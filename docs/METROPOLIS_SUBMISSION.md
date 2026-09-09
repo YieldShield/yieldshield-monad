@@ -41,7 +41,7 @@ Career details and company data above were provided by David. No employment date
 | --- | --- |
 | Public working app | Frontend and API deployed; full market workflow still pending activation |
 | Monad mainnet or testnet deployment | 20 contracts verified; wrapper transaction completed; funded pools and receipt journeys pending |
-| Exact source under an OSI-approved license | MIT new code and retained compatible file-level notices; repository publication requires explicit owner approval |
+| Exact source under an OSI-approved license | MIT new code and retained file-level notices; repository publication requires explicit owner approval |
 | Substantial new build-window work and reuse disclosure | Import baseline, separate stage commits and new-work disclosure present; eligibility ultimately assessed by organizers |
 | Setup and technical documentation | README, architecture, operations and evidence files present |
 | Public video ≤3 minutes | Script prepared in DEMO_GUIDE.md; recording and public hosting pending |
@@ -57,3 +57,5 @@ The signed-in Metropolis Rules & Guidelines v3.0 (updated 3 September 2026), rec
 Recorded deadline: **13 October 2026, 23:59 ET**, equivalent to **14 October 2026, 05:59 CEST**. Internal target: **12 October, 18:00 Europe/Berlin**. The project workspace showed submissions opening on 22 September. The build window itself began 1 September, as the [Monad Foundation's event listing](https://luma.com/metropolis-hangzhou-sep-2026) confirms.
 
 Before final submission, inspect the current [project workspace](https://hackathon.monad.xyz/project) and [registration rules](https://hackathon.monad.xyz/onboarding), replace the existing legacy repository link, verify signed-out access to all artifacts, and retain the submission confirmation. No sponsor bounty is selected or claimed; an external Kuru link does not establish a qualifying integration.
+
+Owner decision, 9 September 2026: keep the repository private for now. Do not change its visibility without a later explicit instruction. Public source remains a requirement before final Metropolis submission.

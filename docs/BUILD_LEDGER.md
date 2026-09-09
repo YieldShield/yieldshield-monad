@@ -37,3 +37,5 @@ Implementation uses OpenAI Codex for code, tests, documentation, debugging and d
 The first hosted CI run passed: https://github.com/YieldShield/yieldshield-monad/actions/runs/34365837836 . It ran 53 API/deployment checks, 4 UI calculation/timing tests, 16 Monad Solidity tests and 225 imported module regressions, plus the production build.
 
 The wrapper has now been exercised on actual Monad testnet (`docs/evidence/native-wrap.json`). Full scenario/reference journey scripts are implemented but not yet run, because funded pools and authenticated Pyth access are pending. Browser verification so far covers signed-out navigation and unavailable states; full wallet/mobile/user walkthrough evidence remains incomplete.
+
+Owner decision, 9 September 2026: keep the repository private for now. Do not change its visibility without a later explicit instruction. Public source remains a requirement before final Metropolis submission.

@@ -59,7 +59,11 @@ function Tag({ children, tone = "" }: { children: ReactNode; tone?: string }) {
 function WalletButton() {
   const w = useWallet();
   return (
-    <button className={w.account ? "wallet-connected" : "button dark"} onClick={w.account ? w.disconnect : w.connect}>
+    <button
+      className={w.account ? "wallet-connected" : "button dark"}
+      disabled={w.busy}
+      onClick={w.account ? w.disconnect : w.connect}
+    >
       {w.account ? (
         <>
           <span className="dot" />
@@ -140,10 +144,25 @@ function HeroArt() {
     </div>
   );
 }
+function ReleaseNotice() {
+  if (registry.status === "complete") return null;
+  return (
+    <div className="release-notice" role="status">
+      <span>
+        Preview build ·{" "}
+        {registry.status === "scenario-complete"
+          ? "Reference markets are being connected."
+          : "Protection markets are being prepared."}
+      </span>
+      <Link to="/status">View status ↗</Link>
+    </div>
+  );
+}
 function Home() {
   return (
     <div className="public-page">
       <Header />
+      <ReleaseNotice />
       <main id="main">
         <section className="hero">
           <div>
@@ -297,6 +316,7 @@ function Shell({ children }: { children: ReactNode }) {
           ))}
         </nav>
         <main id="main" className="workspace">
+          <ReleaseNotice />
           {children}
         </main>
         <div className="app-foot">
@@ -1243,6 +1263,13 @@ function Tokens() {
               })
             }
           />
+          {w.account && faucetStatus && !faucetStatus[0] && (
+            <p className="field-hint">
+              {faucetStatus[1] > 0n
+                ? `Next claim: ${new Date(Number(faucetStatus[1]) * 1000).toLocaleString()}`
+                : "The test-token faucet is being funded or is temporarily unavailable."}
+            </p>
+          )}
           <a href="https://faucet.monad.xyz" target="_blank" rel="noreferrer">
             Need MON for gas? Official faucet ↗
           </a>
@@ -1901,7 +1928,9 @@ function Legal() {
           The frontend is hosted on Vercel and the read-only API on Railway. Requests necessarily reach those providers
           and the configured Monad RPC. Wallet addresses and on-chain transactions are public; the app uses an address
           to read positions when you connect. It does not receive your wallet’s private keys. No advertising analytics,
-          marketing cookies or account database are configured.
+          marketing cookies or account database are configured. Fonts are loaded from Google Fonts, which receives those
+          requests. The browser temporarily stores a pending transaction hash to recover its confirmation after a
+          reload.
         </p>
         <p>
           Contact the operator for privacy questions or requests. This page describes this testnet release; it does not

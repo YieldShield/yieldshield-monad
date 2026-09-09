@@ -2140,6 +2140,40 @@ input[type="range"] {
   }
 }
 
-.partial-exit { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); }
-.partial-exit summary { cursor: pointer; font-weight: 600; }
-.partial-exit p { margin-top: 16px; }
+.partial-exit {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.partial-exit summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.partial-exit p {
+  margin-top: 16px;
+}
+
+.release-notice {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 24px;
+  border: 1px solid #e1d2fa;
+  background: #f0eafb;
+  color: #35225d;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.release-notice a {
+  font-weight: 600;
+  text-decoration: underline;
+}
+.public-page > .release-notice {
+  max-width: 1392px;
+  margin: 0 auto;
+}
+.workspace > .release-notice {
+  margin-bottom: 24px;
+  border-radius: 12px;
+}
