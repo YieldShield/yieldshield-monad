@@ -18,3 +18,22 @@ The repository is private during implementation. Public visibility requires expl
 ## Tool disclosure
 
 Implementation uses OpenAI Codex for code, tests, documentation, debugging and deployment. Original upstream code and dependency authors retain attribution. No interviews, user testing or external endorsements will be claimed unless performed.
+
+## Committed stages and actual evidence
+
+| Commit | Stage |
+| --- | --- |
+| b44fba0 | Attributed prior-work foundation |
+| 2ad6988 | Independent Monad network configuration |
+| 0b1d46f | Monad contracts and lifecycle tests |
+| 65943e3 | Sequential deployment and canonical receipts |
+| 20c3e0f | Read-only Monad API |
+| e3e75b2 | Monad consumer app and wallet journeys |
+| 98bd80f | Railway/Vercel release configuration |
+| 71ca717 | Partial exits, maturity timing, target checks and pending receipt recovery |
+| c14d039 | Reference activation, signed-price validation and journey-evidence tooling |
+| f102662 | Pinned CI, Node and Foundry toolchains |
+
+The first hosted CI run passed: https://github.com/YieldShield/yieldshield-monad/actions/runs/34365837836 . It ran 53 API/deployment checks, 4 UI calculation/timing tests, 16 Monad Solidity tests and 225 imported module regressions, plus the production build.
+
+The wrapper has now been exercised on actual Monad testnet (`docs/evidence/native-wrap.json`). Full scenario/reference journey scripts are implemented but not yet run, because funded pools and authenticated Pyth access are pending. Browser verification so far covers signed-out navigation and unavailable states; full wallet/mobile/user walkthrough evidence remains incomplete.
