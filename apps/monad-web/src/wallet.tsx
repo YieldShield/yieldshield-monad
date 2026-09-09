@@ -182,19 +182,18 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       throw new Error("Wallet account changed. Reconnect before continuing.");
     return createWalletClient({ account, chain: monadTestnet, transport: custom(provider) });
   }
-  async function send(req: TxRequest) {
-    await ensure();
+  async function verifyTarget(address: Address) {
     const registry = deployment as any;
     const entry = Object.values(registry.contracts).find(
-      (v: any) => v.address.toLowerCase() === req.address.toLowerCase(),
+      (v: any) => v.address.toLowerCase() === address.toLowerCase(),
     ) as any;
     const external = [config.externalTokens.shMON, config.pyth.address].some(
-      (a) => a.toLowerCase() === req.address.toLowerCase(),
+      (a) => a.toLowerCase() === address.toLowerCase(),
     );
     if (!entry && !external) {
       const factoryAbi = parseAbi(["function isPoolActive(address) view returns(bool)"]);
       const poolAbi = parseAbi(["function POOL_FACTORY() view returns(address)"]);
-      const origin = await client.readContract({ address: req.address, abi: poolAbi, functionName: "POOL_FACTORY" });
+      const origin = await client.readContract({ address: address, abi: poolAbi, functionName: "POOL_FACTORY" });
       const factory = ["Factory", "ReferenceFactory"]
         .map((n) => registry.contracts[n])
         .find((c) => c?.address.toLowerCase() === origin.toLowerCase());
@@ -202,10 +201,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       const [factoryCode, implementation, active] = await Promise.all([
         client.getCode({ address: origin }),
         client.getStorageAt({
-          address: req.address,
+          address: address,
           slot: "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc",
         }),
-        client.readContract({ address: origin, abi: factoryAbi, functionName: "isPoolActive", args: [req.address] }),
+        client.readContract({ address: origin, abi: factoryAbi, functionName: "isPoolActive", args: [address] }),
       ]);
       if (
         !factoryCode ||
@@ -219,9 +218,13 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       if (!routerCode || keccak256(routerCode) !== registry.contracts.BasePoolRouter.runtimeCodehash)
         throw new Error("Pool router verification failed.");
     }
-    const code = await client.getCode({ address: req.address });
+    const code = await client.getCode({ address: address });
     if (!code || code === "0x" || (entry && keccak256(code) !== entry.runtimeCodehash))
       throw new Error("Contract verification failed.");
+  }
+  async function send(req: TxRequest) {
+    await ensure();
+    await verifyTarget(req.address);
     setStatus("Checking transaction");
     await client.simulateContract({ ...req, account: account! });
     const data = encodeFunctionData(req);
@@ -256,6 +259,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     return receipt;
   }
   async function approve(token: Address, spender: Address, value: bigint) {
+    await verifyTarget(spender);
     const allowance = await client.readContract({
       address: token,
       abi: erc20,
@@ -272,7 +276,13 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     if (
       update.chainId !== 10143 ||
       update.pyth.toLowerCase() !== config.pyth.address.toLowerCase() ||
-      update.expiresAt < Date.now()
+      update.feedId?.toLowerCase() !== config.pyth.monUsdFeedId.toLowerCase() ||
+      !Number.isFinite(update.expiresAt) ||
+      update.expiresAt < Date.now() ||
+      !Array.isArray(update.updateData) ||
+      !update.updateData.length ||
+      update.updateData.length > 4 ||
+      update.updateData.some((value: unknown) => typeof value !== "string" || !/^0x(?:[a-f0-9]{2})+$/i.test(value))
     )
       throw new Error("Invalid or expired price update.");
     const value = await client.readContract({
@@ -294,7 +304,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     pending.current = true;
     setBusy(true);
     setError("");
-    setHash(null);
+    setHash(savedTransaction());
     setStatus(label);
     try {
       if (savedTransaction())
