@@ -1,8 +1,8 @@
 {
-  "name": "yieldshield-base",
+  "name": "yieldshield-monad",
   "private": true,
   "version": "0.1.0",
-  "description": "YieldShield Base Sepolia alpha: continuous synthetic test trading and protection.",
+  "description": "YieldShield on Monad: protected crypto positions and first-loss liquidity for Metropolis.",
   "workspaces": [
     "packages/*",
     "apps/*"
@@ -11,21 +11,23 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "build": "npm run build:packages && npm run build -w web",
+    "build": "npm run build -w monad-web",
     "build:packages": "npm run build -w @yieldshield/core && npm run build -w @yieldshield/sdk && npm run build -w @yieldshield/adapter-solana && npm run build -w @yieldshield/adapter-evm",
     "build:sdk": "npm run build -w @yieldshield/core && npm run build -w @yieldshield/sdk",
     "codegen": "npm run codegen -w @yieldshield/sdk",
     "test:sdk": "npm run test -w @yieldshield/sdk",
     "test:web": "npm run test -w web",
-    "typecheck": "npm run typecheck -w web",
+    "typecheck": "npm run typecheck -w monad-web",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "dev": "npm run dev -w web",
+    "dev": "npm run dev -w monad-web",
     "dev:robinhood": "npm run dev -w web -- --mode robinhood-testnet",
     "build:robinhood": "npm run build:packages && npm run build -w web -- --mode robinhood-testnet",
-    "start:api": "node services/base-api.mjs",
-    "test:base": "node --test services/*.test.mjs scripts/deploy-base-sepolia.test.mjs scripts/base-receipts.test.mjs scripts/base-local-rehearsal.test.mjs scripts/sync-base-deployment.test.mjs scripts/sync-base-demo.test.mjs scripts/smoke-base-demo.test.mjs && vitest run packages/adapter-evm/test"
+    "start:api": "node services/monad/server.mjs",
+    "test:base": "node --test services/*.test.mjs scripts/deploy-base-sepolia.test.mjs scripts/base-receipts.test.mjs scripts/base-local-rehearsal.test.mjs scripts/sync-base-deployment.test.mjs scripts/sync-base-demo.test.mjs scripts/smoke-base-demo.test.mjs && vitest run packages/adapter-evm/test",
+    "test:monad": "node --test services/monad/*.test.mjs scripts/monad-deployment.test.mjs scripts/monad-receipts.test.mjs",
+    "sync:monad": "node scripts/sync-monad.mjs"
   },
   "dependencies": {
     "@pythnetwork/pyth-sdk-solidity": "4.3.1",
