@@ -19,6 +19,38 @@ const names = [
 ];
 const abis = Object.fromEntries(names.map((n) => [n, read(`contracts/out/${n}.sol/${n}.json`).abi]));
 writeFileSync(new URL("config/abis.json", root), JSON.stringify(abis) + "\n");
+const browserFunctions = {
+  SplitRiskPool: [
+    "depositShieldedAsset",
+    "depositBackingAsset",
+    "shieldedWithdraw",
+    "partialWithdrawShielded",
+    "protectorWithdraw",
+    "claimCommission",
+    "startUnlockProcess",
+    "cancelUnlockProcess",
+  ],
+  SplitRiskPoolFactory: ["createPool"],
+  MonadWrappedNative: ["deposit", "withdraw"],
+  MonadYieldVault: ["previewDeposit", "previewRedeem", "depositWithMin", "redeemWithMin", "fundTestYield"],
+  MonadStakingRouter: ["stake"],
+  MonadAssetExchange: ["swap"],
+  ConfigurableTokenFaucet: ["canDrip", "dripAll"],
+};
+const browserAbis = Object.fromEntries(
+  Object.entries(browserFunctions).map(([name, functions]) => {
+    for (const fn of functions)
+      assert(
+        abis[name].some((item) => item.type === "function" && item.name === fn),
+        `Missing browser function ${name}.${fn}`,
+      );
+    return [
+      name,
+      abis[name].filter((item) => item.type === "error" || (item.type === "function" && functions.includes(item.name))),
+    ];
+  }),
+);
+writeFileSync(new URL("config/browser-abis.json", root), JSON.stringify(browserAbis) + "\n");
 const m = read("contracts/deployments/monad-testnet.json");
 const evidence = read("docs/evidence/deployment-verification.json");
 assert.equal(evidence.chainId, 10143);

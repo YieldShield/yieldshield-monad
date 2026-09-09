@@ -5,7 +5,7 @@ import useSWR from "swr";
 import { parseAbi, formatUnits, type Abi, type Address } from "viem";
 import config from "../../../config/monad.json";
 import registryJson from "../../../config/deployment.json";
-import abisJson from "../../../config/abis.json";
+import abisJson from "../../../config/browser-abis.json";
 import { WalletProvider, useWallet, useBalance, client } from "./wallet";
 import { amount, minOut, netAsset, noticeState, fmt, usd, short, fetcher, explorer, errorMessage } from "./lib";
 import type { Asset, Market, Position, Snapshot, Registry } from "./types";
