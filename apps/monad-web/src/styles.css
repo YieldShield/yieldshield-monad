@@ -2177,3 +2177,9 @@ input[type="range"] {
   margin-bottom: 24px;
   border-radius: 12px;
 }
+
+@media (max-width: 720px) {
+  .hero {
+    overflow-x: clip;
+  }
+}

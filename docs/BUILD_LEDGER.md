@@ -39,3 +39,5 @@ The first hosted CI run passed: https://github.com/YieldShield/yieldshield-monad
 The wrapper has now been exercised on actual Monad testnet (`docs/evidence/native-wrap.json`). Full scenario/reference journey scripts are implemented but not yet run, because funded pools and authenticated Pyth access are pending. Browser verification so far covers signed-out navigation and unavailable states; full wallet/mobile/user walkthrough evidence remains incomplete.
 
 Owner decision, 9 September 2026: keep the repository private for now. Do not change its visibility without a later explicit instruction. Public source remains a requirement before final Metropolis submission.
+
+Responsive review: the home, market and calculator views were rendered in 390×844 local browser frames. The review found and fixed decorative artwork causing horizontal overflow on the homepage. This is a layout check, not a completed mobile wallet journey.
