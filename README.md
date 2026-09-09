@@ -64,6 +64,8 @@ The service/deployment tests include a temporary local HTTP listener. Contract t
 
 See [architecture and asset decisions](docs/ARCHITECTURE.md), [operations](docs/OPERATIONS.md), [new-work disclosure](docs/HACKATHON_DELTA.md), [provenance](docs/PROVENANCE.md), and [third-party notices](THIRD_PARTY_NOTICES.md).
 
+The [Metropolis sponsor strategy](docs/SPONSOR_STRATEGY.md) prioritizes Dynamic onboarding and evaluates Kuru, Agora, Chainlink CRE and other relevant sponsors. These are planned integrations with explicit evidence gates; the current release does not claim sponsor-bounty eligibility.
+
 ## Deployment and evidence
 
 Follow [the release runbook](docs/OPERATIONS.md). Deployment commands require an explicit `--broadcast`, a dedicated ignored testnet signer file, and chain 10143. Requests and expected hashes are saved before broadcasting. An interrupted deployment resumes the exact intent; it does not replace an ambiguous nonce. No backend service has a wallet private key.

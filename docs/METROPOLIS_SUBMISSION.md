@@ -58,4 +58,6 @@ Recorded deadline: **13 October 2026, 23:59 ET**, equivalent to **14 October 202
 
 Before final submission, inspect the current [project workspace](https://hackathon.monad.xyz/project) and [registration rules](https://hackathon.monad.xyz/onboarding), replace the existing legacy repository link, verify signed-out access to all artifacts, and retain the submission confirmation. No sponsor bounty is selected or claimed; an external Kuru link does not establish a qualifying integration.
 
+Sponsor priorities and the evidence required for each candidate are recorded in [SPONSOR_STRATEGY.md](SPONSOR_STRATEGY.md). Dynamic is the first integration to pursue, followed by Kuru and conditional Agora mobile trading. Detailed bounty terms still require a refreshed portal sign-in; the public titles alone do not establish eligibility. Keep proposed integrations out of completed-work claims until configured and exercised.
+
 Owner decision, 9 September 2026: keep the repository private for now. Do not change its visibility without a later explicit instruction. Public source remains a requirement before final Metropolis submission.

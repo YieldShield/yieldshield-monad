@@ -41,3 +41,5 @@ The wrapper has now been exercised on actual Monad testnet (`docs/evidence/nativ
 Owner decision, 9 September 2026: keep the repository private for now. Do not change its visibility without a later explicit instruction. Public source remains a requirement before final Metropolis submission.
 
 Responsive review: the home, market and calculator views were rendered in 390×844 local browser frames. The review found and fixed decorative artwork causing horizontal overflow on the homepage. This is a layout check, not a completed mobile wallet journey.
+
+Sponsor review, 9 September 2026: recorded the official published bounties, separated credits and winner benefits from integration opportunities, prioritized Dynamic onboarding, and documented Kuru/Agora/CRE feasibility and evidence gates in `SPONSOR_STRATEGY.md`. The owner requested ongoing sponsor attention; daily checks are scheduled through the deadline. This step changes the build priorities and documentation; it does not activate a sponsor integration or claim eligibility. Detailed portal terms await a refreshed sign-in.

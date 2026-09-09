@@ -42,6 +42,8 @@ An asset exit needs a usable protected-asset fee price. A backing exit additiona
 
 ## Scope decisions
 
+Sponsor selection now follows [the sponsor strategy](SPONSOR_STRATEGY.md). Dynamic is the prioritized wallet/onboarding integration; it serves a different role from Pyth pricing. Kuru execution, an Agora/AUSD mobile journey and a useful Chainlink CRE workflow have explicit feasibility and evidence gates. Those are planned changes, not claims about the current runtime below.
+
 The active UI uses a new workspace rather than modifying the imported historical UI in place. Shared economics and contracts remain attributed. Test trading uses the existing inventory-funded mechanism adapted for the isolated Monad scenario. Kuru is an external discovery link only. No executable Kuru integration, AUSD bounty, tokenized stocks, Morpho strategy, mainnet funded market or AI trading agent is claimed.
 
 ## Official references

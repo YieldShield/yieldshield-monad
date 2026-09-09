@@ -2,6 +2,8 @@
 
 Prepared 9 September 2026 for David Hawig and Santiago. Proposed operator: Hawig Ventures UG (haftungsbeschränkt). This is a plan, not a deployment or an assessment that any external protocol is safe for real funds.
 
+**Sponsor priority update, 9 September 2026:** follow [the sponsor strategy](SPONSOR_STRATEGY.md) for the current integration order and evidence gates. Dynamic onboarding is the first sponsor feature to pursue; executable Kuru trading and Agora's mobile trading opportunity are the next investigations. Chainlink's advertised bounty requires a CRE workflow, so oracle selection is a separate decision. Public bounty titles are verified; detailed portal terms still need a fresh signed-in review. This update supersedes the earlier treatment of sponsor work as an unspecified optional extension.
+
 This supersedes the product and implementation direction in the [8 September plan](MONAD_METROPOLIS_PLAN_2026-09-08.md): use the current **YieldShield Base application** as the implementation reference and build a separate Monad repository. The earlier application record remains historical evidence of what was entered.
 
 ## 1. Recommended product
