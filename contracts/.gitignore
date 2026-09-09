@@ -1,0 +1,27 @@
+# Compiler files
+cache/
+out/
+
+# Node.js dependencies and logs
+node_modules/
+npm-debug.log*
+
+# Foundry broadcast logs are generated deployment artifacts.
+/broadcast/
+
+# Docs
+docs/
+
+# Dotenv file
+.env
+localhost.json
+
+# Generated security reports
+slither-report.md
+slither-results.sarif
+aderyn-report.md
+
+# Coverage artifacts
+lcov.info
+coverage-report/
+.claude/worktrees/

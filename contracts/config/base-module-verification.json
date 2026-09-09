@@ -1,0 +1,82 @@
+{
+  "verifiedAt": "2026-09-08T15:28:02.311Z",
+  "runtimeLimit": 24576,
+  "initcodeLimit": 49152,
+  "contracts": [
+    {
+      "contract": "BasePoolRouter",
+      "runtimeBytes": 3847,
+      "initcodeBytes": 4753
+    },
+    {
+      "contract": "BasePoolAdminModule",
+      "runtimeBytes": 21045,
+      "initcodeBytes": 21312
+    },
+    {
+      "contract": "BasePoolDepositsModule",
+      "runtimeBytes": 12516,
+      "initcodeBytes": 12783
+    },
+    {
+      "contract": "BasePoolFeesModule",
+      "runtimeBytes": 15401,
+      "initcodeBytes": 15668
+    },
+    {
+      "contract": "BasePoolInitializeModule",
+      "runtimeBytes": 12935,
+      "initcodeBytes": 13202
+    },
+    {
+      "contract": "BasePoolPartialExitModule",
+      "runtimeBytes": 13825,
+      "initcodeBytes": 14092
+    },
+    {
+      "contract": "BasePoolProtectorModule",
+      "runtimeBytes": 14830,
+      "initcodeBytes": 15097
+    },
+    {
+      "contract": "BasePoolShieldExitModule",
+      "runtimeBytes": 15204,
+      "initcodeBytes": 15471
+    },
+    {
+      "contract": "BasePoolViewsModule",
+      "runtimeBytes": 11014,
+      "initcodeBytes": 11281
+    },
+    {
+      "contract": "BaseFactoryRouter",
+      "runtimeBytes": 3355,
+      "initcodeBytes": 4042
+    },
+    {
+      "contract": "BaseFactoryAdminModule",
+      "runtimeBytes": 18918,
+      "initcodeBytes": 19185
+    },
+    {
+      "contract": "BaseFactoryCreateModule",
+      "runtimeBytes": 17029,
+      "initcodeBytes": 17296
+    },
+    {
+      "contract": "BaseFactoryLifecycleModule",
+      "runtimeBytes": 12475,
+      "initcodeBytes": 12742
+    },
+    {
+      "contract": "BaseFactoryOracleModule",
+      "runtimeBytes": 19391,
+      "initcodeBytes": 19658
+    },
+    {
+      "contract": "BaseFactoryViewsModule",
+      "runtimeBytes": 7706,
+      "initcodeBytes": 7973
+    }
+  ]
+}

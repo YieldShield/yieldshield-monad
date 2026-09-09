@@ -1,0 +1,12 @@
+contracts/
+scripts/
+docs/
+local-docs/
+artifacts/
+**/.env*.local
+**/test/
+**/*.test.mjs
+**/*.log
+Dockerfile.base-api
+api/
+services/

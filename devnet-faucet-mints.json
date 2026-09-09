@@ -1,0 +1,136 @@
+{
+  "cluster": "https://api.devnet.solana.com",
+  "gov": "7Y1XQ7weMnxiRJnshd2p3yKFFpSD5cpsNuyAAtLzL5VL",
+  "tokens": {
+    "USDC": {
+      "symbol": "USDC",
+      "name": "USD Coin",
+      "mint": "3pnzYeLkpTR4Lhx3pGsPEj9vjGFBb5G1UJWN49NVsxU6",
+      "decimals": 6,
+      "tokenProgram": "spl",
+      "tranche": "stable",
+      "approxPriceUsd": 1,
+      "mainnetMint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+    },
+    "USDT": {
+      "symbol": "USDT",
+      "name": "Tether USD",
+      "mint": "44pZoJnV4gjSWh6FzQDUrgSqeeGzyoKR8YjL7qTtyY6Q",
+      "decimals": 6,
+      "tokenProgram": "spl",
+      "tranche": "stable",
+      "approxPriceUsd": 1,
+      "mainnetMint": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"
+    },
+    "USDY": {
+      "symbol": "USDY",
+      "name": "Ondo US Dollar Yield",
+      "mint": "2BixruYgHavxvkRBeuQp6QdBT2FS7vvgfUbGD6cTyb8S",
+      "decimals": 6,
+      "tokenProgram": "spl",
+      "tranche": "stable",
+      "approxPriceUsd": 1.09,
+      "mainnetMint": "A1KLoBrKBde8Ty9qtNQUtq3C2ortoC3u7twggz7sEto6"
+    },
+    "sUSDe": {
+      "symbol": "sUSDe",
+      "name": "Ethena Staked USDe",
+      "mint": "DCPtHCNWjgiKU8T1TazkYQeGc9Te5efiajHujT3LNxvF",
+      "decimals": 9,
+      "tokenProgram": "spl",
+      "tranche": "stable",
+      "approxPriceUsd": 1.24,
+      "mainnetMint": "Eh6XEPhSwoLv5wFApukmnaVSHQ6sAnoD9BmgmwQoN2sN"
+    },
+    "USDe": {
+      "symbol": "USDe",
+      "name": "Ethena USDe",
+      "mint": "9UqRsMWBNhVac1FLRT7ctEXnT5DUdB5wGLKFT2vgWvTm",
+      "decimals": 9,
+      "tokenProgram": "spl",
+      "tranche": "stable",
+      "approxPriceUsd": 1,
+      "mainnetMint": "DEkqHyPN7GMRJ5cArtQFAWefqbZb33Hyf6s5iCwjEonT"
+    },
+    "USDtb": {
+      "symbol": "USDtb",
+      "name": "Ethena USDtb",
+      "mint": "4iZWb6mh5u25aiss5maV9KBuwMJXfDfGb2cNKzRSUKTj",
+      "decimals": 6,
+      "tokenProgram": "spl",
+      "tranche": "stable",
+      "approxPriceUsd": 1,
+      "mainnetMint": "8yXrtJ54jZtE84xEBzTESKuegjcAkAuDrdAhRd8i8n3T"
+    },
+    "syrupUSDC": {
+      "symbol": "syrupUSDC",
+      "name": "Maple Syrup USDC",
+      "mint": "6D2kTpcpGrvci1ugEc3Wdd7Zg224EScPb6Y1HSWhY9Ud",
+      "decimals": 6,
+      "tokenProgram": "spl",
+      "tranche": "stable",
+      "approxPriceUsd": 1.12,
+      "mainnetMint": "AvZZF1YaZDziPY2RCK4oJrRVrbN3mTD9NL24hPeaZeUj"
+    },
+    "USDS": {
+      "symbol": "USDS",
+      "name": "Sky Dollar",
+      "mint": "8oGvuTQzk39DuhHWXrQjBLNSFuBJHVZ3vKEkhzLTtqJT",
+      "decimals": 6,
+      "tokenProgram": "spl",
+      "tranche": "stable",
+      "approxPriceUsd": 1,
+      "mainnetMint": "USDSwr9ApdHk5bvJKMjzff41FfuX8bSxdKcR81vTwcA"
+    },
+    "PYUSD": {
+      "symbol": "PYUSD",
+      "name": "PayPal USD",
+      "mint": "6p8mWeaNg439dWd5xFA6pbaqTQnwqYbzZuP4hBojfszS",
+      "decimals": 6,
+      "tokenProgram": "token2022",
+      "tranche": "stable",
+      "approxPriceUsd": 1,
+      "mainnetMint": "2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo"
+    },
+    "kUSDSUSDC": {
+      "symbol": "kUSDSUSDC",
+      "name": "Kamino kUSDS-USDC vault share",
+      "mint": "Cy1av9GcGY6hS1ATGRcAvPrLvkUNeeQrAgs6P9DU7TpM",
+      "decimals": 6,
+      "tokenProgram": "spl",
+      "tranche": "stable",
+      "approxPriceUsd": 1.05,
+      "mainnetMint": "FXgbpSwYpdqRqHxZyYHdrRXqg88njKbfL9DNWgarhBvB"
+    },
+    "JitoSOL": {
+      "symbol": "JitoSOL",
+      "name": "Jito Staked SOL",
+      "mint": "8u6X4UCupDEWEZnobP52jBBuEb2591ax2jt6AEYSKQWc",
+      "decimals": 9,
+      "tokenProgram": "spl",
+      "tranche": "volatile",
+      "approxPriceUsd": 190,
+      "mainnetMint": "J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn"
+    },
+    "INF": {
+      "symbol": "INF",
+      "name": "Sanctum Infinity",
+      "mint": "9ZdC6KwNGeUcG4A5dZCAjL1pPGPrSSKmCvqd7A8A64Hq",
+      "decimals": 9,
+      "tokenProgram": "spl",
+      "tranche": "volatile",
+      "approxPriceUsd": 200,
+      "mainnetMint": "5oVNBeEEQvYi1cX3ir8Dx5n1P7pdxydbGF2X4TxVusJm"
+    },
+    "zBTC": {
+      "symbol": "zBTC",
+      "name": "Zeus Bitcoin",
+      "mint": "BjW9biCuC1M95BsikazcUdrbFFNwCrvaK8djxQJ5pEj1",
+      "decimals": 8,
+      "tokenProgram": "spl",
+      "tranche": "volatile",
+      "approxPriceUsd": 98000,
+      "mainnetMint": "zBTCug3er3tLyffELcvDNrKkCymbPWysGcWihESYfLg"
+    }
+  }
+}

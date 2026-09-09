@@ -1,0 +1,173 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.35;
+
+import { TimelockController } from "@openzeppelin/contracts/governance/TimelockController.sol";
+import { IGovernor } from "@openzeppelin/contracts/governance/IGovernor.sol";
+import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import { AccessControlEnumerable } from "@openzeppelin/contracts/access/extensions/AccessControlEnumerable.sol";
+import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+
+/// @title YSTimelockController
+/// @notice Drop-in TimelockController with enumerable role membership so the
+///         ProtocolAccessControl validator can enforce the H-8 invariant
+///         (exactly one DEFAULT_ADMIN_ROLE member, equal to the timelock itself).
+contract YSTimelockController is TimelockController, AccessControlEnumerable {
+    uint256 public constant MIN_PUBLIC_DELAY = 2 days;
+    uint256 public constant MAX_PUBLIC_DELAY = 30 days;
+
+    error PublicTimelockDelayTooShort(uint256 providedDelay, uint256 minimumDelay);
+    error PublicTimelockDelayTooLong(uint256 providedDelay, uint256 maximumDelay);
+    error DefaultAdminMustBeTimelock(address account);
+    error TimelockDefaultAdminCannotBeRevoked();
+    error TimelockOperationalRoleFrozen(bytes32 role, address account);
+    error GovernanceControllerRotationInvalid(address oldController, address newController);
+
+    event GovernanceControllerRotated(address indexed oldController, address indexed newController);
+
+    constructor(uint256 minDelay, address[] memory proposers, address[] memory executors, address admin)
+        TimelockController(minDelay, proposers, executors, admin)
+    {
+        _validatePublicDelay(minDelay);
+    }
+
+    function grantRole(bytes32 role, address account) public virtual override(AccessControl, IAccessControl) {
+        _validateRoleGrant(role, account);
+        super.grantRole(role, account);
+    }
+
+    function revokeRole(bytes32 role, address account) public virtual override(AccessControl, IAccessControl) {
+        _validateRoleRevocation(role, account);
+        super.revokeRole(role, account);
+    }
+
+    function renounceRole(bytes32 role, address callerConfirmation)
+        public
+        virtual
+        override(AccessControl, IAccessControl)
+    {
+        _validateRoleRevocation(role, callerConfirmation);
+        super.renounceRole(role, callerConfirmation);
+    }
+
+    function updateDelay(uint256 newDelay) public virtual override {
+        _validatePublicDelay(newDelay);
+        super.updateDelay(newDelay);
+    }
+
+    function rotateGovernanceController(address newController) external {
+        if (msg.sender != address(this) || newController == address(0) || newController.code.length == 0) {
+            revert GovernanceControllerRotationInvalid(address(0), newController);
+        }
+        _validateNewGovernanceController(newController);
+
+        address oldController = _soleRoleMemberOrZero(PROPOSER_ROLE);
+        if (
+            oldController == address(0) || _soleRoleMemberOrZero(EXECUTOR_ROLE) != oldController
+                || _soleRoleMemberOrZero(CANCELLER_ROLE) != oldController
+        ) {
+            revert GovernanceControllerRotationInvalid(oldController, newController);
+        }
+
+        _revokeRole(PROPOSER_ROLE, oldController);
+        _revokeRole(EXECUTOR_ROLE, oldController);
+        _revokeRole(CANCELLER_ROLE, oldController);
+        _grantRole(PROPOSER_ROLE, newController);
+        _grantRole(EXECUTOR_ROLE, newController);
+        _grantRole(CANCELLER_ROLE, newController);
+
+        emit GovernanceControllerRotated(oldController, newController);
+    }
+
+    function _validateNewGovernanceController(address newController) internal view {
+        try IERC165(newController).supportsInterface(type(IGovernor).interfaceId) returns (bool supported) {
+            if (!supported) {
+                revert GovernanceControllerRotationInvalid(address(0), newController);
+            }
+        } catch {
+            revert GovernanceControllerRotationInvalid(address(0), newController);
+        }
+
+        (bool success, bytes memory data) = newController.staticcall(abi.encodeWithSignature("timelock()"));
+        if (!success || data.length < 32 || abi.decode(data, (address)) != address(this)) {
+            revert GovernanceControllerRotationInvalid(address(0), newController);
+        }
+    }
+
+    function _grantRole(bytes32 role, address account)
+        internal
+        virtual
+        override(AccessControl, AccessControlEnumerable)
+        returns (bool)
+    {
+        return super._grantRole(role, account);
+    }
+
+    function _revokeRole(bytes32 role, address account)
+        internal
+        virtual
+        override(AccessControl, AccessControlEnumerable)
+        returns (bool)
+    {
+        return super._revokeRole(role, account);
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(TimelockController, AccessControlEnumerable)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
+
+    function _validatePublicDelay(uint256 delay) internal view {
+        if (!_isLocalDevelopmentChain() && delay < MIN_PUBLIC_DELAY) {
+            revert PublicTimelockDelayTooShort(delay, MIN_PUBLIC_DELAY);
+        }
+        if (delay > MAX_PUBLIC_DELAY) {
+            revert PublicTimelockDelayTooLong(delay, MAX_PUBLIC_DELAY);
+        }
+    }
+
+    function _validateRoleGrant(bytes32 role, address account) internal view {
+        if (role == DEFAULT_ADMIN_ROLE && account != address(this)) {
+            revert DefaultAdminMustBeTimelock(account);
+        }
+        if (_isTimelockManagedOperationalRole(role)) {
+            revert TimelockOperationalRoleFrozen(role, account);
+        }
+    }
+
+    function _validateRoleRevocation(bytes32 role, address account) internal view {
+        if (role == DEFAULT_ADMIN_ROLE && account == address(this)) {
+            revert TimelockDefaultAdminCannotBeRevoked();
+        }
+        if (_isOperationalRole(role) && account == _soleRoleMemberOrZero(role)) {
+            revert TimelockOperationalRoleFrozen(role, account);
+        }
+        if (_isTimelockManagedOperationalRole(role)) {
+            revert TimelockOperationalRoleFrozen(role, account);
+        }
+    }
+
+    function _isTimelockManagedOperationalRole(bytes32 role) internal view returns (bool) {
+        return msg.sender == address(this) && _isOperationalRole(role);
+    }
+
+    function _isOperationalRole(bytes32 role) internal pure returns (bool) {
+        return role == PROPOSER_ROLE || role == EXECUTOR_ROLE || role == CANCELLER_ROLE;
+    }
+
+    function _soleRoleMemberOrZero(bytes32 role) internal view returns (address) {
+        if (getRoleMemberCount(role) != 1) {
+            return address(0);
+        }
+        return getRoleMember(role, 0);
+    }
+
+    function _isLocalDevelopmentChain() internal view returns (bool) {
+        return block.chainid == 31337 || block.chainid == 1337;
+    }
+}

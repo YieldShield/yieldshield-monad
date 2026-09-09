@@ -1,0 +1,6596 @@
+{
+  "address": "AW9jQVRL1Eo2QBB9Aea3iHfyDLWuUtcCNwZ2Rdo9RRXs",
+  "metadata": {
+    "name": "split_risk_pool",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "YieldShield core split-risk pool + factory/registry + position NFTs."
+  },
+  "instructions": [
+    {
+      "name": "accept_governance_authority",
+      "docs": [
+        "Accept a pending governance-authority transfer (gov SEC-003)."
+      ],
+      "discriminator": [
+        96,
+        26,
+        122,
+        29,
+        227,
+        228,
+        230,
+        229
+      ],
+      "accounts": [
+        {
+          "name": "pending_authority",
+          "signer": true
+        },
+        {
+          "name": "factory",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "accrue_fees",
+      "docs": [
+        "Accrue fees on one Shield position from price appreciation (per-position; SEC-105)."
+      ],
+      "discriminator": [
+        136,
+        229,
+        178,
+        88,
+        250,
+        122,
+        35,
+        46
+      ],
+      "accounts": [
+        {
+          "name": "cranker",
+          "docs": [
+            "Permissionless cranker (pays the tx; no authority required)."
+          ],
+          "signer": true
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.shielded_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.backing_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.creator",
+                "account": "Pool"
+              }
+            ]
+          },
+          "relations": [
+            "shield_position"
+          ]
+        },
+        {
+          "name": "pool_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "shielded_mint",
+          "relations": [
+            "pool"
+          ]
+        },
+        {
+          "name": "position_mint"
+        },
+        {
+          "name": "shield_position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  105,
+                  101,
+                  108,
+                  100,
+                  95,
+                  112,
+                  111,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "oracle_program"
+        },
+        {
+          "name": "shielded_feed"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "activate_shielded",
+      "docs": [
+        "Cross-asset Shield exit / activation after minimum_pool_time (REQ-004)."
+      ],
+      "discriminator": [
+        57,
+        251,
+        62,
+        64,
+        98,
+        74,
+        129,
+        28
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "factory",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.shielded_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.backing_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.creator",
+                "account": "Pool"
+              }
+            ]
+          },
+          "relations": [
+            "shield_position"
+          ]
+        },
+        {
+          "name": "pool_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "shielded_mint",
+          "relations": [
+            "pool"
+          ]
+        },
+        {
+          "name": "backing_mint",
+          "relations": [
+            "pool"
+          ]
+        },
+        {
+          "name": "vault_backing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116,
+                  95,
+                  98,
+                  97,
+                  99,
+                  107,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner_backing_account",
+          "writable": true
+        },
+        {
+          "name": "position_mint",
+          "writable": true
+        },
+        {
+          "name": "owner_position_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "owner"
+              },
+              {
+                "kind": "account",
+                "path": "position_token_program"
+              },
+              {
+                "kind": "account",
+                "path": "position_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "shield_position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  105,
+                  101,
+                  108,
+                  100,
+                  95,
+                  112,
+                  111,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "asset_token_program"
+        },
+        {
+          "name": "position_token_program"
+        },
+        {
+          "name": "oracle_program"
+        },
+        {
+          "name": "shielded_feed"
+        },
+        {
+          "name": "backing_feed"
+        }
+      ],
+      "args": [
+        {
+          "name": "min_out",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "add_token",
+      "docs": [
+        "Whitelist a token for use in pools (governance-gated)."
+      ],
+      "discriminator": [
+        237,
+        255,
+        26,
+        54,
+        56,
+        48,
+        68,
+        52
+      ],
+      "accounts": [
+        {
+          "name": "governance_authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "factory"
+          ]
+        },
+        {
+          "name": "factory",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "token_entry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  111,
+                  107,
+                  101,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "AddTokenParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "add_token_initial",
+      "docs": [
+        "Whitelist a token during the bootstrap phase (EVM addTokenInitial)."
+      ],
+      "discriminator": [
+        84,
+        17,
+        128,
+        223,
+        11,
+        226,
+        9,
+        240
+      ],
+      "accounts": [
+        {
+          "name": "governance_authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "factory"
+          ]
+        },
+        {
+          "name": "factory",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "token_entry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  111,
+                  107,
+                  101,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "AddTokenParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "advance_protector_epoch",
+      "docs": [
+        "Advance the protector epoch after a full backing drain (permissionless; SEC-104)."
+      ],
+      "discriminator": [
+        69,
+        150,
+        130,
+        91,
+        48,
+        199,
+        154,
+        33
+      ],
+      "accounts": [
+        {
+          "name": "cranker",
+          "docs": [
+            "Permissionless cranker (pays for the epoch snapshot PDA)."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.shielded_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.backing_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.creator",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "protector_epoch",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  101,
+                  99,
+                  116,
+                  111,
+                  114,
+                  95,
+                  101,
+                  112,
+                  111,
+                  99,
+                  104
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.protector_epoch",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "allow_account",
+      "docs": [
+        "Add an account to an access-control allowlist (signed by the ACL authority)."
+      ],
+      "discriminator": [
+        81,
+        64,
+        221,
+        184,
+        236,
+        221,
+        185,
+        197
+      ],
+      "accounts": [
+        {
+          "name": "acl_authority",
+          "docs": [
+            "The access-control authority (owns this allowlist)."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "allow_entry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  108,
+                  108,
+                  111,
+                  119
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "acl_authority"
+              },
+              {
+                "kind": "arg",
+                "path": "account"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "account",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "cancel_unlock",
+      "docs": [
+        "Cancel a pending protector unlock (REQ-005)."
+      ],
+      "discriminator": [
+        116,
+        58,
+        36,
+        132,
+        24,
+        104,
+        170,
+        228
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "signer": true
+        },
+        {
+          "name": "position_mint"
+        },
+        {
+          "name": "owner_position_account",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "owner"
+              },
+              {
+                "kind": "account",
+                "path": "position_token_program"
+              },
+              {
+                "kind": "account",
+                "path": "position_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "protector_position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  101,
+                  99,
+                  116,
+                  111,
+                  114,
+                  95,
+                  112,
+                  111,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position_token_program"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "claim_commission",
+      "docs": [
+        "Claim a protector's accrued commission (REQ-006; callable while paused)."
+      ],
+      "discriminator": [
+        12,
+        9,
+        15,
+        170,
+        155,
+        235,
+        124,
+        254
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "signer": true
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.shielded_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.backing_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.creator",
+                "account": "Pool"
+              }
+            ]
+          },
+          "relations": [
+            "protector_position"
+          ]
+        },
+        {
+          "name": "shielded_mint",
+          "relations": [
+            "pool"
+          ]
+        },
+        {
+          "name": "vault_shielded",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116,
+                  95,
+                  115,
+                  104,
+                  105,
+                  101,
+                  108,
+                  100,
+                  101,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position_mint"
+        },
+        {
+          "name": "owner_position_account",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "owner"
+              },
+              {
+                "kind": "account",
+                "path": "position_token_program"
+              },
+              {
+                "kind": "account",
+                "path": "position_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "protector_position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  101,
+                  99,
+                  116,
+                  111,
+                  114,
+                  95,
+                  112,
+                  111,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner_shielded_account",
+          "writable": true
+        },
+        {
+          "name": "protector_epoch",
+          "docs": [
+            "Required only when the position is in an expired epoch (`position.epoch < pool.epoch`):",
+            "the epoch's frozen accumulator (EVM `protectorEpochFinalRewardPerShare`)."
+          ],
+          "optional": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  101,
+                  99,
+                  116,
+                  111,
+                  114,
+                  95,
+                  101,
+                  112,
+                  111,
+                  99,
+                  104
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "protector_position.epoch",
+                "account": "ProtectorPosition"
+              }
+            ]
+          }
+        },
+        {
+          "name": "asset_token_program"
+        },
+        {
+          "name": "position_token_program"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "claim_rewards",
+      "docs": [
+        "Claim Shield-side rewards subject to CLAIM_REWARDS_COOLDOWN (REQ-006)."
+      ],
+      "discriminator": [
+        4,
+        144,
+        132,
+        71,
+        116,
+        23,
+        151,
+        80
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "signer": true
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.shielded_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.backing_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.creator",
+                "account": "Pool"
+              }
+            ]
+          },
+          "relations": [
+            "shield_position"
+          ]
+        },
+        {
+          "name": "pool_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "shielded_mint",
+          "relations": [
+            "pool"
+          ]
+        },
+        {
+          "name": "position_mint"
+        },
+        {
+          "name": "owner_position_account",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "owner"
+              },
+              {
+                "kind": "account",
+                "path": "position_token_program"
+              },
+              {
+                "kind": "account",
+                "path": "position_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "shield_position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  105,
+                  101,
+                  108,
+                  100,
+                  95,
+                  112,
+                  111,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position_token_program"
+        },
+        {
+          "name": "oracle_program"
+        },
+        {
+          "name": "shielded_feed"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "close_pool",
+      "docs": [
+        "Close an empty pool and refund the creation bond (AC-106; governance-gated)."
+      ],
+      "discriminator": [
+        140,
+        189,
+        209,
+        23,
+        239,
+        62,
+        239,
+        11
+      ],
+      "accounts": [
+        {
+          "name": "governance_authority",
+          "signer": true,
+          "relations": [
+            "factory"
+          ]
+        },
+        {
+          "name": "factory",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "creator",
+          "docs": [
+            "Rent + bond destination; must match `pool.creator`."
+          ],
+          "writable": true,
+          "relations": [
+            "pool"
+          ]
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.shielded_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.backing_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.creator",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "backing_mint"
+        },
+        {
+          "name": "vault_shielded",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116,
+                  95,
+                  115,
+                  104,
+                  105,
+                  101,
+                  108,
+                  100,
+                  101,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault_backing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116,
+                  95,
+                  98,
+                  97,
+                  99,
+                  107,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "bond_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  111,
+                  110,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "creator_backing_account",
+          "docs": [
+            "Creator's backing-token account; receives the refunded bond."
+          ],
+          "writable": true
+        },
+        {
+          "name": "shielded_token_program"
+        },
+        {
+          "name": "backing_token_program"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "create_pool",
+      "docs": [
+        "Create a pool: Pool + PoolConfig + vaults + bond escrow (REQ-010, CON-109)."
+      ],
+      "discriminator": [
+        233,
+        146,
+        209,
+        142,
+        207,
+        104,
+        64,
+        188
+      ],
+      "accounts": [
+        {
+          "name": "creator",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "factory",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "shielded_mint"
+        },
+        {
+          "name": "backing_mint"
+        },
+        {
+          "name": "shielded_token_entry",
+          "docs": [
+            "Whitelist entry for the shielded asset (PDA existence proves it is whitelisted)."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  111,
+                  107,
+                  101,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "shielded_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "backing_token_entry",
+          "docs": [
+            "Whitelist entry for the backing asset."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  111,
+                  107,
+                  101,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "backing_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "shielded_mint"
+              },
+              {
+                "kind": "account",
+                "path": "backing_mint"
+              },
+              {
+                "kind": "account",
+                "path": "creator"
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault_shielded",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116,
+                  95,
+                  115,
+                  104,
+                  105,
+                  101,
+                  108,
+                  100,
+                  101,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault_backing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116,
+                  95,
+                  98,
+                  97,
+                  99,
+                  107,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "bond_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  111,
+                  110,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "creator_backing_account",
+          "docs": [
+            "Creator's backing-token account; source of the creation bond."
+          ],
+          "writable": true
+        },
+        {
+          "name": "shielded_token_program"
+        },
+        {
+          "name": "backing_token_program"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "oracle_program",
+          "docs": [
+            "new pool records as `price_oracle`. Only read when a USD bond floor is enforced."
+          ]
+        },
+        {
+          "name": "backing_feed"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "CreatePoolParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "deactivate_dust_pool",
+      "docs": [
+        "Deactivate a dust pool, forfeiting the bond to the protocol recipient (governance-gated)."
+      ],
+      "discriminator": [
+        1,
+        37,
+        166,
+        161,
+        170,
+        176,
+        245,
+        155
+      ],
+      "accounts": [
+        {
+          "name": "governance_authority",
+          "signer": true,
+          "relations": [
+            "factory"
+          ]
+        },
+        {
+          "name": "factory",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.shielded_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.backing_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.creator",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "backing_mint",
+          "relations": [
+            "pool"
+          ]
+        },
+        {
+          "name": "bond_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  111,
+                  110,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "recipient_account",
+          "docs": [
+            "Protocol fee recipient's backing account (the bond forfeit destination)."
+          ],
+          "writable": true
+        },
+        {
+          "name": "backing_token_program"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "deactivate_pool",
+      "docs": [
+        "Deactivate a pool (governance-gated)."
+      ],
+      "discriminator": [
+        59,
+        92,
+        55,
+        157,
+        53,
+        79,
+        176,
+        59
+      ],
+      "accounts": [
+        {
+          "name": "governance_authority",
+          "signer": true,
+          "relations": [
+            "factory"
+          ]
+        },
+        {
+          "name": "factory",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.shielded_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.backing_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.creator",
+                "account": "Pool"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "deactivate_protector_only_pool",
+      "docs": [
+        "Deactivate a protector-only pool, forfeiting the bond (governance-gated)."
+      ],
+      "discriminator": [
+        197,
+        40,
+        157,
+        229,
+        119,
+        46,
+        110,
+        72
+      ],
+      "accounts": [
+        {
+          "name": "governance_authority",
+          "signer": true,
+          "relations": [
+            "factory"
+          ]
+        },
+        {
+          "name": "factory",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.shielded_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.backing_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.creator",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "backing_mint",
+          "relations": [
+            "pool"
+          ]
+        },
+        {
+          "name": "bond_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  111,
+                  110,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "recipient_account",
+          "docs": [
+            "Protocol fee recipient's backing account (the bond forfeit destination)."
+          ],
+          "writable": true
+        },
+        {
+          "name": "backing_token_program"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "deposit_backing",
+      "docs": [
+        "Open a Protector (underwriter) position (REQ-002)."
+      ],
+      "discriminator": [
+        244,
+        90,
+        46,
+        193,
+        148,
+        134,
+        105,
+        252
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "factory",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.shielded_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.backing_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.creator",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "backing_mint",
+          "relations": [
+            "pool"
+          ]
+        },
+        {
+          "name": "owner_backing_account",
+          "writable": true
+        },
+        {
+          "name": "vault_backing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116,
+                  95,
+                  98,
+                  97,
+                  99,
+                  107,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position_mint",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  115,
+                  95,
+                  109,
+                  105,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.position_index",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner_position_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "owner"
+              },
+              {
+                "kind": "account",
+                "path": "position_token_program"
+              },
+              {
+                "kind": "account",
+                "path": "position_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "protector_position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  101,
+                  99,
+                  116,
+                  111,
+                  114,
+                  95,
+                  112,
+                  111,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "asset_token_program"
+        },
+        {
+          "name": "position_token_program"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "allow_entry",
+          "docs": [
+            "Required only when the pool has access control: the depositor's `AllowEntry` PDA."
+          ],
+          "optional": true
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "min_received",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "deposit_shielded",
+      "docs": [
+        "Open a Shield (protected) position (REQ-001)."
+      ],
+      "discriminator": [
+        153,
+        236,
+        36,
+        173,
+        34,
+        236,
+        165,
+        0
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "factory",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.shielded_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.backing_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.creator",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "shielded_mint",
+          "relations": [
+            "pool"
+          ]
+        },
+        {
+          "name": "backing_mint",
+          "relations": [
+            "pool"
+          ]
+        },
+        {
+          "name": "owner_shielded_account",
+          "writable": true
+        },
+        {
+          "name": "vault_shielded",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116,
+                  95,
+                  115,
+                  104,
+                  105,
+                  101,
+                  108,
+                  100,
+                  101,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position_mint",
+          "docs": [
+            "Position NFT mint (Token-2022, supply 1, 0 decimals; mint+freeze authority = pool)."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  115,
+                  95,
+                  109,
+                  105,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.position_index",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner_position_account",
+          "docs": [
+            "Owner's ATA for the position NFT."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "owner"
+              },
+              {
+                "kind": "account",
+                "path": "position_token_program"
+              },
+              {
+                "kind": "account",
+                "path": "position_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "shield_position",
+          "docs": [
+            "Position data, keyed by the NFT mint."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  105,
+                  101,
+                  108,
+                  100,
+                  95,
+                  112,
+                  111,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "asset_token_program",
+          "docs": [
+            "Token program of the shielded *asset* (SPL or Token-2022)."
+          ]
+        },
+        {
+          "name": "position_token_program",
+          "docs": [
+            "Token-2022 program for the position NFT."
+          ]
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "oracle_program"
+        },
+        {
+          "name": "shielded_feed"
+        },
+        {
+          "name": "backing_feed"
+        },
+        {
+          "name": "allow_entry",
+          "docs": [
+            "Required only when the pool has access control: the depositor's `AllowEntry` PDA."
+          ],
+          "optional": true
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "min_received",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "disallow_account",
+      "docs": [
+        "Remove an account from an access-control allowlist (signed by the ACL authority)."
+      ],
+      "discriminator": [
+        223,
+        152,
+        194,
+        98,
+        89,
+        11,
+        66,
+        8
+      ],
+      "accounts": [
+        {
+          "name": "acl_authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "allow_entry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  108,
+                  108,
+                  111,
+                  119
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "acl_authority"
+              },
+              {
+                "kind": "account",
+                "path": "allow_entry.account",
+                "account": "AllowEntry"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "finalize_bootstrap",
+      "docs": [
+        "Finalize governance bootstrap (one-way; governance-gated)."
+      ],
+      "discriminator": [
+        71,
+        162,
+        148,
+        179,
+        29,
+        105,
+        105,
+        7
+      ],
+      "accounts": [
+        {
+          "name": "governance_authority",
+          "signer": true,
+          "relations": [
+            "factory"
+          ]
+        },
+        {
+          "name": "factory",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "forfeit_commission",
+      "docs": [
+        "Forfeit a protector's accrued commission to the protocol fee (REQ-006)."
+      ],
+      "discriminator": [
+        42,
+        49,
+        129,
+        183,
+        113,
+        7,
+        138,
+        139
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "signer": true
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.shielded_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.backing_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.creator",
+                "account": "Pool"
+              }
+            ]
+          },
+          "relations": [
+            "protector_position"
+          ]
+        },
+        {
+          "name": "shielded_mint",
+          "relations": [
+            "pool"
+          ]
+        },
+        {
+          "name": "vault_shielded",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116,
+                  95,
+                  115,
+                  104,
+                  105,
+                  101,
+                  108,
+                  100,
+                  101,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position_mint"
+        },
+        {
+          "name": "owner_position_account",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "owner"
+              },
+              {
+                "kind": "account",
+                "path": "position_token_program"
+              },
+              {
+                "kind": "account",
+                "path": "position_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "protector_position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  101,
+                  99,
+                  116,
+                  111,
+                  114,
+                  95,
+                  112,
+                  111,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner_shielded_account",
+          "writable": true
+        },
+        {
+          "name": "protector_epoch",
+          "docs": [
+            "Required only when the position is in an expired epoch (`position.epoch < pool.epoch`):",
+            "the epoch's frozen accumulator (EVM `protectorEpochFinalRewardPerShare`)."
+          ],
+          "optional": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  101,
+                  99,
+                  116,
+                  111,
+                  114,
+                  95,
+                  101,
+                  112,
+                  111,
+                  99,
+                  104
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "protector_position.epoch",
+                "account": "ProtectorPosition"
+              }
+            ]
+          }
+        },
+        {
+          "name": "asset_token_program"
+        },
+        {
+          "name": "position_token_program"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "init_factory",
+      "docs": [
+        "Initialize the protocol registry singleton (ARC-002, REQ-010..012)."
+      ],
+      "discriminator": [
+        65,
+        136,
+        219,
+        177,
+        234,
+        197,
+        24,
+        39
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "docs": [
+            "Pays rent for the `Factory` PDA."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "factory",
+          "docs": [
+            "The registry singleton — seeds `[\"factory\"]`."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "governance_authority",
+          "type": "pubkey"
+        },
+        {
+          "name": "default_oracle",
+          "type": "pubkey"
+        },
+        {
+          "name": "minimum_creation_bond_usd",
+          "type": "u128"
+        },
+        {
+          "name": "max_active_pools",
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "name": "partial_withdraw_protector",
+      "docs": [
+        "Partially exit a Protector position in place after the unlock cooldown (REQ-005)."
+      ],
+      "discriminator": [
+        119,
+        72,
+        91,
+        62,
+        138,
+        154,
+        214,
+        65
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "factory",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.shielded_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.backing_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.creator",
+                "account": "Pool"
+              }
+            ]
+          },
+          "relations": [
+            "protector_position"
+          ]
+        },
+        {
+          "name": "pool_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "backing_mint",
+          "relations": [
+            "pool"
+          ]
+        },
+        {
+          "name": "vault_backing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116,
+                  95,
+                  98,
+                  97,
+                  99,
+                  107,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner_backing_account",
+          "writable": true
+        },
+        {
+          "name": "position_mint"
+        },
+        {
+          "name": "owner_position_account",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "owner"
+              },
+              {
+                "kind": "account",
+                "path": "position_token_program"
+              },
+              {
+                "kind": "account",
+                "path": "position_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "protector_position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  101,
+                  99,
+                  116,
+                  111,
+                  114,
+                  95,
+                  112,
+                  111,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "asset_token_program"
+        },
+        {
+          "name": "position_token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "min_out",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "partial_withdraw_shielded",
+      "docs": [
+        "Partially exit a Shield position in place, same-asset (REQ-003)."
+      ],
+      "discriminator": [
+        47,
+        110,
+        118,
+        7,
+        254,
+        93,
+        235,
+        141
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "factory",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.shielded_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.backing_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.creator",
+                "account": "Pool"
+              }
+            ]
+          },
+          "relations": [
+            "shield_position"
+          ]
+        },
+        {
+          "name": "pool_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "shielded_mint",
+          "relations": [
+            "pool"
+          ]
+        },
+        {
+          "name": "vault_shielded",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116,
+                  95,
+                  115,
+                  104,
+                  105,
+                  101,
+                  108,
+                  100,
+                  101,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner_shielded_account",
+          "writable": true
+        },
+        {
+          "name": "position_mint"
+        },
+        {
+          "name": "owner_position_account",
+          "docs": [
+            "Position NFT must be owned by the signer (proves position ownership without burning)."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "owner"
+              },
+              {
+                "kind": "account",
+                "path": "position_token_program"
+              },
+              {
+                "kind": "account",
+                "path": "position_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "shield_position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  105,
+                  101,
+                  108,
+                  100,
+                  95,
+                  112,
+                  111,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "asset_token_program"
+        },
+        {
+          "name": "position_token_program"
+        },
+        {
+          "name": "oracle_program"
+        },
+        {
+          "name": "shielded_feed"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "min_out",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "pause",
+      "docs": [
+        "Pause the protocol (governance-gated)."
+      ],
+      "discriminator": [
+        211,
+        22,
+        221,
+        251,
+        74,
+        121,
+        193,
+        47
+      ],
+      "accounts": [
+        {
+          "name": "governance_authority",
+          "signer": true,
+          "relations": [
+            "factory"
+          ]
+        },
+        {
+          "name": "factory",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "pay_pool_fee",
+      "docs": [
+        "Pay out the accumulated pool-creator fee (REQ-009)."
+      ],
+      "discriminator": [
+        194,
+        57,
+        80,
+        13,
+        37,
+        31,
+        149,
+        201
+      ],
+      "accounts": [
+        {
+          "name": "cranker",
+          "signer": true
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.shielded_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.backing_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.creator",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "shielded_mint",
+          "relations": [
+            "pool"
+          ]
+        },
+        {
+          "name": "vault_shielded",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116,
+                  95,
+                  115,
+                  104,
+                  105,
+                  101,
+                  108,
+                  100,
+                  101,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "recipient_account",
+          "docs": [
+            "Recipient token account (its authority must match the configured recipient)."
+          ],
+          "writable": true
+        },
+        {
+          "name": "asset_token_program"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "pay_protocol_fee",
+      "docs": [
+        "Pay out the accumulated protocol fee (REQ-009)."
+      ],
+      "discriminator": [
+        74,
+        104,
+        123,
+        108,
+        138,
+        149,
+        100,
+        150
+      ],
+      "accounts": [
+        {
+          "name": "cranker",
+          "signer": true
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.shielded_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.backing_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.creator",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "shielded_mint",
+          "relations": [
+            "pool"
+          ]
+        },
+        {
+          "name": "vault_shielded",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116,
+                  95,
+                  115,
+                  104,
+                  105,
+                  101,
+                  108,
+                  100,
+                  101,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "recipient_account",
+          "docs": [
+            "Recipient token account (its authority must match the configured recipient)."
+          ],
+          "writable": true
+        },
+        {
+          "name": "asset_token_program"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "remove_token",
+      "docs": [
+        "Remove a token from the whitelist (governance-gated)."
+      ],
+      "discriminator": [
+        149,
+        134,
+        57,
+        61,
+        136,
+        2,
+        144,
+        145
+      ],
+      "accounts": [
+        {
+          "name": "governance_authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "factory"
+          ]
+        },
+        {
+          "name": "factory",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_entry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  111,
+                  107,
+                  101,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "token_entry.mint",
+                "account": "WhitelistEntry"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "set_governance_authority",
+      "docs": [
+        "Begin a two-step governance-authority transfer (gov SEC-003)."
+      ],
+      "discriminator": [
+        0,
+        113,
+        148,
+        253,
+        151,
+        181,
+        148,
+        42
+      ],
+      "accounts": [
+        {
+          "name": "governance_authority",
+          "signer": true,
+          "relations": [
+            "factory"
+          ]
+        },
+        {
+          "name": "factory",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "new_authority",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "set_max_active_pools",
+      "docs": [
+        "Set the maximum active-pool count (governance-gated)."
+      ],
+      "discriminator": [
+        35,
+        68,
+        248,
+        79,
+        177,
+        245,
+        248,
+        93
+      ],
+      "accounts": [
+        {
+          "name": "governance_authority",
+          "signer": true,
+          "relations": [
+            "factory"
+          ]
+        },
+        {
+          "name": "factory",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "value",
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "name": "set_minimum_creation_bond_usd",
+      "docs": [
+        "Set the minimum creation bond (USD 8-decimal; governance-gated)."
+      ],
+      "discriminator": [
+        167,
+        68,
+        138,
+        209,
+        130,
+        2,
+        74,
+        27
+      ],
+      "accounts": [
+        {
+          "name": "governance_authority",
+          "signer": true,
+          "relations": [
+            "factory"
+          ]
+        },
+        {
+          "name": "factory",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "value",
+          "type": "u128"
+        }
+      ]
+    },
+    {
+      "name": "set_token_requires_strict_protected_price",
+      "docs": [
+        "Toggle a token's strict-protected-price requirement (governance-gated)."
+      ],
+      "discriminator": [
+        238,
+        200,
+        95,
+        15,
+        191,
+        121,
+        141,
+        170
+      ],
+      "accounts": [
+        {
+          "name": "governance_authority",
+          "signer": true,
+          "relations": [
+            "factory"
+          ]
+        },
+        {
+          "name": "factory",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_entry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  111,
+                  107,
+                  101,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "token_entry.mint",
+                "account": "WhitelistEntry"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "requires_strict",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "settle_expired_protector_position",
+      "docs": [
+        "Settle an expired-epoch protector position (REQ-007)."
+      ],
+      "discriminator": [
+        43,
+        131,
+        157,
+        121,
+        20,
+        136,
+        223,
+        232
+      ],
+      "accounts": [
+        {
+          "name": "cranker",
+          "signer": true
+        },
+        {
+          "name": "pool",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.shielded_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.backing_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.creator",
+                "account": "Pool"
+              }
+            ]
+          },
+          "relations": [
+            "protector_position",
+            "protector_epoch"
+          ]
+        },
+        {
+          "name": "position_mint"
+        },
+        {
+          "name": "owner_position_account",
+          "docs": [
+            "Position NFT must still exist with its owner (proves the position is live)."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "owner"
+              },
+              {
+                "kind": "account",
+                "path": "position_token_program"
+              },
+              {
+                "kind": "account",
+                "path": "position_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "owner"
+        },
+        {
+          "name": "protector_position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  101,
+                  99,
+                  116,
+                  111,
+                  114,
+                  95,
+                  112,
+                  111,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "protector_epoch",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  101,
+                  99,
+                  116,
+                  111,
+                  114,
+                  95,
+                  101,
+                  112,
+                  111,
+                  99,
+                  104
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              },
+              {
+                "kind": "account",
+                "path": "protector_position.epoch",
+                "account": "ProtectorPosition"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position_token_program"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "start_unlock",
+      "docs": [
+        "Begin the protector unlock cooldown (REQ-005)."
+      ],
+      "discriminator": [
+        53,
+        202,
+        212,
+        31,
+        76,
+        178,
+        31,
+        123
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "signer": true
+        },
+        {
+          "name": "position_mint"
+        },
+        {
+          "name": "owner_position_account",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "owner"
+              },
+              {
+                "kind": "account",
+                "path": "position_token_program"
+              },
+              {
+                "kind": "account",
+                "path": "position_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "protector_position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  101,
+                  99,
+                  116,
+                  111,
+                  114,
+                  95,
+                  112,
+                  111,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position_token_program"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "sweep_inactive_protector_backing_dust",
+      "docs": [
+        "Recover inactive protector backing dust to the protocol recipient (governance-gated)."
+      ],
+      "discriminator": [
+        9,
+        23,
+        231,
+        30,
+        231,
+        60,
+        157,
+        44
+      ],
+      "accounts": [
+        {
+          "name": "governance_authority",
+          "signer": true,
+          "relations": [
+            "factory"
+          ]
+        },
+        {
+          "name": "factory",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.shielded_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.backing_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.creator",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "backing_mint",
+          "relations": [
+            "pool"
+          ]
+        },
+        {
+          "name": "vault_backing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116,
+                  95,
+                  98,
+                  97,
+                  99,
+                  107,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "recipient_account",
+          "docs": [
+            "Recipient backing account (must be owned by the protocol fee recipient)."
+          ],
+          "writable": true
+        },
+        {
+          "name": "backing_token_program"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "sweep_unaccounted_surplus",
+      "docs": [
+        "Recover unaccounted token surplus on an empty pool (governance-gated)."
+      ],
+      "discriminator": [
+        173,
+        143,
+        0,
+        163,
+        183,
+        7,
+        10,
+        66
+      ],
+      "accounts": [
+        {
+          "name": "governance_authority",
+          "signer": true,
+          "relations": [
+            "factory"
+          ]
+        },
+        {
+          "name": "factory",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.shielded_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.backing_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.creator",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "shielded_mint",
+          "relations": [
+            "pool"
+          ]
+        },
+        {
+          "name": "backing_mint",
+          "relations": [
+            "pool"
+          ]
+        },
+        {
+          "name": "vault_shielded",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116,
+                  95,
+                  115,
+                  104,
+                  105,
+                  101,
+                  108,
+                  100,
+                  101,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault_backing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116,
+                  95,
+                  98,
+                  97,
+                  99,
+                  107,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "recipient_shielded",
+          "writable": true
+        },
+        {
+          "name": "recipient_backing",
+          "writable": true
+        },
+        {
+          "name": "shielded_token_program"
+        },
+        {
+          "name": "backing_token_program"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "unpause",
+      "docs": [
+        "Unpause the protocol (governance-gated)."
+      ],
+      "discriminator": [
+        169,
+        144,
+        4,
+        38,
+        10,
+        141,
+        188,
+        255
+      ],
+      "accounts": [
+        {
+          "name": "governance_authority",
+          "signer": true,
+          "relations": [
+            "factory"
+          ]
+        },
+        {
+          "name": "factory",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "update_minimum_collateral",
+      "docs": [
+        "Update a token's minimum collateral ratio (governance-gated)."
+      ],
+      "discriminator": [
+        168,
+        189,
+        46,
+        74,
+        21,
+        72,
+        15,
+        155
+      ],
+      "accounts": [
+        {
+          "name": "governance_authority",
+          "signer": true,
+          "relations": [
+            "factory"
+          ]
+        },
+        {
+          "name": "factory",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_entry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  111,
+                  107,
+                  101,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "token_entry.mint",
+                "account": "WhitelistEntry"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "min_collateral_ratio_bp",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "update_pool_config",
+      "docs": [
+        "Governance update of a pool's mutable configuration (REQ-008, CON-101..109)."
+      ],
+      "discriminator": [
+        68,
+        236,
+        203,
+        122,
+        179,
+        62,
+        234,
+        252
+      ],
+      "accounts": [
+        {
+          "name": "governance_authority",
+          "signer": true,
+          "relations": [
+            "factory"
+          ]
+        },
+        {
+          "name": "factory",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.shielded_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.backing_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.creator",
+                "account": "Pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "UpdatePoolConfigParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "withdraw_protector",
+      "docs": [
+        "Fully exit a Protector position after the unlock cooldown (REQ-005)."
+      ],
+      "discriminator": [
+        24,
+        159,
+        171,
+        222,
+        200,
+        24,
+        191,
+        25
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "factory",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.shielded_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.backing_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.creator",
+                "account": "Pool"
+              }
+            ]
+          },
+          "relations": [
+            "protector_position"
+          ]
+        },
+        {
+          "name": "pool_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "backing_mint",
+          "relations": [
+            "pool"
+          ]
+        },
+        {
+          "name": "vault_backing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116,
+                  95,
+                  98,
+                  97,
+                  99,
+                  107,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner_backing_account",
+          "writable": true
+        },
+        {
+          "name": "position_mint",
+          "writable": true
+        },
+        {
+          "name": "owner_position_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "owner"
+              },
+              {
+                "kind": "account",
+                "path": "position_token_program"
+              },
+              {
+                "kind": "account",
+                "path": "position_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "protector_position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  116,
+                  101,
+                  99,
+                  116,
+                  111,
+                  114,
+                  95,
+                  112,
+                  111,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "asset_token_program"
+        },
+        {
+          "name": "position_token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "min_out",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "withdraw_shielded",
+      "docs": [
+        "Fully exit a Shield position, same-asset (REQ-003)."
+      ],
+      "discriminator": [
+        131,
+        87,
+        189,
+        24,
+        178,
+        224,
+        59,
+        250
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "factory",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  97,
+                  99,
+                  116,
+                  111,
+                  114,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool.shielded_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.backing_mint",
+                "account": "Pool"
+              },
+              {
+                "kind": "account",
+                "path": "pool.creator",
+                "account": "Pool"
+              }
+            ]
+          },
+          "relations": [
+            "shield_position"
+          ]
+        },
+        {
+          "name": "pool_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "shielded_mint",
+          "relations": [
+            "pool"
+          ]
+        },
+        {
+          "name": "vault_shielded",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116,
+                  95,
+                  115,
+                  104,
+                  105,
+                  101,
+                  108,
+                  100,
+                  101,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "pool"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner_shielded_account",
+          "writable": true
+        },
+        {
+          "name": "position_mint",
+          "writable": true
+        },
+        {
+          "name": "owner_position_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "owner"
+              },
+              {
+                "kind": "account",
+                "path": "position_token_program"
+              },
+              {
+                "kind": "account",
+                "path": "position_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "shield_position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  105,
+                  101,
+                  108,
+                  100,
+                  95,
+                  112,
+                  111,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "asset_token_program"
+        },
+        {
+          "name": "position_token_program"
+        },
+        {
+          "name": "oracle_program"
+        },
+        {
+          "name": "shielded_feed"
+        }
+      ],
+      "args": [
+        {
+          "name": "min_out",
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "AllowEntry",
+      "discriminator": [
+        3,
+        29,
+        6,
+        254,
+        2,
+        209,
+        219,
+        245
+      ]
+    },
+    {
+      "name": "Factory",
+      "discriminator": [
+        159,
+        68,
+        192,
+        61,
+        48,
+        249,
+        216,
+        202
+      ]
+    },
+    {
+      "name": "Pool",
+      "discriminator": [
+        241,
+        154,
+        109,
+        4,
+        17,
+        177,
+        109,
+        188
+      ]
+    },
+    {
+      "name": "PoolConfig",
+      "discriminator": [
+        26,
+        108,
+        14,
+        123,
+        116,
+        230,
+        129,
+        43
+      ]
+    },
+    {
+      "name": "ProtectorEpoch",
+      "discriminator": [
+        48,
+        228,
+        215,
+        27,
+        117,
+        94,
+        237,
+        46
+      ]
+    },
+    {
+      "name": "ProtectorPosition",
+      "discriminator": [
+        228,
+        211,
+        113,
+        27,
+        194,
+        73,
+        148,
+        41
+      ]
+    },
+    {
+      "name": "ShieldPosition",
+      "discriminator": [
+        126,
+        138,
+        231,
+        79,
+        41,
+        163,
+        216,
+        117
+      ]
+    },
+    {
+      "name": "WhitelistEntry",
+      "discriminator": [
+        51,
+        70,
+        173,
+        81,
+        219,
+        192,
+        234,
+        62
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "AddTokenParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "symbol",
+            "type": "string"
+          },
+          {
+            "name": "primary_feed",
+            "type": "pubkey"
+          },
+          {
+            "name": "backup_feed",
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "min_collateral_ratio_bp",
+            "type": "u64"
+          },
+          {
+            "name": "requires_strict_protected_price",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AllowEntry",
+      "docs": [
+        "Allowlist marker — PDA seeds `[\"allow\", acl_authority, account]`. Existence = allowed."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "acl",
+            "docs": [
+              "The access-control authority that owns this allowlist."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "account",
+            "docs": [
+              "The allowed account."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "PDA bump."
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CreatePoolParams",
+      "docs": [
+        "Caller-supplied pool parameters. Immutables (rates) go on `Pool`; the rest on `PoolConfig`."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "commission_rate_bp",
+            "type": "u64"
+          },
+          {
+            "name": "pool_fee_bp",
+            "type": "u64"
+          },
+          {
+            "name": "collateral_ratio_bp",
+            "type": "u64"
+          },
+          {
+            "name": "shielded_min_deposit",
+            "type": "u64"
+          },
+          {
+            "name": "shielded_max_deposit",
+            "type": "u64"
+          },
+          {
+            "name": "backing_min_deposit",
+            "type": "u64"
+          },
+          {
+            "name": "backing_max_deposit",
+            "type": "u64"
+          },
+          {
+            "name": "max_tvl_usd",
+            "type": "u128"
+          },
+          {
+            "name": "minimum_pool_time",
+            "type": "u64"
+          },
+          {
+            "name": "unlock_duration",
+            "type": "u64"
+          },
+          {
+            "name": "protocol_fee_bp",
+            "type": "u64"
+          },
+          {
+            "name": "protocol_fee_recipient",
+            "type": "pubkey"
+          },
+          {
+            "name": "pool_fee_recipient",
+            "type": "pubkey"
+          },
+          {
+            "name": "shield_transfer_lock",
+            "type": "u64"
+          },
+          {
+            "name": "protector_transfer_lock",
+            "type": "u64"
+          },
+          {
+            "name": "creation_bond_amount",
+            "docs": [
+              "Creation bond, in backing-token native units."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "access_control",
+            "docs": [
+              "Optional access-control authority (EVM `createPoolWithAccessControl`); `None` = open pool."
+            ],
+            "type": {
+              "option": "pubkey"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Factory",
+      "docs": [
+        "Protocol registry singleton — PDA seeds `[\"factory\"]`.",
+        "",
+        "Holds the v1 stored governance authority (D3 / GOV-001), the default oracle program, pool",
+        "accounting counters, and the global creation-bond / active-pool limits."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "governance_authority",
+            "docs": [
+              "Current governance authority (`has_one` target for `onlyGovernance`; gov SEC-001/003)."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "pending_governance_authority",
+            "docs": [
+              "Pending authority during a two-step transfer; `None` when no transfer is in flight."
+            ],
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "default_oracle",
+            "docs": [
+              "Default `composite-oracle` config/program used when a pool does not override it."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "pool_count",
+            "docs": [
+              "Total pools ever created (monotonic; never decremented)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "active_pool_count",
+            "docs": [
+              "Currently active pools (≤ `max_active_pools`)."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "max_active_pools",
+            "docs": [
+              "CON-109 ceiling on simultaneously active pools."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "minimum_creation_bond_usd",
+            "docs": [
+              "CON-109 minimum creation bond, USD 8-decimal."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "whitelisted_token_count",
+            "docs": [
+              "Number of whitelisted tokens (≤ `MAX_WHITELISTED_TOKENS`)."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "bootstrap_finalized",
+            "docs": [
+              "True once governance bootstrap has been finalized (one-way)."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "paused",
+            "docs": [
+              "Global pause flag (gov pause; blocks deposits/most withdrawals)."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "PDA bump."
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Pool",
+      "docs": [
+        "A split-risk pool — PDA seeds `[\"pool\", shielded_mint, backing_mint, creator]`.",
+        "",
+        "Holds the pool immutables, the SEC-101 running totals, the reserved-fee accumulators",
+        "(SEC-008/103), the U256 MasterChef reward accumulator (SEC-104), and protector-epoch",
+        "bookkeeping. The 256-bit accumulator is stored as little-endian bytes (`reward_per_share`)",
+        "because `ethnum::U256` is not an Anchor type; use [`Pool::reward_per_share`] /",
+        "[`Pool::set_reward_per_share`] to convert."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "shielded_mint",
+            "docs": [
+              "Shielded (protected) asset mint."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "backing_mint",
+            "docs": [
+              "Backing (underwriter) asset mint."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "creator",
+            "docs": [
+              "Pool creator (bond payer / pool-fee recipient default)."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "commission_rate_bp",
+            "docs": [
+              "`COMMISSION_RATE` in bps (CON-101)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "pool_fee_bp",
+            "docs": [
+              "`POOL_FEE` in bps (CON-102)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "collateral_ratio_bp",
+            "docs": [
+              "`COLLATERAL_RATIO` in bps (CON-104)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "total_shielded_tokens",
+            "docs": [
+              "Σ extant shield position amounts (native shielded-token units)."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "total_protector_tokens",
+            "docs": [
+              "Σ extant protector claims (native backing-token units)."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "total_value_at_deposit",
+            "docs": [
+              "Σ extant shield position USD values (8-decimal)."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "total_shield_collateral_amount",
+            "docs": [
+              "Σ extant shield `collateral_amount` (backing-token units)."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "accumulated_commissions",
+            "docs": [
+              "Commission owed to protectors (claimable, not user-withdrawable)."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "accumulated_pool_fee",
+            "docs": [
+              "Pool-creator fee owed."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "accumulated_protocol_fee",
+            "docs": [
+              "Protocol fee owed."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "reward_per_share",
+            "docs": [
+              "MasterChef `reward_per_share`, scaled by `REWARD_PRECISION`, stored as U256 LE bytes."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "total_protector_shares",
+            "docs": [
+              "Total normalized protector shares in the current epoch."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "protector_epoch",
+            "docs": [
+              "Current protector epoch (increments on full backing drain via activation)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "pending_protector_reward_dust",
+            "docs": [
+              "Reward tokens that did not yet move the per-share accumulator (carried forward; EVM",
+              "`pendingProtectorRewardDust`)."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "current_epoch_commission_reserve",
+            "docs": [
+              "Commission reserved within the current epoch (snapshotted on epoch advance; EVM",
+              "`currentEpochCommissionReserve`)."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "historical_commission_reserve",
+            "docs": [
+              "Commission reserved across all expired epochs awaiting settlement (EVM",
+              "`historicalCommissionReserve`)."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "total_commissions_ever_accumulated",
+            "docs": [
+              "Lifetime commission ever accumulated (monotonic; EVM `totalCommissionsEverAccumulated`)."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "shielded_token_scale",
+            "docs": [
+              "`10^shielded_decimals` — the scale used to convert shielded amounts to/from USD value",
+              "(EVM immutable `shieldedTokenScale`)."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "creation_bond_amount",
+            "docs": [
+              "Creation bond (backing-token units) held in the `[\"bond\", pool]` escrow; refunded to the",
+              "creator at `close_pool` (CON-109)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "shielded_token_transfer_integrity_broken",
+            "docs": [
+              "SEC-108: set when the shielded token exhibits a transfer shortfall."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "active",
+            "docs": [
+              "Whether the pool is active (false after deactivation)."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "position_index",
+            "docs": [
+              "Monotonic position-index source for `[\"pos_mint\", pool, index]` (OI-4; never decremented)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "shield_position_count",
+            "docs": [
+              "Count of extant shield positions."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "protector_position_count",
+            "docs": [
+              "Count of extant protector positions."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "PDA bump."
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PoolConfig",
+      "docs": [
+        "Governance-updatable pool configuration — PDA seeds `[\"config\", pool]` (CON-101..109, REQ-008)."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "shielded_min_deposit",
+            "docs": [
+              "Minimum shielded deposit (native units)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "shielded_max_deposit",
+            "docs": [
+              "Maximum shielded deposit (native units)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "backing_min_deposit",
+            "docs": [
+              "Minimum backing deposit (native units)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "backing_max_deposit",
+            "docs": [
+              "Maximum backing deposit (native units)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "max_tvl_usd",
+            "docs": [
+              "USD TVL cap (8-decimal; REQ-008)."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "minimum_pool_time",
+            "docs": [
+              "Minimum pool time before cross-asset activation (CON-106; REQ-004)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "unlock_duration",
+            "docs": [
+              "Protector unlock cooldown (CON-105; REQ-005)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "protocol_fee_bp",
+            "docs": [
+              "Protocol fee in bps (CON-103)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "protocol_fee_recipient",
+            "docs": [
+              "Recipient of the protocol fee."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "pool_fee_recipient",
+            "docs": [
+              "Recipient of the pool-creator fee."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "price_oracle",
+            "docs": [
+              "Oracle config/program used for this pool's price reads (overrides `Factory::default_oracle`)."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "access_control",
+            "docs": [
+              "Optional access-control program / allowlist PDA (WS7; `None` = open)."
+            ],
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "shield_transfer_lock",
+            "docs": [
+              "Shield NFT transfer-lock duration (CON-108)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "protector_transfer_lock",
+            "docs": [
+              "Protector NFT transfer-lock duration (CON-108/POS-004)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "PDA bump."
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProtectorEpoch",
+      "docs": [
+        "Snapshot of an expired protector epoch — PDA seeds `[\"protector_epoch\", pool, epoch]`."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pool",
+            "docs": [
+              "The pool this epoch belongs to."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "epoch",
+            "docs": [
+              "The epoch generation number."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "final_reward_per_share",
+            "docs": [
+              "`reward_per_share` frozen at epoch expiry, stored as U256 LE bytes (EVM",
+              "`protectorEpochFinalRewardPerShare`)."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "remaining_shares",
+            "docs": [
+              "Shares still owed settlement in this epoch (EVM `protectorEpochRemainingShares`)."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "remaining_reserve",
+            "docs": [
+              "Commission reserve still owed in this epoch (EVM `protectorEpochRemainingReserve`)."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "PDA bump."
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProtectorPosition",
+      "docs": [
+        "Protector (underwriter) position data — PDA seeds `[\"protector_pos\", position_mint]`.",
+        "",
+        "`reward_debt` is the U256 MasterChef checkpoint (SEC-104), stored as little-endian bytes;",
+        "use [`ProtectorPosition::reward_debt`] / [`ProtectorPosition::set_reward_debt`]."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pool",
+            "docs": [
+              "The pool this position belongs to."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "docs": [
+              "Backing-token amount (native units)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "deposit_time",
+            "docs": [
+              "Entry timestamp (drives transfer lock)."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "unlock_request_time",
+            "docs": [
+              "Pending-unlock request time; `0` when no unlock is pending (REQ-005)."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "shares",
+            "docs": [
+              "Normalized MasterChef shares (SEC-104)."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "reward_debt",
+            "docs": [
+              "U256 reward-debt checkpoint, stored as LE bytes (SEC-104)."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "commissions_claimed",
+            "docs": [
+              "Cumulative commissions already claimed by this position."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "epoch",
+            "docs": [
+              "Protector epoch this position was opened in (SEC-102/104)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "settled",
+            "docs": [
+              "True once an expired-epoch position has been settled (EVM",
+              "`protectorEpochPositionSettled`)."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "PDA bump."
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ShieldPosition",
+      "docs": [
+        "Shield (protected) position data — PDA seeds `[\"shield_pos\", position_mint]`.",
+        "",
+        "Mirrors the EVM `ShieldPosition`, plus the Solana-specific link back to the owning pool.",
+        "Cooldown / fee baseline travel with the mint-keyed PDA (EVM L-14 parity)."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pool",
+            "docs": [
+              "The pool this position belongs to."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "docs": [
+              "Shielded-token amount (native units)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "deposit_time",
+            "docs": [
+              "Entry timestamp (drives transfer lock; `i64` per `Clock::unix_timestamp`)."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "value_at_deposit",
+            "docs": [
+              "USD value at entry, 8-decimal (basis for collateral sizing and fee high-water-mark)."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "collateral_amount",
+            "docs": [
+              "Backing-token collateral cap attributable to this position."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "last_fee_claim_time",
+            "docs": [
+              "Last fee-crystallization timestamp."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "fee_value_baseline_usd",
+            "docs": [
+              "SEC-105 per-position USD fee high-water-mark (already-taxed yield floor)."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "last_claim_rewards_time",
+            "docs": [
+              "Last `claim_rewards` timestamp (REQ-006 `CLAIM_REWARDS_COOLDOWN`)."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "PDA bump."
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UpdatePoolConfigParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "shielded_min_deposit",
+            "type": "u64"
+          },
+          {
+            "name": "shielded_max_deposit",
+            "type": "u64"
+          },
+          {
+            "name": "backing_min_deposit",
+            "type": "u64"
+          },
+          {
+            "name": "backing_max_deposit",
+            "type": "u64"
+          },
+          {
+            "name": "max_tvl_usd",
+            "type": "u128"
+          },
+          {
+            "name": "minimum_pool_time",
+            "type": "u64"
+          },
+          {
+            "name": "unlock_duration",
+            "type": "u64"
+          },
+          {
+            "name": "protocol_fee_bp",
+            "type": "u64"
+          },
+          {
+            "name": "protocol_fee_recipient",
+            "type": "pubkey"
+          },
+          {
+            "name": "pool_fee_recipient",
+            "type": "pubkey"
+          },
+          {
+            "name": "price_oracle",
+            "type": "pubkey"
+          },
+          {
+            "name": "shield_transfer_lock",
+            "type": "u64"
+          },
+          {
+            "name": "protector_transfer_lock",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WhitelistEntry",
+      "docs": [
+        "A whitelisted token entry — PDA seeds `[\"token\", mint]` (REQ-012, CON-005/107)."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "name",
+            "docs": [
+              "Display name (≤ `MAX_TOKEN_NAME_LENGTH`)."
+            ],
+            "type": "string"
+          },
+          {
+            "name": "symbol",
+            "docs": [
+              "Symbol (≤ `MAX_TOKEN_SYMBOL_LENGTH`, CON-107)."
+            ],
+            "type": "string"
+          },
+          {
+            "name": "mint",
+            "docs": [
+              "The token mint this entry whitelists."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "decimals",
+            "docs": [
+              "Token decimals (CON-107 range [6, 32] enforced at add time)."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "primary_feed",
+            "docs": [
+              "Primary oracle feed account (in `composite-oracle`) for this token."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "backup_feed",
+            "docs": [
+              "Optional backup oracle feed account (dual-feed)."
+            ],
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "min_collateral_ratio_bp",
+            "docs": [
+              "Minimum collateral ratio (bps) permitted for pools backed by this token."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "requires_strict_protected_price",
+            "docs": [
+              "When true, the token must expose a strict protected-price path (SEC-006)."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "PDA bump."
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ]
+}

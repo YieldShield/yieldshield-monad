@@ -1,0 +1,1210 @@
+{
+  "address": "2KUapyvHxDg8gnSFnT9vy43DxZp5th71mkDcukg851Mt",
+  "metadata": {
+    "name": "composite_oracle",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "YieldShield price router + dual-feed challenge + feed adapters."
+  },
+  "instructions": [
+    {
+      "name": "accept_oracle_governance",
+      "docs": [
+        "Accept a pending oracle-governance transfer."
+      ],
+      "discriminator": [
+        122,
+        235,
+        95,
+        252,
+        21,
+        42,
+        70,
+        16
+      ],
+      "accounts": [
+        {
+          "name": "pending_authority",
+          "signer": true
+        },
+        {
+          "name": "oracle_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  97,
+                  99,
+                  108,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "cancel_challenge",
+      "docs": [
+        "Cancel a challenge whose deviation has resolved."
+      ],
+      "discriminator": [
+        231,
+        253,
+        0,
+        151,
+        179,
+        94,
+        5,
+        152
+      ],
+      "accounts": [
+        {
+          "name": "challenger",
+          "docs": [
+            "Permissionless challenger."
+          ],
+          "signer": true
+        },
+        {
+          "name": "oracle_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  97,
+                  99,
+                  108,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "feed",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  101,
+                  101,
+                  100
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "token_mint"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "token_mint",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "challenge",
+      "docs": [
+        "Open a challenge against a dual-feed token (permissionless; CON-002 cooldown)."
+      ],
+      "discriminator": [
+        16,
+        107,
+        14,
+        39,
+        244,
+        150,
+        81,
+        187
+      ],
+      "accounts": [
+        {
+          "name": "challenger",
+          "docs": [
+            "Permissionless challenger."
+          ],
+          "signer": true
+        },
+        {
+          "name": "oracle_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  97,
+                  99,
+                  108,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "feed",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  101,
+                  101,
+                  100
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "token_mint"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "token_mint",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "configure_feed",
+      "docs": [
+        "Configure a token's feed (single or dual) (oracle REQ-002)."
+      ],
+      "discriminator": [
+        148,
+        186,
+        157,
+        93,
+        231,
+        55,
+        200,
+        6
+      ],
+      "accounts": [
+        {
+          "name": "governance_authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "oracle_config"
+          ]
+        },
+        {
+          "name": "oracle_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  97,
+                  99,
+                  108,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "feed",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  101,
+                  101,
+                  100
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "params.token_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "ConfigureFeedParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "finalize_challenge",
+      "docs": [
+        "Finalize a challenge after its duration — switch to backup if deviation persists (AC-003)."
+      ],
+      "discriminator": [
+        184,
+        38,
+        132,
+        51,
+        103,
+        143,
+        203,
+        9
+      ],
+      "accounts": [
+        {
+          "name": "challenger",
+          "docs": [
+            "Permissionless challenger."
+          ],
+          "signer": true
+        },
+        {
+          "name": "oracle_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  97,
+                  99,
+                  108,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "feed",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  101,
+                  101,
+                  100
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "token_mint"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "token_mint",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "get_price",
+      "docs": [
+        "Protected USD price (8-decimal); fails closed (SEC-001). Returns via return-data."
+      ],
+      "discriminator": [
+        238,
+        38,
+        193,
+        106,
+        228,
+        32,
+        210,
+        33
+      ],
+      "accounts": [
+        {
+          "name": "feed",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  101,
+                  101,
+                  100
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "token_mint"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "token_mint",
+          "type": "pubkey"
+        }
+      ],
+      "returns": "u128"
+    },
+    {
+      "name": "get_value",
+      "docs": [
+        "Protected USD value (8-decimal) of `amount` units; fails closed. Returns via return-data."
+      ],
+      "discriminator": [
+        88,
+        79,
+        40,
+        100,
+        21,
+        74,
+        119,
+        125
+      ],
+      "accounts": [
+        {
+          "name": "feed",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  101,
+                  101,
+                  100
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "token_mint"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "token_mint",
+          "type": "pubkey"
+        },
+        {
+          "name": "amount",
+          "type": "u128"
+        },
+        {
+          "name": "decimals",
+          "type": "u8"
+        }
+      ],
+      "returns": "u128"
+    },
+    {
+      "name": "init_oracle_config",
+      "docs": [
+        "Initialize the oracle router config singleton (oracle CON-002)."
+      ],
+      "discriminator": [
+        77,
+        144,
+        180,
+        246,
+        217,
+        15,
+        118,
+        92
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "oracle_config",
+          "docs": [
+            "The oracle config singleton — seeds `[\"oracle_config\"]`."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  97,
+                  99,
+                  108,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "governance_authority",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "push_manual_price",
+      "docs": [
+        "Push a manual price for a token's primary/backup slot (v1 Manual feed)."
+      ],
+      "discriminator": [
+        53,
+        111,
+        35,
+        196,
+        190,
+        70,
+        183,
+        10
+      ],
+      "accounts": [
+        {
+          "name": "governance_authority",
+          "signer": true,
+          "relations": [
+            "oracle_config"
+          ]
+        },
+        {
+          "name": "oracle_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  97,
+                  99,
+                  108,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "feed",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  101,
+                  101,
+                  100
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "token_mint"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "token_mint",
+          "type": "pubkey"
+        },
+        {
+          "name": "is_backup",
+          "type": "bool"
+        },
+        {
+          "name": "price",
+          "type": "u128"
+        },
+        {
+          "name": "publish_time",
+          "type": "i64"
+        }
+      ]
+    },
+    {
+      "name": "revert_to_primary",
+      "docs": [
+        "Revert routing to the primary once it recovers."
+      ],
+      "discriminator": [
+        134,
+        33,
+        140,
+        179,
+        35,
+        247,
+        68,
+        129
+      ],
+      "accounts": [
+        {
+          "name": "challenger",
+          "docs": [
+            "Permissionless challenger."
+          ],
+          "signer": true
+        },
+        {
+          "name": "oracle_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  97,
+                  99,
+                  108,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "feed",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  102,
+                  101,
+                  101,
+                  100
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "token_mint"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "token_mint",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "set_challenge_duration",
+      "docs": [
+        "Set the default challenge duration (seconds; CON-002)."
+      ],
+      "discriminator": [
+        129,
+        92,
+        35,
+        121,
+        17,
+        41,
+        70,
+        237
+      ],
+      "accounts": [
+        {
+          "name": "governance_authority",
+          "signer": true,
+          "relations": [
+            "oracle_config"
+          ]
+        },
+        {
+          "name": "oracle_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  97,
+                  99,
+                  108,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "secs",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "set_deviation_threshold",
+      "docs": [
+        "Set the router deviation threshold (bps; CON-002)."
+      ],
+      "discriminator": [
+        175,
+        227,
+        177,
+        219,
+        167,
+        244,
+        3,
+        69
+      ],
+      "accounts": [
+        {
+          "name": "governance_authority",
+          "signer": true,
+          "relations": [
+            "oracle_config"
+          ]
+        },
+        {
+          "name": "oracle_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  97,
+                  99,
+                  108,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "bps",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "set_oracle_governance",
+      "docs": [
+        "Begin a two-step oracle-governance transfer."
+      ],
+      "discriminator": [
+        171,
+        252,
+        156,
+        21,
+        247,
+        44,
+        1,
+        199
+      ],
+      "accounts": [
+        {
+          "name": "governance_authority",
+          "signer": true,
+          "relations": [
+            "oracle_config"
+          ]
+        },
+        {
+          "name": "oracle_config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  111,
+                  114,
+                  97,
+                  99,
+                  108,
+                  101,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "new_authority",
+          "type": "pubkey"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "FeedConfig",
+      "discriminator": [
+        75,
+        97,
+        12,
+        15,
+        89,
+        221,
+        78,
+        71
+      ]
+    },
+    {
+      "name": "OracleConfig",
+      "discriminator": [
+        133,
+        196,
+        152,
+        50,
+        27,
+        21,
+        145,
+        254
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "ConfigureFeedParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "token_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "primary",
+            "type": {
+              "defined": {
+                "name": "FeedSlot"
+              }
+            }
+          },
+          {
+            "name": "backup",
+            "type": {
+              "option": {
+                "defined": {
+                  "name": "FeedSlot"
+                }
+              }
+            }
+          },
+          {
+            "name": "requires_strict",
+            "type": "bool"
+          },
+          {
+            "name": "max_price_age",
+            "type": "u64"
+          },
+          {
+            "name": "max_confidence_bps",
+            "type": "u64"
+          },
+          {
+            "name": "max_deviation_bps",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FeedConfig",
+      "docs": [
+        "Per-token feed configuration — PDA seeds `[\"feed\", token_mint]` (oracle REQ-002..004).",
+        "",
+        "Carries the primary slot, an optional backup slot, the dual-feed challenge state, and the",
+        "per-token safety parameters. Protected reads fail closed while a challenge is pending or a",
+        "dispute is unresolved (oracle SEC-001)."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "token_mint",
+            "docs": [
+              "The token this feed prices."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "primary",
+            "docs": [
+              "Primary feed slot."
+            ],
+            "type": {
+              "defined": {
+                "name": "FeedSlot"
+              }
+            }
+          },
+          {
+            "name": "backup",
+            "docs": [
+              "Optional backup feed slot (dual-feed); `None` = single-feed token."
+            ],
+            "type": {
+              "option": {
+                "defined": {
+                  "name": "FeedSlot"
+                }
+              }
+            }
+          },
+          {
+            "name": "is_backup_active",
+            "docs": [
+              "True once a finalized challenge has switched routing to the backup (AC-003)."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "challenge_start",
+            "docs": [
+              "Active-challenge start time; `0` when no challenge is in flight."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "challenger",
+            "docs": [
+              "Address that opened the active challenge; `None` when idle."
+            ],
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "last_challenge_time",
+            "docs": [
+              "Last challenge timestamp (enforces `COOLDOWN_PERIOD`, CON-002)."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "requires_strict",
+            "docs": [
+              "True if this token must use the strict protected-price path (SEC-006)."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "max_price_age",
+            "docs": [
+              "Per-token staleness window (seconds), bounded by `MAX_PRICE_AGE_LIMIT`."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "max_confidence_bps",
+            "docs": [
+              "Per-token max confidence width (bps)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "max_deviation_bps",
+            "docs": [
+              "Per-token deviation circuit-breaker threshold (bps)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "primary_price",
+            "docs": [
+              "Cached primary price (USD 8-decimal) for `Manual` slots; `0` until first push."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "primary_publish_time",
+            "docs": [
+              "Publish time of `primary_price` (unix seconds) — drives staleness."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "backup_price",
+            "docs": [
+              "Cached backup price (USD 8-decimal) for `Manual` slots."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "backup_publish_time",
+            "docs": [
+              "Publish time of `backup_price`."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "PDA bump."
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FeedKind",
+      "docs": [
+        "The kind of price source a feed slot points at. Determines which adapter (WS6) reads the",
+        "referenced account(s)."
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Manual"
+          },
+          {
+            "name": "Pyth"
+          },
+          {
+            "name": "Switchboard"
+          },
+          {
+            "name": "AmmTwap"
+          },
+          {
+            "name": "VaultNav"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FeedSlot",
+      "docs": [
+        "A configured feed slot: which adapter kind and which on-chain account it reads."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "kind",
+            "docs": [
+              "Adapter kind for this slot."
+            ],
+            "type": {
+              "defined": {
+                "name": "FeedKind"
+              }
+            }
+          },
+          {
+            "name": "account",
+            "docs": [
+              "The price/source account the adapter reads (e.g. Pyth price account)."
+            ],
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OracleConfig",
+      "docs": [
+        "`OracleConfig` singleton — PDA seeds `[\"oracle_config\"]`.",
+        "",
+        "Holds the oracle program's stored governance authority (its own two-step transfer, gov",
+        "SEC-003) and the router-level defaults for the dual-feed challenge mechanism (CON-002)."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "governance_authority",
+            "docs": [
+              "Current governance authority for oracle-admin instructions."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "pending_governance_authority",
+            "docs": [
+              "Pending authority during a two-step transfer."
+            ],
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "deviation_threshold_bps",
+            "docs": [
+              "Default primary/backup deviation (bps) that makes a token challengeable (CON-002)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "default_challenge_duration",
+            "docs": [
+              "Default challenge hold-up duration in seconds (CON-002)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "emergency_override_delay",
+            "docs": [
+              "Emergency-override schedule→execute delay (CON-002)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "emergency_override_expiry",
+            "docs": [
+              "Emergency-override execution window after the delay (CON-002)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "PDA bump."
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ]
+}

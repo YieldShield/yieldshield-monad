@@ -1,0 +1,764 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.35;
+
+import { Test } from "forge-std/Test.sol";
+import { SplitRiskPool } from "../contracts/SplitRiskPool.sol";
+import { EventsLib } from "../contracts/libraries/EventsLib.sol";
+import { ErrorsLib } from "../contracts/libraries/ErrorsLib.sol";
+import { SlippageLib } from "../contracts/libraries/SlippageLib.sol";
+import { TokenWhitelistLib } from "../contracts/libraries/TokenWhitelistLib.sol";
+import { MockERC20 } from "../contracts/mocks/MockERC20.sol";
+import { MockOracle } from "../contracts/mocks/MockOracle.sol";
+import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import { ShieldReceiptNFT } from "../contracts/ShieldReceiptNFT.sol";
+import { ProtectorReceiptNFT } from "../contracts/ProtectorReceiptNFT.sol";
+import { IShieldReceiptNFT } from "../contracts/interfaces/IShieldReceiptNFT.sol";
+import { IProtectorReceiptNFT } from "../contracts/interfaces/IProtectorReceiptNFT.sol";
+import { TestTimelockHelper } from "./helpers/TestTimelockHelper.sol";
+
+contract SenderPaidFeeMockERC20 is MockERC20 {
+    uint256 public senderPaidFeeBps;
+
+    constructor(string memory name, string memory symbol) MockERC20(name, symbol) { }
+
+    function setSenderPaidFee(uint256 feeBps) external onlyOwner {
+        require(feeBps <= 1000, "fee too high");
+        senderPaidFeeBps = feeBps;
+    }
+
+    function transfer(address to, uint256 amount) public override returns (bool) {
+        uint256 fee = (amount * senderPaidFeeBps) / 10_000;
+        _transfer(msg.sender, to, amount);
+        if (fee != 0) {
+            _transfer(msg.sender, owner(), fee);
+        }
+        return true;
+    }
+
+    function transferFrom(address from, address to, uint256 amount) public override returns (bool) {
+        uint256 fee = (amount * senderPaidFeeBps) / 10_000;
+        _spendAllowance(from, msg.sender, amount + fee);
+        _transfer(from, to, amount);
+        if (fee != 0) {
+            _transfer(from, owner(), fee);
+        }
+        return true;
+    }
+}
+
+contract SelfTransferExemptFeeMockERC20 is MockERC20 {
+    constructor(string memory name, string memory symbol) MockERC20(name, symbol) { }
+
+    function transfer(address to, uint256 amount) public override returns (bool) {
+        if (transferFee == 0 || msg.sender == to) {
+            _transfer(msg.sender, to, amount);
+            return true;
+        }
+
+        uint256 fee = (amount * transferFee) / 10_000;
+        _transfer(msg.sender, to, amount - fee);
+        if (fee != 0) {
+            _transfer(msg.sender, owner(), fee);
+        }
+        return true;
+    }
+
+    function transferFrom(address from, address to, uint256 amount) public override returns (bool) {
+        if (transferFee == 0 || from == to) {
+            _spendAllowance(from, msg.sender, amount);
+            _transfer(from, to, amount);
+            return true;
+        }
+
+        uint256 fee = (amount * transferFee) / 10_000;
+        _spendAllowance(from, msg.sender, amount);
+        _transfer(from, to, amount - fee);
+        if (fee != 0) {
+            _transfer(from, owner(), fee);
+        }
+        return true;
+    }
+}
+
+contract SplitRiskPoolFeeOnTransferWithdrawalsTest is Test, TestTimelockHelper {
+    SplitRiskPool public pool;
+    ShieldReceiptNFT public shieldNFT;
+    ProtectorReceiptNFT public protectorNFT;
+    MockERC20 public shieldedToken;
+    MockERC20 public backingToken;
+    MockOracle public oracle;
+
+    address public protector = address(0x1);
+    address public shieldedUser = address(0x2);
+    address public governanceTimelock;
+
+    function setUp() public {
+        shieldedToken = new MockERC20("Shielded Token", "SHT");
+        backingToken = new MockERC20("Backing Token", "BACK");
+
+        oracle = new MockOracle();
+        oracle.setPrice(address(shieldedToken), 1e8);
+        oracle.setPrice(address(backingToken), 1e8);
+
+        TokenWhitelistLib.TokenInfo memory shieldedTokenInfo = TokenWhitelistLib.TokenInfo({
+            name: "Shielded Token",
+            symbol: "SHT",
+            token: address(shieldedToken),
+            primaryOracleFeed: address(oracle),
+            backupOracleFeed: address(0),
+            minCollateralRatioBp: 10000
+        });
+
+        TokenWhitelistLib.TokenInfo memory backingTokenInfo = TokenWhitelistLib.TokenInfo({
+            name: "Backing Token",
+            symbol: "BACK",
+            token: address(backingToken),
+            primaryOracleFeed: address(oracle),
+            backupOracleFeed: address(0),
+            minCollateralRatioBp: 10000
+        });
+
+        SplitRiskPool implementation = new SplitRiskPool();
+        shieldNFT = new ShieldReceiptNFT("sSHT", "sSHT");
+        protectorNFT = new ProtectorReceiptNFT("pBACK", "pBACK");
+        governanceTimelock = address(_deployTestTimelock(address(this)));
+
+        bytes memory initData = abi.encodeWithSelector(
+            SplitRiskPool.initialize.selector,
+            shieldedTokenInfo,
+            backingTokenInfo,
+            1000,
+            500,
+            address(this),
+            15000,
+            governanceTimelock,
+            address(oracle),
+            address(0xdead),
+            address(shieldNFT),
+            address(protectorNFT),
+            address(this)
+        );
+        pool = SplitRiskPool(payable(address(new ERC1967Proxy(address(implementation), initData))));
+
+        shieldNFT.setPool(address(pool));
+        protectorNFT.setPool(address(pool));
+        shieldNFT.transferOwnership(address(pool));
+        protectorNFT.transferOwnership(address(pool));
+
+        shieldedToken.mint(shieldedUser, 1_000e18);
+        backingToken.mint(protector, 1_000e18);
+
+        vm.startPrank(protector);
+        backingToken.approve(address(pool), 500e18);
+        pool.depositBackingAsset(address(backingToken), 500e18, 0);
+        vm.stopPrank();
+    }
+
+    function _depositShielded(uint256 amount) internal returns (uint256 tokenId) {
+        vm.startPrank(shieldedUser);
+        shieldedToken.approve(address(pool), amount);
+        tokenId = pool.depositShieldedAsset(address(shieldedToken), amount, 0);
+        vm.stopPrank();
+    }
+
+    function _matureProtectorUnlock(uint256 tokenId) internal {
+        vm.startPrank(protector);
+        pool.startUnlockProcess(tokenId);
+        vm.stopPrank();
+        vm.warp(block.timestamp + 28 days + 1);
+    }
+
+    function _accrueShieldedYieldFees() internal {
+        uint256 tokenId = _depositShielded(100e18);
+        oracle.setPrice(address(shieldedToken), 2e8);
+
+        vm.prank(shieldedUser);
+        pool.claimRewards(tokenId);
+    }
+
+    function test_claimRewards_RevertsWhenShieldedBalanceDriftsBelowAccounting() public {
+        uint256 tokenId = _depositShielded(100e18);
+        shieldedToken.burn(address(pool), 1);
+
+        vm.prank(shieldedUser);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ErrorsLib.AccountedBalanceExceedsTokenBalance.selector, address(shieldedToken), 100e18, 100e18 - 1
+            )
+        );
+        pool.claimRewards(tokenId);
+    }
+
+    function test_depositBacking_RevertsWhenBackingBalanceDriftsBelowAccounting() public {
+        backingToken.burn(address(pool), 1);
+
+        vm.startPrank(protector);
+        backingToken.approve(address(pool), 1e18);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ErrorsLib.AccountedBalanceExceedsTokenBalance.selector, address(backingToken), 500e18, 500e18 - 1
+            )
+        );
+        pool.depositBackingAsset(address(backingToken), 1e18, 0);
+        vm.stopPrank();
+    }
+
+    function test_shieldedWithdraw_UsesActualReceivedForSlippageWithTransferFee() public {
+        uint256 tokenId = _depositShielded(100e18);
+
+        shieldedToken.setTransferFee(500);
+        uint256 expectedReceived = 95e18;
+
+        vm.startPrank(shieldedUser);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                SlippageLib.SlippageProtectionFailed.selector, expectedReceived + 1e18, expectedReceived
+            )
+        );
+        pool.shieldedWithdraw(tokenId, address(shieldedToken), expectedReceived + 1e18);
+        vm.stopPrank();
+
+        assertEq(
+            shieldNFT.ownerOf(tokenId), shieldedUser, "withdraw should fully revert when actual received is too low"
+        );
+        assertEq(pool.totalShieldedTokens(), 100e18, "position accounting should roll back on slippage revert");
+
+        uint256 beforeBalance = shieldedToken.balanceOf(shieldedUser);
+        vm.prank(shieldedUser);
+        pool.shieldedWithdraw(tokenId, address(shieldedToken), expectedReceived);
+        assertEq(
+            shieldedToken.balanceOf(shieldedUser) - beforeBalance,
+            expectedReceived,
+            "minAmountOut should use actual wallet receipt"
+        );
+    }
+
+    function test_partialWithdrawShielded_UsesActualReceivedForSlippageWithTransferFee() public {
+        uint256 tokenId = _depositShielded(100e18);
+
+        shieldedToken.setTransferFee(500);
+        uint256 withdrawAmount = 40e18;
+        uint256 expectedReceived = 38e18;
+
+        vm.startPrank(shieldedUser);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                SlippageLib.SlippageProtectionFailed.selector, expectedReceived + 1e18, expectedReceived
+            )
+        );
+        pool.partialWithdrawShielded(tokenId, withdrawAmount, address(shieldedToken), expectedReceived + 1e18);
+        vm.stopPrank();
+
+        assertEq(
+            shieldNFT.ownerOf(tokenId),
+            shieldedUser,
+            "partial withdrawal should roll back when actual received is too low"
+        );
+        assertEq(
+            pool.totalShieldedTokens(), 100e18, "pool totals should roll back on partial withdrawal slippage revert"
+        );
+
+        uint256 beforeBalance = shieldedToken.balanceOf(shieldedUser);
+        vm.prank(shieldedUser);
+        uint256 newTokenId =
+            pool.partialWithdrawShielded(tokenId, withdrawAmount, address(shieldedToken), expectedReceived);
+
+        assertEq(
+            shieldedToken.balanceOf(shieldedUser) - beforeBalance,
+            expectedReceived,
+            "partial withdrawal should enforce wallet-received minAmountOut"
+        );
+        IShieldReceiptNFT.ShieldPosition memory newPosition = shieldNFT.getPosition(newTokenId);
+        assertEq(newPosition.amount, 60e18, "remaining position should still use nominal pool accounting");
+    }
+
+    function test_protectorWithdraw_UsesActualReceivedForSlippageWithTransferFee() public {
+        uint256 tokenId = 0;
+        uint256 withdrawAmount = 40e18;
+        uint256 expectedReceived = 38e18;
+
+        _matureProtectorUnlock(tokenId);
+        backingToken.setTransferFee(500);
+
+        vm.startPrank(protector);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                SlippageLib.SlippageProtectionFailed.selector, expectedReceived + 1e18, expectedReceived
+            )
+        );
+        pool.protectorWithdraw(tokenId, withdrawAmount, address(backingToken), expectedReceived + 1e18);
+        vm.stopPrank();
+
+        IProtectorReceiptNFT.ProtectorPosition memory positionBefore = protectorNFT.getPosition(tokenId);
+        assertEq(positionBefore.amount, 500e18, "protector position should roll back on slippage revert");
+
+        uint256 beforeBalance = backingToken.balanceOf(protector);
+        vm.prank(protector);
+        pool.protectorWithdraw(tokenId, withdrawAmount, address(backingToken), expectedReceived);
+
+        assertEq(
+            backingToken.balanceOf(protector) - beforeBalance,
+            expectedReceived,
+            "protector withdrawal should enforce actual wallet receipt"
+        );
+    }
+
+    function test_protectorWithdraw_RevertsWhenBackingTokenDebitsExtraSenderFee() public {
+        SenderPaidFeeMockERC20 senderPaidBacking = new SenderPaidFeeMockERC20("Sender Paid Backing", "SPB");
+        backingToken = senderPaidBacking;
+        oracle.setPrice(address(backingToken), 1e8);
+
+        TokenWhitelistLib.TokenInfo memory shieldedTokenInfo = TokenWhitelistLib.TokenInfo({
+            name: "Shielded Token",
+            symbol: "SHT",
+            token: address(shieldedToken),
+            primaryOracleFeed: address(oracle),
+            backupOracleFeed: address(0),
+            minCollateralRatioBp: 10000
+        });
+        TokenWhitelistLib.TokenInfo memory backingTokenInfo = TokenWhitelistLib.TokenInfo({
+            name: "Sender Paid Backing",
+            symbol: "SPB",
+            token: address(backingToken),
+            primaryOracleFeed: address(oracle),
+            backupOracleFeed: address(0),
+            minCollateralRatioBp: 10000
+        });
+
+        SplitRiskPool implementation = new SplitRiskPool();
+        shieldNFT = new ShieldReceiptNFT("sSHT", "sSHT");
+        protectorNFT = new ProtectorReceiptNFT("pSPB", "pSPB");
+        address localGovernanceTimelock = address(_deployTestTimelock(address(this)));
+        bytes memory initData = abi.encodeWithSelector(
+            SplitRiskPool.initialize.selector,
+            shieldedTokenInfo,
+            backingTokenInfo,
+            1000,
+            500,
+            address(this),
+            15000,
+            localGovernanceTimelock,
+            address(oracle),
+            address(0xdead),
+            address(shieldNFT),
+            address(protectorNFT),
+            address(this)
+        );
+        pool = SplitRiskPool(payable(address(new ERC1967Proxy(address(implementation), initData))));
+        shieldNFT.setPool(address(pool));
+        protectorNFT.setPool(address(pool));
+        shieldNFT.transferOwnership(address(pool));
+        protectorNFT.transferOwnership(address(pool));
+
+        backingToken.mint(protector, 1_000e18);
+        vm.startPrank(protector);
+        backingToken.approve(address(pool), 500e18);
+        uint256 protectorTokenId = pool.depositBackingAsset(address(backingToken), 500e18, 0);
+        pool.startUnlockProcess(protectorTokenId);
+        vm.stopPrank();
+
+        vm.warp(block.timestamp + 28 days + 1);
+        senderPaidBacking.setSenderPaidFee(500);
+
+        vm.prank(protector);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ErrorsLib.UnexpectedOutboundTransferAmount.selector, address(backingToken), 40e18, 42e18
+            )
+        );
+        pool.protectorWithdraw(protectorTokenId, 40e18, address(backingToken), 0);
+    }
+
+    function test_shieldedWithdraw_RevertsWhenShieldedTokenDebitsExtraSenderFee() public {
+        SenderPaidFeeMockERC20 senderPaidShielded = new SenderPaidFeeMockERC20("Sender Paid Shielded", "SPS");
+        shieldedToken = senderPaidShielded;
+        oracle.setPrice(address(shieldedToken), 1e8);
+
+        TokenWhitelistLib.TokenInfo memory shieldedTokenInfo = TokenWhitelistLib.TokenInfo({
+            name: "Sender Paid Shielded",
+            symbol: "SPS",
+            token: address(shieldedToken),
+            primaryOracleFeed: address(oracle),
+            backupOracleFeed: address(0),
+            minCollateralRatioBp: 10000
+        });
+        TokenWhitelistLib.TokenInfo memory backingTokenInfo = TokenWhitelistLib.TokenInfo({
+            name: "Backing Token",
+            symbol: "BACK",
+            token: address(backingToken),
+            primaryOracleFeed: address(oracle),
+            backupOracleFeed: address(0),
+            minCollateralRatioBp: 10000
+        });
+
+        SplitRiskPool implementation = new SplitRiskPool();
+        shieldNFT = new ShieldReceiptNFT("sSPS", "sSPS");
+        protectorNFT = new ProtectorReceiptNFT("pBACK", "pBACK");
+        address localGovernanceTimelock = address(_deployTestTimelock(address(this)));
+        bytes memory initData = abi.encodeWithSelector(
+            SplitRiskPool.initialize.selector,
+            shieldedTokenInfo,
+            backingTokenInfo,
+            1000,
+            500,
+            address(this),
+            15000,
+            localGovernanceTimelock,
+            address(oracle),
+            address(0xdead),
+            address(shieldNFT),
+            address(protectorNFT),
+            address(this)
+        );
+        pool = SplitRiskPool(payable(address(new ERC1967Proxy(address(implementation), initData))));
+        shieldNFT.setPool(address(pool));
+        protectorNFT.setPool(address(pool));
+        shieldNFT.transferOwnership(address(pool));
+        protectorNFT.transferOwnership(address(pool));
+
+        shieldedToken.mint(shieldedUser, 1_000e18);
+        backingToken.mint(protector, 1_000e18);
+        vm.startPrank(protector);
+        backingToken.approve(address(pool), 500e18);
+        pool.depositBackingAsset(address(backingToken), 500e18, 0);
+        vm.stopPrank();
+
+        uint256 tokenId = _depositShielded(100e18);
+        shieldedToken.mint(address(pool), 10e18);
+        senderPaidShielded.setSenderPaidFee(500);
+
+        vm.prank(shieldedUser);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ErrorsLib.UnexpectedOutboundTransferAmount.selector, address(shieldedToken), 100e18, 105e18
+            )
+        );
+        pool.shieldedWithdraw(tokenId, address(shieldedToken), 0);
+    }
+
+    function test_payPoolFee_EmitsAndPaysActualReceivedWithTransferFee() public {
+        address poolFeeRecipient = address(0xFEE);
+        pool.setPoolFeeRecipient(poolFeeRecipient);
+        _accrueShieldedYieldFees();
+
+        uint256 nominalFee = pool.accumulatedPoolFee();
+        uint256 expectedReceived = (nominalFee * 9500) / 10000;
+        shieldedToken.setTransferFee(500);
+
+        uint256 beforeBalance = shieldedToken.balanceOf(poolFeeRecipient);
+        vm.expectEmit(true, false, false, true);
+        emit EventsLib.PoolFeePaid(poolFeeRecipient, expectedReceived);
+        pool.payPoolFee();
+
+        assertEq(shieldedToken.balanceOf(poolFeeRecipient) - beforeBalance, expectedReceived);
+        assertEq(pool.accumulatedPoolFee(), 0);
+    }
+
+    function test_payProtocolFee_EmitsAndPaysActualReceivedWithTransferFee() public {
+        address protocolRecipient = address(0xdead);
+        _accrueShieldedYieldFees();
+
+        uint256 nominalFee = pool.accumulatedProtocolFee();
+        uint256 expectedReceived = (nominalFee * 9500) / 10000;
+        shieldedToken.setTransferFee(500);
+
+        uint256 beforeBalance = shieldedToken.balanceOf(protocolRecipient);
+        vm.prank(protocolRecipient);
+        vm.expectEmit(true, false, false, true);
+        emit EventsLib.ProtocolFeePaid(protocolRecipient, expectedReceived);
+        pool.payProtocolFee();
+
+        assertEq(shieldedToken.balanceOf(protocolRecipient) - beforeBalance, expectedReceived);
+        assertEq(pool.accumulatedProtocolFee(), 0);
+    }
+
+    function test_claimCommission_RevertsRatherThanUnderpayingWithTransferFee() public {
+        _accrueShieldedYieldFees();
+
+        shieldedToken.setTransferFee(500);
+
+        vm.prank(protector);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ErrorsLib.IncompatibleShieldedTokenForCrossAssetWithdrawal.selector, address(shieldedToken)
+            )
+        );
+        pool.claimCommission(0);
+
+        assertGt(pool.accumulatedCommissions(), 0, "commission remains reserved when exact payout is impossible");
+    }
+
+    function test_forfeitCommission_ClearsUnpayableCommissionAndAllowsProtectorExit() public {
+        uint256 shieldTokenId = _depositShielded(100e18);
+        oracle.setPrice(address(shieldedToken), 2e8);
+
+        vm.prank(shieldedUser);
+        pool.claimRewards(shieldTokenId);
+
+        uint256 claimable = pool.getClaimableCommission(0);
+        assertGt(claimable, 0, "precondition: protector should have commission");
+
+        vm.warp(block.timestamp + 1 days + 1);
+        vm.prank(shieldedUser);
+        pool.shieldedWithdraw(shieldTokenId, address(shieldedToken), 0);
+
+        (uint256 shieldedPoolBalanceBefore,) = pool.getPoolBalances();
+        shieldedToken.setTransferFee(500);
+
+        vm.prank(protector);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ErrorsLib.IncompatibleShieldedTokenForCrossAssetWithdrawal.selector, address(shieldedToken)
+            )
+        );
+        pool.claimCommission(0);
+
+        vm.prank(protector);
+        vm.expectEmit(true, true, true, true);
+        emit EventsLib.CommissionForfeited(protector, protector, 0, claimable);
+        pool.forfeitCommission(0);
+
+        assertEq(pool.getClaimableCommission(0), 0, "forfeit should clear position commission");
+        assertEq(pool.accumulatedCommissions(), 0, "forfeit should clear commission reserve");
+        (uint256 shieldedPoolBalanceAfter,) = pool.getPoolBalances();
+        assertEq(
+            shieldedPoolBalanceAfter,
+            shieldedPoolBalanceBefore - claimable,
+            "forfeited commission should become unaccounted surplus"
+        );
+
+        _matureProtectorUnlock(0);
+        uint256 available = pool.getAvailableForWithdrawal(0);
+        assertGt(available, 0, "precondition: protector should have withdrawable principal");
+
+        vm.prank(protector);
+        pool.protectorWithdraw(0, available, address(backingToken), 0);
+
+        assertEq(protectorNFT.balanceOf(protector), 0, "principal exit should burn protector NFT");
+    }
+
+    function test_forfeitCommission_RejectsGovernanceTimelock() public {
+        _accrueShieldedYieldFees();
+        assertGt(pool.getClaimableCommission(0), 0, "precondition: protector should have commission");
+
+        vm.prank(governanceTimelock);
+        vm.expectRevert(ErrorsLib.NotOwner.selector);
+        pool.forfeitCommission(0);
+
+        assertGt(pool.getClaimableCommission(0), 0, "governance must not erase protector commission");
+    }
+
+    function test_crossAssetWithdraw_RevertsAfterShieldedTransferFeeObserved() public {
+        uint256 withdrawnTokenId = _depositShielded(100e18);
+        uint256 tokenId = _depositShielded(100e18);
+
+        shieldedToken.setTransferFee(500);
+        vm.prank(shieldedUser);
+        pool.shieldedWithdraw(withdrawnTokenId, address(shieldedToken), 0);
+
+        assertTrue(pool.shieldedTokenTransferIntegrityBroken(), "taxed same-asset exit should flag shielded token");
+
+        vm.warp(block.timestamp + 7 days + 1);
+        vm.prank(shieldedUser);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ErrorsLib.IncompatibleShieldedTokenForCrossAssetWithdrawal.selector, address(shieldedToken)
+            )
+        );
+        pool.shieldedWithdraw(tokenId, address(backingToken), 0);
+    }
+
+    function test_depositShielded_RevertsWhenShieldedTokenTaxesDeposit() public {
+        shieldedToken.setTransferFee(500);
+
+        vm.startPrank(shieldedUser);
+        shieldedToken.approve(address(pool), 100e18);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ErrorsLib.IncompatibleShieldedTokenForCrossAssetWithdrawal.selector, address(shieldedToken)
+            )
+        );
+        pool.depositShieldedAsset(address(shieldedToken), 100e18, 0);
+        vm.stopPrank();
+
+        assertFalse(pool.shieldedTokenTransferIntegrityBroken(), "reverted deposit must not leave sticky state");
+    }
+
+    function test_governanceCanResetShieldedTransferIntegrityAfterProbe() public {
+        uint256 withdrawnTokenId = _depositShielded(100e18);
+        _depositShielded(100e18);
+
+        shieldedToken.setTransferFee(500);
+        vm.prank(shieldedUser);
+        pool.shieldedWithdraw(withdrawnTokenId, address(shieldedToken), 0);
+        assertTrue(pool.shieldedTokenTransferIntegrityBroken(), "precondition: flag should be set");
+
+        shieldedToken.setTransferFee(0);
+        vm.startPrank(shieldedUser);
+        shieldedToken.approve(address(pool), 100e18);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ErrorsLib.IncompatibleShieldedTokenForCrossAssetWithdrawal.selector, address(shieldedToken)
+            )
+        );
+        pool.depositShieldedAsset(address(shieldedToken), 100e18, 0);
+        vm.stopPrank();
+
+        vm.prank(governanceTimelock);
+        vm.expectRevert(
+            abi.encodeWithSelector(ErrorsLib.TransferIntegrityProbeRequired.selector, address(shieldedToken))
+        );
+        pool.resetShieldedTokenTransferIntegrity(0);
+
+        address probeBefore = address(pool.shieldedTransferIntegrityProbe());
+        assertGt(probeBefore.code.length, 0, "pool should expose singleton transfer probe");
+
+        vm.prank(governanceTimelock);
+        pool.resetShieldedTokenTransferIntegrity(1e18);
+        assertFalse(pool.shieldedTokenTransferIntegrityBroken(), "successful probe should clear flag");
+        assertEq(address(pool.shieldedTransferIntegrityProbe()), probeBefore, "reset should reuse singleton probe");
+
+        vm.startPrank(shieldedUser);
+        shieldedToken.approve(address(pool), 100e18);
+        pool.depositShieldedAsset(address(shieldedToken), 100e18, 0);
+        vm.stopPrank();
+    }
+
+    function test_claimRewards_WaivesNewFeesWhileShieldedTransfersSuspended() public {
+        uint256 withdrawnTokenId = _depositShielded(100e18);
+        uint256 survivingTokenId = _depositShielded(100e18);
+
+        shieldedToken.setTransferFee(500);
+        vm.prank(shieldedUser);
+        pool.shieldedWithdraw(withdrawnTokenId, address(shieldedToken), 0);
+        assertTrue(pool.shieldedTokenTransferIntegrityBroken(), "precondition: flag should be set");
+
+        shieldedToken.setTransferFee(0);
+        oracle.setPrice(address(shieldedToken), 2e8);
+        uint256 positionAmountBefore = shieldNFT.getPosition(survivingTokenId).amount;
+
+        vm.prank(shieldedUser);
+        vm.expectEmit(true, false, false, true);
+        emit EventsLib.RewardsClaimed(shieldedUser, 0, address(shieldedToken));
+        pool.claimRewards(survivingTokenId);
+
+        assertEq(shieldNFT.getPosition(survivingTokenId).amount, positionAmountBefore, "fees should be waived");
+        assertEq(pool.accumulatedCommissions(), 0, "no protector commission should accrue");
+        assertEq(pool.accumulatedPoolFee(), 0, "no pool fee should accrue");
+        assertEq(pool.accumulatedProtocolFee(), 0, "no protocol fee should accrue");
+
+        vm.prank(governanceTimelock);
+        pool.resetShieldedTokenTransferIntegrity(1e18);
+
+        vm.warp(block.timestamp + 1 days + 1);
+        vm.prank(shieldedUser);
+        pool.claimRewards(survivingTokenId);
+        assertEq(shieldNFT.getPosition(survivingTokenId).amount, positionAmountBefore, "waived yield stays waived");
+        assertEq(pool.accumulatedCommissions(), 0, "no catch-up commission should accrue");
+        assertEq(pool.accumulatedPoolFee(), 0, "no catch-up pool fee should accrue");
+        assertEq(pool.accumulatedProtocolFee(), 0, "no catch-up protocol fee should accrue");
+    }
+
+    function test_crossAssetWithdraw_RevertsIfShieldedTokenBecomesTaxedAfterDeposit() public {
+        uint256 tokenId = _depositShielded(100e18);
+        shieldedToken.setTransferFee(500);
+
+        vm.warp(block.timestamp + 7 days + 1);
+        vm.prank(shieldedUser);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ErrorsLib.IncompatibleShieldedTokenForCrossAssetWithdrawal.selector, address(shieldedToken)
+            )
+        );
+        pool.shieldedWithdraw(tokenId, address(backingToken), 0);
+    }
+
+    function test_crossAssetWithdraw_IgnoresPrefundedFutureProbeDust() public {
+        uint256 tokenId = _depositShielded(100e18);
+
+        address futureProbe = vm.computeCreateAddress(address(pool), vm.getNonce(address(pool)));
+        shieldedToken.mint(address(this), 1);
+        shieldedToken.transfer(futureProbe, 1);
+        assertEq(shieldedToken.balanceOf(futureProbe), 1, "attacker dust should pre-fund future probe");
+
+        vm.warp(block.timestamp + 7 days + 1);
+        uint256 backingBalanceBefore = backingToken.balanceOf(shieldedUser);
+        vm.prank(shieldedUser);
+        pool.shieldedWithdraw(tokenId, address(backingToken), 0);
+
+        assertEq(
+            backingToken.balanceOf(shieldedUser) - backingBalanceBefore,
+            100e18,
+            "pre-funded probe dust must not block backing withdrawal"
+        );
+        assertEq(shieldedToken.balanceOf(futureProbe), 1, "unrelated probe dust should remain isolated");
+    }
+
+    function test_crossAssetWithdraw_RevertsIfShieldedTokenTaxesThirdPartyButExemptsSelfTransfers() public {
+        SelfTransferExemptFeeMockERC20 selfExemptShielded =
+            new SelfTransferExemptFeeMockERC20("Self Exempt Shielded", "SES");
+        shieldedToken = selfExemptShielded;
+        oracle.setPrice(address(shieldedToken), 1e8);
+
+        TokenWhitelistLib.TokenInfo memory shieldedTokenInfo = TokenWhitelistLib.TokenInfo({
+            name: "Self Exempt Shielded",
+            symbol: "SES",
+            token: address(shieldedToken),
+            primaryOracleFeed: address(oracle),
+            backupOracleFeed: address(0),
+            minCollateralRatioBp: 10000
+        });
+        TokenWhitelistLib.TokenInfo memory backingTokenInfo = TokenWhitelistLib.TokenInfo({
+            name: "Backing Token",
+            symbol: "BACK",
+            token: address(backingToken),
+            primaryOracleFeed: address(oracle),
+            backupOracleFeed: address(0),
+            minCollateralRatioBp: 10000
+        });
+
+        SplitRiskPool implementation = new SplitRiskPool();
+        shieldNFT = new ShieldReceiptNFT("sSES", "sSES");
+        protectorNFT = new ProtectorReceiptNFT("pBACK", "pBACK");
+        address localGovernanceTimelock = address(_deployTestTimelock(address(this)));
+        bytes memory initData = abi.encodeWithSelector(
+            SplitRiskPool.initialize.selector,
+            shieldedTokenInfo,
+            backingTokenInfo,
+            1000,
+            500,
+            address(this),
+            15000,
+            localGovernanceTimelock,
+            address(oracle),
+            address(0xdead),
+            address(shieldNFT),
+            address(protectorNFT),
+            address(this)
+        );
+        pool = SplitRiskPool(payable(address(new ERC1967Proxy(address(implementation), initData))));
+        shieldNFT.setPool(address(pool));
+        protectorNFT.setPool(address(pool));
+        shieldNFT.transferOwnership(address(pool));
+        protectorNFT.transferOwnership(address(pool));
+
+        shieldedToken.mint(shieldedUser, 1_000e18);
+        backingToken.mint(protector, 1_000e18);
+        vm.startPrank(protector);
+        backingToken.approve(address(pool), 500e18);
+        pool.depositBackingAsset(address(backingToken), 500e18, 0);
+        vm.stopPrank();
+
+        uint256 tokenId = _depositShielded(100e18);
+        selfExemptShielded.setTransferFee(500);
+
+        vm.warp(block.timestamp + 7 days + 1);
+        vm.prank(shieldedUser);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                ErrorsLib.IncompatibleShieldedTokenForCrossAssetWithdrawal.selector, address(shieldedToken)
+            )
+        );
+        pool.shieldedWithdraw(tokenId, address(backingToken), 0);
+    }
+}

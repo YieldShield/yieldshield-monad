@@ -1,0 +1,77 @@
+{
+  "verifiedAt": "2026-09-08T11:14:44.946Z",
+  "chainId": 84532,
+  "status": "awaiting-live-session",
+  "blockNumber": "46548881",
+  "blockHash": "0x5c1a86e894f15b2845a5443b058579cf647c8ce69b15ee8d3edccfef37055916",
+  "contractsVerified": 39,
+  "transactionsVerified": 99,
+  "actualExecutionFeesWei": "515926230000000",
+  "l1FeesWei": "11932544988011",
+  "remainingBalanceWei": "21472141225011989",
+  "marketOpen": false,
+  "roles": {
+    "0x0000000000000000000000000000000000000000000000000000000000000000": "0xdf25A5f619a2bF7b9baC4A349D6C8381597e0604",
+    "0xb09aa5aeb3702cfd50b6b62bc4532604938f21248a27a1d5ca736082b6819cc1": "0x23EA8b07fda821d2096dee02a3a662a5374B69Cb",
+    "0xd8aa0f3194971a2a116679f7c2090f6939c8d4e01a2a8d7e41d55e5351469e63": "0x23EA8b07fda821d2096dee02a3a662a5374B69Cb",
+    "0xfd643c72710c63c0180259aba6b2d05451e3591a24e58b62239378085726f783": "0x23EA8b07fda821d2096dee02a3a662a5374B69Cb"
+  },
+  "assets": [
+    {
+      "symbol": "tAAPLc",
+      "testToken": "0xa5a0A6f7E3AF100d2809B960f9C26A38609B0943",
+      "sourceToken": "0xb200000000000000000000C2e324d24d7eEcd1fb",
+      "sourceFeed": "0x787f13dEa48Db0897CbCDD985de77809D837F988",
+      "priceUpdatedAt": "1788826639",
+      "sourceBlock": "51037943",
+      "receivedAt": "1788865242",
+      "openingAllowed": false
+    },
+    {
+      "symbol": "tNVDAc",
+      "testToken": "0xf4EEEf5F1926057798b26db94D11e1f1Fe2BD7fE",
+      "sourceToken": "0xb20000000000000000000078ee7ce2fE4908108C",
+      "sourceFeed": "0x04689a41629776563E6822F76f2e57D148d28513",
+      "priceUpdatedAt": "1788854539",
+      "sourceBlock": "51037943",
+      "receivedAt": "1788865248",
+      "openingAllowed": false
+    },
+    {
+      "symbol": "tMETAc",
+      "testToken": "0x2a9A794e70198804260FdB6fC4527a523186577D",
+      "sourceToken": "0xb2000000000000000000008bC8786B856E61707C",
+      "sourceFeed": "0x6526aE6797A76123638b863AeE4dD27Ba4E4b27D",
+      "priceUpdatedAt": "1788854785",
+      "sourceBlock": "51037943",
+      "receivedAt": "1788865254",
+      "openingAllowed": false
+    },
+    {
+      "symbol": "tGOOGLc",
+      "testToken": "0xCd4eb925280e9c75aFF2f57fEB579Aea0981b0cB",
+      "sourceToken": "0xb2000000000000000000002D0BA3164cc74f58B7",
+      "sourceFeed": "0x5bF49E0ffA937CE2FfF033c739aD7C634c4D34F2",
+      "priceUpdatedAt": "1788826237",
+      "sourceBlock": "51037943",
+      "receivedAt": "1788865260",
+      "openingAllowed": false
+    },
+    {
+      "symbol": "TestUSDC",
+      "testToken": "0xb602F500021d22F65d4971BA61D8fb7a409e154C",
+      "sourceToken": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "sourceFeed": "0x7e860098F58bBFC8648a4311b374B1D669a2bc6B",
+      "priceUpdatedAt": "1788784815",
+      "sourceBlock": "51037943",
+      "receivedAt": "1788865266",
+      "openingAllowed": null
+    }
+  ],
+  "notes": [
+    "Read-only infrastructure verification; not the completed-deployment publisher.",
+    "All receipts and runtimes checked against manifest requests and source-hash-checked compiler artifacts.",
+    "Core governance and oracle configuration checked at one block.",
+    "Pool creation, seeding, faucet funding and completed-deployment publication remain pending."
+  ]
+}

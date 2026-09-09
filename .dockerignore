@@ -1,0 +1,11 @@
+**/node_modules
+**/.env*
+**/.git
+contracts/**
+!contracts/deployments
+!contracts/deployments/base-sepolia-alpha.json
+.vercel
+.railway
+artifacts
+apps/web/dist
+**/*.log

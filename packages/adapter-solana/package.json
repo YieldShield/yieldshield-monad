@@ -1,0 +1,38 @@
+{
+  "name": "@yieldshield/adapter-solana",
+  "version": "0.1.0",
+  "description": "Solana implementation of the @yieldshield/core chain port: reads via @yieldshield/sdk, tx intents to unsigned instructions, and the wallet/submit React surface (framework-kit).",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@solana/client": "^1.7.0",
+    "@solana/kit": "^6.10.0",
+    "@solana/react-hooks": "^1.4.1",
+    "@yieldshield/core": "*",
+    "@yieldshield/sdk": "*"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "typescript": "^5.7.2"
+  }
+}

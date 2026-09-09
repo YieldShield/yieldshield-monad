@@ -1,0 +1,2781 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.35;
+
+import { Test } from "forge-std/Test.sol";
+import { YSToken } from "../contracts/YSToken.sol";
+import { YSGovernor } from "../contracts/YSGovernor.sol";
+import { TimelockController } from "@openzeppelin/contracts/governance/TimelockController.sol";
+import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+import { YSTimelockController } from "../contracts/governance/YSTimelockController.sol";
+import { IVotes } from "@openzeppelin/contracts/governance/utils/IVotes.sol";
+import { PythOracle } from "../contracts/oracles/PythOracle.sol";
+import { PythConfig } from "../contracts/oracles/PythConfig.sol";
+import { ChainlinkOracleFeed } from "../contracts/oracles/ChainlinkOracleFeed.sol";
+import { ERC4626OracleFeed } from "../contracts/oracles/ERC4626OracleFeed.sol";
+import { CompositeOracle } from "../contracts/oracles/CompositeOracle.sol";
+import { RobinhoodStockOracleFeed } from "../contracts/oracles/RobinhoodStockOracleFeed.sol";
+import { USMarketSessionGate } from "../contracts/oracles/USMarketSessionGate.sol";
+import { SplitRiskPoolFactory } from "../contracts/SplitRiskPoolFactory.sol";
+import { SplitRiskPool } from "../contracts/SplitRiskPool.sol";
+import { ConfigurableTokenFaucet } from "../contracts/mocks/ConfigurableTokenFaucet.sol";
+import { MockERC20Decimals } from "../contracts/mocks/MockERC20Decimals.sol";
+import { MockSequencerUptimeFeed } from "../contracts/mocks/MockSequencerUptimeFeed.sol";
+import { DeployYieldShieldProduction } from "../script/DeployYieldShieldProduction.s.sol";
+import { FactoryProxyTestBase } from "./helpers/FactoryProxyTestBase.sol";
+import { MockPyth } from "@pythnetwork/pyth-sdk-solidity/MockPyth.sol";
+
+contract ProductionDeployHarness is DeployYieldShieldProduction {
+    bytes32 internal expectedFactoryProxyCodehash;
+    bytes32 internal expectedFactoryImplementationCodehash;
+    bytes32 internal expectedPoolImplementationCodehash;
+    bytes32 internal expectedYSTokenCodehash;
+    bytes32 internal expectedTimelockCodehash;
+    bytes32 internal expectedGovernorCodehash;
+    bytes32 internal expectedCompositeOracleCodehash;
+    bytes32 internal expectedERC4626OracleCodehash;
+    bytes32 internal expectedPythOracleCodehash;
+    bytes32 internal expectedChainlinkOracleCodehash;
+    bytes32 internal expectedUSMarketSessionGateCodehash;
+    bytes32 internal expectedRobinhoodStockOracleCodehash;
+    bytes32 internal expectedRobinhoodSequencerCodehash;
+    bool internal strictProductionGuardsOverrideSet;
+    bool internal strictProductionGuardsOverride;
+    bool internal robinhoodSequencerConfigOverrideSet;
+    address internal robinhoodSequencerFeedOverride;
+    string internal robinhoodSequencerFeedSourceOverride;
+    bool internal robinhoodMissingSequencerExceptionOverride;
+    bool internal demoAssetsRequestedOverrideSet;
+    bool internal demoAssetsRequestedOverride;
+    bool internal marketSessionGuardianOverrideSet;
+    address internal marketSessionGuardianOverride;
+    mapping(address canonicalToken => address testToken) internal canonicalStockTokenOverrides;
+    bool internal canonicalStockTokenOverridesEnabled;
+    bytes32 internal canonicalStockTokenCodehashOverride;
+
+    function onERC721Received(address, address, uint256, bytes calldata) external pure returns (bytes4) {
+        return this.onERC721Received.selector;
+    }
+
+    function robinhoodTestnetDemoAssetsRequestedHarness() external view returns (bool) {
+        return _robinhoodTestnetDemoAssetsRequested();
+    }
+
+    function envFlagOrDefaultHarness(string memory envName, bool defaultValue) external view returns (bool) {
+        return _envFlagOrDefault(envName, defaultValue);
+    }
+
+    function deployAndConfigureRobinhoodSequencerFeedsHarness()
+        external
+        returns (ChainlinkOracleFeed chainlinkOracleFeed, ERC4626OracleFeed erc4626OracleFeed)
+    {
+        chainlinkOracleFeed = new ChainlinkOracleFeed(86_400);
+        erc4626OracleFeed = new ERC4626OracleFeed(address(chainlinkOracleFeed));
+        _configureRobinhoodSequencerFeeds(chainlinkOracleFeed, erc4626OracleFeed);
+    }
+
+    function validateAndSnapshotRobinhoodSequencerConfigurationHarness(
+        ChainlinkOracleFeed chainlinkOracleFeed,
+        ERC4626OracleFeed erc4626OracleFeed
+    ) external {
+        _validateAndSnapshotRobinhoodSequencerConfiguration(chainlinkOracleFeed, erc4626OracleFeed);
+    }
+
+    function deploymentMetadataValueHarness(string memory key) external view returns (bool found, string memory value) {
+        return _deploymentMetadataValue(key);
+    }
+
+    function setMarketSessionGuardianOverrideHarness(address guardian) external {
+        marketSessionGuardianOverrideSet = true;
+        marketSessionGuardianOverride = guardian;
+    }
+
+    function readProductionMarketSessionGuardianHarness(address timelockAddr) external view returns (address) {
+        return _readProductionMarketSessionGuardian(timelockAddr);
+    }
+
+    function snapshotProductionMarketSessionGuardianHarness(address timelockAddr) external {
+        _snapshotProductionMarketSessionGuardian(_readProductionMarketSessionGuardian(timelockAddr));
+    }
+
+    function deployProductionMarketSessionGateHarness(address initialOwner, address timelockAddr)
+        external
+        returns (USMarketSessionGate)
+    {
+        deployer = initialOwner;
+        return _deployProductionMarketSessionGate(timelockAddr);
+    }
+
+    function setRobinhoodSequencerConfigHarness(address feed, string memory source, bool allowMissing) external {
+        robinhoodSequencerConfigOverrideSet = true;
+        robinhoodSequencerFeedOverride = feed;
+        robinhoodSequencerFeedSourceOverride = source;
+        robinhoodMissingSequencerExceptionOverride = allowMissing;
+    }
+
+    function setDemoAssetsRequestedOverrideHarness(bool requested) external {
+        demoAssetsRequestedOverrideSet = true;
+        demoAssetsRequestedOverride = requested;
+    }
+
+    function requireRobinhoodTestnetDemoAssetsAllowedHarness() external view {
+        _requireRobinhoodTestnetDemoAssetsAllowed();
+    }
+
+    function defaultRobinhoodTestnetStockTokensHarness()
+        external
+        pure
+        returns (address tsla, address amzn, address pltr, address nflx, address amd)
+    {
+        return (
+            ROBINHOOD_TESTNET_TSLA_TOKEN,
+            ROBINHOOD_TESTNET_AMZN_TOKEN,
+            ROBINHOOD_TESTNET_PLTR_TOKEN,
+            ROBINHOOD_TESTNET_NFLX_TOKEN,
+            ROBINHOOD_TESTNET_AMD_TOKEN
+        );
+    }
+
+    function setCanonicalStockTokenOverrideHarness(address canonicalToken, address testToken) external {
+        canonicalStockTokenOverrides[canonicalToken] = testToken;
+        canonicalStockTokenOverridesEnabled = true;
+        canonicalStockTokenCodehashOverride = testToken.codehash;
+    }
+
+    function robinhoodDemoStockTokenHarness(string memory envName, address canonicalToken, string memory symbol)
+        external
+        view
+        returns (address token)
+    {
+        (token,) = _robinhoodDemoStockToken(envName, canonicalToken, symbol, symbol);
+    }
+
+    function validateRobinhoodTestnetStockTokenHarness(address token, string memory symbol) external view {
+        _validateRobinhoodTestnetStockToken(token, symbol);
+    }
+
+    function configureRobinhoodTestnetDemoSessionsHarness(USMarketSessionGate gate) external {
+        _configureRobinhoodTestnetDemoSessions(gate);
+    }
+
+    function robinhoodTestnetDemoSessionDaysHarness() external pure returns (uint256) {
+        return ROBINHOOD_TESTNET_DEMO_SESSION_DAYS;
+    }
+
+    function currentDeploymentAddressHarness(string memory deploymentName) external view returns (address) {
+        bytes32 deploymentNameHash = keccak256(bytes(deploymentName));
+        for (uint256 i = deployments.length; i > 0; i--) {
+            Deployment memory deployment = deployments[i - 1];
+            if (keccak256(bytes(deployment.name)) == deploymentNameHash) {
+                return deployment.addr;
+            }
+        }
+        return address(0);
+    }
+
+    function deployRobinhoodStockOracleFeedHarness(address chainlinkOracleFeed, address marketSessionGate)
+        external
+        returns (address)
+    {
+        return _deployRobinhoodStockOracleFeed(chainlinkOracleFeed, marketSessionGate);
+    }
+
+    function validateRobinhoodStockOracleWiringHarness(
+        address chainlinkOracleFeed,
+        address marketSessionGate,
+        address stockOracleFeed
+    ) external view {
+        _validateRobinhoodStockOracleWiring(
+            ProtocolDeployment({
+                factoryAddr: address(0),
+                factoryImplementationAddr: address(0),
+                poolImplementationAddr: address(0),
+                compositeOracleAddr: address(0),
+                pythOracleAddr: address(0),
+                chainlinkOracleFeedAddr: chainlinkOracleFeed,
+                marketSessionGateAddr: marketSessionGate,
+                robinhoodStockOracleFeedAddr: stockOracleFeed,
+                erc4626OracleFeedAddr: address(0),
+                timelockAddr: address(0),
+                governorAddr: address(0)
+            })
+        );
+    }
+
+    function validateProductionBootstrapHolder(address holder) external view {
+        _validateProductionBootstrapHolder(
+            holder,
+            holder.codehash,
+            _readMasterCopy(holder),
+            _readThreshold(holder),
+            _readOwnersHash(holder),
+            address(0),
+            address(0),
+            address(0)
+        );
+    }
+
+    function validateProductionBootstrapHolderPinned(
+        address holder,
+        bytes32 expectedCodehash,
+        address expectedSingleton,
+        uint256 expectedThreshold,
+        bytes32 expectedOwnersHash
+    ) external view {
+        _validateProductionBootstrapHolder(
+            holder,
+            expectedCodehash,
+            expectedSingleton,
+            expectedThreshold,
+            expectedOwnersHash,
+            address(0),
+            address(0),
+            address(0)
+        );
+    }
+
+    function validateProductionBootstrapHolderPinnedExtensions(
+        address holder,
+        bytes32 expectedCodehash,
+        address expectedSingleton,
+        uint256 expectedThreshold,
+        bytes32 expectedOwnersHash,
+        address expectedGuard,
+        address expectedFallbackHandler,
+        address expectedModuleGuard
+    ) external view {
+        _validateProductionBootstrapHolder(
+            holder,
+            expectedCodehash,
+            expectedSingleton,
+            expectedThreshold,
+            expectedOwnersHash,
+            expectedGuard,
+            expectedFallbackHandler,
+            expectedModuleGuard
+        );
+    }
+
+    function validateProductionPythConfig(address pythAddress, uint256 maxPriceAge, bool updaterConfirmed)
+        external
+        view
+    {
+        _validateProductionPythConfig(pythAddress, maxPriceAge, updaterConfirmed);
+    }
+
+    function finalizeProductionProtocolBootstrapHarness(
+        address factoryAddr,
+        address factoryImplementationAddr,
+        address poolImplementationAddr,
+        address compositeOracleAddr,
+        address pythOracleAddr,
+        address erc4626OracleFeedAddr,
+        address timelockAddr,
+        address governorAddr,
+        address bootstrapAdmin
+    ) external {
+        _pinProductionProtocolCodehashesForHarness(
+            factoryAddr,
+            factoryImplementationAddr,
+            poolImplementationAddr,
+            compositeOracleAddr,
+            pythOracleAddr,
+            erc4626OracleFeedAddr,
+            timelockAddr,
+            governorAddr
+        );
+        _finalizeProductionProtocolBootstrap(
+            ProtocolDeployment({
+                factoryAddr: factoryAddr,
+                factoryImplementationAddr: factoryImplementationAddr,
+                poolImplementationAddr: poolImplementationAddr,
+                compositeOracleAddr: compositeOracleAddr,
+                pythOracleAddr: pythOracleAddr,
+                chainlinkOracleFeedAddr: address(0),
+                marketSessionGateAddr: address(0),
+                robinhoodStockOracleFeedAddr: address(0),
+                erc4626OracleFeedAddr: erc4626OracleFeedAddr,
+                timelockAddr: timelockAddr,
+                governorAddr: governorAddr
+            }),
+            bootstrapAdmin
+        );
+    }
+
+    function validateProductionProtocolFinalizedHarness(
+        address factoryAddr,
+        address factoryImplementationAddr,
+        address poolImplementationAddr,
+        address compositeOracleAddr,
+        address pythOracleAddr,
+        address erc4626OracleFeedAddr,
+        address timelockAddr,
+        address governorAddr
+    ) external {
+        _pinProductionProtocolCodehashesForHarness(
+            factoryAddr,
+            factoryImplementationAddr,
+            poolImplementationAddr,
+            compositeOracleAddr,
+            pythOracleAddr,
+            erc4626OracleFeedAddr,
+            timelockAddr,
+            governorAddr
+        );
+        _validateProductionProtocolFinalized(
+            ProtocolDeployment({
+                factoryAddr: factoryAddr,
+                factoryImplementationAddr: factoryImplementationAddr,
+                poolImplementationAddr: poolImplementationAddr,
+                compositeOracleAddr: compositeOracleAddr,
+                pythOracleAddr: pythOracleAddr,
+                chainlinkOracleFeedAddr: address(0),
+                marketSessionGateAddr: address(0),
+                robinhoodStockOracleFeedAddr: address(0),
+                erc4626OracleFeedAddr: erc4626OracleFeedAddr,
+                timelockAddr: timelockAddr,
+                governorAddr: governorAddr
+            })
+        );
+    }
+
+    function validateProductionProtocolFinalizedWithExpectedPythCodehashHarness(
+        address factoryAddr,
+        address factoryImplementationAddr,
+        address poolImplementationAddr,
+        address compositeOracleAddr,
+        address pythOracleAddr,
+        address expectedPythOracleCodehashAddr,
+        address erc4626OracleFeedAddr,
+        address timelockAddr,
+        address governorAddr
+    ) external {
+        _pinProductionProtocolCodehashesForHarness(
+            factoryAddr,
+            factoryImplementationAddr,
+            poolImplementationAddr,
+            compositeOracleAddr,
+            expectedPythOracleCodehashAddr,
+            erc4626OracleFeedAddr,
+            timelockAddr,
+            governorAddr
+        );
+        _validateProductionProtocolFinalized(
+            ProtocolDeployment({
+                factoryAddr: factoryAddr,
+                factoryImplementationAddr: factoryImplementationAddr,
+                poolImplementationAddr: poolImplementationAddr,
+                compositeOracleAddr: compositeOracleAddr,
+                pythOracleAddr: pythOracleAddr,
+                chainlinkOracleFeedAddr: address(0),
+                marketSessionGateAddr: address(0),
+                robinhoodStockOracleFeedAddr: address(0),
+                erc4626OracleFeedAddr: erc4626OracleFeedAddr,
+                timelockAddr: timelockAddr,
+                governorAddr: governorAddr
+            })
+        );
+    }
+
+    function finalizeProductionChainlinkProtocolBootstrapHarness(
+        ProtocolDeployment memory protocol,
+        address bootstrapAdmin
+    ) external {
+        _pinProductionChainlinkProtocolCodehashesForHarness(protocol);
+        _finalizeProductionProtocolBootstrap(protocol, bootstrapAdmin);
+    }
+
+    function seedRobinhoodTestnetDemoAssetsHarness(ProtocolDeployment memory protocol) external {
+        deployer = address(this);
+        deployments.push(Deployment("RobinhoodStockOracleFeed", protocol.robinhoodStockOracleFeedAddr));
+        USMarketSessionGate marketSessionGate = USMarketSessionGate(protocol.marketSessionGateAddr);
+        _configureRobinhoodTestnetDemoSessions(marketSessionGate);
+        _seedRobinhoodTestnetDemoAssets(protocol);
+    }
+
+    function validateProductionChainlinkProtocolFinalizedHarness(ProtocolDeployment memory protocol) external {
+        _pinProductionChainlinkProtocolCodehashesForHarness(protocol);
+        _validateProductionProtocolFinalized(protocol);
+    }
+
+    function _pinProductionProtocolCodehashesForHarness(
+        address factoryAddr,
+        address factoryImplementationAddr,
+        address poolImplementationAddr,
+        address compositeOracleAddr,
+        address pythOracleCodehashAddr,
+        address erc4626OracleAddr,
+        address timelockAddr,
+        address governorAddr
+    ) internal {
+        _pinCommonProductionCodehashesForHarness(
+            factoryAddr,
+            factoryImplementationAddr,
+            poolImplementationAddr,
+            compositeOracleAddr,
+            erc4626OracleAddr,
+            timelockAddr,
+            governorAddr
+        );
+        if (expectedPythOracleCodehash == bytes32(0)) {
+            expectedPythOracleCodehash = pythOracleCodehashAddr.codehash;
+        }
+    }
+
+    function _pinProductionChainlinkProtocolCodehashesForHarness(ProtocolDeployment memory protocol) internal {
+        _pinCommonProductionCodehashesForHarness(
+            protocol.factoryAddr,
+            protocol.factoryImplementationAddr,
+            protocol.poolImplementationAddr,
+            protocol.compositeOracleAddr,
+            protocol.erc4626OracleFeedAddr,
+            protocol.timelockAddr,
+            protocol.governorAddr
+        );
+        if (expectedChainlinkOracleCodehash == bytes32(0)) {
+            expectedChainlinkOracleCodehash = protocol.chainlinkOracleFeedAddr.codehash;
+        }
+        if (expectedUSMarketSessionGateCodehash == bytes32(0)) {
+            expectedUSMarketSessionGateCodehash = protocol.marketSessionGateAddr.codehash;
+        }
+        if (expectedRobinhoodStockOracleCodehash == bytes32(0)) {
+            expectedRobinhoodStockOracleCodehash = protocol.robinhoodStockOracleFeedAddr.codehash;
+        }
+    }
+
+    function _pinCommonProductionCodehashesForHarness(
+        address factoryAddr,
+        address factoryImplementationAddr,
+        address poolImplementationAddr,
+        address compositeOracleAddr,
+        address erc4626OracleAddr,
+        address timelockAddr,
+        address governorAddr
+    ) internal {
+        if (expectedFactoryProxyCodehash == bytes32(0)) {
+            expectedFactoryProxyCodehash = factoryAddr.codehash;
+        }
+        if (expectedFactoryImplementationCodehash == bytes32(0)) {
+            expectedFactoryImplementationCodehash = factoryImplementationAddr.codehash;
+        }
+        if (expectedPoolImplementationCodehash == bytes32(0)) {
+            expectedPoolImplementationCodehash = poolImplementationAddr.codehash;
+        }
+        if (expectedCompositeOracleCodehash == bytes32(0)) {
+            expectedCompositeOracleCodehash = compositeOracleAddr.codehash;
+        }
+        if (expectedERC4626OracleCodehash == bytes32(0)) {
+            expectedERC4626OracleCodehash = erc4626OracleAddr.codehash;
+        }
+        if (expectedTimelockCodehash == bytes32(0)) expectedTimelockCodehash = timelockAddr.codehash;
+        if (expectedGovernorCodehash == bytes32(0)) expectedGovernorCodehash = governorAddr.codehash;
+        if (expectedYSTokenCodehash == bytes32(0) && governorAddr.code.length != 0) {
+            expectedYSTokenCodehash = address(YSGovernor(payable(governorAddr)).token()).codehash;
+        }
+    }
+
+    function _readRequiredProductionCodehash(bytes32 name, string memory envName)
+        internal
+        view
+        override
+        returns (bytes32 codehash)
+    {
+        if (name == bytes32("SplitRiskPoolFactory") && expectedFactoryProxyCodehash != bytes32(0)) {
+            return expectedFactoryProxyCodehash;
+        }
+        if (name == bytes32("FactoryImplementation") && expectedFactoryImplementationCodehash != bytes32(0)) {
+            return expectedFactoryImplementationCodehash;
+        }
+        if (name == bytes32("PoolImplementation") && expectedPoolImplementationCodehash != bytes32(0)) {
+            return expectedPoolImplementationCodehash;
+        }
+        if (name == bytes32("YSToken") && expectedYSTokenCodehash != bytes32(0)) return expectedYSTokenCodehash;
+        if (name == bytes32("TimelockController") && expectedTimelockCodehash != bytes32(0)) {
+            return expectedTimelockCodehash;
+        }
+        if (name == bytes32("YSGovernor") && expectedGovernorCodehash != bytes32(0)) {
+            return expectedGovernorCodehash;
+        }
+        if (name == bytes32("CompositeOracle") && expectedCompositeOracleCodehash != bytes32(0)) {
+            return expectedCompositeOracleCodehash;
+        }
+        if (name == bytes32("ERC4626OracleFeed") && expectedERC4626OracleCodehash != bytes32(0)) {
+            return expectedERC4626OracleCodehash;
+        }
+        if (name == bytes32("PythOracle") && expectedPythOracleCodehash != bytes32(0)) {
+            return expectedPythOracleCodehash;
+        }
+        if (name == bytes32("ChainlinkOracleFeed") && expectedChainlinkOracleCodehash != bytes32(0)) {
+            return expectedChainlinkOracleCodehash;
+        }
+        if (name == bytes32("USMarketSessionGate") && expectedUSMarketSessionGateCodehash != bytes32(0)) {
+            return expectedUSMarketSessionGateCodehash;
+        }
+        if (name == bytes32("RobinhoodStockOracleFeed") && expectedRobinhoodStockOracleCodehash != bytes32(0)) {
+            return expectedRobinhoodStockOracleCodehash;
+        }
+        if (name == bytes32("RobinhoodSequencerFeed") && expectedRobinhoodSequencerCodehash != bytes32(0)) {
+            return expectedRobinhoodSequencerCodehash;
+        }
+
+        return super._readRequiredProductionCodehash(name, envName);
+    }
+
+    function setExpectedProductionCodehashHarness(bytes32 name, bytes32 expectedCodehash) external {
+        if (name == bytes32("SplitRiskPoolFactory")) {
+            expectedFactoryProxyCodehash = expectedCodehash;
+        } else if (name == bytes32("FactoryImplementation")) {
+            expectedFactoryImplementationCodehash = expectedCodehash;
+        } else if (name == bytes32("PoolImplementation")) {
+            expectedPoolImplementationCodehash = expectedCodehash;
+        } else if (name == bytes32("YSToken")) {
+            expectedYSTokenCodehash = expectedCodehash;
+        } else if (name == bytes32("TimelockController")) {
+            expectedTimelockCodehash = expectedCodehash;
+        } else if (name == bytes32("YSGovernor")) {
+            expectedGovernorCodehash = expectedCodehash;
+        } else if (name == bytes32("CompositeOracle")) {
+            expectedCompositeOracleCodehash = expectedCodehash;
+        } else if (name == bytes32("ERC4626OracleFeed")) {
+            expectedERC4626OracleCodehash = expectedCodehash;
+        } else if (name == bytes32("PythOracle")) {
+            expectedPythOracleCodehash = expectedCodehash;
+        } else if (name == bytes32("ChainlinkOracleFeed")) {
+            expectedChainlinkOracleCodehash = expectedCodehash;
+        } else if (name == bytes32("USMarketSessionGate")) {
+            expectedUSMarketSessionGateCodehash = expectedCodehash;
+        } else if (name == bytes32("RobinhoodStockOracleFeed")) {
+            expectedRobinhoodStockOracleCodehash = expectedCodehash;
+        } else if (name == bytes32("RobinhoodSequencerFeed")) {
+            expectedRobinhoodSequencerCodehash = expectedCodehash;
+        }
+    }
+
+    function requireProductionCodehashHarness(bytes32 name, address contractAddress, string memory envName)
+        external
+        view
+    {
+        _requireMandatoryProductionCodehash(name, contractAddress, envName);
+    }
+
+    function _readProductionMarketSessionGuardian(address timelockAddr)
+        internal
+        view
+        override
+        returns (address guardian)
+    {
+        if (!marketSessionGuardianOverrideSet) {
+            return super._readProductionMarketSessionGuardian(timelockAddr);
+        }
+        guardian = marketSessionGuardianOverride;
+        if (guardian == address(0) || guardian == timelockAddr) {
+            revert ProductionMarketSessionGuardianInvalid(guardian, timelockAddr);
+        }
+    }
+
+    function requireProductionPythOracleCodehashHarness(address pythOracleAddr, string memory envName) external view {
+        _requireMandatoryProductionCodehash(bytes32("PythOracle"), pythOracleAddr, envName);
+    }
+
+    function requireProductionFactoryImplementationCodehashHarness(
+        address factoryImplementationAddr,
+        string memory envName
+    ) external view {
+        _requireMandatoryProductionCodehash(bytes32("FactoryImplementation"), factoryImplementationAddr, envName);
+    }
+
+    function requireProductionPoolImplementationCodehashHarness(address poolImplementationAddr, string memory envName)
+        external
+        view
+    {
+        _requireMandatoryProductionCodehash(bytes32("PoolImplementation"), poolImplementationAddr, envName);
+    }
+
+    function requireProductionChainlinkOracleCodehashHarness(address chainlinkOracleAddr, string memory envName)
+        external
+        view
+    {
+        _requireMandatoryProductionCodehash(bytes32("ChainlinkOracleFeed"), chainlinkOracleAddr, envName);
+    }
+
+    function deployGovernanceWithRelaxedTestnetGuardsHarness()
+        external
+        returns (YSToken ysToken, TimelockController timelock, YSGovernor governor, address bootstrapHolder)
+    {
+        deployer = address(this);
+        address ysTokenAddr;
+        address timelockAddr;
+        address governorAddr;
+        (ysTokenAddr, timelockAddr, governorAddr, bootstrapHolder) = deployGovernance();
+        ysToken = YSToken(ysTokenAddr);
+        timelock = TimelockController(payable(timelockAddr));
+        governor = YSGovernor(payable(governorAddr));
+    }
+
+    function requiresStrictProductionGuardsHarness() external view returns (bool) {
+        return _requiresStrictProductionGuards();
+    }
+
+    function setStrictProductionGuardsOverrideHarness(bool value) external {
+        strictProductionGuardsOverrideSet = true;
+        strictProductionGuardsOverride = value;
+    }
+
+    function _requiresStrictProductionGuards() internal view override returns (bool) {
+        if (strictProductionGuardsOverrideSet) {
+            return strictProductionGuardsOverride;
+        }
+
+        return super._requiresStrictProductionGuards();
+    }
+
+    function _robinhoodSequencerFeed(bool isTestnet) internal view override returns (address) {
+        if (robinhoodSequencerConfigOverrideSet) {
+            return robinhoodSequencerFeedOverride;
+        }
+        return super._robinhoodSequencerFeed(isTestnet);
+    }
+
+    function _robinhoodSequencerFeedSource(bool isTestnet) internal view override returns (string memory) {
+        if (robinhoodSequencerConfigOverrideSet) {
+            return robinhoodSequencerFeedSourceOverride;
+        }
+        return super._robinhoodSequencerFeedSource(isTestnet);
+    }
+
+    function _robinhoodMissingSequencerFeedExceptionRequested() internal view override returns (bool) {
+        if (robinhoodSequencerConfigOverrideSet) {
+            return robinhoodMissingSequencerExceptionOverride;
+        }
+        return super._robinhoodMissingSequencerFeedExceptionRequested();
+    }
+
+    function _robinhoodTestnetDemoAssetsRequested() internal view override returns (bool) {
+        if (demoAssetsRequestedOverrideSet) {
+            return demoAssetsRequestedOverride;
+        }
+        return super._robinhoodTestnetDemoAssetsRequested();
+    }
+
+    function _expectedRobinhoodTestnetStockToken(address canonicalToken) internal view override returns (address) {
+        address testToken = canonicalStockTokenOverrides[canonicalToken];
+        return testToken == address(0) ? super._expectedRobinhoodTestnetStockToken(canonicalToken) : testToken;
+    }
+
+    function _readRobinhoodTestnetStockToken(string memory envName, address expectedToken)
+        internal
+        view
+        override
+        returns (address)
+    {
+        if (canonicalStockTokenOverridesEnabled) return expectedToken;
+        return super._readRobinhoodTestnetStockToken(envName, expectedToken);
+    }
+
+    function _expectedRobinhoodTestnetStockTokenCodehash() internal view override returns (bytes32) {
+        if (canonicalStockTokenCodehashOverride != bytes32(0)) return canonicalStockTokenCodehashOverride;
+        return super._expectedRobinhoodTestnetStockTokenCodehash();
+    }
+
+    function _readMasterCopy(address holder) internal view returns (address singleton) {
+        (bool success, bytes memory data) = holder.staticcall(abi.encodeWithSignature("masterCopy()"));
+        if (success && data.length >= 32) {
+            singleton = abi.decode(data, (address));
+        }
+    }
+
+    function _readThreshold(address holder) internal view returns (uint256 threshold) {
+        (bool success, bytes memory data) = holder.staticcall(abi.encodeWithSignature("getThreshold()"));
+        if (success && data.length >= 32) {
+            threshold = abi.decode(data, (uint256));
+        }
+    }
+
+    function _readOwnersHash(address holder) internal view returns (bytes32 ownersHash) {
+        (bool success, bytes memory data) = holder.staticcall(abi.encodeWithSignature("getOwners()"));
+        if (success && data.length >= 64) {
+            ownersHash = keccak256(abi.encode(abi.decode(data, (address[]))));
+        }
+    }
+}
+
+contract ContractBootstrapHolder { }
+
+contract CodeButNotPyth { }
+
+contract DeploymentCanonicalRobinhoodStockToken is MockERC20Decimals {
+    bool public paused;
+    uint256 public uiMultiplier = 1e18;
+
+    constructor(string memory symbol_) MockERC20Decimals(string.concat("Canonical ", symbol_), symbol_, 18) { }
+
+    function setPaused(bool value) external {
+        paused = value;
+    }
+
+    function setUiMultiplier(uint256 value) external {
+        uiMultiplier = value;
+    }
+}
+
+contract FakeProductionOwnableOracle {
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function transferOwnership(address newOwner) external {
+        owner = newOwner;
+    }
+}
+
+contract ZeroValidTimePeriodPyth {
+    function getValidTimePeriod() external pure returns (uint256) {
+        return 0;
+    }
+}
+
+contract SelectorsOnlyBootstrapHolder {
+    address[] internal owners;
+    uint256 internal threshold;
+
+    constructor(address[] memory owners_, uint256 threshold_) {
+        owners = owners_;
+        threshold = threshold_;
+    }
+
+    function getThreshold() external view returns (uint256) {
+        return threshold;
+    }
+
+    function getOwners() external view returns (address[] memory) {
+        return owners;
+    }
+}
+
+contract SafeLikeBootstrapHolder {
+    address internal constant SAFE_SINGLETON = address(0x5AFE);
+    address internal constant SENTINEL_MODULES = address(0x1);
+    bytes32 internal constant SAFE_GUARD_STORAGE_SLOT =
+        0x4a204f620c8c5ccdca3fd54d003badd85ba500436a431f0cbda4f558c93c34c8;
+    bytes32 internal constant SAFE_FALLBACK_HANDLER_STORAGE_SLOT =
+        0x6c9a6c4a39284e37ed1cf53d337577d14212a4870fb976a4366c693b939918d5;
+    bytes32 internal constant SAFE_MODULE_GUARD_STORAGE_SLOT =
+        0xb104e0b93118902c651344349b610029d694cfdec91c589c91ebafbcd0289947;
+    address[] internal owners;
+    address[] internal modules;
+    uint256 internal threshold;
+    uint256 internal safeNonce;
+    bytes32 internal safeDomainSeparator;
+    address internal safeGuard;
+    address internal safeFallbackHandler;
+    address internal safeModuleGuard;
+
+    constructor(address[] memory owners_, uint256 threshold_) {
+        owners = owners_;
+        threshold = threshold_;
+        safeDomainSeparator = keccak256(abi.encodePacked(address(this), owners_.length, threshold_));
+    }
+
+    function getThreshold() external view returns (uint256) {
+        return threshold;
+    }
+
+    function getOwners() external view returns (address[] memory) {
+        return owners;
+    }
+
+    function VERSION() external pure returns (string memory) {
+        return "1.4.1";
+    }
+
+    function nonce() external view returns (uint256) {
+        return safeNonce;
+    }
+
+    function domainSeparator() external view returns (bytes32) {
+        return safeDomainSeparator;
+    }
+
+    function masterCopy() external pure returns (address) {
+        return SAFE_SINGLETON;
+    }
+
+    function addModule(address module) external {
+        modules.push(module);
+    }
+
+    function setGuard(address guard) external {
+        safeGuard = guard;
+    }
+
+    function setFallbackHandler(address fallbackHandler) external {
+        safeFallbackHandler = fallbackHandler;
+    }
+
+    function setModuleGuard(address moduleGuard) external {
+        safeModuleGuard = moduleGuard;
+    }
+
+    function getModulesPaginated(address, uint256 pageSize)
+        external
+        view
+        returns (address[] memory page, address next)
+    {
+        if (modules.length == 0 || pageSize == 0) {
+            return (new address[](0), SENTINEL_MODULES);
+        }
+
+        uint256 pageLength = modules.length < pageSize ? modules.length : pageSize;
+        page = new address[](pageLength);
+        for (uint256 i = 0; i < pageLength; i++) {
+            page[i] = modules[i];
+        }
+        next = pageLength == modules.length ? SENTINEL_MODULES : modules[pageLength - 1];
+    }
+
+    function getStorageAt(uint256 offset, uint256 length) external view returns (bytes memory data) {
+        if (length == 0) {
+            return new bytes(0);
+        }
+
+        bytes32 slot = bytes32(offset);
+        if (slot == SAFE_GUARD_STORAGE_SLOT) {
+            return abi.encodePacked(bytes32(uint256(uint160(safeGuard))));
+        }
+        if (slot == SAFE_FALLBACK_HANDLER_STORAGE_SLOT) {
+            return abi.encodePacked(bytes32(uint256(uint160(safeFallbackHandler))));
+        }
+        if (slot == SAFE_MODULE_GUARD_STORAGE_SLOT) {
+            return abi.encodePacked(bytes32(uint256(uint160(safeModuleGuard))));
+        }
+
+        return new bytes(32);
+    }
+}
+
+contract DeploymentSecurityTest is Test, FactoryProxyTestBase {
+    bytes32 internal constant ERC1967_IMPLEMENTATION_SLOT =
+        0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
+    string internal constant ENV_FACTORY_IMPLEMENTATION_CODEHASH = "YS_PRODUCTION_FACTORY_IMPLEMENTATION_CODEHASH";
+    string internal constant ENV_POOL_IMPLEMENTATION_CODEHASH = "YS_PRODUCTION_POOL_IMPLEMENTATION_CODEHASH";
+    string internal constant ENV_PYTH_ORACLE_CODEHASH = "YS_PRODUCTION_PYTH_ORACLE_CODEHASH";
+    string internal constant ENV_CHAINLINK_ORACLE_CODEHASH = "YS_PRODUCTION_CHAINLINK_ORACLE_CODEHASH";
+    uint256 internal constant TIMELOCK_DELAY = 2 days;
+    uint256 internal constant ROBINHOOD_MAINNET_CHAIN_ID = 4_663;
+    uint256 internal constant ROBINHOOD_TESTNET_CHAIN_ID = 46_630;
+
+    address internal deployer = address(this);
+    address internal bootstrapHolder = address(0xB0057);
+    address internal dummyPyth = address(0x1234);
+
+    function _proxyImplementation(address proxy) internal view returns (address implementation) {
+        implementation = address(uint160(uint256(vm.load(proxy, ERC1967_IMPLEMENTATION_SLOT))));
+    }
+
+    function test_ProductionBootstrap_AssignsSupplyAndClearsExternalAdmins() public {
+        (YSToken ysToken, TimelockController timelock, YSGovernor governor) = _deployGovernance();
+
+        assertEq(ysToken.balanceOf(bootstrapHolder), ysToken.INITIAL_SUPPLY());
+        assertFalse(timelock.hasRole(timelock.DEFAULT_ADMIN_ROLE(), deployer));
+        assertFalse(timelock.hasRole(timelock.DEFAULT_ADMIN_ROLE(), bootstrapHolder));
+        assertTrue(timelock.hasRole(timelock.DEFAULT_ADMIN_ROLE(), address(timelock)));
+        _assertSoleSelfAdmin(timelock);
+        assertTrue(timelock.hasRole(timelock.PROPOSER_ROLE(), address(governor)));
+        assertTrue(timelock.hasRole(timelock.EXECUTOR_ROLE(), address(governor)));
+        assertTrue(timelock.hasRole(timelock.CANCELLER_ROLE(), address(governor)));
+    }
+
+    function test_ProductionBootstrap_CanReachProposalThresholdAfterDelegation() public {
+        (YSToken ysToken,, YSGovernor governor) = _deployGovernance();
+
+        vm.prank(bootstrapHolder);
+        ysToken.delegate(bootstrapHolder);
+        vm.warp(block.timestamp + 1);
+
+        assertGe(ysToken.getVotes(bootstrapHolder), governor.proposalThreshold());
+    }
+
+    function test_TimelockRejectsExternalDefaultAdminGrant() public {
+        (, TimelockController timelock,) = _deployGovernance();
+        address attacker = address(0xBEEF);
+        bytes32 defaultAdminRole = timelock.DEFAULT_ADMIN_ROLE();
+
+        vm.prank(address(timelock));
+        vm.expectRevert(abi.encodeWithSelector(YSTimelockController.DefaultAdminMustBeTimelock.selector, attacker));
+        timelock.grantRole(defaultAdminRole, attacker);
+    }
+
+    function test_TimelockRejectsSelfDefaultAdminRevocation() public {
+        (, TimelockController timelock,) = _deployGovernance();
+        bytes32 defaultAdminRole = timelock.DEFAULT_ADMIN_ROLE();
+
+        vm.prank(address(timelock));
+        vm.expectRevert(YSTimelockController.TimelockDefaultAdminCannotBeRevoked.selector);
+        timelock.revokeRole(defaultAdminRole, address(timelock));
+
+        vm.prank(address(timelock));
+        vm.expectRevert(YSTimelockController.TimelockDefaultAdminCannotBeRevoked.selector);
+        timelock.renounceRole(defaultAdminRole, address(timelock));
+    }
+
+    function test_TimelockRejectsSelfManagingOperationalRoles() public {
+        (, TimelockController timelock, YSGovernor governor) = _deployGovernance();
+        bytes32 proposerRole = timelock.PROPOSER_ROLE();
+        address attacker = address(0xBEEF);
+
+        vm.prank(address(timelock));
+        vm.expectRevert(
+            abi.encodeWithSelector(YSTimelockController.TimelockOperationalRoleFrozen.selector, proposerRole, attacker)
+        );
+        timelock.grantRole(proposerRole, attacker);
+
+        vm.prank(address(timelock));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                YSTimelockController.TimelockOperationalRoleFrozen.selector, proposerRole, address(governor)
+            )
+        );
+        timelock.revokeRole(proposerRole, address(governor));
+
+        vm.prank(address(governor));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                YSTimelockController.TimelockOperationalRoleFrozen.selector, proposerRole, address(governor)
+            )
+        );
+        timelock.renounceRole(proposerRole, address(governor));
+    }
+
+    function test_TimelockCanRotateGovernanceControllerAtomically() public {
+        (YSToken ysToken, TimelockController timelock, YSGovernor governor) = _deployGovernance();
+        YSTimelockController ysTimelock = YSTimelockController(payable(address(timelock)));
+        YSGovernor newGovernor = new YSGovernor(IVotes(address(ysToken)), timelock, address(0));
+
+        vm.prank(address(timelock));
+        ysTimelock.rotateGovernanceController(address(newGovernor));
+
+        assertFalse(timelock.hasRole(timelock.PROPOSER_ROLE(), address(governor)));
+        assertFalse(timelock.hasRole(timelock.EXECUTOR_ROLE(), address(governor)));
+        assertFalse(timelock.hasRole(timelock.CANCELLER_ROLE(), address(governor)));
+        assertTrue(timelock.hasRole(timelock.PROPOSER_ROLE(), address(newGovernor)));
+        assertTrue(timelock.hasRole(timelock.EXECUTOR_ROLE(), address(newGovernor)));
+        assertTrue(timelock.hasRole(timelock.CANCELLER_ROLE(), address(newGovernor)));
+    }
+
+    function test_TimelockControllerRotationRejectsEOA() public {
+        (, TimelockController timelock, YSGovernor governor) = _deployGovernance();
+        YSTimelockController ysTimelock = YSTimelockController(payable(address(timelock)));
+        address eoaController = address(0xA11CE);
+
+        vm.prank(address(timelock));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                YSTimelockController.GovernanceControllerRotationInvalid.selector, address(0), eoaController
+            )
+        );
+        ysTimelock.rotateGovernanceController(eoaController);
+
+        assertTrue(timelock.hasRole(timelock.PROPOSER_ROLE(), address(governor)));
+    }
+
+    function test_TimelockControllerRotationRejectsNonGovernorContract() public {
+        (YSToken ysToken, TimelockController timelock, YSGovernor governor) = _deployGovernance();
+        YSTimelockController ysTimelock = YSTimelockController(payable(address(timelock)));
+
+        vm.prank(address(timelock));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                YSTimelockController.GovernanceControllerRotationInvalid.selector, address(0), address(ysToken)
+            )
+        );
+        ysTimelock.rotateGovernanceController(address(ysToken));
+
+        assertTrue(timelock.hasRole(timelock.PROPOSER_ROLE(), address(governor)));
+    }
+
+    function test_TimelockControllerRotationRejectsGovernorForDifferentTimelock() public {
+        (YSToken ysToken, TimelockController timelock, YSGovernor governor) = _deployGovernance();
+        (, TimelockController otherTimelock,) = _deployGovernance();
+        YSTimelockController ysTimelock = YSTimelockController(payable(address(timelock)));
+        YSGovernor wrongGovernor = new YSGovernor(IVotes(address(ysToken)), otherTimelock, address(0));
+
+        vm.prank(address(timelock));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                YSTimelockController.GovernanceControllerRotationInvalid.selector, address(0), address(wrongGovernor)
+            )
+        );
+        ysTimelock.rotateGovernanceController(address(wrongGovernor));
+
+        assertTrue(timelock.hasRole(timelock.PROPOSER_ROLE(), address(governor)));
+    }
+
+    function test_GovernorConstructorRejectsNonYSTimelock() public {
+        address[] memory emptyAccounts = new address[](0);
+        TimelockController ozTimelock = new TimelockController(TIMELOCK_DELAY, emptyAccounts, emptyAccounts, deployer);
+        YSToken ysToken = new YSToken(bootstrapHolder);
+        bytes32 expectedCodehash = keccak256(type(YSTimelockController).runtimeCode);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                YSGovernor.GovernorTimelockImplementationMismatch.selector,
+                address(ozTimelock),
+                expectedCodehash,
+                address(ozTimelock).codehash
+            )
+        );
+        new YSGovernor(IVotes(address(ysToken)), ozTimelock, deployer);
+    }
+
+    function test_GovernorConstructorRejectsUnexpectedBootstrapAdmin() public {
+        address attacker = address(0xBEEF);
+        address[] memory emptyAccounts = new address[](0);
+        TimelockController timelock = TimelockController(
+            payable(address(new YSTimelockController(TIMELOCK_DELAY, emptyAccounts, emptyAccounts, attacker)))
+        );
+        YSToken ysToken = new YSToken(bootstrapHolder);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                YSGovernor.GovernorTimelockInvalidInitialAdmin.selector, address(timelock), deployer, attacker, 2
+            )
+        );
+        new YSGovernor(IVotes(address(ysToken)), timelock, deployer);
+    }
+
+    function test_GovernorConstructorRejectsEOAOperationalController() public {
+        address attacker = address(0xBEEF);
+        address[] memory controllers = new address[](1);
+        controllers[0] = attacker;
+        TimelockController timelock = TimelockController(
+            payable(address(new YSTimelockController(TIMELOCK_DELAY, controllers, controllers, deployer)))
+        );
+        YSToken ysToken = new YSToken(bootstrapHolder);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                YSGovernor.GovernorTimelockInvalidInitialController.selector, address(timelock), attacker
+            )
+        );
+        new YSGovernor(IVotes(address(ysToken)), timelock, deployer);
+    }
+
+    function test_GovernorConstructorRejectsShortPublicTimelockDelay() public {
+        address[] memory emptyAccounts = new address[](0);
+        vm.chainId(31337);
+        TimelockController timelock = TimelockController(
+            payable(address(new YSTimelockController(1 days, emptyAccounts, emptyAccounts, deployer)))
+        );
+        YSToken ysToken = new YSToken(bootstrapHolder);
+
+        vm.chainId(PythConfig.ARBITRUM_MAINNET_CHAIN_ID);
+        vm.expectRevert(
+            abi.encodeWithSelector(YSGovernor.GovernorTimelockDelayTooShort.selector, address(timelock), 1 days, 2 days)
+        );
+        new YSGovernor(IVotes(address(ysToken)), timelock, deployer);
+        vm.chainId(31337);
+    }
+
+    function test_ProductionBootstrap_RejectsEOABootstrapHolder() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.InvalidProductionBootstrapHolder.selector, bootstrapHolder
+            )
+        );
+        harness.validateProductionBootstrapHolder(bootstrapHolder);
+    }
+
+    function test_ProductionBootstrap_RejectsInertContractBootstrapHolder() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        ContractBootstrapHolder contractHolder = new ContractBootstrapHolder();
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.InvalidProductionBootstrapHolderSingleton.selector,
+                address(contractHolder),
+                address(0),
+                address(0)
+            )
+        );
+        harness.validateProductionBootstrapHolder(address(contractHolder));
+    }
+
+    function test_ProductionBootstrap_AllowsSafeLikeBootstrapHolder() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        address[] memory owners = new address[](2);
+        owners[0] = address(0xA11CE);
+        owners[1] = address(0xB0B);
+        SafeLikeBootstrapHolder contractHolder = new SafeLikeBootstrapHolder(owners, 2);
+
+        harness.validateProductionBootstrapHolder(address(contractHolder));
+    }
+
+    function test_ProductionBootstrap_RejectsWrongBootstrapHolderCodehash() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        address[] memory owners = new address[](2);
+        owners[0] = address(0xA11CE);
+        owners[1] = address(0xB0B);
+        SafeLikeBootstrapHolder contractHolder = new SafeLikeBootstrapHolder(owners, 2);
+        bytes32 wrongCodehash = keccak256("wrong bootstrap holder codehash");
+        address expectedSingleton = contractHolder.masterCopy();
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.InvalidProductionBootstrapHolderCodehash.selector,
+                address(contractHolder),
+                address(contractHolder).codehash,
+                wrongCodehash
+            )
+        );
+        harness.validateProductionBootstrapHolderPinned(
+            address(contractHolder), wrongCodehash, expectedSingleton, 2, keccak256(abi.encode(owners))
+        );
+    }
+
+    function test_ProductionBootstrap_RejectsWrongBootstrapHolderSingleton() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        address[] memory owners = new address[](2);
+        owners[0] = address(0xA11CE);
+        owners[1] = address(0xB0B);
+        SafeLikeBootstrapHolder contractHolder = new SafeLikeBootstrapHolder(owners, 2);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.InvalidProductionBootstrapHolderSingleton.selector,
+                address(contractHolder),
+                contractHolder.masterCopy(),
+                address(0xBAD)
+            )
+        );
+        harness.validateProductionBootstrapHolderPinned(
+            address(contractHolder), address(contractHolder).codehash, address(0xBAD), 2, keccak256(abi.encode(owners))
+        );
+    }
+
+    function test_ProductionBootstrap_RejectsWrongBootstrapHolderThreshold() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        address[] memory owners = new address[](2);
+        owners[0] = address(0xA11CE);
+        owners[1] = address(0xB0B);
+        SafeLikeBootstrapHolder contractHolder = new SafeLikeBootstrapHolder(owners, 2);
+        address expectedSingleton = contractHolder.masterCopy();
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.InvalidProductionBootstrapHolderThreshold.selector,
+                address(contractHolder),
+                2,
+                3
+            )
+        );
+        harness.validateProductionBootstrapHolderPinned(
+            address(contractHolder),
+            address(contractHolder).codehash,
+            expectedSingleton,
+            3,
+            keccak256(abi.encode(owners))
+        );
+    }
+
+    function test_ProductionBootstrap_RejectsNonMajorityBootstrapHolderThreshold() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        address[] memory owners = new address[](4);
+        owners[0] = address(0xA11CE);
+        owners[1] = address(0xB0B);
+        owners[2] = address(0xCAFE);
+        owners[3] = address(0xDAD);
+        SafeLikeBootstrapHolder contractHolder = new SafeLikeBootstrapHolder(owners, 2);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.InvalidProductionBootstrapHolderThresholdRatio.selector,
+                address(contractHolder),
+                2,
+                owners.length
+            )
+        );
+        harness.validateProductionBootstrapHolder(address(contractHolder));
+    }
+
+    function test_ProductionBootstrap_RejectsWrongBootstrapHolderOwnersHash() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        address[] memory owners = new address[](2);
+        owners[0] = address(0xA11CE);
+        owners[1] = address(0xB0B);
+        SafeLikeBootstrapHolder contractHolder = new SafeLikeBootstrapHolder(owners, 2);
+        address expectedSingleton = contractHolder.masterCopy();
+        bytes32 wrongOwnersHash = keccak256("wrong owners hash");
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.InvalidProductionBootstrapHolderOwnersHash.selector,
+                address(contractHolder),
+                keccak256(abi.encode(owners)),
+                wrongOwnersHash
+            )
+        );
+        harness.validateProductionBootstrapHolderPinned(
+            address(contractHolder), address(contractHolder).codehash, expectedSingleton, 2, wrongOwnersHash
+        );
+    }
+
+    function test_ProductionBootstrap_RejectsSafeLikeHolderWithInvalidThreshold() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        address[] memory owners = new address[](1);
+        owners[0] = address(0xA11CE);
+        SafeLikeBootstrapHolder contractHolder = new SafeLikeBootstrapHolder(owners, 2);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.InvalidProductionBootstrapHolder.selector, address(contractHolder)
+            )
+        );
+        harness.validateProductionBootstrapHolder(address(contractHolder));
+    }
+
+    function test_ProductionBootstrap_RejectsSelectorOnlyBootstrapHolder() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        address[] memory owners = new address[](2);
+        owners[0] = address(0xA11CE);
+        owners[1] = address(0xB0B);
+        SelectorsOnlyBootstrapHolder contractHolder = new SelectorsOnlyBootstrapHolder(owners, 2);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.InvalidProductionBootstrapHolderSingleton.selector,
+                address(contractHolder),
+                address(0),
+                address(0)
+            )
+        );
+        harness.validateProductionBootstrapHolder(address(contractHolder));
+    }
+
+    function test_ProductionBootstrap_RejectsDuplicateOwnerSafeLikeHolder() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        address[] memory owners = new address[](2);
+        owners[0] = address(0xA11CE);
+        owners[1] = address(0xA11CE);
+        SafeLikeBootstrapHolder contractHolder = new SafeLikeBootstrapHolder(owners, 2);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.InvalidProductionBootstrapHolder.selector, address(contractHolder)
+            )
+        );
+        harness.validateProductionBootstrapHolder(address(contractHolder));
+    }
+
+    function test_ProductionBootstrap_RejectsSafeLikeHolderWithEnabledModule() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        address[] memory owners = new address[](2);
+        owners[0] = address(0xA11CE);
+        owners[1] = address(0xB0B);
+        SafeLikeBootstrapHolder contractHolder = new SafeLikeBootstrapHolder(owners, 2);
+        address module = address(0xCA11);
+        contractHolder.addModule(module);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.InvalidProductionBootstrapHolderModule.selector,
+                address(contractHolder),
+                module
+            )
+        );
+        harness.validateProductionBootstrapHolder(address(contractHolder));
+    }
+
+    function test_ProductionBootstrap_RejectsSafeLikeHolderWithUnexpectedGuard() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        address[] memory owners = new address[](2);
+        owners[0] = address(0xA11CE);
+        owners[1] = address(0xB0B);
+        SafeLikeBootstrapHolder contractHolder = new SafeLikeBootstrapHolder(owners, 2);
+        address guard = address(0x6A4D);
+        contractHolder.setGuard(guard);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.InvalidProductionBootstrapHolderGuard.selector,
+                address(contractHolder),
+                guard,
+                address(0)
+            )
+        );
+        harness.validateProductionBootstrapHolder(address(contractHolder));
+    }
+
+    function test_ProductionBootstrap_RejectsSafeLikeHolderWithUnexpectedFallbackHandler() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        address[] memory owners = new address[](2);
+        owners[0] = address(0xA11CE);
+        owners[1] = address(0xB0B);
+        SafeLikeBootstrapHolder contractHolder = new SafeLikeBootstrapHolder(owners, 2);
+        address fallbackHandler = address(0xFA11BA);
+        contractHolder.setFallbackHandler(fallbackHandler);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.InvalidProductionBootstrapHolderFallbackHandler.selector,
+                address(contractHolder),
+                fallbackHandler,
+                address(0)
+            )
+        );
+        harness.validateProductionBootstrapHolder(address(contractHolder));
+    }
+
+    function test_ProductionBootstrap_RejectsSafeLikeHolderWithUnexpectedModuleGuard() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        address[] memory owners = new address[](2);
+        owners[0] = address(0xA11CE);
+        owners[1] = address(0xB0B);
+        SafeLikeBootstrapHolder contractHolder = new SafeLikeBootstrapHolder(owners, 2);
+        address moduleGuard = address(0xD00D);
+        contractHolder.setModuleGuard(moduleGuard);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.InvalidProductionBootstrapHolderModuleGuard.selector,
+                address(contractHolder),
+                moduleGuard,
+                address(0)
+            )
+        );
+        harness.validateProductionBootstrapHolder(address(contractHolder));
+    }
+
+    function test_ProductionBootstrap_AllowsPinnedSafeLikeHolderExtensions() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        address[] memory owners = new address[](2);
+        owners[0] = address(0xA11CE);
+        owners[1] = address(0xB0B);
+        SafeLikeBootstrapHolder contractHolder = new SafeLikeBootstrapHolder(owners, 2);
+        address guard = address(0x6A4D);
+        address fallbackHandler = address(0xFA11BA);
+        address moduleGuard = address(0xD00D);
+        contractHolder.setGuard(guard);
+        contractHolder.setFallbackHandler(fallbackHandler);
+        contractHolder.setModuleGuard(moduleGuard);
+
+        harness.validateProductionBootstrapHolderPinnedExtensions(
+            address(contractHolder),
+            address(contractHolder).codehash,
+            contractHolder.masterCopy(),
+            2,
+            keccak256(abi.encode(owners)),
+            guard,
+            fallbackHandler,
+            moduleGuard
+        );
+    }
+
+    function test_ProductionBootstrap_BurnCannotBreakProposalReachability() public {
+        (YSToken ysToken,, YSGovernor governor) = _deployGovernance();
+        uint256 belowQuorumSupply = ysToken.MIN_GOVERNANCE_SUPPLY() - 1;
+        uint256 burnAmount = ysToken.INITIAL_SUPPLY() - belowQuorumSupply;
+
+        vm.prank(bootstrapHolder);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                YSToken.BurnWouldReduceSupplyBelowGovernanceQuorum.selector,
+                belowQuorumSupply,
+                ysToken.MIN_GOVERNANCE_SUPPLY()
+            )
+        );
+        ysToken.burn(burnAmount);
+
+        assertEq(
+            governor.MAX_GOVERNOR_PROPOSAL_THRESHOLD(),
+            ysToken.MIN_GOVERNANCE_SUPPLY(),
+            "burn floor must match the maximum configurable proposal threshold"
+        );
+        assertLe(governor.proposalThreshold(), ysToken.MIN_GOVERNANCE_SUPPLY());
+    }
+
+    function test_ProductionPythConfig_RejectsNoCodePythContract() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        address missingPyth = address(0x1234);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(DeployYieldShieldProduction.InvalidProductionPythContract.selector, missingPyth)
+        );
+        harness.validateProductionPythConfig(missingPyth, PythConfig.DEFAULT_ARBITRUM_MAINNET_MAX_PRICE_AGE, true);
+    }
+
+    function test_ProductionPythConfig_RejectsContractWithoutPythInterface() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        CodeButNotPyth notPyth = new CodeButNotPyth();
+
+        vm.expectRevert(
+            abi.encodeWithSelector(DeployYieldShieldProduction.InvalidProductionPythContract.selector, address(notPyth))
+        );
+        harness.validateProductionPythConfig(address(notPyth), PythConfig.DEFAULT_ARBITRUM_MAINNET_MAX_PRICE_AGE, true);
+    }
+
+    function test_ProductionPythConfig_RejectsZeroValidTimePeriod() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        ZeroValidTimePeriodPyth notUsablePyth = new ZeroValidTimePeriodPyth();
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.InvalidProductionPythContract.selector, address(notUsablePyth)
+            )
+        );
+        harness.validateProductionPythConfig(
+            address(notUsablePyth), PythConfig.DEFAULT_ARBITRUM_MAINNET_MAX_PRICE_AGE, true
+        );
+    }
+
+    function test_ProductionPythConfig_RequiresMainnetUpdaterConfirmation() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        MockPyth mockPyth = new MockPyth(60, 1);
+        vm.chainId(PythConfig.ARBITRUM_MAINNET_CHAIN_ID);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.ProductionPythUpdaterNotConfirmed.selector,
+                PythConfig.ARBITRUM_MAINNET_CHAIN_ID,
+                PythConfig.DEFAULT_ARBITRUM_MAINNET_MAX_PRICE_AGE
+            )
+        );
+        harness.validateProductionPythConfig(
+            address(mockPyth), PythConfig.DEFAULT_ARBITRUM_MAINNET_MAX_PRICE_AGE, false
+        );
+    }
+
+    function test_ProductionPythConfig_AllowsConfirmedMainnetUpdater() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        MockPyth mockPyth = new MockPyth(60, 1);
+        vm.chainId(PythConfig.ARBITRUM_MAINNET_CHAIN_ID);
+
+        harness.validateProductionPythConfig(address(mockPyth), PythConfig.DEFAULT_ARBITRUM_MAINNET_MAX_PRICE_AGE, true);
+    }
+
+    function test_ProductionPythConfig_AllowsSepoliaWithoutUpdaterConfirmation() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        MockPyth mockPyth = new MockPyth(3600, 1);
+        vm.chainId(PythConfig.ARBITRUM_SEPOLIA_CHAIN_ID);
+
+        harness.validateProductionPythConfig(
+            address(mockPyth), PythConfig.DEFAULT_ARBITRUM_SEPOLIA_MAX_PRICE_AGE, false
+        );
+    }
+
+    function test_ProductionProtocol_RoutesOracleOwnershipThroughFactoryGovernance() public {
+        (, TimelockController timelock,) = _deployGovernance();
+
+        PythOracle pythOracle = new PythOracle(dummyPyth, 60);
+        _pinPythOracleCodehash(address(pythOracle));
+        ERC4626OracleFeed erc4626OracleFeed = new ERC4626OracleFeed(address(pythOracle));
+        CompositeOracle compositeOracle = new CompositeOracle();
+        SplitRiskPool poolImplementation = new SplitRiskPool();
+        SplitRiskPoolFactory factory = _deployFactory(deployer, address(timelock), address(poolImplementation));
+
+        compositeOracle.transferOwnership(address(factory));
+        factory.setCompositeOracle(address(compositeOracle));
+        factory.setDefaultProtocolFeeRecipient(address(timelock));
+
+        pythOracle.transferOwnership(address(factory));
+        erc4626OracleFeed.transferOwnership(address(factory));
+        factory.setManagedPythOracle(address(pythOracle));
+        factory.setManagedERC4626OracleFeed(address(erc4626OracleFeed));
+        factory.finalizeBootstrap();
+        factory.transferOwnership(address(timelock));
+
+        assertEq(factory.owner(), address(timelock));
+        assertFalse(factory.bootstrapModeEnabled());
+        assertEq(compositeOracle.owner(), address(factory));
+        assertEq(pythOracle.owner(), address(factory));
+        assertEq(erc4626OracleFeed.owner(), address(factory));
+        assertEq(factory.pythOracle(), address(pythOracle));
+        assertEq(factory.erc4626OracleFeed(), address(erc4626OracleFeed));
+
+        bytes32 feedId = keccak256("feed");
+        address token = address(0xCAFE);
+        vm.prank(address(timelock));
+        factory.setPythTokenPriceFeed(token, feedId);
+        assertEq(pythOracle.tokenToPriceFeedId(token), feedId);
+
+        vm.prank(address(timelock));
+        factory.setPythMaxPriceAgeForToken(token, 86_400);
+        assertEq(pythOracle.maxPriceAgeForToken(token), 86_400);
+
+        vm.prank(address(timelock));
+        factory.schedulePythTokenRemoval(token);
+        assertEq(pythOracle.scheduledTokenRemovalTime(token), block.timestamp + pythOracle.TOKEN_REMOVAL_DELAY());
+
+        vm.warp(block.timestamp + pythOracle.TOKEN_REMOVAL_DELAY());
+
+        vm.prank(address(timelock));
+        factory.removePythToken(token);
+        assertFalse(pythOracle.isTokenSupported(token));
+        assertEq(pythOracle.tokenToPriceFeedId(token), bytes32(0));
+        assertEq(pythOracle.maxPriceAgeForToken(token), 0);
+    }
+
+    function test_ProductionProtocol_FinalizerResumesPartialBootstrapAndIsIdempotent() public {
+        (, TimelockController timelock, YSGovernor governor) = _deployGovernance();
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+
+        PythOracle pythOracle = new PythOracle(dummyPyth, 60);
+        _pinPythOracleCodehash(address(pythOracle));
+        ERC4626OracleFeed erc4626OracleFeed = new ERC4626OracleFeed(address(pythOracle));
+        CompositeOracle compositeOracle = new CompositeOracle();
+        SplitRiskPool poolImplementation = new SplitRiskPool();
+        SplitRiskPoolFactory factory = _deployFactory(address(harness), address(timelock), address(poolImplementation));
+        address directOracleCaller = address(0xCA11);
+        _pinProductionProtocolCodehashes(
+            _proxyImplementation(address(factory)), address(poolImplementation), address(pythOracle)
+        );
+
+        compositeOracle.setAuthorizedCaller(directOracleCaller, true);
+        compositeOracle.transferOwnership(address(harness));
+        pythOracle.transferOwnership(address(harness));
+        erc4626OracleFeed.transferOwnership(address(harness));
+
+        harness.finalizeProductionProtocolBootstrapHarness(
+            address(factory),
+            _proxyImplementation(address(factory)),
+            address(poolImplementation),
+            address(compositeOracle),
+            address(pythOracle),
+            address(erc4626OracleFeed),
+            address(timelock),
+            address(governor),
+            address(harness)
+        );
+        harness.validateProductionProtocolFinalizedHarness(
+            address(factory),
+            _proxyImplementation(address(factory)),
+            address(poolImplementation),
+            address(compositeOracle),
+            address(pythOracle),
+            address(erc4626OracleFeed),
+            address(timelock),
+            address(governor)
+        );
+
+        assertEq(factory.owner(), address(timelock));
+        assertFalse(factory.bootstrapModeEnabled());
+        assertEq(compositeOracle.owner(), address(factory));
+        assertEq(pythOracle.owner(), address(factory));
+        assertEq(erc4626OracleFeed.owner(), address(factory));
+        assertEq(factory.compositeOracle(), address(compositeOracle));
+        assertEq(factory.defaultProtocolFeeRecipient(), address(timelock));
+        assertEq(factory.pythOracle(), address(pythOracle));
+        assertEq(factory.erc4626OracleFeed(), address(erc4626OracleFeed));
+        assertFalse(compositeOracle.authorizedCallers(directOracleCaller));
+        assertEq(compositeOracle.authorizedCallerCount(), 0);
+
+        harness.finalizeProductionProtocolBootstrapHarness(
+            address(factory),
+            _proxyImplementation(address(factory)),
+            address(poolImplementation),
+            address(compositeOracle),
+            address(pythOracle),
+            address(erc4626OracleFeed),
+            address(timelock),
+            address(governor),
+            address(harness)
+        );
+        harness.validateProductionProtocolFinalizedHarness(
+            address(factory),
+            _proxyImplementation(address(factory)),
+            address(poolImplementation),
+            address(compositeOracle),
+            address(pythOracle),
+            address(erc4626OracleFeed),
+            address(timelock),
+            address(governor)
+        );
+    }
+
+    function test_ProductionMarketSessionGuardian_FreshDeploymentUsesConfigAndMetadata() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        address timelock = address(0xBEEF);
+        address guardian = address(0xA11CE);
+        harness.setMarketSessionGuardianOverrideHarness(guardian);
+
+        USMarketSessionGate marketSessionGate =
+            harness.deployProductionMarketSessionGateHarness(address(harness), timelock);
+
+        assertEq(marketSessionGate.owner(), address(harness));
+        assertEq(marketSessionGate.emergencyGuardian(), guardian);
+        (bool found, string memory guardianMetadata) = harness.deploymentMetadataValueHarness("marketSessionGuardian");
+        assertTrue(found);
+        assertEq(guardianMetadata, vm.toString(guardian));
+    }
+
+    function test_RobinhoodTestnet_DemoCalendarConfiguresNinetyDayBoundedWindow() public {
+        vm.chainId(ROBINHOOD_TESTNET_CHAIN_ID);
+        vm.warp(10_000 days + 12 hours);
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        USMarketSessionGate marketSessionGate = new USMarketSessionGate(address(harness), address(0xA11CE));
+        uint64 firstDay = uint64(block.timestamp / 1 days);
+        uint64 lastDay = firstDay + uint64(harness.robinhoodTestnetDemoSessionDaysHarness() - 1);
+
+        harness.configureRobinhoodTestnetDemoSessionsHarness(marketSessionGate);
+
+        (uint32 firstOpen, uint32 firstClose) = marketSessionGate.getDailySession(firstDay);
+        (uint32 lastOpen, uint32 lastClose) = marketSessionGate.getDailySession(lastDay);
+        (uint32 afterOpen, uint32 afterClose) = marketSessionGate.getDailySession(lastDay + 1);
+        assertEq(firstOpen, 0);
+        assertEq(firstClose, 1 days);
+        assertEq(lastOpen, 0);
+        assertEq(lastClose, 1 days);
+        assertEq(afterOpen, 0);
+        assertEq(afterClose, 0);
+
+        vm.warp(uint256(firstDay) * 1 days);
+        assertTrue(marketSessionGate.isMarketOpen(), "first configured day must be open");
+        vm.warp(uint256(lastDay) * 1 days + 23 hours);
+        assertTrue(marketSessionGate.isMarketOpen(), "last configured day must be open");
+        vm.warp(uint256(lastDay + 1) * 1 days);
+        assertFalse(marketSessionGate.isMarketOpen(), "day after demo window must fail closed");
+    }
+
+    function test_RobinhoodStockOracle_IsCoreDeploymentAndPinsImmutableWiring() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        ChainlinkOracleFeed chainlinkOracleFeed = new ChainlinkOracleFeed(86_400);
+        USMarketSessionGate marketSessionGate = new USMarketSessionGate(address(harness), address(0xA11CE));
+
+        address stockOracleFeed =
+            harness.deployRobinhoodStockOracleFeedHarness(address(chainlinkOracleFeed), address(marketSessionGate));
+        assertEq(harness.currentDeploymentAddressHarness("RobinhoodStockOracleFeed"), stockOracleFeed);
+        assertEq(RobinhoodStockOracleFeed(stockOracleFeed).innerFeed(), address(chainlinkOracleFeed));
+        assertEq(RobinhoodStockOracleFeed(stockOracleFeed).marketSessionGate(), address(marketSessionGate));
+        assertEq(RobinhoodStockOracleFeed(stockOracleFeed).owner(), address(harness));
+        harness.validateRobinhoodStockOracleWiringHarness(
+            address(chainlinkOracleFeed), address(marketSessionGate), stockOracleFeed
+        );
+
+        ChainlinkOracleFeed wrongInnerFeed = new ChainlinkOracleFeed(86_400);
+        RobinhoodStockOracleFeed wrongInner =
+            new RobinhoodStockOracleFeed(address(wrongInnerFeed), address(marketSessionGate));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.ProductionProtocolAddressMismatch.selector,
+                bytes32("stockOracle.innerFeed"),
+                address(wrongInnerFeed),
+                address(chainlinkOracleFeed)
+            )
+        );
+        harness.validateRobinhoodStockOracleWiringHarness(
+            address(chainlinkOracleFeed), address(marketSessionGate), address(wrongInner)
+        );
+
+        USMarketSessionGate wrongMarketGate = new USMarketSessionGate(address(harness), address(0xA11CE));
+        RobinhoodStockOracleFeed wrongGate =
+            new RobinhoodStockOracleFeed(address(chainlinkOracleFeed), address(wrongMarketGate));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.ProductionProtocolAddressMismatch.selector,
+                bytes32("stockOracle.marketGate"),
+                address(wrongMarketGate),
+                address(marketSessionGate)
+            )
+        );
+        harness.validateRobinhoodStockOracleWiringHarness(
+            address(chainlinkOracleFeed), address(marketSessionGate), address(wrongGate)
+        );
+    }
+
+    function test_ProductionMarketSessionGuardian_RejectsZeroAndTimelock() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        address timelock = address(0xBEEF);
+
+        harness.setMarketSessionGuardianOverrideHarness(address(0));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.ProductionMarketSessionGuardianInvalid.selector, address(0), timelock
+            )
+        );
+        harness.readProductionMarketSessionGuardianHarness(timelock);
+
+        harness.setMarketSessionGuardianOverrideHarness(timelock);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.ProductionMarketSessionGuardianInvalid.selector, timelock, timelock
+            )
+        );
+        harness.readProductionMarketSessionGuardianHarness(timelock);
+    }
+
+    function test_ProductionProtocol_FinalizerRecoversPauseOnlyChainlinkGuardian() public {
+        vm.chainId(ROBINHOOD_MAINNET_CHAIN_ID);
+
+        (, TimelockController timelock, YSGovernor governor) = _deployGovernance();
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        address guardian = address(0xA11CE);
+        harness.setMarketSessionGuardianOverrideHarness(guardian);
+
+        ChainlinkOracleFeed chainlinkOracleFeed = new ChainlinkOracleFeed(86_400);
+        // Exercise recovery from the former deployment wiring, where the timelock
+        // was also the guardian. Finalization replaces it before transferring ownership.
+        USMarketSessionGate marketSessionGate = new USMarketSessionGate(address(harness), address(timelock));
+        RobinhoodStockOracleFeed stockOracleFeed =
+            new RobinhoodStockOracleFeed(address(chainlinkOracleFeed), address(marketSessionGate));
+        stockOracleFeed.transferOwnership(address(harness));
+        vm.prank(address(harness));
+        marketSessionGate.setDailySession(uint64(block.timestamp / 1 days), 0, uint32(1 days));
+        ERC4626OracleFeed erc4626OracleFeed = new ERC4626OracleFeed(address(chainlinkOracleFeed));
+        CompositeOracle compositeOracle = new CompositeOracle();
+        SplitRiskPool poolImplementation = new SplitRiskPool();
+        SplitRiskPoolFactory factory = _deployFactory(address(harness), address(timelock), address(poolImplementation));
+        DeployYieldShieldProduction.ProtocolDeployment memory protocol;
+        protocol.factoryAddr = address(factory);
+        protocol.factoryImplementationAddr = _proxyImplementation(address(factory));
+        protocol.poolImplementationAddr = address(poolImplementation);
+        protocol.compositeOracleAddr = address(compositeOracle);
+        protocol.chainlinkOracleFeedAddr = address(chainlinkOracleFeed);
+        protocol.marketSessionGateAddr = address(marketSessionGate);
+        protocol.robinhoodStockOracleFeedAddr = address(stockOracleFeed);
+        protocol.erc4626OracleFeedAddr = address(erc4626OracleFeed);
+        protocol.timelockAddr = address(timelock);
+        protocol.governorAddr = address(governor);
+
+        compositeOracle.transferOwnership(address(harness));
+        chainlinkOracleFeed.transferOwnership(address(harness));
+        erc4626OracleFeed.transferOwnership(address(harness));
+
+        harness.finalizeProductionChainlinkProtocolBootstrapHarness(protocol, address(harness));
+        harness.validateProductionChainlinkProtocolFinalizedHarness(protocol);
+
+        assertEq(factory.owner(), address(timelock));
+        assertFalse(factory.bootstrapModeEnabled());
+        assertEq(compositeOracle.owner(), address(factory));
+        assertEq(chainlinkOracleFeed.owner(), address(timelock));
+        assertEq(marketSessionGate.owner(), address(timelock));
+        assertEq(stockOracleFeed.owner(), address(timelock));
+        assertEq(marketSessionGate.emergencyGuardian(), guardian);
+        assertEq(erc4626OracleFeed.owner(), address(factory));
+        assertEq(factory.compositeOracle(), address(compositeOracle));
+        assertEq(factory.defaultProtocolFeeRecipient(), address(timelock));
+        assertEq(factory.pythOracle(), address(0));
+        assertEq(compositeOracle.robinhoodStockOracleFeed(), address(stockOracleFeed));
+        assertEq(factory.erc4626OracleFeed(), address(erc4626OracleFeed));
+        assertEq(address(erc4626OracleFeed.underlyingPriceOracle()), address(chainlinkOracleFeed));
+
+        assertTrue(marketSessionGate.isMarketOpen());
+        vm.prank(guardian);
+        marketSessionGate.emergencyPause();
+        assertFalse(marketSessionGate.isMarketOpen());
+
+        vm.prank(guardian);
+        vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, guardian));
+        marketSessionGate.clearEmergencyPause();
+
+        vm.prank(guardian);
+        vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, guardian));
+        marketSessionGate.setDailySession(uint64(block.timestamp / 1 days), 0, uint32(1 days));
+    }
+
+    function test_ProductionProtocol_ChainlinkFinalizerRejectsUnsupportedChain() public {
+        vm.chainId(1);
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        address chainlinkOracleFeed = address(0xC11);
+        DeployYieldShieldProduction.ProtocolDeployment memory protocol;
+        protocol.chainlinkOracleFeedAddr = chainlinkOracleFeed;
+
+        vm.expectRevert(
+            abi.encodeWithSelector(DeployYieldShieldProduction.ProductionRobinhoodUnsupportedChain.selector, uint256(1))
+        );
+        harness.finalizeProductionChainlinkProtocolBootstrapHarness(protocol, address(harness));
+
+        vm.expectRevert(
+            abi.encodeWithSelector(DeployYieldShieldProduction.ProductionRobinhoodUnsupportedChain.selector, uint256(1))
+        );
+        harness.validateProductionChainlinkProtocolFinalizedHarness(protocol);
+    }
+
+    function test_ProductionProtocol_RobinhoodTestnetSeedCreatesPoolsAndFinalizes() public {
+        vm.chainId(46_630);
+
+        (, TimelockController timelock, YSGovernor governor) = _deployGovernance();
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        harness.setDemoAssetsRequestedOverrideHarness(true);
+        address guardian = address(0xA11CE);
+        harness.setMarketSessionGuardianOverrideHarness(guardian);
+        (
+            address canonicalTsla,
+            address canonicalAmzn,
+            address canonicalPltr,
+            address canonicalNflx,
+            address canonicalAmd
+        ) = harness.defaultRobinhoodTestnetStockTokensHarness();
+        DeploymentCanonicalRobinhoodStockToken tsla = new DeploymentCanonicalRobinhoodStockToken("TSLA");
+        DeploymentCanonicalRobinhoodStockToken amzn = new DeploymentCanonicalRobinhoodStockToken("AMZN");
+        DeploymentCanonicalRobinhoodStockToken pltr = new DeploymentCanonicalRobinhoodStockToken("PLTR");
+        DeploymentCanonicalRobinhoodStockToken nflx = new DeploymentCanonicalRobinhoodStockToken("NFLX");
+        DeploymentCanonicalRobinhoodStockToken amd = new DeploymentCanonicalRobinhoodStockToken("AMD");
+        harness.setCanonicalStockTokenOverrideHarness(canonicalTsla, address(tsla));
+        harness.setCanonicalStockTokenOverrideHarness(canonicalAmzn, address(amzn));
+        harness.setCanonicalStockTokenOverrideHarness(canonicalPltr, address(pltr));
+        harness.setCanonicalStockTokenOverrideHarness(canonicalNflx, address(nflx));
+        harness.setCanonicalStockTokenOverrideHarness(canonicalAmd, address(amd));
+
+        ChainlinkOracleFeed chainlinkOracleFeed = new ChainlinkOracleFeed(86_400);
+        USMarketSessionGate marketSessionGate = new USMarketSessionGate(address(harness), guardian);
+        RobinhoodStockOracleFeed stockOracleFeed =
+            new RobinhoodStockOracleFeed(address(chainlinkOracleFeed), address(marketSessionGate));
+        stockOracleFeed.transferOwnership(address(harness));
+        ERC4626OracleFeed erc4626OracleFeed = new ERC4626OracleFeed(address(chainlinkOracleFeed));
+        CompositeOracle compositeOracle = new CompositeOracle();
+        SplitRiskPool poolImplementation = new SplitRiskPool();
+        SplitRiskPoolFactory factory = _deployFactory(address(harness), address(timelock), address(poolImplementation));
+        DeployYieldShieldProduction.ProtocolDeployment memory protocol;
+        protocol.factoryAddr = address(factory);
+        protocol.factoryImplementationAddr = _proxyImplementation(address(factory));
+        protocol.poolImplementationAddr = address(poolImplementation);
+        protocol.compositeOracleAddr = address(compositeOracle);
+        protocol.chainlinkOracleFeedAddr = address(chainlinkOracleFeed);
+        protocol.marketSessionGateAddr = address(marketSessionGate);
+        protocol.robinhoodStockOracleFeedAddr = address(stockOracleFeed);
+        protocol.erc4626OracleFeedAddr = address(erc4626OracleFeed);
+        protocol.timelockAddr = address(timelock);
+        protocol.governorAddr = address(governor);
+
+        chainlinkOracleFeed.setSequencerUptimeFeedRequired(false);
+        erc4626OracleFeed.setSequencerUptimeFeedRequired(false);
+        compositeOracle.transferOwnership(address(harness));
+        chainlinkOracleFeed.transferOwnership(address(harness));
+        erc4626OracleFeed.transferOwnership(address(harness));
+
+        harness.seedRobinhoodTestnetDemoAssetsHarness(protocol);
+
+        assertEq(factory.poolCount(), 9);
+        assertEq(factory.getWhitelistedTokens().length, 10);
+        assertFalse(factory.bootstrapModeEnabled());
+        assertEq(compositeOracle.authorizedCallerCount(), 0);
+        _assertRobinhoodDemoOpeningFreshness(harness, chainlinkOracleFeed);
+        _assertRobinhoodDemoPauseProbeModesAndRefresh(harness, chainlinkOracleFeed, stockOracleFeed);
+        assertEq(harness.currentDeploymentAddressHarness("RobinhoodTestTSLA"), address(tsla));
+        assertEq(harness.currentDeploymentAddressHarness("RobinhoodTestAMZN"), address(amzn));
+        assertEq(harness.currentDeploymentAddressHarness("RobinhoodTestPLTR"), address(pltr));
+        assertEq(harness.currentDeploymentAddressHarness("RobinhoodTestNFLX"), address(nflx));
+        assertEq(harness.currentDeploymentAddressHarness("RobinhoodTestAMD"), address(amd));
+
+        address faucetAddr = harness.currentDeploymentAddressHarness("RobinhoodDemoAssetFaucet");
+        assertTrue(faucetAddr != address(0));
+        ConfigurableTokenFaucet faucet = ConfigurableTokenFaucet(faucetAddr);
+        assertEq(faucet.owner(), address(harness));
+        assertEq(faucet.getAllTokens().length, 5);
+        assertEq(faucet.dripAmount(harness.currentDeploymentAddressHarness("RobinhoodTestUSDG")), 10_000e6);
+        assertEq(faucet.dripAmount(harness.currentDeploymentAddressHarness("RobinhoodTestWETH")), 10e18);
+        assertEq(faucet.dripAmount(harness.currentDeploymentAddressHarness("RobinhoodTestSGOV")), 25e18);
+        assertFalse(faucet.enabledTokens(harness.currentDeploymentAddressHarness("RobinhoodTestTSLA")));
+
+        harness.finalizeProductionChainlinkProtocolBootstrapHarness(protocol, address(harness));
+        harness.validateProductionChainlinkProtocolFinalizedHarness(protocol);
+
+        assertEq(factory.owner(), address(timelock));
+        assertEq(compositeOracle.owner(), address(factory));
+        assertEq(compositeOracle.robinhoodStockOracleFeed(), address(stockOracleFeed));
+        assertEq(chainlinkOracleFeed.owner(), address(timelock));
+        assertEq(marketSessionGate.owner(), address(timelock));
+        assertEq(stockOracleFeed.owner(), address(timelock));
+        assertEq(marketSessionGate.emergencyGuardian(), guardian);
+        assertEq(erc4626OracleFeed.owner(), address(factory));
+        assertEq(factory.poolCount(), 9);
+        assertEq(factory.getWhitelistedTokens().length, 10);
+        _assertRobinhoodDemoPauseProbeModesAndRefresh(harness, chainlinkOracleFeed, stockOracleFeed);
+
+        address deployedTsla = harness.currentDeploymentAddressHarness("RobinhoodTestTSLA");
+        vm.prank(address(timelock));
+        chainlinkOracleFeed.setProtectionOpeningMaxPriceAgeForToken(deployedTsla, 30 minutes);
+        assertEq(
+            chainlinkOracleFeed.protectionOpeningMaxPriceAgeForToken(deployedTsla),
+            30 minutes,
+            "timelock governance must retain opening-freshness administration"
+        );
+    }
+
+    function test_RobinhoodTestnet_DemoAssetsDefaultOffAndRequireExplicitOptIn() public {
+        vm.chainId(ROBINHOOD_TESTNET_CHAIN_ID);
+        vm.setEnv("YS_ROBINHOOD_TESTNET_SEED_DEMO_ASSETS", "false");
+        ProductionDeployHarness defaultHarness = new ProductionDeployHarness();
+        assertFalse(defaultHarness.robinhoodTestnetDemoAssetsRequestedHarness());
+
+        ProductionDeployHarness explicitOnHarness = new ProductionDeployHarness();
+        explicitOnHarness.setDemoAssetsRequestedOverrideHarness(true);
+        assertTrue(explicitOnHarness.robinhoodTestnetDemoAssetsRequestedHarness());
+
+        ProductionDeployHarness explicitOffHarness = new ProductionDeployHarness();
+        explicitOffHarness.setDemoAssetsRequestedOverrideHarness(false);
+        assertFalse(explicitOffHarness.robinhoodTestnetDemoAssetsRequestedHarness());
+    }
+
+    function test_RobinhoodMainnet_RejectsExplicitDemoAssetOptIn() public {
+        vm.chainId(ROBINHOOD_MAINNET_CHAIN_ID);
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        harness.setDemoAssetsRequestedOverrideHarness(true);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.ProductionRobinhoodTestnetDemoAssetsUnsupported.selector,
+                ROBINHOOD_MAINNET_CHAIN_ID
+            )
+        );
+        harness.requireRobinhoodTestnetDemoAssetsAllowedHarness();
+    }
+
+    function test_ConfigurableTokenFaucet_UsesPerTokenDripAmountsAndCooldowns() public {
+        MockERC20Decimals usdg = new MockERC20Decimals("Robinhood Test USDG", "USDG", 6);
+        MockERC20Decimals weth = new MockERC20Decimals("Robinhood Test WETH", "WETH", 18);
+        ConfigurableTokenFaucet faucet = new ConfigurableTokenFaucet(address(this));
+
+        address[] memory tokens = new address[](2);
+        uint256[] memory dripAmounts = new uint256[](2);
+        tokens[0] = address(usdg);
+        tokens[1] = address(weth);
+        dripAmounts[0] = 10_000e6;
+        dripAmounts[1] = 10e18;
+        faucet.setTokens(tokens, dripAmounts);
+
+        usdg.mint(address(faucet), 100_000e6);
+        weth.mint(address(faucet), 100e18);
+
+        address recipient = address(0xBEEF);
+        (bool canDrip, uint256 nextDripTime) = faucet.canDrip(address(usdg), recipient);
+        assertTrue(canDrip);
+        assertEq(nextDripTime, 0);
+
+        faucet.drip(address(usdg), recipient);
+        assertEq(usdg.balanceOf(recipient), 10_000e6);
+        (canDrip, nextDripTime) = faucet.canDrip(address(usdg), recipient);
+        assertFalse(canDrip);
+        assertGt(nextDripTime, block.timestamp);
+
+        vm.expectRevert(bytes("ConfigurableTokenFaucet: drip unavailable"));
+        faucet.drip(address(usdg), recipient);
+
+        address batchRecipient = address(0xCAFE);
+        faucet.dripAll(batchRecipient);
+        assertEq(usdg.balanceOf(batchRecipient), 10_000e6);
+        assertEq(weth.balanceOf(batchRecipient), 10e18);
+    }
+
+    function test_ProductionProtocol_RobinhoodTestnetSeedDefaultsAndOptOutsArePinned() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+
+        assertTrue(harness.envFlagOrDefaultHarness("YS_TEST_UNSET_20260709_ROBINHOOD_SEED_DEFAULT", true));
+        assertFalse(harness.envFlagOrDefaultHarness("YS_TEST_UNSET_20260709_ROBINHOOD_SEED_OFF", false));
+
+        vm.setEnv("YS_TEST_SET_20260709_ROBINHOOD_SEED_TRUE", "true");
+        assertTrue(harness.envFlagOrDefaultHarness("YS_TEST_SET_20260709_ROBINHOOD_SEED_TRUE", false));
+
+        vm.setEnv("YS_TEST_SET_20260709_ROBINHOOD_SEED_FALSE", "false");
+        assertFalse(harness.envFlagOrDefaultHarness("YS_TEST_SET_20260709_ROBINHOOD_SEED_FALSE", true));
+    }
+
+    function test_ProductionProtocol_RobinhoodTestnetFaucetTokenDefaultsArePinned() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+
+        (address tsla, address amzn, address pltr, address nflx, address amd) =
+            harness.defaultRobinhoodTestnetStockTokensHarness();
+
+        assertEq(tsla, 0xC9f9c86933092BbbfFF3CCb4b105A4A94bf3Bd4E);
+        assertEq(amzn, 0x5884aD2f920c162CFBbACc88C9C51AA75eC09E02);
+        assertEq(pltr, 0x1FBE1a0e43594b3455993B5dE5Fd0A7A266298d0);
+        assertEq(nflx, 0x3b8262A63d25f0477c4DDE23F83cfe22Cb768C93);
+        assertEq(amd, 0x71178BAc73cBeb415514eB542a8995b82669778d);
+    }
+
+    function test_RobinhoodTestnet_CanonicalStockOverrideMustMatchPinnedAddress() public {
+        vm.chainId(ROBINHOOD_TESTNET_CHAIN_ID);
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        (address canonicalTsla,,,,) = harness.defaultRobinhoodTestnetStockTokensHarness();
+        DeploymentCanonicalRobinhoodStockToken wrongToken = new DeploymentCanonicalRobinhoodStockToken("TSLA");
+        string memory envName = "YS_TEST_ROBINHOOD_WRONG_CANONICAL_TSLA";
+        vm.setEnv(envName, vm.toString(address(wrongToken)));
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.ProductionRobinhoodCanonicalTokenAddressMismatch.selector,
+                canonicalTsla,
+                address(wrongToken)
+            )
+        );
+        harness.robinhoodDemoStockTokenHarness(envName, canonicalTsla, "TSLA");
+    }
+
+    function test_RobinhoodTestnet_CanonicalStockValidationChecksMetadataAndMultiplier() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        (address canonicalTsla,,,,) = harness.defaultRobinhoodTestnetStockTokensHarness();
+        DeploymentCanonicalRobinhoodStockToken token = new DeploymentCanonicalRobinhoodStockToken("TSLA");
+        harness.setCanonicalStockTokenOverrideHarness(canonicalTsla, address(token));
+
+        harness.validateRobinhoodTestnetStockTokenHarness(address(token), "TSLA");
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.ProductionRobinhoodCanonicalTokenSymbolMismatch.selector,
+                address(token),
+                "TSLA",
+                "NFLX"
+            )
+        );
+        harness.validateRobinhoodTestnetStockTokenHarness(address(token), "NFLX");
+
+        token.setUiMultiplier(0);
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.ProductionRobinhoodCanonicalTokenMultiplierInvalid.selector, address(token)
+            )
+        );
+        harness.validateRobinhoodTestnetStockTokenHarness(address(token), "TSLA");
+    }
+
+    function test_ProductionProtocol_ValidationRejectsMismatchedFactoryGovernanceTimelock() public {
+        (, TimelockController expectedTimelock, YSGovernor expectedGovernor) = _deployGovernance();
+        (, TimelockController wrongTimelock,) = _deployGovernance();
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+
+        PythOracle pythOracle = new PythOracle(dummyPyth, 60);
+        _pinPythOracleCodehash(address(pythOracle));
+        ERC4626OracleFeed erc4626OracleFeed = new ERC4626OracleFeed(address(pythOracle));
+        CompositeOracle compositeOracle = new CompositeOracle();
+        SplitRiskPool poolImplementation = new SplitRiskPool();
+        SplitRiskPoolFactory factory =
+            _deployFactory(address(harness), address(wrongTimelock), address(poolImplementation));
+        _pinProductionProtocolCodehashes(
+            _proxyImplementation(address(factory)), address(poolImplementation), address(pythOracle)
+        );
+
+        compositeOracle.transferOwnership(address(factory));
+        pythOracle.transferOwnership(address(factory));
+        erc4626OracleFeed.transferOwnership(address(factory));
+
+        vm.startPrank(address(harness));
+        factory.setCompositeOracle(address(compositeOracle));
+        factory.setDefaultProtocolFeeRecipient(address(expectedTimelock));
+        factory.setManagedPythOracle(address(pythOracle));
+        factory.setManagedERC4626OracleFeed(address(erc4626OracleFeed));
+        factory.finalizeBootstrap();
+        factory.transferOwnership(address(expectedTimelock));
+        vm.stopPrank();
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.ProductionProtocolAddressMismatch.selector,
+                bytes32("factory.governanceTimelock"),
+                address(wrongTimelock),
+                address(expectedTimelock)
+            )
+        );
+        harness.validateProductionProtocolFinalizedHarness(
+            address(factory),
+            _proxyImplementation(address(factory)),
+            address(poolImplementation),
+            address(compositeOracle),
+            address(pythOracle),
+            address(erc4626OracleFeed),
+            address(expectedTimelock),
+            address(expectedGovernor)
+        );
+    }
+
+    function test_ProductionProtocol_ValidationRejectsMismatchedFactoryImplementation() public {
+        (, TimelockController timelock, YSGovernor governor) = _deployGovernance();
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+
+        PythOracle pythOracle = new PythOracle(dummyPyth, 60);
+        _pinPythOracleCodehash(address(pythOracle));
+        ERC4626OracleFeed erc4626OracleFeed = new ERC4626OracleFeed(address(pythOracle));
+        CompositeOracle compositeOracle = new CompositeOracle();
+        SplitRiskPool poolImplementation = new SplitRiskPool();
+        SplitRiskPoolFactory factory = _deployFactory(address(harness), address(timelock), address(poolImplementation));
+        SplitRiskPoolFactory wrongFactoryImplementation = new SplitRiskPoolFactory();
+        _pinProductionProtocolCodehashes(
+            address(wrongFactoryImplementation), address(poolImplementation), address(pythOracle)
+        );
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.ProductionProtocolAddressMismatch.selector,
+                bytes32("factory.proxyImplementation"),
+                _proxyImplementation(address(factory)),
+                address(wrongFactoryImplementation)
+            )
+        );
+        harness.validateProductionProtocolFinalizedHarness(
+            address(factory),
+            address(wrongFactoryImplementation),
+            address(poolImplementation),
+            address(compositeOracle),
+            address(pythOracle),
+            address(erc4626OracleFeed),
+            address(timelock),
+            address(governor)
+        );
+    }
+
+    function test_ProductionProtocol_ValidationRejectsMismatchedPoolImplementation() public {
+        (, TimelockController timelock, YSGovernor governor) = _deployGovernance();
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+
+        PythOracle pythOracle = new PythOracle(dummyPyth, 60);
+        _pinPythOracleCodehash(address(pythOracle));
+        ERC4626OracleFeed erc4626OracleFeed = new ERC4626OracleFeed(address(pythOracle));
+        CompositeOracle compositeOracle = new CompositeOracle();
+        SplitRiskPool poolImplementation = new SplitRiskPool();
+        SplitRiskPool wrongPoolImplementation = new SplitRiskPool();
+        SplitRiskPoolFactory factory = _deployFactory(address(harness), address(timelock), address(poolImplementation));
+        _pinProductionProtocolCodehashes(
+            _proxyImplementation(address(factory)), address(wrongPoolImplementation), address(pythOracle)
+        );
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.ProductionProtocolAddressMismatch.selector,
+                bytes32("factory.poolImplementation"),
+                address(poolImplementation),
+                address(wrongPoolImplementation)
+            )
+        );
+        harness.validateProductionProtocolFinalizedHarness(
+            address(factory),
+            _proxyImplementation(address(factory)),
+            address(wrongPoolImplementation),
+            address(compositeOracle),
+            address(pythOracle),
+            address(erc4626OracleFeed),
+            address(timelock),
+            address(governor)
+        );
+    }
+
+    function test_ProductionProtocol_ValidationRejectsTimelockControlledByNonGovernor() public {
+        (,, YSGovernor wrongController) = _deployGovernance();
+        address wrongControllerAddr = address(wrongController);
+        address[] memory controllers = new address[](1);
+        controllers[0] = wrongControllerAddr;
+        TimelockController timelock = TimelockController(
+            payable(address(new YSTimelockController(TIMELOCK_DELAY, controllers, controllers, deployer)))
+        );
+        YSToken ysToken = new YSToken(bootstrapHolder);
+        YSGovernor governor = new YSGovernor(IVotes(address(ysToken)), timelock, deployer);
+        timelock.renounceRole(timelock.DEFAULT_ADMIN_ROLE(), deployer);
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+
+        PythOracle pythOracle = new PythOracle(dummyPyth, 60);
+        _pinPythOracleCodehash(address(pythOracle));
+        ERC4626OracleFeed erc4626OracleFeed = new ERC4626OracleFeed(address(pythOracle));
+        CompositeOracle compositeOracle = new CompositeOracle();
+        SplitRiskPool poolImplementation = new SplitRiskPool();
+        SplitRiskPoolFactory factory = _deployFactory(address(harness), address(timelock), address(poolImplementation));
+        _pinProductionProtocolCodehashes(
+            _proxyImplementation(address(factory)), address(poolImplementation), address(pythOracle)
+        );
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.ProductionProtocolTimelockRoleMismatch.selector,
+                timelock.PROPOSER_ROLE(),
+                wrongControllerAddr,
+                address(governor)
+            )
+        );
+        harness.validateProductionProtocolFinalizedHarness(
+            address(factory),
+            _proxyImplementation(address(factory)),
+            address(poolImplementation),
+            address(compositeOracle),
+            address(pythOracle),
+            address(erc4626OracleFeed),
+            address(timelock),
+            address(governor)
+        );
+    }
+
+    function test_ProductionProtocol_ValidationRejectsCompositeOracleAuthorizedCallers() public {
+        (, TimelockController timelock, YSGovernor governor) = _deployGovernance();
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+
+        PythOracle pythOracle = new PythOracle(dummyPyth, 60);
+        _pinPythOracleCodehash(address(pythOracle));
+        ERC4626OracleFeed erc4626OracleFeed = new ERC4626OracleFeed(address(pythOracle));
+        CompositeOracle compositeOracle = new CompositeOracle();
+        SplitRiskPool poolImplementation = new SplitRiskPool();
+        SplitRiskPoolFactory factory = _deployFactory(address(harness), address(timelock), address(poolImplementation));
+        _pinProductionProtocolCodehashes(
+            _proxyImplementation(address(factory)), address(poolImplementation), address(pythOracle)
+        );
+
+        compositeOracle.transferOwnership(address(factory));
+        pythOracle.transferOwnership(address(factory));
+        erc4626OracleFeed.transferOwnership(address(factory));
+
+        vm.startPrank(address(harness));
+        factory.setCompositeOracle(address(compositeOracle));
+        factory.setDefaultProtocolFeeRecipient(address(timelock));
+        factory.setManagedPythOracle(address(pythOracle));
+        factory.setManagedERC4626OracleFeed(address(erc4626OracleFeed));
+        factory.finalizeBootstrap();
+        factory.transferOwnership(address(timelock));
+        vm.stopPrank();
+
+        address staleCaller = address(0xCA11);
+        vm.prank(address(factory));
+        compositeOracle.setAuthorizedCaller(staleCaller, true);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.ProductionProtocolAuthorizedCallersPresent.selector,
+                address(compositeOracle),
+                1
+            )
+        );
+        harness.validateProductionProtocolFinalizedHarness(
+            address(factory),
+            _proxyImplementation(address(factory)),
+            address(poolImplementation),
+            address(compositeOracle),
+            address(pythOracle),
+            address(erc4626OracleFeed),
+            address(timelock),
+            address(governor)
+        );
+    }
+
+    function test_ProductionProtocol_ValidationRejectsUnexpectedERC4626OracleBytecode() public {
+        (, TimelockController timelock, YSGovernor governor) = _deployGovernance();
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+
+        PythOracle pythOracle = new PythOracle(dummyPyth, 60);
+        _pinPythOracleCodehash(address(pythOracle));
+        ERC4626OracleFeed expectedERC4626OracleFeed = new ERC4626OracleFeed(address(pythOracle));
+        FakeProductionOwnableOracle fakeERC4626OracleFeed = new FakeProductionOwnableOracle();
+        CompositeOracle compositeOracle = new CompositeOracle();
+        SplitRiskPool poolImplementation = new SplitRiskPool();
+        SplitRiskPoolFactory factory = _deployFactory(address(harness), address(timelock), address(poolImplementation));
+        _pinProductionProtocolCodehashes(
+            _proxyImplementation(address(factory)), address(poolImplementation), address(pythOracle)
+        );
+
+        compositeOracle.transferOwnership(address(factory));
+        pythOracle.transferOwnership(address(factory));
+        fakeERC4626OracleFeed.transferOwnership(address(factory));
+
+        vm.startPrank(address(harness));
+        factory.setCompositeOracle(address(compositeOracle));
+        factory.setDefaultProtocolFeeRecipient(address(timelock));
+        factory.setManagedPythOracle(address(pythOracle));
+        factory.setManagedERC4626OracleFeed(address(fakeERC4626OracleFeed));
+        factory.finalizeBootstrap();
+        factory.transferOwnership(address(timelock));
+        vm.stopPrank();
+
+        harness.setExpectedProductionCodehashHarness(
+            bytes32("ERC4626OracleFeed"), address(expectedERC4626OracleFeed).codehash
+        );
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.ProductionProtocolCodehashMismatch.selector,
+                bytes32("ERC4626OracleFeed"),
+                address(fakeERC4626OracleFeed),
+                address(fakeERC4626OracleFeed).codehash,
+                address(expectedERC4626OracleFeed).codehash
+            )
+        );
+        harness.validateProductionProtocolFinalizedHarness(
+            address(factory),
+            _proxyImplementation(address(factory)),
+            address(poolImplementation),
+            address(compositeOracle),
+            address(pythOracle),
+            address(fakeERC4626OracleFeed),
+            address(timelock),
+            address(governor)
+        );
+    }
+
+    function test_ProductionProtocol_ValidationRequiresPythOracleCodehashEnv() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        PythOracle pythOracle = new PythOracle(dummyPyth, 60);
+        string memory missingEnvName = "YS_TEST_REQUIRED_PYTH_ORACLE_CODEHASH";
+        vm.setEnv(missingEnvName, vm.toString(bytes32(0)));
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.ProductionProtocolCodehashRequired.selector,
+                bytes32("PythOracle"),
+                missingEnvName
+            )
+        );
+        harness.requireProductionPythOracleCodehashHarness(address(pythOracle), missingEnvName);
+    }
+
+    function test_ProductionProtocol_ValidationRequiresFactoryImplementationCodehashEnv() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        SplitRiskPoolFactory factoryImplementation = new SplitRiskPoolFactory();
+        string memory missingEnvName = "YS_TEST_REQUIRED_FACTORY_IMPLEMENTATION_CODEHASH";
+        vm.setEnv(missingEnvName, vm.toString(bytes32(0)));
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.ProductionProtocolCodehashRequired.selector,
+                bytes32("FactoryImplementation"),
+                missingEnvName
+            )
+        );
+        harness.requireProductionFactoryImplementationCodehashHarness(address(factoryImplementation), missingEnvName);
+    }
+
+    function test_ProductionProtocol_ValidationRequiresPoolImplementationCodehashEnv() public {
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        SplitRiskPool poolImplementation = new SplitRiskPool();
+        string memory missingEnvName = "YS_TEST_REQUIRED_POOL_IMPLEMENTATION_CODEHASH";
+        vm.setEnv(missingEnvName, vm.toString(bytes32(0)));
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.ProductionProtocolCodehashRequired.selector,
+                bytes32("PoolImplementation"),
+                missingEnvName
+            )
+        );
+        harness.requireProductionPoolImplementationCodehashHarness(address(poolImplementation), missingEnvName);
+    }
+
+    function test_RobinhoodTestnetRelaxedDeploy_DefaultsBootstrapHolderToDeployer() public {
+        vm.chainId(ROBINHOOD_TESTNET_CHAIN_ID);
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        harness.setStrictProductionGuardsOverrideHarness(false);
+
+        (YSToken ysToken, TimelockController timelock,, address testnetBootstrapHolder) =
+            harness.deployGovernanceWithRelaxedTestnetGuardsHarness();
+
+        assertEq(testnetBootstrapHolder, address(harness));
+        assertEq(ysToken.balanceOf(testnetBootstrapHolder), ysToken.INITIAL_SUPPLY());
+        assertEq(ysToken.delegates(testnetBootstrapHolder), testnetBootstrapHolder);
+        assertFalse(timelock.hasRole(timelock.DEFAULT_ADMIN_ROLE(), testnetBootstrapHolder));
+        _assertSoleSelfAdmin(timelock);
+    }
+
+    function test_RobinhoodTestnetRelaxedDeploy_SkipsManualProtocolCodehashPins() public {
+        vm.chainId(ROBINHOOD_TESTNET_CHAIN_ID);
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        harness.setStrictProductionGuardsOverrideHarness(false);
+        ChainlinkOracleFeed chainlinkOracleFeed = new ChainlinkOracleFeed(86_400);
+        string memory missingEnvName = "YS_TEST_REQUIRED_CHAINLINK_ORACLE_CODEHASH";
+        vm.setEnv(missingEnvName, vm.toString(bytes32(0)));
+
+        assertFalse(harness.requiresStrictProductionGuardsHarness());
+        harness.requireProductionChainlinkOracleCodehashHarness(address(chainlinkOracleFeed), missingEnvName);
+    }
+
+    function test_RobinhoodMainnetStillRequiresManualProtocolCodehashPins() public {
+        vm.chainId(ROBINHOOD_MAINNET_CHAIN_ID);
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        ChainlinkOracleFeed chainlinkOracleFeed = new ChainlinkOracleFeed(86_400);
+        string memory missingEnvName = "YS_TEST_REQUIRED_CHAINLINK_ORACLE_CODEHASH";
+        vm.setEnv(missingEnvName, vm.toString(bytes32(0)));
+
+        assertTrue(harness.requiresStrictProductionGuardsHarness());
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.ProductionProtocolCodehashRequired.selector,
+                bytes32("ChainlinkOracleFeed"),
+                missingEnvName
+            )
+        );
+        harness.requireProductionChainlinkOracleCodehashHarness(address(chainlinkOracleFeed), missingEnvName);
+    }
+
+    function test_RobinhoodTestnetStrictModeRequiresManualProtocolCodehashPins() public {
+        vm.chainId(ROBINHOOD_TESTNET_CHAIN_ID);
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        harness.setStrictProductionGuardsOverrideHarness(true);
+        ChainlinkOracleFeed chainlinkOracleFeed = new ChainlinkOracleFeed(86_400);
+        string memory missingEnvName = "YS_TEST_REQUIRED_CHAINLINK_ORACLE_CODEHASH";
+        vm.setEnv(missingEnvName, vm.toString(bytes32(0)));
+
+        assertTrue(harness.requiresStrictProductionGuardsHarness());
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.ProductionProtocolCodehashRequired.selector,
+                bytes32("ChainlinkOracleFeed"),
+                missingEnvName
+            )
+        );
+        harness.requireProductionChainlinkOracleCodehashHarness(address(chainlinkOracleFeed), missingEnvName);
+    }
+
+    function test_RobinhoodMainnet_MissingSequencerExceptionCannotDisableGuard() public {
+        vm.chainId(ROBINHOOD_MAINNET_CHAIN_ID);
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        harness.setRobinhoodSequencerConfigHarness(address(0), "https://docs.example/verified-feed", true);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.ProductionRobinhoodSequencerFeedRequired.selector,
+                ROBINHOOD_MAINNET_CHAIN_ID,
+                "YS_ROBINHOOD_SEQUENCER_FEED"
+            )
+        );
+        harness.deployAndConfigureRobinhoodSequencerFeedsHarness();
+    }
+
+    function test_RobinhoodMainnet_RequiresNonblankSequencerFeedSource() public {
+        vm.chainId(ROBINHOOD_MAINNET_CHAIN_ID);
+        MockSequencerUptimeFeed sequencerFeed = new MockSequencerUptimeFeed();
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        harness.setRobinhoodSequencerConfigHarness(address(sequencerFeed), " \t\n", false);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.ProductionRobinhoodSequencerFeedSourceRequired.selector,
+                ROBINHOOD_MAINNET_CHAIN_ID,
+                "YS_ROBINHOOD_SEQUENCER_FEED_SOURCE"
+            )
+        );
+        harness.deployAndConfigureRobinhoodSequencerFeedsHarness();
+    }
+
+    function test_RobinhoodMainnet_RejectsCodelessSequencerFeed() public {
+        vm.chainId(ROBINHOOD_MAINNET_CHAIN_ID);
+        address codelessFeed = address(0xDEAD);
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        harness.setRobinhoodSequencerConfigHarness(codelessFeed, "https://docs.example/verified-feed", false);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.ProductionRobinhoodSequencerFeedInvalid.selector, codelessFeed
+            )
+        );
+        harness.deployAndConfigureRobinhoodSequencerFeedsHarness();
+    }
+
+    function test_RobinhoodMainnet_RejectsCodeBearingNonSequencerContract() public {
+        vm.chainId(ROBINHOOD_MAINNET_CHAIN_ID);
+        CodeButNotPyth nonSequencerContract = new CodeButNotPyth();
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        harness.setRobinhoodSequencerConfigHarness(
+            address(nonSequencerContract), "https://docs.example/verified-feed", false
+        );
+
+        vm.expectRevert(
+            abi.encodeWithSelector(ChainlinkOracleFeed.InvalidFeedAddress.selector, address(nonSequencerContract))
+        );
+        harness.deployAndConfigureRobinhoodSequencerFeedsHarness();
+    }
+
+    function test_RobinhoodMainnet_RequiresReviewedSequencerCodehash() public {
+        vm.chainId(ROBINHOOD_MAINNET_CHAIN_ID);
+        MockSequencerUptimeFeed sequencerFeed = new MockSequencerUptimeFeed();
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        harness.setRobinhoodSequencerConfigHarness(address(sequencerFeed), "https://docs.example/verified-feed", false);
+        vm.setEnv("YS_ROBINHOOD_SEQUENCER_FEED_CODEHASH", vm.toString(bytes32(0)));
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.ProductionProtocolCodehashRequired.selector,
+                bytes32("RobinhoodSequencerFeed"),
+                "YS_ROBINHOOD_SEQUENCER_FEED_CODEHASH"
+            )
+        );
+        harness.deployAndConfigureRobinhoodSequencerFeedsHarness();
+    }
+
+    function test_RobinhoodMainnet_RejectsMismatchedSequencerCodehash() public {
+        vm.chainId(ROBINHOOD_MAINNET_CHAIN_ID);
+        MockSequencerUptimeFeed sequencerFeed = new MockSequencerUptimeFeed();
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        bytes32 wrongCodehash = bytes32(uint256(1));
+        harness.setRobinhoodSequencerConfigHarness(address(sequencerFeed), "https://docs.example/verified-feed", false);
+        harness.setExpectedProductionCodehashHarness("RobinhoodSequencerFeed", wrongCodehash);
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.ProductionProtocolCodehashMismatch.selector,
+                bytes32("RobinhoodSequencerFeed"),
+                address(sequencerFeed),
+                address(sequencerFeed).codehash,
+                wrongCodehash
+            )
+        );
+        harness.deployAndConfigureRobinhoodSequencerFeedsHarness();
+    }
+
+    function test_RobinhoodMainnet_ProbesAndRecordsSequencerFeedProvenance() public {
+        vm.chainId(ROBINHOOD_MAINNET_CHAIN_ID);
+        MockSequencerUptimeFeed sequencerFeed = new MockSequencerUptimeFeed();
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        harness.setRobinhoodSequencerConfigHarness(address(sequencerFeed), "https://docs.example/verified-feed", true);
+        harness.setExpectedProductionCodehashHarness("RobinhoodSequencerFeed", address(sequencerFeed).codehash);
+
+        (ChainlinkOracleFeed chainlinkOracleFeed, ERC4626OracleFeed erc4626OracleFeed) =
+            harness.deployAndConfigureRobinhoodSequencerFeedsHarness();
+
+        assertEq(address(chainlinkOracleFeed.sequencerUptimeFeed()), address(sequencerFeed));
+        assertEq(address(erc4626OracleFeed.sequencerUptimeFeed()), address(sequencerFeed));
+        assertTrue(chainlinkOracleFeed.sequencerUptimeFeedRequired());
+        assertTrue(erc4626OracleFeed.sequencerUptimeFeedRequired());
+        (bool feedFound, string memory feedValue) =
+            harness.deploymentMetadataValueHarness("robinhoodSequencerUptimeFeed");
+        (bool sourceFound, string memory sourceValue) =
+            harness.deploymentMetadataValueHarness("robinhoodSequencerUptimeFeedSource");
+        (bool codehashFound, string memory codehashValue) =
+            harness.deploymentMetadataValueHarness("robinhoodSequencerUptimeFeedCodehash");
+        assertTrue(feedFound);
+        assertTrue(sourceFound);
+        assertTrue(codehashFound);
+        assertEq(feedValue, vm.toString(address(sequencerFeed)));
+        assertEq(sourceValue, "https://docs.example/verified-feed");
+        assertEq(codehashValue, vm.toString(address(sequencerFeed).codehash));
+    }
+
+    function test_RobinhoodTestnet_StrictModeMayUseExplicitMissingSequencerException() public {
+        vm.chainId(ROBINHOOD_TESTNET_CHAIN_ID);
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        harness.setStrictProductionGuardsOverrideHarness(true);
+        harness.setRobinhoodSequencerConfigHarness(address(0), "", true);
+
+        (ChainlinkOracleFeed chainlinkOracleFeed, ERC4626OracleFeed erc4626OracleFeed) =
+            harness.deployAndConfigureRobinhoodSequencerFeedsHarness();
+
+        assertFalse(chainlinkOracleFeed.sequencerUptimeFeedRequired());
+        assertFalse(erc4626OracleFeed.sequencerUptimeFeedRequired());
+        (, string memory sourceValue) = harness.deploymentMetadataValueHarness("robinhoodSequencerUptimeFeedSource");
+        assertEq(sourceValue, "robinhood-testnet-explicit-exception");
+    }
+
+    function test_RobinhoodTestnet_ConfiguredSequencerDoesNotRequireMainnetCodehashPin() public {
+        vm.chainId(ROBINHOOD_TESTNET_CHAIN_ID);
+        MockSequencerUptimeFeed sequencerFeed = new MockSequencerUptimeFeed();
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        harness.setRobinhoodSequencerConfigHarness(address(sequencerFeed), "", false);
+        vm.setEnv("YS_ROBINHOOD_SEQUENCER_FEED_CODEHASH", vm.toString(bytes32(0)));
+
+        (ChainlinkOracleFeed chainlinkOracleFeed, ERC4626OracleFeed erc4626OracleFeed) =
+            harness.deployAndConfigureRobinhoodSequencerFeedsHarness();
+
+        assertEq(address(chainlinkOracleFeed.sequencerUptimeFeed()), address(sequencerFeed));
+        assertEq(address(erc4626OracleFeed.sequencerUptimeFeed()), address(sequencerFeed));
+        (, string memory sourceValue) = harness.deploymentMetadataValueHarness("robinhoodSequencerUptimeFeedSource");
+        (, string memory codehashValue) = harness.deploymentMetadataValueHarness("robinhoodSequencerUptimeFeedCodehash");
+        assertEq(sourceValue, "operator-supplied-testnet-feed");
+        assertEq(codehashValue, vm.toString(address(sequencerFeed).codehash));
+    }
+
+    function test_RobinhoodRecovery_RejectsSequencerAdapterWiringMismatch() public {
+        vm.chainId(ROBINHOOD_TESTNET_CHAIN_ID);
+        MockSequencerUptimeFeed sequencerFeed = new MockSequencerUptimeFeed();
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        harness.setRobinhoodSequencerConfigHarness(address(sequencerFeed), "https://docs.example/feed", false);
+        ChainlinkOracleFeed chainlinkOracleFeed = new ChainlinkOracleFeed(86_400);
+        ERC4626OracleFeed erc4626OracleFeed = new ERC4626OracleFeed(address(chainlinkOracleFeed));
+        chainlinkOracleFeed.setSequencerUptimeFeed(address(sequencerFeed));
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.ProductionProtocolAddressMismatch.selector,
+                bytes32("erc4626.sequencerFeed"),
+                address(0),
+                address(sequencerFeed)
+            )
+        );
+        harness.validateAndSnapshotRobinhoodSequencerConfigurationHarness(chainlinkOracleFeed, erc4626OracleFeed);
+    }
+
+    function test_RobinhoodTestnet_RelaxedModeMayOmitSequencerFeed() public {
+        vm.chainId(ROBINHOOD_TESTNET_CHAIN_ID);
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+        harness.setStrictProductionGuardsOverrideHarness(false);
+        harness.setRobinhoodSequencerConfigHarness(address(0), "", false);
+
+        (ChainlinkOracleFeed chainlinkOracleFeed, ERC4626OracleFeed erc4626OracleFeed) =
+            harness.deployAndConfigureRobinhoodSequencerFeedsHarness();
+
+        assertFalse(chainlinkOracleFeed.sequencerUptimeFeedRequired());
+        assertFalse(erc4626OracleFeed.sequencerUptimeFeedRequired());
+        (, string memory sourceValue) = harness.deploymentMetadataValueHarness("robinhoodSequencerUptimeFeedSource");
+        assertEq(sourceValue, "robinhood-testnet-relaxed-guards");
+    }
+
+    function test_ProductionProtocol_ValidationRejectsUnexpectedPythOracleBytecode() public {
+        (, TimelockController timelock, YSGovernor governor) = _deployGovernance();
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+
+        PythOracle expectedPythOracle = new PythOracle(dummyPyth, 60);
+        FakeProductionOwnableOracle fakePythOracle = new FakeProductionOwnableOracle();
+        _pinPythOracleCodehash(address(expectedPythOracle));
+        ERC4626OracleFeed erc4626OracleFeed = new ERC4626OracleFeed(address(expectedPythOracle));
+        CompositeOracle compositeOracle = new CompositeOracle();
+        SplitRiskPool poolImplementation = new SplitRiskPool();
+        SplitRiskPoolFactory factory = _deployFactory(address(harness), address(timelock), address(poolImplementation));
+        _pinProductionProtocolCodehashes(
+            _proxyImplementation(address(factory)), address(poolImplementation), address(expectedPythOracle)
+        );
+
+        compositeOracle.transferOwnership(address(factory));
+        fakePythOracle.transferOwnership(address(factory));
+        erc4626OracleFeed.transferOwnership(address(factory));
+
+        vm.startPrank(address(harness));
+        factory.setCompositeOracle(address(compositeOracle));
+        factory.setDefaultProtocolFeeRecipient(address(timelock));
+        factory.setManagedPythOracle(address(fakePythOracle));
+        factory.setManagedERC4626OracleFeed(address(erc4626OracleFeed));
+        factory.finalizeBootstrap();
+        factory.transferOwnership(address(timelock));
+        vm.stopPrank();
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.ProductionProtocolCodehashMismatch.selector,
+                bytes32("PythOracle"),
+                address(fakePythOracle),
+                address(fakePythOracle).codehash,
+                address(expectedPythOracle).codehash
+            )
+        );
+        harness.validateProductionProtocolFinalizedWithExpectedPythCodehashHarness(
+            address(factory),
+            _proxyImplementation(address(factory)),
+            address(poolImplementation),
+            address(compositeOracle),
+            address(fakePythOracle),
+            address(expectedPythOracle),
+            address(erc4626OracleFeed),
+            address(timelock),
+            address(governor)
+        );
+    }
+
+    function test_ProductionProtocol_FinalizerRejectsUnexpectedOracleOwner() public {
+        (, TimelockController timelock, YSGovernor governor) = _deployGovernance();
+        ProductionDeployHarness harness = new ProductionDeployHarness();
+
+        PythOracle pythOracle = new PythOracle(dummyPyth, 60);
+        _pinPythOracleCodehash(address(pythOracle));
+        ERC4626OracleFeed erc4626OracleFeed = new ERC4626OracleFeed(address(pythOracle));
+        CompositeOracle compositeOracle = new CompositeOracle();
+        SplitRiskPool poolImplementation = new SplitRiskPool();
+        SplitRiskPoolFactory factory = _deployFactory(address(harness), address(timelock), address(poolImplementation));
+        _pinProductionProtocolCodehashes(
+            _proxyImplementation(address(factory)), address(poolImplementation), address(pythOracle)
+        );
+
+        address unexpectedOwner = address(0xA11CE);
+        compositeOracle.transferOwnership(unexpectedOwner);
+        pythOracle.transferOwnership(address(harness));
+        erc4626OracleFeed.transferOwnership(address(harness));
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                DeployYieldShieldProduction.ProductionProtocolOwnerMismatch.selector,
+                bytes32("CompositeOracle"),
+                unexpectedOwner,
+                address(factory)
+            )
+        );
+        harness.finalizeProductionProtocolBootstrapHarness(
+            address(factory),
+            _proxyImplementation(address(factory)),
+            address(poolImplementation),
+            address(compositeOracle),
+            address(pythOracle),
+            address(erc4626OracleFeed),
+            address(timelock),
+            address(governor),
+            address(harness)
+        );
+    }
+
+    function _deployGovernance() internal returns (YSToken ysToken, TimelockController timelock, YSGovernor governor) {
+        address[] memory emptyAccounts = new address[](0);
+        timelock = TimelockController(
+            payable(address(new YSTimelockController(TIMELOCK_DELAY, emptyAccounts, emptyAccounts, deployer)))
+        );
+        ysToken = new YSToken(bootstrapHolder);
+        governor = new YSGovernor(IVotes(address(ysToken)), timelock, deployer);
+
+        timelock.grantRole(timelock.PROPOSER_ROLE(), address(governor));
+        timelock.grantRole(timelock.EXECUTOR_ROLE(), address(governor));
+        timelock.grantRole(timelock.CANCELLER_ROLE(), address(governor));
+        timelock.renounceRole(timelock.DEFAULT_ADMIN_ROLE(), deployer);
+    }
+
+    function _assertSoleSelfAdmin(TimelockController timelock) internal view {
+        YSTimelockController ysTimelock = YSTimelockController(payable(address(timelock)));
+        assertEq(ysTimelock.getRoleMemberCount(ysTimelock.DEFAULT_ADMIN_ROLE()), 1);
+        assertEq(ysTimelock.getRoleMember(ysTimelock.DEFAULT_ADMIN_ROLE(), 0), address(timelock));
+    }
+
+    function _assertRobinhoodDemoOpeningFreshness(
+        ProductionDeployHarness harness,
+        ChainlinkOracleFeed chainlinkOracleFeed
+    ) internal view {
+        address stockOracleFeed = harness.currentDeploymentAddressHarness("RobinhoodStockOracleFeed");
+        RobinhoodStockOracleFeed stockFeed = RobinhoodStockOracleFeed(stockOracleFeed);
+        address[8] memory stockTokens;
+        stockTokens[0] = harness.currentDeploymentAddressHarness("RobinhoodTestSGOV");
+        stockTokens[1] = harness.currentDeploymentAddressHarness("RobinhoodTestSPY");
+        stockTokens[2] = harness.currentDeploymentAddressHarness("RobinhoodTestQQQ");
+        stockTokens[3] = harness.currentDeploymentAddressHarness("RobinhoodTestTSLA");
+        stockTokens[4] = harness.currentDeploymentAddressHarness("RobinhoodTestAMZN");
+        stockTokens[5] = harness.currentDeploymentAddressHarness("RobinhoodTestPLTR");
+        stockTokens[6] = harness.currentDeploymentAddressHarness("RobinhoodTestNFLX");
+        stockTokens[7] = harness.currentDeploymentAddressHarness("RobinhoodTestAMD");
+
+        for (uint256 i = 0; i < stockTokens.length; i++) {
+            assertEq(
+                chainlinkOracleFeed.protectionOpeningMaxPriceAgeForToken(stockTokens[i]),
+                1 hours,
+                "demo stock opening freshness was not explicitly configured"
+            );
+            assertTrue(
+                stockFeed.isProtectionOpeningFreshnessConfigured(stockTokens[i]),
+                "stock wrapper rejected configured opening freshness"
+            );
+        }
+    }
+
+    function _assertRobinhoodDemoPauseProbeModesAndRefresh(
+        ProductionDeployHarness harness,
+        ChainlinkOracleFeed chainlinkOracleFeed,
+        RobinhoodStockOracleFeed stockFeed
+    ) internal view {
+        address[10] memory tokens;
+        tokens[0] = harness.currentDeploymentAddressHarness("RobinhoodTestUSDG");
+        tokens[1] = harness.currentDeploymentAddressHarness("RobinhoodTestWETH");
+        tokens[2] = harness.currentDeploymentAddressHarness("RobinhoodTestSGOV");
+        tokens[3] = harness.currentDeploymentAddressHarness("RobinhoodTestSPY");
+        tokens[4] = harness.currentDeploymentAddressHarness("RobinhoodTestQQQ");
+        tokens[5] = harness.currentDeploymentAddressHarness("RobinhoodTestTSLA");
+        tokens[6] = harness.currentDeploymentAddressHarness("RobinhoodTestAMZN");
+        tokens[7] = harness.currentDeploymentAddressHarness("RobinhoodTestPLTR");
+        tokens[8] = harness.currentDeploymentAddressHarness("RobinhoodTestNFLX");
+        tokens[9] = harness.currentDeploymentAddressHarness("RobinhoodTestAMD");
+
+        for (uint256 i = 0; i < tokens.length; i++) {
+            assertTrue(chainlinkOracleFeed.supportsUserUpdates(tokens[i]), "demo token must support user refresh");
+            RobinhoodStockOracleFeed.PauseProbeMode expectedMode = RobinhoodStockOracleFeed.PauseProbeMode.Unset;
+            if (i >= 2 && i <= 4) expectedMode = RobinhoodStockOracleFeed.PauseProbeMode.OraclePaused;
+            if (i >= 5) expectedMode = RobinhoodStockOracleFeed.PauseProbeMode.TokenPaused;
+            assertEq(uint256(stockFeed.pauseProbeMode(tokens[i])), uint256(expectedMode), "pause probe mode mismatch");
+            if (i >= 2) assertTrue(stockFeed.supportsUserUpdates(tokens[i]), "stock route must support user refresh");
+        }
+    }
+
+    function _pinPythOracleCodehash(address pythOracleAddr) internal {
+        vm.setEnv(ENV_PYTH_ORACLE_CODEHASH, vm.toString(pythOracleAddr.codehash));
+    }
+
+    function _pinProductionProtocolCodehashes(
+        address factoryImplementationAddr,
+        address poolImplementationAddr,
+        address pythOracleAddr
+    ) internal {
+        vm.setEnv(ENV_FACTORY_IMPLEMENTATION_CODEHASH, vm.toString(factoryImplementationAddr.codehash));
+        vm.setEnv(ENV_POOL_IMPLEMENTATION_CODEHASH, vm.toString(poolImplementationAddr.codehash));
+        _pinPythOracleCodehash(pythOracleAddr);
+    }
+}

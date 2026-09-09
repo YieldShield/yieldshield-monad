@@ -1,0 +1,79 @@
+const assert = require("node:assert/strict");
+const { readFileSync } = require("node:fs");
+const { join } = require("node:path");
+const { test } = require("node:test");
+
+const root = join(__dirname, "..", "..");
+
+test("local Slither reports findings without hiding execution failures", () => {
+    const makefile = readFileSync(join(root, "Makefile"), "utf8");
+    const recipe = makefile.slice(
+        makefile.indexOf("slither:\n"),
+        makefile.indexOf("\n# Security analysis — Aderyn"),
+    );
+
+    assert.match(recipe, /\bslither\s+\./u);
+    assert.match(recipe, /--checklist\b/u);
+    assert.match(recipe, /--fail-none\b/u);
+    assert.doesNotMatch(recipe, /\|\|\s*true/u);
+
+    const securityPolicy = readFileSync(join(root, "SECURITY.md"), "utf8");
+    assert.match(securityPolicy, /report-only for detector findings/u);
+    assert.match(securityPolicy, /Tool startup/u);
+    assert.match(securityPolicy, /non-zero exit\s+status/u);
+});
+
+test("Slither 0.11.5 is pinned in both jobs without detector-family exclusions", () => {
+    const workflow = readFileSync(
+        join(root, ".github", "workflows", "ci.yml"),
+        "utf8",
+    );
+    const pins = workflow.match(/slither-analyzer==0\.11\.5/gu) || [];
+    assert.equal(pins.length, 2, "both Slither jobs must pin 0.11.5");
+
+    const gate = workflow.slice(
+        workflow.indexOf("  slither-gate:"),
+        workflow.indexOf("  aderyn:"),
+    );
+    assert.match(gate, /--fail-high/u);
+    assert.doesNotMatch(gate, /--exclude(?:-|\s)/u);
+
+    const config = JSON.parse(
+        readFileSync(join(root, "slither.config.json"), "utf8"),
+    );
+    for (const detector of [
+        "reentrancy-balance",
+        "pyth-unchecked-confidence",
+        "pyth-unchecked-publishtime",
+    ]) {
+        assert.equal(
+            config.detectors_to_exclude.includes(detector),
+            false,
+            `${detector} must remain visible`,
+        );
+    }
+
+    const pool = readFileSync(
+        join(root, "contracts", "SplitRiskPool.sol"),
+        "utf8",
+    );
+    const narrowSuppressions =
+        pool.match(/slither-disable-next-line reentrancy-balance/gu) || [];
+    assert.equal(
+        narrowSuppressions.length,
+        3,
+        "only the three callback-tested balance paths may be suppressed",
+    );
+
+    const marketGate = readFileSync(
+        join(root, "contracts", "oracles", "USMarketSessionGate.sol"),
+        "utf8",
+    );
+    const calendarSuppressions =
+        marketGate.match(/slither-disable-next-line weak-prng/gu) || [];
+    assert.equal(
+        calendarSuppressions.length,
+        1,
+        "only the deterministic UTC modulo may suppress weak-prng",
+    );
+});

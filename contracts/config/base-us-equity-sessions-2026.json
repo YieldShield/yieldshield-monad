@@ -1,0 +1,594 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-09-08",
+  "policy": "Conservative regular US equity sessions only, 09:30\u201316:00 America/New_York, or 13:00 on published early-close days. Missing dates remain closed. No premarket, extended hours, or inferred sessions.",
+  "coverageStart": "2026-09-08",
+  "coverageEnd": "2026-12-31",
+  "sources": [
+    {
+      "title": "NYSE Holidays and Trading Hours",
+      "url": "https://www.nyse.com/markets/hours-calendars"
+    },
+    {
+      "title": "NYSE 2026 Trading Calendar",
+      "url": "https://www.nyse.com/publicdocs/nyse/ICE_NYSE_2026_Yearly_Trading_Calendar.pdf"
+    },
+    {
+      "title": "Nasdaq Trader Trading Calendar",
+      "url": "https://www.nasdaqtrader.com/trader.aspx?id=Calendar"
+    }
+  ],
+  "closedWeekdays": [
+    "2026-11-26",
+    "2026-12-25"
+  ],
+  "sessions": [
+    {
+      "date": "2026-09-08",
+      "epochDay": 20704,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-09-09",
+      "epochDay": 20705,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-09-10",
+      "epochDay": 20706,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-09-11",
+      "epochDay": 20707,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-09-14",
+      "epochDay": 20710,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-09-15",
+      "epochDay": 20711,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-09-16",
+      "epochDay": 20712,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-09-17",
+      "epochDay": 20713,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-09-18",
+      "epochDay": 20714,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-09-21",
+      "epochDay": 20717,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-09-22",
+      "epochDay": 20718,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-09-23",
+      "epochDay": 20719,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-09-24",
+      "epochDay": 20720,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-09-25",
+      "epochDay": 20721,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-09-28",
+      "epochDay": 20724,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-09-29",
+      "epochDay": 20725,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-09-30",
+      "epochDay": 20726,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-10-01",
+      "epochDay": 20727,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-10-02",
+      "epochDay": 20728,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-10-05",
+      "epochDay": 20731,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-10-06",
+      "epochDay": 20732,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-10-07",
+      "epochDay": 20733,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-10-08",
+      "epochDay": 20734,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-10-09",
+      "epochDay": 20735,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-10-12",
+      "epochDay": 20738,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-10-13",
+      "epochDay": 20739,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-10-14",
+      "epochDay": 20740,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-10-15",
+      "epochDay": 20741,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-10-16",
+      "epochDay": 20742,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-10-19",
+      "epochDay": 20745,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-10-20",
+      "epochDay": 20746,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-10-21",
+      "epochDay": 20747,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-10-22",
+      "epochDay": 20748,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-10-23",
+      "epochDay": 20749,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-10-26",
+      "epochDay": 20752,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-10-27",
+      "epochDay": 20753,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-10-28",
+      "epochDay": 20754,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-10-29",
+      "epochDay": 20755,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-10-30",
+      "epochDay": 20756,
+      "opensAtSecond": 48600,
+      "closesAtSecond": 72000,
+      "session": "regular"
+    },
+    {
+      "date": "2026-11-02",
+      "epochDay": 20759,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-11-03",
+      "epochDay": 20760,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-11-04",
+      "epochDay": 20761,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-11-05",
+      "epochDay": 20762,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-11-06",
+      "epochDay": 20763,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-11-09",
+      "epochDay": 20766,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-11-10",
+      "epochDay": 20767,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-11-11",
+      "epochDay": 20768,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-11-12",
+      "epochDay": 20769,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-11-13",
+      "epochDay": 20770,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-11-16",
+      "epochDay": 20773,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-11-17",
+      "epochDay": 20774,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-11-18",
+      "epochDay": 20775,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-11-19",
+      "epochDay": 20776,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-11-20",
+      "epochDay": 20777,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-11-23",
+      "epochDay": 20780,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-11-24",
+      "epochDay": 20781,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-11-25",
+      "epochDay": 20782,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-11-27",
+      "epochDay": 20784,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 64800,
+      "session": "early-close"
+    },
+    {
+      "date": "2026-11-30",
+      "epochDay": 20787,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-12-01",
+      "epochDay": 20788,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-12-02",
+      "epochDay": 20789,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-12-03",
+      "epochDay": 20790,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-12-04",
+      "epochDay": 20791,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-12-07",
+      "epochDay": 20794,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-12-08",
+      "epochDay": 20795,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-12-09",
+      "epochDay": 20796,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-12-10",
+      "epochDay": 20797,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-12-11",
+      "epochDay": 20798,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-12-14",
+      "epochDay": 20801,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-12-15",
+      "epochDay": 20802,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-12-16",
+      "epochDay": 20803,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-12-17",
+      "epochDay": 20804,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-12-18",
+      "epochDay": 20805,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-12-21",
+      "epochDay": 20808,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-12-22",
+      "epochDay": 20809,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-12-23",
+      "epochDay": 20810,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-12-24",
+      "epochDay": 20811,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 64800,
+      "session": "early-close"
+    },
+    {
+      "date": "2026-12-28",
+      "epochDay": 20815,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-12-29",
+      "epochDay": 20816,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-12-30",
+      "epochDay": 20817,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    },
+    {
+      "date": "2026-12-31",
+      "epochDay": 20818,
+      "opensAtSecond": 52200,
+      "closesAtSecond": 75600,
+      "session": "regular"
+    }
+  ]
+}

@@ -1,0 +1,1266 @@
+{
+  "kind": "base-sepolia-crypto-smoke-v1",
+  "chainId": 84532,
+  "deployer": "0xA437345Be29EC6802024A8e090E34b621b92E5E2",
+  "manifestDigest": "dd116d3e76bff637ddca8a2ba548c991b543968567e67b5e59597fb54ceee3bc",
+  "recipeHash": "592d2cf7e5747e984bf5f5f0d838ffe1bd79940043be15bc8c3ac871c5d22b8e",
+  "status": "complete",
+  "contracts": {},
+  "transactions": {
+    "tWETH:buy-approve": {
+      "intentHash": "0a741b1d76346a2394c28d69d9a3a4306b3091c349ac6e28e60ae515a8fe7cb9",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 300,
+        "to": "0x4dFe9500E03AC27F25997184d162191cC5ADBf34",
+        "data": "0x095ea7b30000000000000000000000006f504fc32e1f93627e6a73907564e9ea4abfacf900000000000000000000000000000000000000000000000000000000150b7e24",
+        "value": "0",
+        "gas": "55578",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0x8e53d274b663ac0eb7e6edd958550281466446cd7a2aee22bf86c0fdec2e11da",
+      "maximumCost": "389046000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0x8e53d274b663ac0eb7e6edd958550281466446cd7a2aee22bf86c0fdec2e11da",
+        "blockHash": "0x16c8963ea3710b2c69bed08de0bd828ff0311455f93057e40b7f56e81a91846c",
+        "blockNumber": "46585560",
+        "contractAddress": null,
+        "gasUsed": "45933"
+      }
+    },
+    "tWETH:buy": {
+      "intentHash": "385a813520c7d20a05dcabe2e0588b89081d1c09b2ccc19c46029d22731b7219",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 301,
+        "to": "0x6f504fC32e1f93627E6A73907564e9ea4abfacf9",
+        "data": "0x6322619000000000000000000000000054f25f95af2527e08cfbe5a0528038e9dc4265f20000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000016345785d8a000000000000000000000000000000000000000000000000000000000000150b7e24000000000000000000000000000000000000000000000000000000006aa10ee6",
+        "value": "0",
+        "gas": "122568",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0x4e7d68c7d5dfa7ca9e146e398c3f0dd5ccc06ba249967a761f112a52e7fea615",
+      "maximumCost": "857976000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0x4e7d68c7d5dfa7ca9e146e398c3f0dd5ccc06ba249967a761f112a52e7fea615",
+        "blockHash": "0xa56fa93f4bcb12ececbb31f713a0c7886610f0e7dc3601e7ff88b3c87d117018",
+        "blockNumber": "46585563",
+        "contractAddress": null,
+        "gasUsed": "97099"
+      }
+    },
+    "tWETH:sell-approve": {
+      "intentHash": "8d1c03e1b8fa4e251fa06a64900627e8944ef42db50a866790ac89de58350f90",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 302,
+        "to": "0x54f25F95Af2527E08cfBe5A0528038e9DC4265f2",
+        "data": "0x095ea7b30000000000000000000000006f504fc32e1f93627e6a73907564e9ea4abfacf9000000000000000000000000000000000000000000000000016345785d8a0000",
+        "value": "0",
+        "gas": "55607",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0xad64f63143e5535e3aa5ed759c1a8519713f2397a93359f19a9081f5e9d76fe8",
+      "maximumCost": "389249000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0xad64f63143e5535e3aa5ed759c1a8519713f2397a93359f19a9081f5e9d76fe8",
+        "blockHash": "0x9cafb39a88bd04bb37f62b02712bbd2fb1226d6878f44b9de21d812ea5c7c9b3",
+        "blockNumber": "46585565",
+        "contractAddress": null,
+        "gasUsed": "45957"
+      }
+    },
+    "tWETH:sell": {
+      "intentHash": "45f821808a4471509f39ff0107e2f3d38c4ec2928b256cf75d9ea6f3df1775ae",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 303,
+        "to": "0x6f504fC32e1f93627E6A73907564e9ea4abfacf9",
+        "data": "0x6322619000000000000000000000000054f25f95af2527e08cfbe5a0528038e9dc4265f20000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000016345785d8a00000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000006aa10ee6",
+        "value": "0",
+        "gas": "122876",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0x1418afeb71111b5093faba84997e98b048051829330aeb33dbb4194407908f28",
+      "maximumCost": "860132000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0x1418afeb71111b5093faba84997e98b048051829330aeb33dbb4194407908f28",
+        "blockHash": "0x5f4836c0427258bd4bffd075fca588beea11181d4ffc857a967226dec8beda54",
+        "blockNumber": "46585568",
+        "contractAddress": null,
+        "gasUsed": "92315"
+      }
+    },
+    "tcbBTC:buy-approve": {
+      "intentHash": "4d3e466cc22e013ae8037586c05f2726f27825cf1af40afeb6442ed94d6dd094",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 304,
+        "to": "0x4dFe9500E03AC27F25997184d162191cC5ADBf34",
+        "data": "0x095ea7b30000000000000000000000006f504fc32e1f93627e6a73907564e9ea4abfacf9000000000000000000000000000000000000000000000000000000000698508c",
+        "value": "0",
+        "gas": "35018",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0x6be23a114d02d1a5f748f5e57a492cc1be42d103f141df6fa52ab548020ee3ec",
+      "maximumCost": "245126000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0x6be23a114d02d1a5f748f5e57a492cc1be42d103f141df6fa52ab548020ee3ec",
+        "blockHash": "0x649f1c657b08a7f7d84a000141c7fc6dac4b52a55ab0cde869c5294054b7a180",
+        "blockNumber": "46585571",
+        "contractAddress": null,
+        "gasUsed": "28833"
+      }
+    },
+    "tcbBTC:buy": {
+      "intentHash": "18daac7db7850e03fca9d0511238bafb38fc4d17da2b7c92a5d60066544c528a",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 305,
+        "to": "0x6f504fC32e1f93627E6A73907564e9ea4abfacf9",
+        "data": "0x6322619000000000000000000000000021f0fb9b8672955d62c0c9ff2e9a5d021eadcebe000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000186a0000000000000000000000000000000000000000000000000000000000698508c000000000000000000000000000000000000000000000000000000006aa10efc",
+        "value": "0",
+        "gas": "122524",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0x21b63cfc1f31e90cbb44dae3a7f6427c31de301aee7fabc00c3883c1f2f8b404",
+      "maximumCost": "857668000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0x21b63cfc1f31e90cbb44dae3a7f6427c31de301aee7fabc00c3883c1f2f8b404",
+        "blockHash": "0x026d71005c023fe467afd26a0ce9d098ca339ceefc49a91a0f981790eb6871d5",
+        "blockNumber": "46585574",
+        "contractAddress": null,
+        "gasUsed": "97063"
+      }
+    },
+    "tcbBTC:sell-approve": {
+      "intentHash": "550d5f190dd1f969f3f4471aa7d5c838f804b73252033a20604d7e41c7359f6f",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 306,
+        "to": "0x21f0fb9B8672955D62C0C9fF2E9a5D021EADCeBe",
+        "data": "0x095ea7b30000000000000000000000006f504fc32e1f93627e6a73907564e9ea4abfacf900000000000000000000000000000000000000000000000000000000000186a0",
+        "value": "0",
+        "gas": "55564",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0xef96acb28427af57c25ec8476f8d23aa12b55c62907fd1618fbce676afbb3313",
+      "maximumCost": "388948000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0xef96acb28427af57c25ec8476f8d23aa12b55c62907fd1618fbce676afbb3313",
+        "blockHash": "0xb19f54c23c78733d5d4df8cbfec5d496817aa103ff17c149ee02b26d9f7b6436",
+        "blockNumber": "46585577",
+        "contractAddress": null,
+        "gasUsed": "45921"
+      }
+    },
+    "tcbBTC:sell": {
+      "intentHash": "1346667d2ca9ab8ad6ede386fb88973a7353baba848bca9d99a1187681ac9a12",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 307,
+        "to": "0x6f504fC32e1f93627E6A73907564e9ea4abfacf9",
+        "data": "0x6322619000000000000000000000000021f0fb9b8672955d62c0c9ff2e9a5d021eadcebe000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000186a00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000006aa10efc",
+        "value": "0",
+        "gas": "122831",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0x2a4d844d48a4c13c75b77b549c4563289660c0717ab556c8ffc795d97e8bf5f8",
+      "maximumCost": "859817000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0x2a4d844d48a4c13c75b77b549c4563289660c0717ab556c8ffc795d97e8bf5f8",
+        "blockHash": "0x291ce8d88bb39a5218468fd057059b9af6e958546d6c39df4a2441906f1e9de0",
+        "blockNumber": "46585579",
+        "contractAddress": null,
+        "gasUsed": "92279"
+      }
+    },
+    "vWETH:deposit-approve": {
+      "intentHash": "8590efffbbcf97f0529831a3744a592c9764625daa0810596b5260cbb702213b",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 308,
+        "to": "0x54f25F95Af2527E08cfBe5A0528038e9DC4265f2",
+        "data": "0x095ea7b30000000000000000000000000e5a8e9308fd29ba52da9126270061c014fb09f8000000000000000000000000000000000000000000000000016345785d8a0000",
+        "value": "0",
+        "gas": "55593",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0x89a9f2b68dc0a8d6ec5bd3d3fcad35bf2582591ca0ec258d264aa4802c6f534b",
+      "maximumCost": "389151000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0x89a9f2b68dc0a8d6ec5bd3d3fcad35bf2582591ca0ec258d264aa4802c6f534b",
+        "blockHash": "0xf4569ef9dea15d1d4cb3b0c15e9fa16c6be31389d7dc49b84071c91bba860727",
+        "blockNumber": "46585582",
+        "contractAddress": null,
+        "gasUsed": "45945"
+      }
+    },
+    "vWETH:deposit": {
+      "intentHash": "2ac35dc5f43a923aa29ae519284717f12e9876ca363e775c45f4eb48ca971dfa",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 309,
+        "to": "0x0E5a8E9308fd29BA52Da9126270061c014Fb09f8",
+        "data": "0x146d3ad5000000000000000000000000000000000000000000000000016345785d8a00000000000000000000000000000000000000000000000000000161245189bbcf68000000000000000000000000a437345be29ec6802024a8e090e34b621b92e5e2",
+        "value": "0",
+        "gas": "85008",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0x17abbc20368ea3ebab3c9616dc2d7ac8cd0629b1ab175f313d0fd6501e99200c",
+      "maximumCost": "595056000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0x17abbc20368ea3ebab3c9616dc2d7ac8cd0629b1ab175f313d0fd6501e99200c",
+        "blockHash": "0xe78640cb89a9f28fa93bde1713e74bf22d0339818655b527281b9d0ff6819c25",
+        "blockNumber": "46585584",
+        "contractAddress": null,
+        "gasUsed": "60512"
+      }
+    },
+    "vWETH:yield-approve": {
+      "intentHash": "339bff339117f1ecc41013221bb881441b5fdc7282f2baaf2a8514be49405d9b",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 310,
+        "to": "0x54f25F95Af2527E08cfBe5A0528038e9DC4265f2",
+        "data": "0x095ea7b30000000000000000000000000e5a8e9308fd29ba52da9126270061c014fb09f80000000000000000000000000000000000000000000000000de0b6b3a7640000",
+        "value": "0",
+        "gas": "55593",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0x3cb49a0266c5bb640cbca664d43a7666d8c3ca97236672f10bb87c977ab7cbff",
+      "maximumCost": "389151000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0x3cb49a0266c5bb640cbca664d43a7666d8c3ca97236672f10bb87c977ab7cbff",
+        "blockHash": "0x799d55787cc0708c1e5fb52b2c42eed3b64869297dd54955e88e0ecdde462ac5",
+        "blockNumber": "46585587",
+        "contractAddress": null,
+        "gasUsed": "45945"
+      }
+    },
+    "vWETH:fund-yield": {
+      "intentHash": "7ec2dd262b2e3f0e1326ea1672576f057f795ac85edea28d2feb56a109a3080d",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 311,
+        "to": "0x0E5a8E9308fd29BA52Da9126270061c014Fb09f8",
+        "data": "0x3e5dcc9a0000000000000000000000000000000000000000000000000de0b6b3a7640000",
+        "value": "0",
+        "gas": "76131",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0xda20c123778b0f52323c50d49efe704e025310dcb7f1824ac7ad7be306389d70",
+      "maximumCost": "532917000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0xda20c123778b0f52323c50d49efe704e025310dcb7f1824ac7ad7be306389d70",
+        "blockHash": "0x48897a0d30b04507fae1293150c8777143b9be2d35cd752e8b6b90382a2d3307",
+        "blockNumber": "46585589",
+        "contractAddress": null,
+        "gasUsed": "53223"
+      }
+    },
+    "vWETH:redeem": {
+      "intentHash": "6a8dfbeb8a3eb2fb8a8e2ffe06d639d3b016790eb626d27de0e26c345331ecee",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 312,
+        "to": "0x0E5a8E9308fd29BA52Da9126270061c014Fb09f8",
+        "data": "0x0d67de540000000000000000000000000000000000000000000000000162ea9c8f924d3c00000000000000000000000000000000000000000000000001617eb90b26c000000000000000000000000000a437345be29ec6802024a8e090e34b621b92e5e2",
+        "value": "0",
+        "gas": "79120",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0x0a08dbb8a3991fb5d4c81bfefd136f83772ee73f9c4e875051fd3169718ebbe0",
+      "maximumCost": "553840000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0x0a08dbb8a3991fb5d4c81bfefd136f83772ee73f9c4e875051fd3169718ebbe0",
+        "blockHash": "0x70541455ac560c928d1a25d324a6981b3873172f3c2bd72e46b9f190a42bc01e",
+        "blockNumber": "46585592",
+        "contractAddress": null,
+        "gasUsed": "60559"
+      }
+    },
+    "vUSDC:deposit-approve": {
+      "intentHash": "0e046c64eb424dcc87997d13e5bd8df9fdbd0859716a38e459f8b8c095e41fdd",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 313,
+        "to": "0x4dFe9500E03AC27F25997184d162191cC5ADBf34",
+        "data": "0x095ea7b300000000000000000000000017e1d0b9a4045a080e9cb3bbc45da3ee3893b5f30000000000000000000000000000000000000000000000000000000005f5e100",
+        "value": "0",
+        "gas": "55564",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0x5c5f054518da2146bf5ec677d368d2ac5590dd5e13b898b4fcd415858d2be899",
+      "maximumCost": "388948000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0x5c5f054518da2146bf5ec677d368d2ac5590dd5e13b898b4fcd415858d2be899",
+        "blockHash": "0x8a09cc8927810b6210e572894ef2749b8db8bef84ae51fe3255fda7bcf8d10a7",
+        "blockNumber": "46585595",
+        "contractAddress": null,
+        "gasUsed": "45921"
+      }
+    },
+    "vUSDC:deposit": {
+      "intentHash": "b4ff430581a8acf137af6c6a8fa7583ffe6d992a0d3515d078e422e12c908794",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 314,
+        "to": "0x17e1d0B9A4045a080e9cB3BBC45da3ee3893B5f3",
+        "data": "0x146d3ad50000000000000000000000000000000000000000000000000000000005f5e1000000000000000000000000000000000000000000000000000000000005ecbb96000000000000000000000000a437345be29ec6802024a8e090e34b621b92e5e2",
+        "value": "0",
+        "gas": "84906",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0xa09c1954e7af22cf57b22060340a95e2b7174985238dd2835177f32c49695da2",
+      "maximumCost": "594342000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0xa09c1954e7af22cf57b22060340a95e2b7174985238dd2835177f32c49695da2",
+        "blockHash": "0xbb3e24b3b3d38ad0db94060cfb5020e331bceefb540d1bb7f4973c913b6dbc6e",
+        "blockNumber": "46585598",
+        "contractAddress": null,
+        "gasUsed": "60428"
+      }
+    },
+    "vUSDC:yield-approve": {
+      "intentHash": "0e046c64eb424dcc87997d13e5bd8df9fdbd0859716a38e459f8b8c095e41fdd",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 315,
+        "to": "0x4dFe9500E03AC27F25997184d162191cC5ADBf34",
+        "data": "0x095ea7b300000000000000000000000017e1d0b9a4045a080e9cb3bbc45da3ee3893b5f30000000000000000000000000000000000000000000000000000000005f5e100",
+        "value": "0",
+        "gas": "55564",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0xa84409b6840d7697ced36d70c5736e528cd8485ac911cab0b39dfb4a2fe319ee",
+      "maximumCost": "388948000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0xa84409b6840d7697ced36d70c5736e528cd8485ac911cab0b39dfb4a2fe319ee",
+        "blockHash": "0x2446c935e57d420d4c74b1627d164c968c20eb8a757724c1698d3cb0d96ec014",
+        "blockNumber": "46585601",
+        "contractAddress": null,
+        "gasUsed": "45921"
+      }
+    },
+    "vUSDC:fund-yield": {
+      "intentHash": "81b0b5a84a3a828a6ad903776967f2ae04eaa3cf8c81022b1424fa03f1464dd6",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 316,
+        "to": "0x17e1d0B9A4045a080e9cB3BBC45da3ee3893B5f3",
+        "data": "0x3e5dcc9a0000000000000000000000000000000000000000000000000000000005f5e100",
+        "value": "0",
+        "gas": "76088",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0xae9f90c761d4efc290089881312bbd13b7dc306bba61760e0262b56b1be57832",
+      "maximumCost": "532616000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0xae9f90c761d4efc290089881312bbd13b7dc306bba61760e0262b56b1be57832",
+        "blockHash": "0xa595e25c6e6ac901ed794c2dff09fe01475c2b099d52115aebc0fd2555ce4b1e",
+        "blockNumber": "46585603",
+        "contractAddress": null,
+        "gasUsed": "53187"
+      }
+    },
+    "vUSDC:redeem": {
+      "intentHash": "eeabd415ff28c347750dc32c5fe53f67d1bf82319fa9a7e7aec9653a85de57bd",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 317,
+        "to": "0x17e1d0B9A4045a080e9cB3BBC45da3ee3893B5f3",
+        "data": "0x0d67de540000000000000000000000000000000000000000000000000000000005f45ac30000000000000000000000000000000000000000000000000000000005ee3fe0000000000000000000000000a437345be29ec6802024a8e090e34b621b92e5e2",
+        "value": "0",
+        "gas": "79017",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0xb91930730d12aa9a0cae8934121d93ed66ed2ccac2f1657834e5f9e3d6fc3d1f",
+      "maximumCost": "553119000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0xb91930730d12aa9a0cae8934121d93ed66ed2ccac2f1657834e5f9e3d6fc3d1f",
+        "blockHash": "0x6e1e5105a6cad6c76d2f644edd16f84283ce368dfd4f734e72c558348317ddb0",
+        "blockNumber": "46585606",
+        "contractAddress": null,
+        "gasUsed": "60475"
+      }
+    },
+    "junior:approve": {
+      "intentHash": "a4938dbd090cad8c7aa8f957e8575956e2b87daead4bff477ee32192ae5c22e8",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 318,
+        "to": "0x17e1d0B9A4045a080e9cB3BBC45da3ee3893B5f3",
+        "data": "0x095ea7b3000000000000000000000000d6bb77374993ee78ed244c9d54ee735a2b67d36e0000000000000000000000000000000000000000000000000000000005f5e100",
+        "value": "0",
+        "gas": "55617",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0xe0e8e5e4b79ba0ddc7dd8f6449237dc7cc9e017e9621d4624142aea5598d94e2",
+      "maximumCost": "389319000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0xe0e8e5e4b79ba0ddc7dd8f6449237dc7cc9e017e9621d4624142aea5598d94e2",
+        "blockHash": "0x7e1f4fa6d8aa67cf73aa52cd073c2368414175828c7d30601ae687877d884fb7",
+        "blockNumber": "46585608",
+        "contractAddress": null,
+        "gasUsed": "45965"
+      }
+    },
+    "junior": {
+      "intentHash": "fade16cc9664afee8e2b4e123b929319cccc3f28aa9b8870facc69dfb0a9243f",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 319,
+        "to": "0xD6bb77374993ee78eD244C9d54ee735a2B67D36e",
+        "data": "0xde64140400000000000000000000000017e1d0b9a4045a080e9cb3bbc45da3ee3893b5f30000000000000000000000000000000000000000000000000000000005f5e1000000000000000000000000000000000000000000000000000000000005f5e100",
+        "value": "0",
+        "gas": "534989",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0xa646b62543ebac3357c67357ec62a02c488c540a84f0ef49f02871118c81a2ba",
+      "maximumCost": "3744923000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0xa646b62543ebac3357c67357ec62a02c488c540a84f0ef49f02871118c81a2ba",
+        "blockHash": "0xd57fe85a4d673d5d87d5f2407bc48ad838c268c63bf5f3ba6c92d472c37ef198",
+        "blockNumber": "46585611",
+        "contractAddress": null,
+        "gasUsed": "422531"
+      }
+    },
+    "junior:notice": {
+      "intentHash": "ba0446592c803d31537a29e8d6cf684ec879ab383ad3e14a1ce11405dfa7b4cd",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 320,
+        "to": "0xD6bb77374993ee78eD244C9d54ee735a2B67D36e",
+        "data": "0x9ae78abc0000000000000000000000000000000000000000000000000000000000000001",
+        "value": "0",
+        "gas": "94227",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0x7ecdecfe7955ebe81ede9361f911b9d4fa9c7265b2554331b372f2fea566ba12",
+      "maximumCost": "659589000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0x7ecdecfe7955ebe81ede9361f911b9d4fa9c7265b2554331b372f2fea566ba12",
+        "blockHash": "0x0a0e7f5470aa37a6ebe88fe20f5e25b36fb146c88eb4651d77b84baf9c5ec874",
+        "blockNumber": "46585614",
+        "contractAddress": null,
+        "gasUsed": "71040"
+      }
+    },
+    "tWETH:vUSDC:return:approve": {
+      "intentHash": "d347d5ee31d320a7cd249aa32a35d9a128f81a68d640c5d0c1a9a63b3109c836",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 321,
+        "to": "0x54f25F95Af2527E08cfBe5A0528038e9DC4265f2",
+        "data": "0x095ea7b3000000000000000000000000d6bb77374993ee78ed244c9d54ee735a2b67d36e000000000000000000000000000000000000000000000000016345785d8a0000",
+        "value": "0",
+        "gas": "55607",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0xf378bf6fd65cdd412868d316721bef5d5e53537013a53b9b4d19aaa3a0f3da3b",
+      "maximumCost": "389249000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0xf378bf6fd65cdd412868d316721bef5d5e53537013a53b9b4d19aaa3a0f3da3b",
+        "blockHash": "0x0f001b5ee3217186c927dd3b2b72c6e249a659254b6b315e43b0ba0d54877d4d",
+        "blockNumber": "46585617",
+        "contractAddress": null,
+        "gasUsed": "45957"
+      }
+    },
+    "tWETH:vUSDC:return": {
+      "intentHash": "5928867d5f1fa75f427e937e15b4f900a2aea9f7f43f1d221cf27a2ac9ec7764",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 322,
+        "to": "0xD6bb77374993ee78eD244C9d54ee735a2B67D36e",
+        "data": "0x693b593f00000000000000000000000054f25f95af2527e08cfbe5a0528038e9dc4265f2000000000000000000000000000000000000000000000000016345785d8a0000000000000000000000000000000000000000000000000000016345785d8a0000",
+        "value": "0",
+        "gas": "867140",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0x267fd6a3a3d8a05420bf6707dda6016546164aca23d97972d437f3882f9fb941",
+      "maximumCost": "6069980000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0x267fd6a3a3d8a05420bf6707dda6016546164aca23d97972d437f3882f9fb941",
+        "blockHash": "0x72f619a415cc43f17a1be135d2ea45c5842dfa3fde689ac425eddbaf9b53218d",
+        "blockNumber": "46585619",
+        "contractAddress": null,
+        "gasUsed": "691033"
+      }
+    },
+    "tWETH:vUSDC:protected:approve": {
+      "intentHash": "d347d5ee31d320a7cd249aa32a35d9a128f81a68d640c5d0c1a9a63b3109c836",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 323,
+        "to": "0x54f25F95Af2527E08cfBe5A0528038e9DC4265f2",
+        "data": "0x095ea7b3000000000000000000000000d6bb77374993ee78ed244c9d54ee735a2b67d36e000000000000000000000000000000000000000000000000016345785d8a0000",
+        "value": "0",
+        "gas": "55607",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0xfee9140b8001009dd3604a196a8e43e97875b951d01e305b8e442483e69b8ed7",
+      "maximumCost": "389249000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0xfee9140b8001009dd3604a196a8e43e97875b951d01e305b8e442483e69b8ed7",
+        "blockHash": "0xe0fec8c69d3384a0303e416313ccf1046fc1c08cbd7ca1e366e2024f95dd87d9",
+        "blockNumber": "46585622",
+        "contractAddress": null,
+        "gasUsed": "45957"
+      }
+    },
+    "tWETH:vUSDC:protected": {
+      "intentHash": "5928867d5f1fa75f427e937e15b4f900a2aea9f7f43f1d221cf27a2ac9ec7764",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 324,
+        "to": "0xD6bb77374993ee78eD244C9d54ee735a2B67D36e",
+        "data": "0x693b593f00000000000000000000000054f25f95af2527e08cfbe5a0528038e9dc4265f2000000000000000000000000000000000000000000000000016345785d8a0000000000000000000000000000000000000000000000000000016345785d8a0000",
+        "value": "0",
+        "gas": "726866",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0xb807ad6439f32525ccb36f9782aa0da407dad726758f95783e245db2d14cd993",
+      "maximumCost": "5088062000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0xb807ad6439f32525ccb36f9782aa0da407dad726758f95783e245db2d14cd993",
+        "blockHash": "0xff39e5ec6d2324c80bff1eb0b567bef41011ec7982232f676b540254a9b124a7",
+        "blockNumber": "46585625",
+        "contractAddress": null,
+        "gasUsed": "577641"
+      }
+    },
+    "tcbBTC:TestUSDC:return:approve": {
+      "intentHash": "9c037398e775d4d8bdeebfa17c008bc524595726e73c8f7a1eb1dd92a1c5de6d",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 325,
+        "to": "0x21f0fb9B8672955D62C0C9fF2E9a5D021EADCeBe",
+        "data": "0x095ea7b3000000000000000000000000ea246a4cd3380a91a8fc372b206a5b9d04797b8100000000000000000000000000000000000000000000000000000000000186a0",
+        "value": "0",
+        "gas": "55564",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0xfad929f137c304793854b6cb8fc4caf8adf560cfd02683440560b85f6b909f64",
+      "maximumCost": "388948000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0xfad929f137c304793854b6cb8fc4caf8adf560cfd02683440560b85f6b909f64",
+        "blockHash": "0x799e62161582ead2d9c28d1f794d62470f814b6e625b18f9b1a45477db376d3c",
+        "blockNumber": "46585627",
+        "contractAddress": null,
+        "gasUsed": "45921"
+      }
+    },
+    "tcbBTC:TestUSDC:return:approve:minimum-v2": {
+      "intentHash": "abc61f2e8948e96db0473af5e61c037680c3ae3668a618b293dfd68351c42b3a",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 326,
+        "to": "0x21f0fb9B8672955D62C0C9fF2E9a5D021EADCeBe",
+        "data": "0x095ea7b3000000000000000000000000ea246a4cd3380a91a8fc372b206a5b9d04797b8100000000000000000000000000000000000000000000000000000000000f4240",
+        "value": "0",
+        "gas": "35003",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0xc29aeec6996f2397c490724b427da54b63ab370ddc0cd5a153a1939b3a62060b",
+      "maximumCost": "245021000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0xc29aeec6996f2397c490724b427da54b63ab370ddc0cd5a153a1939b3a62060b",
+        "blockHash": "0x1ff817c3692f9d7b24c6aef6f034f31b2a542cbc9bb21a8c2361cf68ef3bb9c1",
+        "blockNumber": "46585678",
+        "contractAddress": null,
+        "gasUsed": "28821"
+      }
+    },
+    "tcbBTC:TestUSDC:return": {
+      "intentHash": "b240656f4beb5b415c150b47f9b8668f0c71213304545a658ec3957d8a733365",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 327,
+        "to": "0xEa246A4Cd3380A91a8FC372b206A5B9D04797B81",
+        "data": "0x693b593f00000000000000000000000021f0fb9b8672955d62c0c9ff2e9a5d021eadcebe00000000000000000000000000000000000000000000000000000000000f424000000000000000000000000000000000000000000000000000000000000f4240",
+        "value": "0",
+        "gas": "711232",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0x6f0ee7c233aad0452b9ffd836e000689951536d120a0915417592c32607f23b2",
+      "maximumCost": "4978624000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0x6f0ee7c233aad0452b9ffd836e000689951536d120a0915417592c32607f23b2",
+        "blockHash": "0x2ef54433cce03df3b26b17f8f6f9b818995ad79326cce86f3f7cddad9fb79a4e",
+        "blockNumber": "46585680",
+        "contractAddress": null,
+        "gasUsed": "565018"
+      }
+    },
+    "tcbBTC:TestUSDC:protected:approve:minimum-v2": {
+      "intentHash": "abc61f2e8948e96db0473af5e61c037680c3ae3668a618b293dfd68351c42b3a",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 328,
+        "to": "0x21f0fb9B8672955D62C0C9fF2E9a5D021EADCeBe",
+        "data": "0x095ea7b3000000000000000000000000ea246a4cd3380a91a8fc372b206a5b9d04797b8100000000000000000000000000000000000000000000000000000000000f4240",
+        "value": "0",
+        "gas": "55564",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0xafe5d4a0c89b632796c47a105aef9f49482e6538f499d42fd88da7292550c852",
+      "maximumCost": "388948000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0xafe5d4a0c89b632796c47a105aef9f49482e6538f499d42fd88da7292550c852",
+        "blockHash": "0xced319c3ead8399a52fb62b70062249919c9fc9bb7771d6f63dc88644d62a7d4",
+        "blockNumber": "46585683",
+        "contractAddress": null,
+        "gasUsed": "45921"
+      }
+    },
+    "tcbBTC:TestUSDC:protected": {
+      "intentHash": "b240656f4beb5b415c150b47f9b8668f0c71213304545a658ec3957d8a733365",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 329,
+        "to": "0xEa246A4Cd3380A91a8FC372b206A5B9D04797B81",
+        "data": "0x693b593f00000000000000000000000021f0fb9b8672955d62c0c9ff2e9a5d021eadcebe00000000000000000000000000000000000000000000000000000000000f424000000000000000000000000000000000000000000000000000000000000f4240",
+        "value": "0",
+        "gas": "570957",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0xff5695cd36e22cb7929fda473013b55f7bb3952a0601e227185e2593364eb942",
+      "maximumCost": "3996699000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0xff5695cd36e22cb7929fda473013b55f7bb3952a0601e227185e2593364eb942",
+        "blockHash": "0xb895eff43276a17c85e3f0dc84633cc43707f86fb573e3904cff1cdf68370989",
+        "blockNumber": "46585685",
+        "contractAddress": null,
+        "gasUsed": "451626"
+      }
+    },
+    "vWETH:TestUSDC:return:approve": {
+      "intentHash": "547a467fa5957d3c06fed89ce3e564c28a6d3908ab2ad85ee2222034658849c9",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 330,
+        "to": "0x0E5a8E9308fd29BA52Da9126270061c014Fb09f8",
+        "data": "0x095ea7b30000000000000000000000007476dd1370ad6381fc9bc96125d084beed5a6c49000000000000000000000000000000000000000000000000016345785d8a0000",
+        "value": "0",
+        "gas": "55660",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0xd6020b53d8322afbc0b1dd099c79706b5e789317184d834d0074e900da662b6e",
+      "maximumCost": "389620000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0xd6020b53d8322afbc0b1dd099c79706b5e789317184d834d0074e900da662b6e",
+        "blockHash": "0x635afe8d12f6366ca1af9dfcc0f42acd9216a3a8c4fb148065b1ea26f6acb78f",
+        "blockNumber": "46585688",
+        "contractAddress": null,
+        "gasUsed": "46001"
+      }
+    },
+    "vWETH:TestUSDC:return": {
+      "intentHash": "1031e84713896edcdbf39cc9e4ee819c9ed8966cbb6a249b55c602d3c88d36f2",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 331,
+        "to": "0x7476dD1370aD6381FC9bc96125D084BEED5A6C49",
+        "data": "0x693b593f0000000000000000000000000e5a8e9308fd29ba52da9126270061c014fb09f8000000000000000000000000000000000000000000000000016345785d8a0000000000000000000000000000000000000000000000000000016345785d8a0000",
+        "value": "0",
+        "gas": "790158",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0x9b127682544aa302b1cd4dfb410a004e5b032a83eb3a5010b52571e192771e18",
+      "maximumCost": "5531106000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0x9b127682544aa302b1cd4dfb410a004e5b032a83eb3a5010b52571e192771e18",
+        "blockHash": "0x9456aff1b3bbca2430ef284d9f7d0fd23993dc90711142a232e9b59e6a141026",
+        "blockNumber": "46585690",
+        "contractAddress": null,
+        "gasUsed": "628811"
+      }
+    },
+    "vWETH:TestUSDC:protected:approve": {
+      "intentHash": "547a467fa5957d3c06fed89ce3e564c28a6d3908ab2ad85ee2222034658849c9",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 332,
+        "to": "0x0E5a8E9308fd29BA52Da9126270061c014Fb09f8",
+        "data": "0x095ea7b30000000000000000000000007476dd1370ad6381fc9bc96125d084beed5a6c49000000000000000000000000000000000000000000000000016345785d8a0000",
+        "value": "0",
+        "gas": "55660",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0x2b68ca8127fdc9b6117ef98ea61adb41fcacbc977d1d36bda53d15655642c004",
+      "maximumCost": "389620000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0x2b68ca8127fdc9b6117ef98ea61adb41fcacbc977d1d36bda53d15655642c004",
+        "blockHash": "0x9a1cd188d77b64ec8dd873c9ccfd8db56c19c98ca1dc919ef865ef631ea961ae",
+        "blockNumber": "46585693",
+        "contractAddress": null,
+        "gasUsed": "46001"
+      }
+    },
+    "vWETH:TestUSDC:protected": {
+      "intentHash": "1031e84713896edcdbf39cc9e4ee819c9ed8966cbb6a249b55c602d3c88d36f2",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 333,
+        "to": "0x7476dD1370aD6381FC9bc96125D084BEED5A6C49",
+        "data": "0x693b593f0000000000000000000000000e5a8e9308fd29ba52da9126270061c014fb09f8000000000000000000000000000000000000000000000000016345785d8a0000000000000000000000000000000000000000000000000000016345785d8a0000",
+        "value": "0",
+        "gas": "669146",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0xe5d73065d7a769eec6b99b2488796370bb55a4bbf323a6bed1219b078393845d",
+      "maximumCost": "4684022000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0xe5d73065d7a769eec6b99b2488796370bb55a4bbf323a6bed1219b078393845d",
+        "blockHash": "0x369f46fbe526f919632df73b6429194b84a1b32e75740dc5f1815da8a7acc605",
+        "blockNumber": "46585696",
+        "contractAddress": null,
+        "gasUsed": "530989"
+      }
+    },
+    "tAAPLc:vUSDC:return:approve": {
+      "intentHash": "b89ae37246472b16027ee95784e983507e0f9e5566619113679118326270ea1d",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 334,
+        "to": "0xa301baB965098C9cFb72a270C80D818Fa10444DB",
+        "data": "0x095ea7b3000000000000000000000000909eed441e18538062bd37803223f4bd78cd44ac0000000000000000000000000000000000000000000000000000000005f5e100",
+        "value": "0",
+        "gas": "55564",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0xc563a3bc98551ae2ac199e4d0305c259aac60d6072d797deb1e8a56cccf0f1ba",
+      "maximumCost": "388948000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0xc563a3bc98551ae2ac199e4d0305c259aac60d6072d797deb1e8a56cccf0f1ba",
+        "blockHash": "0x766c8ae755e804af6c305f8edfff30583ee50a65f3bf13055b84515fa44406db",
+        "blockNumber": "46585699",
+        "contractAddress": null,
+        "gasUsed": "45921"
+      }
+    },
+    "tAAPLc:vUSDC:return": {
+      "intentHash": "a8ff0fd9d3dfdad20f753b353f375f12688486de723ef0d629347cdbda043e77",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 335,
+        "to": "0x909eeD441E18538062bD37803223F4bd78cd44ac",
+        "data": "0x693b593f000000000000000000000000a301bab965098c9cfb72a270c80d818fa10444db0000000000000000000000000000000000000000000000000000000005f5e1000000000000000000000000000000000000000000000000000000000005f5e100",
+        "value": "0",
+        "gas": "872619",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0x9a951ba261c9f9356c14abc66797577a5095462f0f4be658e6c9cc78482a5df4",
+      "maximumCost": "6108333000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0x9a951ba261c9f9356c14abc66797577a5095462f0f4be658e6c9cc78482a5df4",
+        "blockHash": "0x3c6df19d701238fafb2a2f6c22220a2283443fd6f447e18da0679915d895735b",
+        "blockNumber": "46585701",
+        "contractAddress": null,
+        "gasUsed": "695461"
+      }
+    },
+    "tAAPLc:vUSDC:protected:approve": {
+      "intentHash": "b89ae37246472b16027ee95784e983507e0f9e5566619113679118326270ea1d",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 336,
+        "to": "0xa301baB965098C9cFb72a270C80D818Fa10444DB",
+        "data": "0x095ea7b3000000000000000000000000909eed441e18538062bd37803223f4bd78cd44ac0000000000000000000000000000000000000000000000000000000005f5e100",
+        "value": "0",
+        "gas": "55564",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0x8163e5db13b45b1f7cb32c73b64ea1d282a7525b55a9cda904137e8b50d1889b",
+      "maximumCost": "388948000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0x8163e5db13b45b1f7cb32c73b64ea1d282a7525b55a9cda904137e8b50d1889b",
+        "blockHash": "0x85e042f6dc7b36f2797e86a58747a2e28949f43997eae00b4e0a1a52c9c2be7e",
+        "blockNumber": "46585704",
+        "contractAddress": null,
+        "gasUsed": "45921"
+      }
+    },
+    "tAAPLc:vUSDC:protected": {
+      "intentHash": "a8ff0fd9d3dfdad20f753b353f375f12688486de723ef0d629347cdbda043e77",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 337,
+        "to": "0x909eeD441E18538062bD37803223F4bd78cd44ac",
+        "data": "0x693b593f000000000000000000000000a301bab965098c9cfb72a270c80d818fa10444db0000000000000000000000000000000000000000000000000000000005f5e1000000000000000000000000000000000000000000000000000000000005f5e100",
+        "value": "0",
+        "gas": "732344",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0x9bbadc042564119a6842a22a2267c1a513476e90da5300f184dc211646f55e60",
+      "maximumCost": "5126408000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0x9bbadc042564119a6842a22a2267c1a513476e90da5300f184dc211646f55e60",
+        "blockHash": "0x253eda7ed4d18cd6a2c5f96a52de68c631640e9bb7a5e20a67725c3372a43cd2",
+        "blockNumber": "46585707",
+        "contractAddress": null,
+        "gasUsed": "582069"
+      }
+    },
+    "tWETH:vUSDC:return-exit": {
+      "intentHash": "d3719467372c386a4d0fdac55aee8735f02f582ee8d70da6e66a4416ae3f8400",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 338,
+        "to": "0xD6bb77374993ee78eD244C9d54ee735a2B67D36e",
+        "data": "0xa533039e000000000000000000000000000000000000000000000000000000000000000000000000000000000000000054f25f95af2527e08cfbe5a0528038e9dc4265f2000000000000000000000000000000000000000000000000013fbe85edc90000",
+        "value": "0",
+        "gas": "465588",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0xdff763425598aa4dec6562b374f7f5865346304fe4deeced1387029721c22c71",
+      "maximumCost": "3259116000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0xdff763425598aa4dec6562b374f7f5865346304fe4deeced1387029721c22c71",
+        "blockHash": "0x8ef303114d40950cc2f89e4af18a6e1e9272c7073e6e4b8a47231c03b617585b",
+        "blockNumber": "46585710",
+        "contractAddress": null,
+        "gasUsed": "332800"
+      }
+    },
+    "tWETH:vUSDC:protected-exit": {
+      "intentHash": "c6876ed3998f372ad15df6e5c8b31bf5e87c560373ea524d55bd4a26aed0833a",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 339,
+        "to": "0xD6bb77374993ee78eD244C9d54ee735a2B67D36e",
+        "data": "0xa533039e000000000000000000000000000000000000000000000000000000000000000100000000000000000000000017e1d0b9a4045a080e9cb3bbc45da3ee3893b5f30000000000000000000000000000000000000000000000000000000000000001",
+        "value": "0",
+        "gas": "499013",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0x9b977bfde008b6ffe19784df8b4a05b2c8e63cd28e014f783585bab5917a1371",
+      "maximumCost": "3493091000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0x9b977bfde008b6ffe19784df8b4a05b2c8e63cd28e014f783585bab5917a1371",
+        "blockHash": "0xfd0cbf3ce1baa7546697022a98e942f8284b143e38695b4017a34b4ef6abd77f",
+        "blockNumber": "46585712",
+        "contractAddress": null,
+        "gasUsed": "320814"
+      }
+    },
+    "tcbBTC:TestUSDC:return-exit": {
+      "intentHash": "cb50d260d1daf646bc05c22ff85f6f7d45530d0e00220d5effa1659444f1c128",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 340,
+        "to": "0xEa246A4Cd3380A91a8FC372b206A5B9D04797B81",
+        "data": "0xa533039e000000000000000000000000000000000000000000000000000000000000000000000000000000000000000021f0fb9b8672955d62c0c9ff2e9a5d021eadcebe00000000000000000000000000000000000000000000000000000000000dbba0",
+        "value": "0",
+        "gas": "465294",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0xbb28af376e0eae0754f6a9af787ed9b36fd67369be9a5745dcb931bb042773bd",
+      "maximumCost": "3257058000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0xbb28af376e0eae0754f6a9af787ed9b36fd67369be9a5745dcb931bb042773bd",
+        "blockHash": "0x8ccfbfa067ce7a7237a7bb0f951b716b49428b019f3954666f3856761a98e68c",
+        "blockNumber": "46585715",
+        "contractAddress": null,
+        "gasUsed": "332562"
+      }
+    },
+    "tcbBTC:TestUSDC:protected-exit": {
+      "intentHash": "7f74b809b3c142bfb6187909831d349d5e259ab0f3a877ccdcb571ef3f69dff3",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 341,
+        "to": "0xEa246A4Cd3380A91a8FC372b206A5B9D04797B81",
+        "data": "0xa533039e00000000000000000000000000000000000000000000000000000000000000010000000000000000000000004dfe9500e03ac27f25997184d162191cc5adbf340000000000000000000000000000000000000000000000000000000000000001",
+        "value": "0",
+        "gas": "418017",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0x1dd5645f51c43365794669f3c368c76777bd1ee138694f7bef7e395c38146142",
+      "maximumCost": "2926119000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0x1dd5645f51c43365794669f3c368c76777bd1ee138694f7bef7e395c38146142",
+        "blockHash": "0xcfb4270d41807d0563b17d6afd8364d36c00d51a6ccf95c87855bb42c274f567",
+        "blockNumber": "46585717",
+        "contractAddress": null,
+        "gasUsed": "268440"
+      }
+    },
+    "vWETH:TestUSDC:return-exit": {
+      "intentHash": "f50bc2271167bf53132d68b51ce07f9b2e4b6af0433456a48317dce573766790",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 342,
+        "to": "0x7476dD1370aD6381FC9bc96125D084BEED5A6C49",
+        "data": "0xa533039e00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000e5a8e9308fd29ba52da9126270061c014fb09f8000000000000000000000000000000000000000000000000013fbe85edc90000",
+        "value": "0",
+        "gas": "514270",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0xf7e24e682199aad6d84245940b9ce34ada51c0676e41feb40f72fcff274418b7",
+      "maximumCost": "3599890000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0xf7e24e682199aad6d84245940b9ce34ada51c0676e41feb40f72fcff274418b7",
+        "blockHash": "0xa3a9dd40923966053ec036a496c5edf98a274b4b563226ed07eebb241117b19d",
+        "blockNumber": "46585720",
+        "contractAddress": null,
+        "gasUsed": "372148"
+      }
+    },
+    "vWETH:TestUSDC:protected-exit": {
+      "intentHash": "322c0736402b7d23514dc4c5358756e684e251edc8f5f21870a2021d8782932d",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 343,
+        "to": "0x7476dD1370aD6381FC9bc96125D084BEED5A6C49",
+        "data": "0xa533039e00000000000000000000000000000000000000000000000000000000000000010000000000000000000000004dfe9500e03ac27f25997184d162191cc5adbf340000000000000000000000000000000000000000000000000000000000000001",
+        "value": "0",
+        "gas": "467459",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0x2e817773a585e571d92f714caa01593be930b6cbb2fd9484d3aeedf6038ed778",
+      "maximumCost": "3272213000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0x2e817773a585e571d92f714caa01593be930b6cbb2fd9484d3aeedf6038ed778",
+        "blockHash": "0x2ffe758b9da1c1f3990beccf1576690eff1e98825b592f93bffa0487dd004a7e",
+        "blockNumber": "46585728",
+        "contractAddress": null,
+        "gasUsed": "300410"
+      }
+    },
+    "tAAPLc:vUSDC:return-exit": {
+      "intentHash": "a08b4d13d512c965a155883325e4bc7bebd82496c218e57184a65fd7db58283c",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 344,
+        "to": "0x909eeD441E18538062bD37803223F4bd78cd44ac",
+        "data": "0xa533039e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a301bab965098c9cfb72a270c80d818fa10444db00000000000000000000000000000000000000000000000000000000055d4a80",
+        "value": "0",
+        "gas": "465558",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0xb8e289f36a530c2c68b4801a3e7befaa0f3f233dde60a8dd24d2c86ac3a23598",
+      "maximumCost": "3258906000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0xb8e289f36a530c2c68b4801a3e7befaa0f3f233dde60a8dd24d2c86ac3a23598",
+        "blockHash": "0x7c026ecf9ceb053c8d0a1748bd8839af0aa070a37d86738e6061300c20f79a1b",
+        "blockNumber": "46585731",
+        "contractAddress": null,
+        "gasUsed": "332776"
+      }
+    },
+    "tAAPLc:vUSDC:protected-exit": {
+      "intentHash": "10cdaa01e7e7a20a25335736390db6efef88ad7a0d24180b22d142ddeed23e5a",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 345,
+        "to": "0x909eeD441E18538062bD37803223F4bd78cd44ac",
+        "data": "0xa533039e000000000000000000000000000000000000000000000000000000000000000100000000000000000000000017e1d0b9a4045a080e9cb3bbc45da3ee3893b5f30000000000000000000000000000000000000000000000000000000000000001",
+        "value": "0",
+        "gas": "504581",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0x79f28c5c6c93b75c70d16c0450f10277f1a8ba4006da4f4dea96910a345a5c17",
+      "maximumCost": "3532067000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0x79f28c5c6c93b75c70d16c0450f10277f1a8ba4006da4f4dea96910a345a5c17",
+        "blockHash": "0xe5538a2be13486dfd8a0913275d4122ffd47afd7273f19eb2f720ee64bb2c043",
+        "blockNumber": "46585739",
+        "contractAddress": null,
+        "gasUsed": "324414"
+      }
+    },
+    "junior:withdraw": {
+      "intentHash": "67e0339a191e7d45c9299dc31e3cb710ed1d9ec43c06aded77c04d6fb2580371",
+      "request": {
+        "chainId": 84532,
+        "type": "eip1559",
+        "nonce": 346,
+        "to": "0xD6bb77374993ee78eD244C9d54ee735a2B67D36e",
+        "data": "0x37b840ef00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000005e69ec000000000000000000000000017e1d0b9a4045a080e9cb3bbc45da3ee3893b5f30000000000000000000000000000000000000000000000000000000005d75c80",
+        "value": "0",
+        "gas": "286889",
+        "maxFeePerGas": "7000000",
+        "maxPriorityFeePerGas": "1000000"
+      },
+      "hash": "0x11d77058bbd64a70538505451bfb3ba8141dba60a4042abad9f42c4a5c5c3eab",
+      "maximumCost": "2008223000000",
+      "status": "confirmed",
+      "receipt": {
+        "transactionHash": "0x11d77058bbd64a70538505451bfb3ba8141dba60a4042abad9f42c4a5c5c3eab",
+        "blockHash": "0x3c46147f8e1757e2380c7e2396d99586348093d023f32d0422619793956e1c32",
+        "blockNumber": "46585742",
+        "contractAddress": null,
+        "gasUsed": "206863"
+      }
+    }
+  },
+  "values": {
+    "tWETH:buy-limit": "353074724",
+    "tWETH:deadline": "1788940006",
+    "tcbBTC:buy-limit": "110645388",
+    "tcbBTC:deadline": "1788940028",
+    "vWETH:deposit-min": "99400599400599400",
+    "vWETH:rate-before": "1001000000000000000",
+    "vUSDC:deposit-min": "99400598",
+    "vUSDC:rate-before": "1001000"
+  },
+  "positions": {
+    "junior": {
+      "pool": "0xD6bb77374993ee78eD244C9d54ee735a2B67D36e",
+      "tokenId": "1",
+      "blockTimestamp": "1788939510"
+    },
+    "tWETH:vUSDC:return": {
+      "pool": "0xD6bb77374993ee78eD244C9d54ee735a2B67D36e",
+      "tokenId": "0",
+      "blockTimestamp": "1788939526"
+    },
+    "tWETH:vUSDC:protected": {
+      "pool": "0xD6bb77374993ee78eD244C9d54ee735a2B67D36e",
+      "tokenId": "1",
+      "blockTimestamp": "1788939538"
+    },
+    "tcbBTC:TestUSDC:return": {
+      "pool": "0xEa246A4Cd3380A91a8FC372b206A5B9D04797B81",
+      "tokenId": "0",
+      "blockTimestamp": "1788939648"
+    },
+    "tcbBTC:TestUSDC:protected": {
+      "pool": "0xEa246A4Cd3380A91a8FC372b206A5B9D04797B81",
+      "tokenId": "1",
+      "blockTimestamp": "1788939658"
+    },
+    "vWETH:TestUSDC:return": {
+      "pool": "0x7476dD1370aD6381FC9bc96125D084BEED5A6C49",
+      "tokenId": "0",
+      "blockTimestamp": "1788939668"
+    },
+    "vWETH:TestUSDC:protected": {
+      "pool": "0x7476dD1370aD6381FC9bc96125D084BEED5A6C49",
+      "tokenId": "1",
+      "blockTimestamp": "1788939680"
+    },
+    "tAAPLc:vUSDC:return": {
+      "pool": "0x909eeD441E18538062bD37803223F4bd78cd44ac",
+      "tokenId": "0",
+      "blockTimestamp": "1788939690"
+    },
+    "tAAPLc:vUSDC:protected": {
+      "pool": "0x909eeD441E18538062bD37803223F4bd78cd44ac",
+      "tokenId": "1",
+      "blockTimestamp": "1788939702"
+    }
+  },
+  "evidence": [
+    {
+      "id": "tWETH:trade",
+      "buy": "0x4e7d68c7d5dfa7ca9e146e398c3f0dd5ccc06ba249967a761f112a52e7fea615",
+      "sell": "0x1418afeb71111b5093faba84997e98b048051829330aeb33dbb4194407908f28",
+      "amount": "100000000000000000"
+    },
+    {
+      "id": "tcbBTC:trade",
+      "buy": "0x21b63cfc1f31e90cbb44dae3a7f6427c31de301aee7fabc00c3883c1f2f8b404",
+      "sell": "0x2a4d844d48a4c13c75b77b549c4563289660c0717ab556c8ffc795d97e8bf5f8",
+      "amount": "100000"
+    },
+    {
+      "id": "vWETH:vault",
+      "rateBefore": "1001000000000000000",
+      "rateAfter": "1001009999990009999",
+      "deposit": "0x17abbc20368ea3ebab3c9616dc2d7ac8cd0629b1ab175f313d0fd6501e99200c",
+      "redeem": "0x0a08dbb8a3991fb5d4c81bfefd136f83772ee73f9c4e875051fd3169718ebbe0"
+    },
+    {
+      "id": "vUSDC:vault",
+      "rateBefore": "1001000",
+      "rateAfter": "1001199",
+      "deposit": "0xa09c1954e7af22cf57b22060340a95e2b7174985238dd2835177f32c49695da2",
+      "redeem": "0xb91930730d12aa9a0cae8934121d93ed66ed2ccac2f1657834e5f9e3d6fc3d1f"
+    },
+    {
+      "id": "tWETH:vUSDC:senior",
+      "returnTx": "0xdff763425598aa4dec6562b374f7f5865346304fe4deeced1387029721c22c71",
+      "protectedTx": "0x9b977bfde008b6ffe19784df8b4a05b2c8e63cd28e014f783585bab5917a1371",
+      "payoutToken": "0x17e1d0B9A4045a080e9cB3BBC45da3ee3893B5f3",
+      "payoutAmount": "353975240"
+    },
+    {
+      "id": "tcbBTC:TestUSDC:senior",
+      "returnTx": "0xbb28af376e0eae0754f6a9af787ed9b36fd67369be9a5745dcb931bb042773bd",
+      "protectedTx": "0x1dd5645f51c43365794669f3c368c76777bd1ee138694f7bef7e395c38146142",
+      "payoutToken": "0x4dFe9500E03AC27F25997184d162191cC5ADBf34",
+      "payoutAmount": "1124166666"
+    },
+    {
+      "id": "vWETH:TestUSDC:senior",
+      "returnTx": "0xf7e24e682199aad6d84245940b9ce34ada51c0676e41feb40f72fcff274418b7",
+      "protectedTx": "0x2e817773a585e571d92f714caa01593be930b6cbb2fd9484d3aeedf6038ed778",
+      "payoutToken": "0x4dFe9500E03AC27F25997184d162191cC5ADBf34",
+      "payoutAmount": "361071822"
+    },
+    {
+      "id": "tAAPLc:vUSDC:senior",
+      "returnTx": "0xb8e289f36a530c2c68b4801a3e7befaa0f3f233dde60a8dd24d2c86ac3a23598",
+      "protectedTx": "0x79f28c5c6c93b75c70d16c0450f10277f1a8ba4006da4f4dea96910a345a5c17",
+      "payoutToken": "0x17e1d0B9A4045a080e9cB3BBC45da3ee3893B5f3",
+      "payoutAmount": "115583525"
+    },
+    {
+      "id": "junior:lifecycle",
+      "deposit": "0xa646b62543ebac3357c67357ec62a02c488c540a84f0ef49f02871118c81a2ba",
+      "notice": "0x7ecdecfe7955ebe81ede9361f911b9d4fa9c7265b2554331b372f2fea566ba12",
+      "withdraw": "0x11d77058bbd64a70538505451bfb3ba8141dba60a4042abad9f42c4a5c5c3eab"
+    }
+  ],
+  "reconciliations": [
+    {
+      "fromRecipeHash": "28e0d780cf82409e9de66e87476c59fb09d29075ae993bc1022b76961412eb99",
+      "toRecipeHash": "592d2cf7e5747e984bf5f5f0d838ffe1bd79940043be15bc8c3ac871c5d22b8e",
+      "reason": "The deployed cbBTC pool minimum is 1000000 base units (0.01 cbBTC). The rejected deposit was never signed/broadcast. Preserve the confirmed 100000-unit approval and create a separately named 1000000-unit approval; all existing transactions keep their original arguments."
+    }
+  ],
+  "completedAt": "2026-09-09T07:42:56.633Z"
+}

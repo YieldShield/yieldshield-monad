@@ -1,0 +1,1274 @@
+{
+  "schemaVersion": 2,
+  "chainId": 84532,
+  "sourceChainId": null,
+  "deploymentKind": "base-sepolia-continuous-demo-v1",
+  "policy": {
+    "kind": "continuous-demo",
+    "priceSource": "deterministic-onchain-demo"
+  },
+  "evaluatedAt": 1788943203,
+  "validUntil": 1788943222,
+  "destination": {
+    "blockNumber": "46587455",
+    "blockHash": "0x272131f5dbd472303f5129793af3bcff5102eff6dec4f64f6e6c24446043136d",
+    "blockTimestamp": 1788943198,
+    "finality": "sealed-block-with-two-block-buffer"
+  },
+  "source": null,
+  "deployment": {
+    "status": "complete",
+    "verified": true,
+    "contractsConfirmed": 46,
+    "transactionsConfirmed": 173,
+    "poolsReady": 14,
+    "totalPools": 14,
+    "faucetReady": true,
+    "steps": [
+      {
+        "code": "infrastructure",
+        "complete": true,
+        "label": "Verify stock, crypto and vault contracts"
+      },
+      {
+        "code": "pools",
+        "complete": true,
+        "label": "Verify registered pools"
+      },
+      {
+        "code": "faucet",
+        "complete": true,
+        "label": "Fund the asset basket"
+      },
+      {
+        "code": "exchange",
+        "complete": true,
+        "label": "Verify multi-asset trading"
+      }
+    ]
+  },
+  "session": {
+    "state": "continuous",
+    "opensAt": null,
+    "closesAt": null,
+    "nextOpenAt": null,
+    "checkedThrough": null
+  },
+  "faucet": {
+    "verified": true,
+    "address": "0x5B934A891192CC6337cBdbdD35E3F4f4a336354A",
+    "configured": true,
+    "ready": true,
+    "cooldownSeconds": 86400,
+    "tokens": [
+      {
+        "symbol": "tAAPLc",
+        "sourceSymbol": "AAPLc",
+        "decimals": 8,
+        "address": "0xa301baB965098C9cFb72a270C80D818Fa10444DB",
+        "enabled": true,
+        "funded": true,
+        "ready": true,
+        "dripAmountBaseUnits": "2500000000",
+        "balanceBaseUnits": "997500000000"
+      },
+      {
+        "symbol": "tNVDAc",
+        "sourceSymbol": "NVDAc",
+        "decimals": 8,
+        "address": "0xe765a85774263a94595C3B36d5ce2e59b95689bE",
+        "enabled": true,
+        "funded": true,
+        "ready": true,
+        "dripAmountBaseUnits": "2500000000",
+        "balanceBaseUnits": "997500000000"
+      },
+      {
+        "symbol": "tMETAc",
+        "sourceSymbol": "METAc",
+        "decimals": 8,
+        "address": "0x9115c740B4F6a9B56B4cFFA039fb5B46Ba69f730",
+        "enabled": true,
+        "funded": true,
+        "ready": true,
+        "dripAmountBaseUnits": "2500000000",
+        "balanceBaseUnits": "997500000000"
+      },
+      {
+        "symbol": "tGOOGLc",
+        "sourceSymbol": "GOOGLc",
+        "decimals": 8,
+        "address": "0x560B12E0a9F6f65301b79F24CCBfbC0360f31bC3",
+        "enabled": true,
+        "funded": true,
+        "ready": true,
+        "dripAmountBaseUnits": "2500000000",
+        "balanceBaseUnits": "997500000000"
+      },
+      {
+        "symbol": "TestUSDC",
+        "sourceSymbol": "USDC",
+        "decimals": 6,
+        "address": "0x4dFe9500E03AC27F25997184d162191cC5ADBf34",
+        "enabled": true,
+        "funded": true,
+        "ready": true,
+        "dripAmountBaseUnits": "10000000000",
+        "balanceBaseUnits": "290000000000"
+      },
+      {
+        "symbol": "tWETH",
+        "sourceSymbol": "WETH",
+        "decimals": 18,
+        "address": "0x54f25F95Af2527E08cfBe5A0528038e9DC4265f2",
+        "enabled": true,
+        "funded": true,
+        "ready": true,
+        "dripAmountBaseUnits": "5000000000000000000",
+        "balanceBaseUnits": "9995000000000000000000"
+      },
+      {
+        "symbol": "tcbBTC",
+        "sourceSymbol": "cbBTC",
+        "decimals": 8,
+        "address": "0x21f0fb9B8672955D62C0C9fF2E9a5D021EADCeBe",
+        "enabled": true,
+        "funded": true,
+        "ready": true,
+        "dripAmountBaseUnits": "5000000",
+        "balanceBaseUnits": "999995000000"
+      },
+      {
+        "symbol": "vWETH",
+        "sourceSymbol": "vWETH",
+        "decimals": 18,
+        "address": "0x0E5a8E9308fd29BA52Da9126270061c014Fb09f8",
+        "enabled": true,
+        "funded": true,
+        "ready": true,
+        "dripAmountBaseUnits": "5000000000000000000",
+        "balanceBaseUnits": "9995000000000000000000"
+      },
+      {
+        "symbol": "vUSDC",
+        "sourceSymbol": "vUSDC",
+        "decimals": 6,
+        "address": "0x17e1d0B9A4045a080e9cB3BBC45da3ee3893B5f3",
+        "enabled": true,
+        "funded": true,
+        "ready": true,
+        "dripAmountBaseUnits": "1000000000",
+        "balanceBaseUnits": "9000000000"
+      }
+    ]
+  },
+  "exchange": {
+    "verified": true,
+    "address": "0x6f504fC32e1f93627E6A73907564e9ea4abfacf9",
+    "ready": true
+  },
+  "assets": [
+    {
+      "symbol": "tAAPLc",
+      "sourceSymbol": "AAPLc",
+      "name": "Apple",
+      "decimals": 8,
+      "sourcePrice": null,
+      "relay": null,
+      "executionPrice": {
+        "kind": "deterministic-demo",
+        "priceUsd": 85.72222223,
+        "evaluatedAt": 1788943198,
+        "marketObservation": false
+      },
+      "pool": {
+        "address": "0xE21292BB5545cC6079e88E5A56b83b94FA3F7174",
+        "state": "ready",
+        "terms": {
+          "backingSymbol": "TestUSDC",
+          "commissionBps": 1000,
+          "poolFeeBps": 100,
+          "protocolFeeBps": 100,
+          "collateralRatioBps": 15000,
+          "protectedExitDelaySeconds": 60,
+          "collateralUnlockSeconds": 120
+        },
+        "capacity": {
+          "basis": "pool-constraints-at-block",
+          "requiresSimulation": true,
+          "maxDepositBaseUnits": "38168138445",
+          "minDepositBaseUnits": "1000000",
+          "maxCollateralDepositBaseUnits": "1000000000000",
+          "minCollateralDepositBaseUnits": "10000",
+          "trackedTvlUsdBaseUnits": "5039431858682",
+          "freeBackingBaseUnits": "49077864689"
+        }
+      },
+      "faucet": {
+        "symbol": "tAAPLc",
+        "sourceSymbol": "AAPLc",
+        "decimals": 8,
+        "address": "0xa301baB965098C9cFb72a270C80D818Fa10444DB",
+        "enabled": true,
+        "funded": true,
+        "dripAmountBaseUnits": "2500000000",
+        "balanceBaseUnits": "9995000000000",
+        "ready": true
+      },
+      "trading": {
+        "buy": {
+          "state": "available",
+          "blockers": []
+        },
+        "sell": {
+          "state": "available",
+          "blockers": []
+        },
+        "capacity": {
+          "maxBuyStockBaseUnits": "2500000000",
+          "maxSellStockBaseUnits": "2500000000",
+          "requiresQuote": true
+        },
+        "stockInventoryBaseUnits": "9999900000000",
+        "usdcInventoryBaseUnits": "2000261402622",
+        "requiresQuote": true
+      },
+      "actions": {
+        "openPosition": {
+          "state": "available",
+          "blockers": []
+        },
+        "withdrawStock": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check this position's ownership, timing and available withdrawal amount."
+            }
+          ]
+        },
+        "protectedExit": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check this position's ownership, timing and available withdrawal amount."
+            }
+          ]
+        },
+        "provideCollateral": {
+          "state": "available",
+          "blockers": []
+        },
+        "withdrawCollateral": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check this position's ownership, timing and available withdrawal amount."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "tNVDAc",
+      "sourceSymbol": "NVDAc",
+      "name": "NVIDIA",
+      "decimals": 8,
+      "sourcePrice": null,
+      "relay": null,
+      "executionPrice": {
+        "kind": "deterministic-demo",
+        "priceUsd": 128.58333334,
+        "evaluatedAt": 1788943198,
+        "marketObservation": false
+      },
+      "pool": {
+        "address": "0xdCa629732d8122E5b3BB391dc3727A8F5ECBC3E9",
+        "state": "ready",
+        "terms": {
+          "backingSymbol": "TestUSDC",
+          "commissionBps": 1000,
+          "poolFeeBps": 100,
+          "protocolFeeBps": 100,
+          "collateralRatioBps": 15000,
+          "protectedExitDelaySeconds": 60,
+          "collateralUnlockSeconds": 120
+        },
+        "capacity": {
+          "basis": "pool-constraints-at-block",
+          "requiresSimulation": true,
+          "maxDepositBaseUnits": "26441996110",
+          "minDepositBaseUnits": "1000000",
+          "maxCollateralDepositBaseUnits": "1000000000000",
+          "minCollateralDepositBaseUnits": "10000",
+          "trackedTvlUsdBaseUnits": "5100000000000",
+          "freeBackingBaseUnits": "51000000000"
+        }
+      },
+      "faucet": {
+        "symbol": "tNVDAc",
+        "sourceSymbol": "NVDAc",
+        "decimals": 8,
+        "address": "0xe765a85774263a94595C3B36d5ce2e59b95689bE",
+        "enabled": true,
+        "funded": true,
+        "dripAmountBaseUnits": "2500000000",
+        "balanceBaseUnits": "9995000000000",
+        "ready": true
+      },
+      "trading": {
+        "buy": {
+          "state": "available",
+          "blockers": []
+        },
+        "sell": {
+          "state": "available",
+          "blockers": []
+        },
+        "capacity": {
+          "maxBuyStockBaseUnits": "2500000000",
+          "maxSellStockBaseUnits": "2500000000",
+          "requiresQuote": true
+        },
+        "stockInventoryBaseUnits": "9999900000000",
+        "usdcInventoryBaseUnits": "2000261402622",
+        "requiresQuote": true
+      },
+      "actions": {
+        "openPosition": {
+          "state": "available",
+          "blockers": []
+        },
+        "withdrawStock": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check this position's ownership, timing and available withdrawal amount."
+            }
+          ]
+        },
+        "protectedExit": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check this position's ownership, timing and available withdrawal amount."
+            }
+          ]
+        },
+        "provideCollateral": {
+          "state": "available",
+          "blockers": []
+        },
+        "withdrawCollateral": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check this position's ownership, timing and available withdrawal amount."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "tMETAc",
+      "sourceSymbol": "METAc",
+      "name": "Meta",
+      "decimals": 8,
+      "sourcePrice": null,
+      "relay": null,
+      "executionPrice": {
+        "kind": "deterministic-demo",
+        "priceUsd": 171.44444445,
+        "evaluatedAt": 1788943198,
+        "marketObservation": false
+      },
+      "pool": {
+        "address": "0x9bA34E764C8f755c358e5d12a0A8492c25129767",
+        "state": "ready",
+        "terms": {
+          "backingSymbol": "TestUSDC",
+          "commissionBps": 1000,
+          "poolFeeBps": 100,
+          "protocolFeeBps": 100,
+          "collateralRatioBps": 15000,
+          "protectedExitDelaySeconds": 60,
+          "collateralUnlockSeconds": 120
+        },
+        "capacity": {
+          "basis": "pool-constraints-at-block",
+          "requiresSimulation": true,
+          "maxDepositBaseUnits": "19442644198",
+          "minDepositBaseUnits": "1000000",
+          "maxCollateralDepositBaseUnits": "1000000000000",
+          "minCollateralDepositBaseUnits": "10000",
+          "trackedTvlUsdBaseUnits": "5000000000000",
+          "freeBackingBaseUnits": "50000000000"
+        }
+      },
+      "faucet": {
+        "symbol": "tMETAc",
+        "sourceSymbol": "METAc",
+        "decimals": 8,
+        "address": "0x9115c740B4F6a9B56B4cFFA039fb5B46Ba69f730",
+        "enabled": true,
+        "funded": true,
+        "dripAmountBaseUnits": "2500000000",
+        "balanceBaseUnits": "9995000000000",
+        "ready": true
+      },
+      "trading": {
+        "buy": {
+          "state": "available",
+          "blockers": []
+        },
+        "sell": {
+          "state": "available",
+          "blockers": []
+        },
+        "capacity": {
+          "maxBuyStockBaseUnits": "2500000000",
+          "maxSellStockBaseUnits": "2500000000",
+          "requiresQuote": true
+        },
+        "stockInventoryBaseUnits": "10000000000000",
+        "usdcInventoryBaseUnits": "2000261402622",
+        "requiresQuote": true
+      },
+      "actions": {
+        "openPosition": {
+          "state": "available",
+          "blockers": []
+        },
+        "withdrawStock": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check this position's ownership, timing and available withdrawal amount."
+            }
+          ]
+        },
+        "protectedExit": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check this position's ownership, timing and available withdrawal amount."
+            }
+          ]
+        },
+        "provideCollateral": {
+          "state": "available",
+          "blockers": []
+        },
+        "withdrawCollateral": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check this position's ownership, timing and available withdrawal amount."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "tGOOGLc",
+      "sourceSymbol": "GOOGLc",
+      "name": "Alphabet",
+      "decimals": 8,
+      "sourcePrice": null,
+      "relay": null,
+      "executionPrice": {
+        "kind": "deterministic-demo",
+        "priceUsd": 107.15277778,
+        "evaluatedAt": 1788943198,
+        "marketObservation": false
+      },
+      "pool": {
+        "address": "0x5C47F70e321F20A82E2a356c79f88BEdb047286A",
+        "state": "ready",
+        "terms": {
+          "backingSymbol": "TestUSDC",
+          "commissionBps": 1000,
+          "poolFeeBps": 100,
+          "protocolFeeBps": 100,
+          "collateralRatioBps": 15000,
+          "protectedExitDelaySeconds": 60,
+          "collateralUnlockSeconds": 120
+        },
+        "capacity": {
+          "basis": "pool-constraints-at-block",
+          "requiresSimulation": true,
+          "maxDepositBaseUnits": "31108230718",
+          "minDepositBaseUnits": "1000000",
+          "maxCollateralDepositBaseUnits": "1000000000000",
+          "minCollateralDepositBaseUnits": "10000",
+          "trackedTvlUsdBaseUnits": "5000000000000",
+          "freeBackingBaseUnits": "50000000000"
+        }
+      },
+      "faucet": {
+        "symbol": "tGOOGLc",
+        "sourceSymbol": "GOOGLc",
+        "decimals": 8,
+        "address": "0x560B12E0a9F6f65301b79F24CCBfbC0360f31bC3",
+        "enabled": true,
+        "funded": true,
+        "dripAmountBaseUnits": "2500000000",
+        "balanceBaseUnits": "9995000000000",
+        "ready": true
+      },
+      "trading": {
+        "buy": {
+          "state": "available",
+          "blockers": []
+        },
+        "sell": {
+          "state": "available",
+          "blockers": []
+        },
+        "capacity": {
+          "maxBuyStockBaseUnits": "2500000000",
+          "maxSellStockBaseUnits": "2500000000",
+          "requiresQuote": true
+        },
+        "stockInventoryBaseUnits": "10000000000000",
+        "usdcInventoryBaseUnits": "2000261402622",
+        "requiresQuote": true
+      },
+      "actions": {
+        "openPosition": {
+          "state": "available",
+          "blockers": []
+        },
+        "withdrawStock": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check this position's ownership, timing and available withdrawal amount."
+            }
+          ]
+        },
+        "protectedExit": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check this position's ownership, timing and available withdrawal amount."
+            }
+          ]
+        },
+        "provideCollateral": {
+          "state": "available",
+          "blockers": []
+        },
+        "withdrawCollateral": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check this position's ownership, timing and available withdrawal amount."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "tWETH",
+      "sourceSymbol": "WETH",
+      "name": "Wrapped Ether",
+      "decimals": 18,
+      "sourcePrice": null,
+      "relay": null,
+      "executionPrice": {
+        "kind": "deterministic-demo",
+        "priceUsd": 2827.55555556,
+        "evaluatedAt": 1788943202,
+        "marketObservation": false
+      },
+      "pool": {
+        "address": "0xe3A6822a532848fBa8CAcAa70A82D8165d4EF90F",
+        "state": "ready",
+        "terms": {
+          "backingSymbol": "TestUSDC",
+          "commissionBps": 1000,
+          "poolFeeBps": 100,
+          "protocolFeeBps": 100,
+          "collateralRatioBps": 15000,
+          "protectedExitDelaySeconds": 60,
+          "collateralUnlockSeconds": 120
+        },
+        "capacity": {
+          "maxDepositBaseUnits": "11788745677443746077",
+          "minDepositBaseUnits": "10000000000000000",
+          "requiresSimulation": true
+        }
+      },
+      "actions": {
+        "openPosition": {
+          "state": "available",
+          "blockers": []
+        },
+        "provideCollateral": {
+          "state": "available",
+          "blockers": []
+        },
+        "withdrawStock": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        },
+        "protectedExit": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        },
+        "withdrawCollateral": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "tcbBTC",
+      "sourceSymbol": "cbBTC",
+      "name": "Coinbase wrapped Bitcoin",
+      "decimals": 8,
+      "sourcePrice": null,
+      "relay": null,
+      "executionPrice": {
+        "kind": "deterministic-demo",
+        "priceUsd": 88361.11111112,
+        "evaluatedAt": 1788943202,
+        "marketObservation": false
+      },
+      "pool": {
+        "address": "0xEa246A4Cd3380A91a8FC372b206A5B9D04797B81",
+        "state": "ready",
+        "terms": {
+          "backingSymbol": "TestUSDC",
+          "commissionBps": 1000,
+          "poolFeeBps": 100,
+          "protocolFeeBps": 100,
+          "collateralRatioBps": 15000,
+          "protectedExitDelaySeconds": 60,
+          "collateralUnlockSeconds": 120
+        },
+        "capacity": {
+          "maxDepositBaseUnits": "36875825",
+          "minDepositBaseUnits": "1000000",
+          "requiresSimulation": true
+        }
+      },
+      "actions": {
+        "openPosition": {
+          "state": "available",
+          "blockers": []
+        },
+        "provideCollateral": {
+          "state": "available",
+          "blockers": []
+        },
+        "withdrawStock": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        },
+        "protectedExit": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        },
+        "withdrawCollateral": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "vWETH",
+      "sourceSymbol": "vWETH",
+      "name": "Test WETH Yield Vault",
+      "decimals": 18,
+      "sourcePrice": null,
+      "relay": null,
+      "executionPrice": {
+        "kind": "test-vault-nav",
+        "priceUsd": 2830.41138664,
+        "evaluatedAt": 1788943202,
+        "marketObservation": false
+      },
+      "pool": {
+        "address": "0x7476dD1370aD6381FC9bc96125D084BEED5A6C49",
+        "state": "ready",
+        "terms": {
+          "backingSymbol": "TestUSDC",
+          "commissionBps": 1000,
+          "poolFeeBps": 100,
+          "protocolFeeBps": 100,
+          "collateralRatioBps": 15000,
+          "protectedExitDelaySeconds": 60,
+          "collateralUnlockSeconds": 120
+        },
+        "capacity": {
+          "maxDepositBaseUnits": "11691922077771996913",
+          "minDepositBaseUnits": "10000000000000000",
+          "requiresSimulation": true
+        }
+      },
+      "actions": {
+        "openPosition": {
+          "state": "available",
+          "blockers": []
+        },
+        "provideCollateral": {
+          "state": "available",
+          "blockers": []
+        },
+        "withdrawStock": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        },
+        "protectedExit": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        },
+        "withdrawCollateral": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "tWETH",
+      "sourceSymbol": "WETH",
+      "name": "Wrapped Ether",
+      "decimals": 18,
+      "sourcePrice": null,
+      "relay": null,
+      "executionPrice": {
+        "kind": "deterministic-demo",
+        "priceUsd": 2827.55555556,
+        "evaluatedAt": 1788943202,
+        "marketObservation": false
+      },
+      "pool": {
+        "address": "0xD6bb77374993ee78eD244C9d54ee735a2B67D36e",
+        "state": "ready",
+        "terms": {
+          "backingSymbol": "vUSDC",
+          "commissionBps": 1000,
+          "poolFeeBps": 100,
+          "protocolFeeBps": 100,
+          "collateralRatioBps": 15000,
+          "protectedExitDelaySeconds": 60,
+          "collateralUnlockSeconds": 120
+        },
+        "capacity": {
+          "maxDepositBaseUnits": "11719569247146778419",
+          "minDepositBaseUnits": "10000000000000000",
+          "requiresSimulation": true
+        }
+      },
+      "actions": {
+        "openPosition": {
+          "state": "available",
+          "blockers": []
+        },
+        "provideCollateral": {
+          "state": "available",
+          "blockers": []
+        },
+        "withdrawStock": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        },
+        "protectedExit": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        },
+        "withdrawCollateral": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "tcbBTC",
+      "sourceSymbol": "cbBTC",
+      "name": "Coinbase wrapped Bitcoin",
+      "decimals": 8,
+      "sourcePrice": null,
+      "relay": null,
+      "executionPrice": {
+        "kind": "deterministic-demo",
+        "priceUsd": 88361.11111112,
+        "evaluatedAt": 1788943202,
+        "marketObservation": false
+      },
+      "pool": {
+        "address": "0x511710Cae7Ee79633CdaD0f96b52AbD96F1b6E3F",
+        "state": "ready",
+        "terms": {
+          "backingSymbol": "vUSDC",
+          "commissionBps": 1000,
+          "poolFeeBps": 100,
+          "protocolFeeBps": 100,
+          "collateralRatioBps": 15000,
+          "protectedExitDelaySeconds": 60,
+          "collateralUnlockSeconds": 120
+        },
+        "capacity": {
+          "maxDepositBaseUnits": "37769253",
+          "minDepositBaseUnits": "1000000",
+          "requiresSimulation": true
+        }
+      },
+      "actions": {
+        "openPosition": {
+          "state": "available",
+          "blockers": []
+        },
+        "provideCollateral": {
+          "state": "available",
+          "blockers": []
+        },
+        "withdrawStock": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        },
+        "protectedExit": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        },
+        "withdrawCollateral": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "tAAPLc",
+      "sourceSymbol": "AAPLc",
+      "name": "Apple",
+      "decimals": 8,
+      "sourcePrice": null,
+      "relay": null,
+      "executionPrice": {
+        "kind": "deterministic-demo",
+        "priceUsd": 85.66666667,
+        "evaluatedAt": 1788943202,
+        "marketObservation": false
+      },
+      "pool": {
+        "address": "0x909eeD441E18538062bD37803223F4bd78cd44ac",
+        "state": "ready",
+        "terms": {
+          "backingSymbol": "vUSDC",
+          "commissionBps": 1000,
+          "poolFeeBps": 100,
+          "protocolFeeBps": 100,
+          "collateralRatioBps": 15000,
+          "protectedExitDelaySeconds": 60,
+          "collateralUnlockSeconds": 120
+        },
+        "capacity": {
+          "maxDepositBaseUnits": "38867141071",
+          "minDepositBaseUnits": "1000000",
+          "requiresSimulation": true
+        }
+      },
+      "actions": {
+        "openPosition": {
+          "state": "available",
+          "blockers": []
+        },
+        "provideCollateral": {
+          "state": "available",
+          "blockers": []
+        },
+        "withdrawStock": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        },
+        "protectedExit": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        },
+        "withdrawCollateral": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "tNVDAc",
+      "sourceSymbol": "NVDAc",
+      "name": "NVIDIA",
+      "decimals": 8,
+      "sourcePrice": null,
+      "relay": null,
+      "executionPrice": {
+        "kind": "deterministic-demo",
+        "priceUsd": 128.5,
+        "evaluatedAt": 1788943202,
+        "marketObservation": false
+      },
+      "pool": {
+        "address": "0x6d2B42d285667AbC09b55495e1f92C3b37ee093b",
+        "state": "ready",
+        "terms": {
+          "backingSymbol": "vUSDC",
+          "commissionBps": 1000,
+          "poolFeeBps": 100,
+          "protocolFeeBps": 100,
+          "collateralRatioBps": 15000,
+          "protectedExitDelaySeconds": 60,
+          "collateralUnlockSeconds": 120
+        },
+        "capacity": {
+          "maxDepositBaseUnits": "25971464850",
+          "minDepositBaseUnits": "1000000",
+          "requiresSimulation": true
+        }
+      },
+      "actions": {
+        "openPosition": {
+          "state": "available",
+          "blockers": []
+        },
+        "provideCollateral": {
+          "state": "available",
+          "blockers": []
+        },
+        "withdrawStock": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        },
+        "protectedExit": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        },
+        "withdrawCollateral": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "tMETAc",
+      "sourceSymbol": "METAc",
+      "name": "Meta",
+      "decimals": 8,
+      "sourcePrice": null,
+      "relay": null,
+      "executionPrice": {
+        "kind": "deterministic-demo",
+        "priceUsd": 171.33333334,
+        "evaluatedAt": 1788943202,
+        "marketObservation": false
+      },
+      "pool": {
+        "address": "0x5BfD6e1335919Ea0DF685BC8ec98353325b139aC",
+        "state": "ready",
+        "terms": {
+          "backingSymbol": "vUSDC",
+          "commissionBps": 1000,
+          "poolFeeBps": 100,
+          "protocolFeeBps": 100,
+          "collateralRatioBps": 15000,
+          "protectedExitDelaySeconds": 60,
+          "collateralUnlockSeconds": 120
+        },
+        "capacity": {
+          "maxDepositBaseUnits": "19478598637",
+          "minDepositBaseUnits": "1000000",
+          "requiresSimulation": true
+        }
+      },
+      "actions": {
+        "openPosition": {
+          "state": "available",
+          "blockers": []
+        },
+        "provideCollateral": {
+          "state": "available",
+          "blockers": []
+        },
+        "withdrawStock": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        },
+        "protectedExit": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        },
+        "withdrawCollateral": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "tGOOGLc",
+      "sourceSymbol": "GOOGLc",
+      "name": "Alphabet",
+      "decimals": 8,
+      "sourcePrice": null,
+      "relay": null,
+      "executionPrice": {
+        "kind": "deterministic-demo",
+        "priceUsd": 107.08333334,
+        "evaluatedAt": 1788943202,
+        "marketObservation": false
+      },
+      "pool": {
+        "address": "0x92b7e0564B1e113C874A0B5f63f24Dc9D0CD0C47",
+        "state": "ready",
+        "terms": {
+          "backingSymbol": "vUSDC",
+          "commissionBps": 1000,
+          "poolFeeBps": 100,
+          "protocolFeeBps": 100,
+          "collateralRatioBps": 15000,
+          "protectedExitDelaySeconds": 60,
+          "collateralUnlockSeconds": 120
+        },
+        "capacity": {
+          "maxDepositBaseUnits": "31165757819",
+          "minDepositBaseUnits": "1000000",
+          "requiresSimulation": true
+        }
+      },
+      "actions": {
+        "openPosition": {
+          "state": "available",
+          "blockers": []
+        },
+        "provideCollateral": {
+          "state": "available",
+          "blockers": []
+        },
+        "withdrawStock": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        },
+        "protectedExit": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        },
+        "withdrawCollateral": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "symbol": "tWETH",
+      "sourceSymbol": "WETH",
+      "name": "Wrapped Ether",
+      "decimals": 18,
+      "sourcePrice": null,
+      "relay": null,
+      "executionPrice": {
+        "kind": "deterministic-demo",
+        "priceUsd": 2827.55555556,
+        "evaluatedAt": 1788943202,
+        "marketObservation": false
+      },
+      "pool": {
+        "address": "0xdE95607EdbC05Eb442B2820597f71895C0541682",
+        "state": "ready",
+        "terms": {
+          "backingSymbol": "vUSDC",
+          "commissionBps": 700,
+          "poolFeeBps": 50,
+          "protocolFeeBps": 100,
+          "collateralRatioBps": 17500,
+          "protectedExitDelaySeconds": 60,
+          "collateralUnlockSeconds": 120
+        },
+        "capacity": {
+          "maxDepositBaseUnits": "1011676441594605978",
+          "minDepositBaseUnits": "10000000000000000",
+          "requiresSimulation": true
+        }
+      },
+      "actions": {
+        "openPosition": {
+          "state": "available",
+          "blockers": []
+        },
+        "provideCollateral": {
+          "state": "available",
+          "blockers": []
+        },
+        "withdrawStock": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        },
+        "protectedExit": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        },
+        "withdrawCollateral": {
+          "state": "position-required",
+          "blockers": [
+            {
+              "code": "position-required",
+              "message": "Check the position owner, waiting period and current payout."
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

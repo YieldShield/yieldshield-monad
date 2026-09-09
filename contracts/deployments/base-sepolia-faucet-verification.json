@@ -1,0 +1,34 @@
+{
+  "verifiedAt": "2026-09-08T13:43:28.832Z",
+  "chainId": 84532,
+  "recipient": "0xA437345Be29EC6802024A8e090E34b621b92E5E2",
+  "faucet": "0x30312686180cD1B462AE315DdF23cc129d414b91",
+  "transactionHash": "0x7625badb37e1bc35c34783a37b39b70d3d01ad34c87325979c4ee06baacfeaba",
+  "blockNumber": "46553359",
+  "blockHash": "0xf15714d778ae48ec71a76701b9a6be561f4eac43032e2462d206c7ae13b7b174",
+  "tokens": [
+    {
+      "symbol": "tAAPLc",
+      "amount": "25"
+    },
+    {
+      "symbol": "tNVDAc",
+      "amount": "25"
+    },
+    {
+      "symbol": "tMETAc",
+      "amount": "25"
+    },
+    {
+      "symbol": "tGOOGLc",
+      "amount": "25"
+    },
+    {
+      "symbol": "TestUSDC",
+      "amount": "10000"
+    }
+  ],
+  "canonicalEventsVerified": true,
+  "balanceChangesVerified": true,
+  "cooldownVerified": true
+}
