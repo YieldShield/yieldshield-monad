@@ -1,0 +1,12 @@
+{
+  "chainId": 10143,
+  "account": "0xA437345Be29EC6802024A8e090E34b621b92E5E2",
+  "wrapper": "0x23EA8b07fda821d2096dee02a3a662a5374B69Cb",
+  "txHash": "0x93b239a6e71840e11b7dce0f881dd7eca680dd9a82a0bd575083b83e752c0e16",
+  "blockNumber": "61072789",
+  "wrappedAmount": "10000000000000000",
+  "walletWrappedBalance": "10000000000000000",
+  "totalSupply": "10000000000000000",
+  "nativeBacking": "10000000000000000",
+  "note": "Actual native MON wrapping on Monad testnet. This verifies the wrapper only; protection markets remain pending."
+}
