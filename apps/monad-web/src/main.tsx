@@ -7,7 +7,7 @@ import config from "../../../config/monad.json";
 import registryJson from "../../../config/deployment.json";
 import abisJson from "../../../config/abis.json";
 import { WalletProvider, useWallet, useBalance, client } from "./wallet";
-import { amount, minOut, netAsset, fmt, usd, short, fetcher, explorer, errorMessage } from "./lib";
+import { amount, minOut, netAsset, noticeState, fmt, usd, short, fetcher, explorer, errorMessage } from "./lib";
 import type { Asset, Market, Position, Snapshot, Registry } from "./types";
 import "./styles.css";
 const registry = registryJson as unknown as Registry;
@@ -749,6 +749,7 @@ function PositionDetail() {
   const p = data?.positions.find((p) => p.key === key);
   const m = state?.markets.find((m) => m.id === p?.poolId);
   const [withdraw, setWithdraw] = useState("");
+  const [partial, setPartial] = useState("");
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 1000);
@@ -773,8 +774,11 @@ function PositionDetail() {
   const senior = p.side === "senior",
     pos = p.position;
   const unlocked = Number(pos.depositTime) * 1000 + 60000 <= now;
-  const noticeReady = Number(pos.unlockRequestTime || 0) * 1000 + 120000;
-  const activeNotice = Number(pos.unlockRequestTime || 0) > 0 && now >= noticeReady && now < noticeReady + 7 * 86400000;
+  const {
+    readyAt: noticeReady,
+    active: activeNotice,
+    expired: noticeExpired,
+  } = noticeState(pos.unlockRequestTime, now);
   let assetExit: bigint | null = null,
     backingExit: bigint | null = null;
   try {
@@ -830,6 +834,11 @@ function PositionDetail() {
           </strong>
         </div>
       </div>
+      {m.reason && (
+        <p className="inline-warning">
+          {m.reason} <Link to="/status">View prices and refresh options ↗</Link>
+        </p>
+      )}
       {senior ? (
         <div className="exit-grid">
           <section className="exit-card">
@@ -839,6 +848,12 @@ function PositionDetail() {
             <strong className="exit-amount">
               {fmt(assetExit, m.shield.decimals, 6)} <small>{m.symbol}</small>
             </strong>
+            {!m.shield.healthy && (
+              <p className="inline-warning">
+                A current asset price is needed to settle gain-sharing fees. Refresh the signed MON price on Market
+                status.
+              </p>
+            )}
             <Submit
               label="Withdraw asset & close"
               disabled={!m.actions.withdrawAsset || assetExit === null || assetExit <= 0n}
@@ -846,6 +861,43 @@ function PositionDetail() {
                 act("Withdraw asset", "shieldedWithdraw", [BigInt(p.id), m.shieldedToken, minOut(assetExit!)], true)
               }
             />
+            <details className="partial-exit">
+              <summary>Withdraw part of this position</summary>
+              <p>
+                Fees settle on the whole position first. The remainder receives a new receipt with proportionally
+                reduced entry value and backing cap. The original waiting period is preserved.
+              </p>
+              <label className="field">
+                Asset amount to receive
+                <input
+                  inputMode="decimal"
+                  value={partial}
+                  onChange={(e) => setPartial(e.target.value)}
+                  placeholder={m.symbol}
+                />
+              </label>
+              <Submit
+                label="Withdraw part & replace receipt"
+                disabled={!partial || assetExit === null || !m.actions.withdrawAsset}
+                onClick={() => {
+                  try {
+                    const n = amount(partial, m.shield.decimals);
+                    if (assetExit === null || n >= assetExit)
+                      throw new Error("Use the full exit to close this position.");
+                    if (assetExit - n < BigInt(m.config?.[0] || 1))
+                      throw new Error("The remaining position would be below the pool minimum.");
+                    void act(
+                      "Withdraw part of position",
+                      "partialWithdrawShielded",
+                      [BigInt(p.id), n, m.shieldedToken, minOut(n)],
+                      true,
+                    );
+                  } catch (e) {
+                    w.setError(errorMessage(e));
+                  }
+                }}
+              />
+            </details>
           </section>
           <section className="exit-card protected">
             <span className="eyebrow">Option 02</span>
@@ -897,7 +949,7 @@ function PositionDetail() {
                 </dd>
               </div>
             </dl>
-            {!Number(pos.unlockRequestTime) || now >= noticeReady + 7 * 86400000 ? (
+            {!Number(pos.unlockRequestTime) || noticeExpired ? (
               <Submit
                 label="Start withdrawal notice"
                 onClick={() => act("Start notice", "startUnlockProcess", [BigInt(p.id)])}

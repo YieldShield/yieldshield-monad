@@ -42,3 +42,13 @@ export function errorMessage(e: unknown) {
     return "Request declined in your wallet. You can try again.";
   return (x.shortMessage || x.message || "Transaction could not be completed.").slice(0, 240);
 }
+
+// The receipt stores maturity, not the timestamp the notice was requested.
+export function noticeState(maturity: string | undefined, now: number) {
+  const readyAt = Number(maturity || 0) * 1000;
+  return {
+    readyAt,
+    active: readyAt > 0 && now >= readyAt && now <= readyAt + 7 * 86400000,
+    expired: readyAt > 0 && now > readyAt + 7 * 86400000,
+  };
+}

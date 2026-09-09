@@ -198,7 +198,7 @@ async function snapshot() {
             actions: {
               protect: ready && capacity >= cfg[0],
               provide: ready,
-              withdrawAsset: !paused,
+              withdrawAsset: Object.values(code).every(Boolean) && shield.healthy && !paused,
               withdrawBacking: ready,
               trade: p.environment === "scenario" && shield.healthy,
             },

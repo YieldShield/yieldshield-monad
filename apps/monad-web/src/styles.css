@@ -2139,3 +2139,7 @@ input[type="range"] {
     animation: none !important;
   }
 }
+
+.partial-exit { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); }
+.partial-exit summary { cursor: pointer; font-weight: 600; }
+.partial-exit p { margin-top: 16px; }

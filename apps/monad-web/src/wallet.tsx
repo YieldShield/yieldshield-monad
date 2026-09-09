@@ -31,6 +31,23 @@ const pythAbi = parseAbi([
   "function updatePriceFeeds(bytes[]) payable",
 ]);
 const WalletContext = createContext<any>(null);
+const pendingKey = "yieldshield-monad:pending-transaction";
+function savedTransaction(): Hash | null {
+  try {
+    const value = localStorage.getItem(pendingKey);
+    return value && /^0x[0-9a-f]{64}$/i.test(value) ? (value as Hash) : null;
+  } catch {
+    return null;
+  }
+}
+function saveTransaction(hash: Hash | null) {
+  try {
+    if (hash) localStorage.setItem(pendingKey, hash);
+    else localStorage.removeItem(pendingKey);
+  } catch {
+    /* Wallet receipt remains the source of truth when storage is unavailable. */
+  }
+}
 type WalletOption = { info: { uuid: string; name: string; icon: string; rdns: string }; provider: EIP1193Provider };
 export function WalletProvider({ children }: { children: ReactNode }) {
   const [options, setOptions] = useState<WalletOption[]>([]),
@@ -43,6 +60,57 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false);
   const pending = useRef(false);
+  useEffect(() => {
+    const saved = savedTransaction();
+    if (!saved) return;
+    pending.current = true;
+    setBusy(true);
+    setHash(saved);
+    setStatus("Checking your previous transaction");
+    void client
+      .waitForTransactionReceipt({ hash: saved, confirmations: 2, checkReplacement: false, timeout: 120000 })
+      .then((receipt) => {
+        saveTransaction(null);
+        setStatus(
+          receipt.status === "success"
+            ? "Previous transaction confirmed. Reconnect to view your position."
+            : "Previous transaction reverted. Check its receipt.",
+        );
+      })
+      .catch(() =>
+        setError("Confirmation is still unavailable. Check the transaction link and reload before trying again."),
+      )
+      .finally(() => {
+        pending.current = false;
+        setBusy(false);
+      });
+  }, []);
+  useEffect(() => {
+    if (!chooser) return;
+    const previous = document.activeElement as HTMLElement | null;
+    const dialog = document.querySelector<HTMLElement>('[aria-labelledby="wallet-title"]');
+    const focusable = () => Array.from(dialog?.querySelectorAll<HTMLElement>("button:not([disabled]), a[href]") || []);
+    focusable()[0]?.focus();
+    const keyboard = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setChooser(false);
+      if (event.key !== "Tab") return;
+      const nodes = focusable(),
+        first = nodes[0],
+        last = nodes.at(-1);
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
+    };
+    document.addEventListener("keydown", keyboard);
+    return () => {
+      document.removeEventListener("keydown", keyboard);
+      previous?.focus();
+    };
+  }, [chooser]);
   useEffect(() => {
     const announce = (event: Event) => {
       const x = (event as CustomEvent<WalletOption>).detail;
@@ -115,32 +183,41 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     return createWalletClient({ account, chain: monadTestnet, transport: custom(provider) });
   }
   async function send(req: TxRequest) {
-    const wallet = await ensure();
+    await ensure();
     const registry = deployment as any;
     const entry = Object.values(registry.contracts).find(
       (v: any) => v.address.toLowerCase() === req.address.toLowerCase(),
     ) as any;
-    const pool = registry.pools.find((v: any) => v.address.toLowerCase() === req.address.toLowerCase());
     const external = [config.externalTokens.shMON, config.pyth.address].some(
       (a) => a.toLowerCase() === req.address.toLowerCase(),
     );
-    if (!entry && !pool && !external) {
+    if (!entry && !external) {
       const factoryAbi = parseAbi(["function isPoolActive(address) view returns(bool)"]);
       const poolAbi = parseAbi(["function POOL_FACTORY() view returns(address)"]);
       const origin = await client.readContract({ address: req.address, abi: poolAbi, functionName: "POOL_FACTORY" });
-      const authorized = ["Factory", "ReferenceFactory"].some(
-        (n) => registry.contracts[n]?.address.toLowerCase() === origin.toLowerCase(),
-      );
+      const factory = ["Factory", "ReferenceFactory"]
+        .map((n) => registry.contracts[n])
+        .find((c) => c?.address.toLowerCase() === origin.toLowerCase());
+      if (!factory) throw new Error("Pool provenance verification failed.");
+      const [factoryCode, implementation, active] = await Promise.all([
+        client.getCode({ address: origin }),
+        client.getStorageAt({
+          address: req.address,
+          slot: "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc",
+        }),
+        client.readContract({ address: origin, abi: factoryAbi, functionName: "isPoolActive", args: [req.address] }),
+      ]);
       if (
-        !authorized ||
-        !(await client.readContract({
-          address: origin,
-          abi: factoryAbi,
-          functionName: "isPoolActive",
-          args: [req.address],
-        }))
+        !factoryCode ||
+        keccak256(factoryCode) !== factory.runtimeCodehash ||
+        !implementation ||
+        "0x" + implementation.slice(-40) !== registry.contracts.BasePoolRouter.address.toLowerCase() ||
+        !active
       )
-        throw new Error("Pool provenance verification failed.");
+        throw new Error("Pool implementation verification failed.");
+      const routerCode = await client.getCode({ address: registry.contracts.BasePoolRouter.address });
+      if (!routerCode || keccak256(routerCode) !== registry.contracts.BasePoolRouter.runtimeCodehash)
+        throw new Error("Pool router verification failed.");
     }
     const code = await client.getCode({ address: req.address });
     if (!code || code === "0x" || (entry && keccak256(code) !== entry.runtimeCodehash))
@@ -163,7 +240,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
           : "Not enough testnet MON for this action and gas. Use the Monad faucet.",
       );
     setStatus("Confirm in your wallet");
+    const wallet = await ensure();
     const tx = await wallet.sendTransaction({ to: req.address, data, value: req.value || 0n, gas, ...fees });
+    saveTransaction(tx);
     setHash(tx);
     setStatus("Confirming on Monad");
     const receipt = await client.waitForTransactionReceipt({
@@ -172,6 +251,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       checkReplacement: false,
       timeout: 120000,
     });
+    saveTransaction(null);
     if (receipt.status !== "success") throw new Error("Transaction reverted. Your wallet receipt has the details.");
     return receipt;
   }
@@ -217,6 +297,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     setHash(null);
     setStatus(label);
     try {
+      if (savedTransaction())
+        throw new Error(
+          "A previous transaction still needs confirmation. Open its receipt and reload before sending another.",
+        );
       await ensure();
       await fn();
       setStatus("Confirmed — your balances will refresh.");
