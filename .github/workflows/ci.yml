@@ -1,0 +1,44 @@
+name: Monad release checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: monad-checks-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          submodules: recursive
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run test:monad
+      - run: npm run test:web
+      - run: npm run build
+      - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09
+        with:
+          version: v1.8.1
+      - name: Monad adapter and lifecycle tests
+        run: forge test --root contracts --match-path 'test/monad/*.t.sol'
+      - name: Imported immutable-module regressions
+        run: forge test --root contracts --match-path 'test/base-modules/*.t.sol'
+      - name: Check delivery script syntax
+        run: |
+          node --check scripts/deploy-monad.mjs
+          node --check scripts/deploy-monad-reference.mjs
+          node --check scripts/smoke-monad.mjs
+          node --check scripts/verify-monad.mjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: monad-web
+          path: apps/monad-web/dist
+          retention-days: 14

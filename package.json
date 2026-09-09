@@ -8,7 +8,7 @@
     "apps/*"
   ],
   "engines": {
-    "node": ">=22.12.0"
+    "node": "24.x"
   },
   "scripts": {
     "build": "npm run build -w monad-web",
@@ -16,7 +16,7 @@
     "build:sdk": "npm run build -w @yieldshield/core && npm run build -w @yieldshield/sdk",
     "codegen": "npm run codegen -w @yieldshield/sdk",
     "test:sdk": "npm run test -w @yieldshield/sdk",
-    "test:web": "npm run test -w web",
+    "test:web": "npm run test -w monad-web",
     "typecheck": "npm run typecheck -w monad-web",
     "lint": "eslint .",
     "format": "prettier --write .",
@@ -27,7 +27,13 @@
     "start:api": "node services/monad/server.mjs",
     "test:base": "node --test services/*.test.mjs scripts/deploy-base-sepolia.test.mjs scripts/base-receipts.test.mjs scripts/base-local-rehearsal.test.mjs scripts/sync-base-deployment.test.mjs scripts/sync-base-demo.test.mjs scripts/smoke-base-demo.test.mjs && vitest run packages/adapter-evm/test",
     "test:monad": "node --test services/monad/*.test.mjs scripts/monad-deployment.test.mjs scripts/monad-receipts.test.mjs",
-    "sync:monad": "node scripts/sync-monad.mjs"
+    "sync:monad": "node scripts/sync-monad.mjs",
+    "deploy:monad:prepare": "node scripts/deploy-monad.mjs --prepare",
+    "deploy:monad": "node scripts/deploy-monad.mjs --broadcast",
+    "deploy:reference": "node scripts/deploy-monad-reference.mjs --broadcast",
+    "verify:monad": "node scripts/verify-monad.mjs",
+    "smoke:monad": "node scripts/smoke-monad.mjs --broadcast",
+    "smoke:reference": "node scripts/smoke-monad.mjs --broadcast --reference"
   },
   "dependencies": {
     "@pythnetwork/pyth-sdk-solidity": "4.3.1",
