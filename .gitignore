@@ -28,3 +28,8 @@ contracts/deployments/base-sepolia-demo-plan.json
 contracts/deployments/base-sepolia-crypto-plan.json
 .vercel
 .env*
+
+# Monad local tooling and signing material
+.tools/
+contracts/.monad-deployment.lock
+artifacts/local/

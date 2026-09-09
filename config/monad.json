@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "chainId": 10143,
+  "name": "Monad Testnet",
+  "nativeSymbol": "MON",
+  "rpcUrl": "https://testnet-rpc.monad.xyz",
+  "explorerUrl": "https://testnet.monadexplorer.com",
+  "mainnetChainId": 143,
+  "mainnetRpcUrl": "https://rpc.monad.xyz",
+  "pyth": {
+    "address": "0x2880aB155794e7179c9eE2e38200202908C17B43",
+    "monUsdFeedId": "0x31491744e2dbf6df7fcf4ac0820d18a609b49076d45066d3568424e62f686cd1",
+    "maxAgeSeconds": 120,
+    "maxConfidenceBps": 100
+  },
+  "externalTokens": {
+    "shMON": "0x282BdDFF5e58793AcAb65438b257Dbd15A8745C9",
+    "circleUSDC": "0x534b2f3A21130d7a60830c2Df862319e593943A3"
+  },
+  "theme": {
+    "purple": "#6E54FF",
+    "lavender": "#DDD7FE",
+    "ink": "#0E091C",
+    "junior": "#85E6FF",
+    "pending": "#FFAE45"
+  }
+}

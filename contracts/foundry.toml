@@ -1,4 +1,6 @@
 [profile.default]
+network = "monad"
+evm_version = "cancun"
 src = 'contracts'
 out = 'out'
 libs = ['lib', 'node_modules']
@@ -31,6 +33,8 @@ remappings = [
 
 
 [rpc_endpoints]
+monadTestnet = "https://testnet-rpc.monad.xyz"
+monad = "https://rpc.monad.xyz"
 default_network = "http://127.0.0.1:8545"
 
 mainnet = "https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_API_KEY}"
