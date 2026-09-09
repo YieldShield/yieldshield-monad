@@ -1,0 +1,152 @@
+{
+  "chainId": 10143,
+  "checkedAt": "2026-09-09T14:30:22.217Z",
+  "deploymentStatus": "preparing",
+  "contracts": [
+    {
+      "name": "TestUSDC",
+      "address": "0xdf25A5f619a2bF7b9baC4A349D6C8381597e0604",
+      "runtimeCodehash": "0x4632364f74e86a6bfe4f063c6e7944c8bd06d608b1ee1e93ed81eb3bad30c9c7",
+      "txHash": "0x2f96bdbaf1ddfcbd8a55fd4f9c93e023637724915226e2379f1b978596154e1e",
+      "blockNumber": "61062684"
+    },
+    {
+      "name": "ScenarioMON",
+      "address": "0xf6d92E132ACBB85ff3c059f8ca71169d7d82EE9C",
+      "runtimeCodehash": "0x4632364f74e86a6bfe4f063c6e7944c8bd06d608b1ee1e93ed81eb3bad30c9c7",
+      "txHash": "0x23d0049ecdb67db171276fd068ced729273ce2c24d3c7f1f0e0da68d9538f8d4",
+      "blockNumber": "61062692"
+    },
+    {
+      "name": "WMON",
+      "address": "0x23EA8b07fda821d2096dee02a3a662a5374B69Cb",
+      "runtimeCodehash": "0x26952774b3c5b0dc0fc12543a800db9e64b1063be398f46700b64aa4402be093",
+      "txHash": "0xbabc13b20dddab4edf000f83fdb67ccb1d2dcc4efd1e30ff9579b5a4db4a2f3c",
+      "blockNumber": "61062701"
+    },
+    {
+      "name": "TestUSDVault",
+      "address": "0x1feB5ae74eaBf81F8148C5396179d1aC9F9C77A5",
+      "runtimeCodehash": "0xb3ded4f82693583b7738de5cca95c8814a7b5fc2ef452fa11c56d1d904c7a84b",
+      "txHash": "0x51fc8cc0110d593e0cedd4beb862eb9f9c7ed654bfb90bcc6629f8ac5150e3c9",
+      "blockNumber": "61062711"
+    },
+    {
+      "name": "ScenarioOracle",
+      "address": "0x9dDE7f1700C9fbE4fd5Ae8aB0913f5fbaC2Ab22f",
+      "runtimeCodehash": "0x9ab99907f09a5abacca6d0cbbd8c56078d445e037c2fd0998c448124754df37e",
+      "txHash": "0x6f71d18101dcbbbeae625268c0c1c2bd667ad57ddefffcd18a59e28e3f16bf75",
+      "blockNumber": "61062744"
+    },
+    {
+      "name": "VaultNAV",
+      "address": "0x7fb18447F616A1A31E132039bddFDA4363Ff9976",
+      "runtimeCodehash": "0xd46691c74c5d6e815bc59a1aac0d17db2a6cea2f7f3156ebdb6f425ad0b84066",
+      "txHash": "0xf024f043eddd8f0d2588700a92c0afd2dcbaba3e1fa823acb94210d749dcfe41",
+      "blockNumber": "61062754"
+    },
+    {
+      "name": "VaultBackingFeed",
+      "address": "0xF0839F05590dc2B0361c8e54FE3094863eb5c675",
+      "runtimeCodehash": "0x83e3ae73c18f7ac135f35958b0bdd4ff843a0692077034adfbc5e619b67daf6d",
+      "txHash": "0x001b0437f95d394645e3a20d9f3a718b7ad036a716c197436cbfac986b586c11",
+      "blockNumber": "61062782"
+    },
+    {
+      "name": "ReferenceFeed",
+      "address": "0x45F5DF2A69bc273082a203ee73D64922EAE8dD40",
+      "runtimeCodehash": "0x838d6f0ee4b7c02f0586dc6eecf5bf82a2103f62cc6e4a3fd31e562eb1f4103a",
+      "txHash": "0x786c9befe6ac89baf7583d9e2d362c4af31b2fd0debc55805084963cc133faf2",
+      "blockNumber": "61062793"
+    },
+    {
+      "name": "StakingRouter",
+      "address": "0xd78C001AF28c649671D52d990f8c13e4965A1f9f",
+      "runtimeCodehash": "0xf7445d8bfec4d69d564b0308ac534804e5add36abac9ae4e670a7fd80e3847fe",
+      "txHash": "0xaf91755f9d33fa8caee859488f85839d31db960cb867fd393080445b863e7099",
+      "blockNumber": "61062803"
+    },
+    {
+      "name": "ScenarioExchangeOracle",
+      "address": "0x4B7cE691B3B4D6565560E5d09B1B7118ae285311",
+      "runtimeCodehash": "0x13b74495176c6f0dd2fc33e115d6cbfcd8795205bbeb6fdbee307f3bc04151f3",
+      "txHash": "0x3da9b75e57635891e1dbf072f210784d369212dde949f58a1c02fb229a081bf2",
+      "blockNumber": "61062811"
+    },
+    {
+      "name": "ScenarioExchange",
+      "address": "0x3a7dE27B5D23615bB0Df1C498e614aac86bb3f65",
+      "runtimeCodehash": "0xefdf6ca928af93717435a358db2d5d1315f500c6e79a5405ac7c98d0e387b115",
+      "txHash": "0x9f84cca705129cf97c5c8191f487f5e621b6fedf55a7150e4e46bb4387b52570",
+      "blockNumber": "61062820"
+    },
+    {
+      "name": "Faucet",
+      "address": "0xb10464B2D7D6f7aFCF67DA8648d95eA374F11E07",
+      "runtimeCodehash": "0xaa26e72bfa62715e96f243bd756d3377694ae93aebb7334bf12ba8ee88a69a08",
+      "txHash": "0xdab563916534e7e28ed5e8f61b9bb74419d7a56d2b6acd21881b38efec43ed08",
+      "blockNumber": "61062829"
+    },
+    {
+      "name": "Timelock",
+      "address": "0xA6ee97633CcBC7ddc8222451D6e9a046D0ADeb18",
+      "runtimeCodehash": "0x364fc7a8cbee889c87e1ab29342f39c93b2316cb3d3e0cc0e1baaf407fd71e11",
+      "txHash": "0x205b828e103aa14ef3a8beb4e854851ece93cf744084118906ddecdc65a53462",
+      "blockNumber": "61062838"
+    },
+    {
+      "name": "YSToken",
+      "address": "0xdaa9954d8a1115117d2Bb858Ec5CA3321BfF83df",
+      "runtimeCodehash": "0x500b41e819c3f77136a94b6e3d5d35f98cb1955ea2ba36ad1eb4d22835d91fcf",
+      "txHash": "0xda90690fcaa565d867efefc14ab7c1a7dd032557f298d3be3ec6a5f33f27e185",
+      "blockNumber": "61062847"
+    },
+    {
+      "name": "Governor",
+      "address": "0xf9CD38469B9ec6859F5E6B3377Bfc742307f8059",
+      "runtimeCodehash": "0x8642d5dc006946de7a9c8720a1a929a0e7afbf4a4d90ab8cdaefe9b71494e5f3",
+      "txHash": "0x0aee0dcfe5e92a802b98b322ab6e3179651254e298dda2db77d61b7694594774",
+      "blockNumber": "61062856"
+    },
+    {
+      "name": "BasePoolAdminModule",
+      "address": "0x1BcA75eAF9042c1aF25d97a76711cB8628849352",
+      "runtimeCodehash": "0x92f57a2164229167c6015a11f5d8697a9c1aeb2fa44cd9ca709aabe013933404",
+      "txHash": "0x29f2000cc9b91843de1afbc3527f4623bcdf4bce05bd901115e18cea560f522d",
+      "blockNumber": "61062903"
+    },
+    {
+      "name": "BasePoolDepositsModule",
+      "address": "0x0B3Fb50b3c7Bd35Bd689F0Ca25Fc5DC10a18C5A9",
+      "runtimeCodehash": "0xe4e805d2431391e0d3637b64bdd563a566468e591236a99a880a9b831a139e0a",
+      "txHash": "0xf7664c531c6c073b96a040cbc0911092b00958414e8020aad7ba9bd9315fb527",
+      "blockNumber": "61062913"
+    },
+    {
+      "name": "BasePoolFeesModule",
+      "address": "0xB92645cF45bB102CDa72cEB638f6458d387381fE",
+      "runtimeCodehash": "0xe85cafd353326d746a03f4810af45dedf134c8f72916f9164d295fe7541d1c9c",
+      "txHash": "0x339ed4cf91c39763255228749fd1bfd02f0ab3140475823e138adb81299fc59e",
+      "blockNumber": "61062922"
+    },
+    {
+      "name": "BasePoolInitializeModule",
+      "address": "0x32aE871E90ce094f56E2375E6AF6048cB8b9F5Cf",
+      "runtimeCodehash": "0xe4048b26c1c7babdcda00046803c89575a8dda42fd6c82b2beb5c9a036bf23a7",
+      "txHash": "0x8d8e0a2d19460136842a27731ea22c434770d5c87e9cb83b7fe9bd70cce51bf4",
+      "blockNumber": "61062930"
+    },
+    {
+      "name": "MonadPoolInitializeModule",
+      "address": "0xa6347Fa0f54C5322D5C478FF99F0E05FA95e7E9D",
+      "runtimeCodehash": "0x2cc17f6e62e92899fa081186b1765a2741733dae817b46a5dc7acc7137002b77",
+      "txHash": "0x968d03fbbfe5fd5a5f48b0d9aa4d410458cb1e1c087ddf0e9ee1d43420efbcd4",
+      "blockNumber": "61062938"
+    }
+  ],
+  "pools": [],
+  "allDeclaredContractsVerified": true,
+  "scenarioReady": false,
+  "referenceReady": false,
+  "note": "Checks declared addresses, canonical receipts, runtime code and pool wiring. Passing partial deployment checks is not full application readiness."
+}

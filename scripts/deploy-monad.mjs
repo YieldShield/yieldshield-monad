@@ -25,6 +25,7 @@ import {
   atomicJson,
   acquireDeploymentLock,
 } from "./monad-deployment-lib.mjs";
+import { deploymentAssets } from "./monad-assets.mjs";
 const env = loadEnv(),
   broadcast = process.argv.includes("--broadcast");
 assert(
@@ -185,6 +186,9 @@ try {
   ]);
   const exchange = await run.deploy("ScenarioExchange", "MonadAssetExchange", [exchangeOracle]);
   const faucet = await run.deploy("Faucet", "ConfigurableTokenFaucet", [account.address]);
+  manifest.assets = deploymentAssets(manifest, config);
+  const assets = manifest.assets.filter((a) => !["wmon", "shmon"].includes(a.id));
+  run.save();
   // Preserve upstream governance checks: bootstrap is finalized; no production administrator shortcut.
   const timelock = await run.deploy("Timelock", "YSTimelockController", [172800n, [], [], account.address]);
   const governanceToken = await run.deploy("YSToken", "YSToken", [account.address]);
@@ -231,61 +235,7 @@ try {
   await run.write("factory:fees", factory, "SplitRiskPoolFactory", "setDefaultProtocolFeeRecipient", [timelock]);
   // A distinct reference factory is initialized only when authenticated Pyth updates are available.
   // The scenario factory contains only synthetic assets and cannot silently substitute them for WMON/shMON.
-  const assets = [
-    {
-      id: "test-usd",
-      address: usd,
-      symbol: "TestUSDC",
-      name: "Test USD",
-      decimals: 6,
-      kind: "synthetic-unit",
-      feed: scenario,
-      artifact: "MonadTestToken",
-    },
-    {
-      id: "scenario-mon",
-      address: lab,
-      symbol: "sMON-demo",
-      name: "Scenario MON",
-      decimals: 18,
-      kind: "synthetic",
-      feed: scenario,
-      artifact: "MonadTestToken",
-    },
-    {
-      id: "test-usd-vault",
-      address: vault,
-      symbol: "vTestUSDC",
-      name: "Test USD Vault",
-      decimals: 6,
-      kind: "test-vault-nav",
-      feed: backingFeed,
-      artifact: "MonadYieldVault",
-    },
-  ];
-  manifest.assets = assets.concat([
-    {
-      id: "wmon",
-      address: wmon,
-      symbol: "WMON",
-      name: "Wrapped testnet MON",
-      decimals: 18,
-      kind: "external-reference",
-      feed: reference,
-      artifact: "MonadWrappedNative",
-    },
-    {
-      id: "shmon",
-      address: config.externalTokens.shMON,
-      symbol: "shMON",
-      name: "Staked testnet MON",
-      decimals: 18,
-      kind: "redemption-nav",
-      feed: reference,
-      external: true,
-    },
-  ]);
-  run.save();
+
   for (const a of assets)
     await run.write(`factory:whitelist:${a.id}`, factory, "SplitRiskPoolFactory", "addTokenInitial", [
       a.address,
@@ -323,9 +273,9 @@ try {
   await run.write("faucet:governance", faucet, "ConfigurableTokenFaucet", "transferOwnership", [timelock]);
   await run.write("nav:governance", nav, "ERC4626OracleFeed", "transferOwnership", [timelock]);
   await native("native:wrap", wmon, "MonadWrappedNative", "deposit", [], parseEther("0.01"));
-  manifest.status = "scenario-complete";
+  manifest.status = manifest.referenceStatus === "active" ? "complete" : "scenario-complete";
   manifest.completedAt = new Date().toISOString();
-  manifest.referenceStatus = "awaiting-authenticated-pyth-updates";
+  manifest.referenceStatus ||= "awaiting-authenticated-pyth-updates";
   manifest.feePolicy = {
     maxFeePerGas: "200000000000",
     maximumTotalTestMon: "4.8",

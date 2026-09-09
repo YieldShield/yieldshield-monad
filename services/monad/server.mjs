@@ -1,3 +1,4 @@
+import { fetchPythUpdate } from "./pyth.mjs";
 import { createServer } from "node:http";
 import { readFileSync } from "node:fs";
 import { createPublicClient, http, parseAbi, keccak256 } from "viem";
@@ -313,25 +314,13 @@ async function positions(owner) {
 }
 async function pythUpdate() {
   return cached("pyth-update", 2000, async () => {
-    if (!process.env.PYTH_API_KEY) {
-      const error = new Error("Pyth account setup is pending. Reference actions require fresh signed prices.");
-      error.status = 503;
-      throw error;
-    }
-    const response = await fetch(
-      `https://pyth.dourolabs.app/hermes/v2/updates/price/latest?ids%5B%5D=${config.pyth.monUsdFeedId}`,
-      { headers: { Authorization: `Bearer ${process.env.PYTH_API_KEY}` }, signal: AbortSignal.timeout(10000) },
-    );
-    if (!response.ok) throw new Error("Pyth update service unavailable");
-    const update = await response.json();
-    if (!update.binary?.data?.length || update.binary.data.some((d) => !/^[a-fA-F0-9]+$/.test(d) || d.length > 200000))
-      throw new Error("Invalid Pyth update");
+    const update = await fetchPythUpdate(process.env.PYTH_API_KEY, config.pyth.monUsdFeedId);
     return {
       chainId: 10143,
       pyth: config.pyth.address,
       feedId: config.pyth.monUsdFeedId,
-      updateData: update.binary.data.map((d) => "0x" + d),
-      price: update.parsed?.[0]?.price,
+      updateData: update.updateData,
+      price: update.price,
       expiresAt: Date.now() + 30000,
     };
   });

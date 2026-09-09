@@ -124,7 +124,58 @@
       "txHash": "0x968d03fbbfe5fd5a5f48b0d9aa4d410458cb1e1c087ddf0e9ee1d43420efbcd4"
     }
   },
-  "assets": [],
+  "assets": [
+    {
+      "id": "test-usd",
+      "address": "0xdf25A5f619a2bF7b9baC4A349D6C8381597e0604",
+      "symbol": "TestUSDC",
+      "name": "Test USD",
+      "decimals": 6,
+      "kind": "synthetic-unit",
+      "feed": "0x9dDE7f1700C9fbE4fd5Ae8aB0913f5fbaC2Ab22f",
+      "artifact": "MonadTestToken"
+    },
+    {
+      "id": "scenario-mon",
+      "address": "0xf6d92E132ACBB85ff3c059f8ca71169d7d82EE9C",
+      "symbol": "sMON-demo",
+      "name": "Scenario MON",
+      "decimals": 18,
+      "kind": "synthetic",
+      "feed": "0x9dDE7f1700C9fbE4fd5Ae8aB0913f5fbaC2Ab22f",
+      "artifact": "MonadTestToken"
+    },
+    {
+      "id": "test-usd-vault",
+      "address": "0x1feB5ae74eaBf81F8148C5396179d1aC9F9C77A5",
+      "symbol": "vTestUSDC",
+      "name": "Test USD Vault",
+      "decimals": 6,
+      "kind": "test-vault-nav",
+      "feed": "0xF0839F05590dc2B0361c8e54FE3094863eb5c675",
+      "artifact": "MonadYieldVault"
+    },
+    {
+      "id": "wmon",
+      "address": "0x23EA8b07fda821d2096dee02a3a662a5374B69Cb",
+      "symbol": "WMON",
+      "name": "Wrapped testnet MON",
+      "decimals": 18,
+      "kind": "external-reference",
+      "feed": "0x45F5DF2A69bc273082a203ee73D64922EAE8dD40",
+      "artifact": "MonadWrappedNative"
+    },
+    {
+      "id": "shmon",
+      "address": "0x282BdDFF5e58793AcAb65438b257Dbd15A8745C9",
+      "symbol": "shMON",
+      "name": "Staked testnet MON",
+      "decimals": 18,
+      "kind": "redemption-nav",
+      "feed": "0x45F5DF2A69bc273082a203ee73D64922EAE8dD40",
+      "external": true
+    }
+  ],
   "pools": [],
-  "updatedAt": "2026-09-09T14:10:38.887Z"
+  "updatedAt": "2026-09-09T14:30:22.217Z"
 }
