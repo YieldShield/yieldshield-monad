@@ -84,7 +84,7 @@ for(const status of ['prepared','submitted'])for(const limit of ['fee','budget',
  if(limit==='budget')run.spendLimit=BigInt(entry.request.gas)*BigInt(entry.request.maxFeePerGas)-1n;
  if(limit==='balance')client.getBalance=async()=>0n;
  run.account={address:account.address,signTransaction:()=>{throw Error('must reject before signing');}};
- const reason={fee:/Transaction fee exceeds configured deployment cap/,budget:/cumulative maximum fee budget exceeded/,balance:/Insufficient test ETH/}[limit];
+ const reason={fee:/Transaction fee exceeds configured deployment cap/,budget:/cumulative maximum fee budget exceeded/,balance:/Insufficient testnet MON/}[limit];
  await assert.rejects(run.transaction('operation',{to,data:'0x1234'}),reason);
  assert.equal(raws.length,1);assert.equal(entry.status,status);
 });

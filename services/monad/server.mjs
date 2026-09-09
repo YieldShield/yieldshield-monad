@@ -1,0 +1,427 @@
+import { createServer } from "node:http";
+import { readFileSync } from "node:fs";
+import { createPublicClient, http, parseAbi, keccak256 } from "viem";
+import { monadTestnet } from "viem/chains";
+import { address, integer, stringify, validateRegistry } from "./domain.mjs";
+const config = JSON.parse(readFileSync(new URL("../../config/monad.json", import.meta.url)));
+const registry = validateRegistry(JSON.parse(readFileSync(new URL("../../config/deployment.json", import.meta.url))));
+const abis = JSON.parse(readFileSync(new URL("../../config/abis.json", import.meta.url)));
+const rpc = createPublicClient({
+  chain: monadTestnet,
+  transport: http(process.env.MONAD_RPC_URL || config.rpcUrl, {
+    timeout: 12000,
+    retryCount: 1,
+    batch: { batchSize: 30, wait: 10 },
+  }),
+});
+const generic = parseAbi([
+  "function getPrice(address) view returns(uint256)",
+  "function isPriceStale(address) view returns(bool,uint64)",
+  "function previewDeposit(uint256) view returns(uint256)",
+  "function previewRedeem(uint256) view returns(uint256)",
+  "function previewUnstake(uint256) view returns(uint256)",
+  "function convertToAssets(uint256) view returns(uint256)",
+  "function maxRedeem(address) view returns(uint256)",
+  "function getUnstakeRequest(address) view returns(uint128,uint64)",
+  "function balanceOf(address) view returns(uint256)",
+]);
+const pythAbi = parseAbi([
+  "function getPriceUnsafe(bytes32) view returns((int64 price,uint64 conf,int32 expo,uint256 publishTime))",
+]);
+const cache = new Map();
+async function cached(key, ttl, fn) {
+  const item = cache.get(key);
+  if (item && item.expires > Date.now()) return item.promise;
+  const promise = fn();
+  cache.set(key, { expires: Date.now() + ttl, promise });
+  try {
+    return await promise;
+  } catch (e) {
+    cache.delete(key);
+    throw e;
+  }
+}
+const get = (target, artifact, fn, args = [], blockNumber) =>
+  rpc.readContract({ address: target, abi: abis[artifact] || generic, functionName: fn, args, blockNumber });
+const c = (name) => registry.contracts[name]?.address;
+const same = (a, b) => a.toLowerCase() === b.toLowerCase();
+async function checkedChain() {
+  if ((await rpc.getChainId()) !== 10143) throw new Error("RPC chain mismatch");
+}
+async function verifiedCode() {
+  return cached("code", 60000, async () => {
+    await checkedChain();
+    const pairs = Object.entries(registry.contracts);
+    const results = await Promise.all(
+      pairs.map(async ([name, v]) => {
+        const code = await rpc.getCode({ address: v.address });
+        return [name, Boolean(code && keccak256(code) === v.runtimeCodehash)];
+      }),
+    );
+    return Object.fromEntries(results);
+  });
+}
+async function discoverPools(blockNumber) {
+  const found = [...registry.pools];
+  for (const factoryName of ["Factory", "ReferenceFactory"]) {
+    const factory = c(factoryName);
+    if (!factory) continue;
+    const pools = await get(factory, "SplitRiskPoolFactory", "getActivePools", [], blockNumber);
+    if (pools.length > 200) throw new Error("Pool index requires pagination");
+    for (const poolAddress of pools) {
+      if (found.some((p) => same(p.address, poolAddress))) continue;
+      const info = await get(factory, "SplitRiskPoolFactory", "getPoolInfo", [poolAddress], blockNumber);
+      const shield = registry.assets.find((a) => same(a.address, info.shieldedToken)),
+        backing = registry.assets.find((a) => same(a.address, info.backingToken));
+      if (
+        !shield ||
+        !backing ||
+        info.commissionRate !== 1000n ||
+        info.poolFee !== 100n ||
+        info.colleteralRatio !== 15000n
+      )
+        continue;
+      const origin = await get(poolAddress, "SplitRiskPool", "POOL_FACTORY", [], blockNumber);
+      if (!same(origin, factory)) throw new Error("Pool provenance mismatch");
+      const cfg = await get(poolAddress, "SplitRiskPool", "poolConfig", [], blockNumber);
+      if (cfg[8] !== 100n) continue;
+      found.push({
+        id: poolAddress.toLowerCase(),
+        address: poolAddress,
+        shieldedToken: shield.address,
+        backingToken: backing.address,
+        symbol: shield.symbol,
+        backingSymbol: backing.symbol,
+        environment: factoryName === "Factory" ? "scenario" : "reference",
+        priceKind: shield.kind,
+        discovered: true,
+        factory,
+      });
+    }
+  }
+  return found;
+}
+async function snapshot() {
+  return cached("status", 8000, async () => {
+    await checkedChain();
+    const [block, code] = await Promise.all([rpc.getBlock(), verifiedCode()]);
+    const blockNumber = block.number;
+    const sources = await Promise.all(
+      registry.assets.map(async (a) => {
+        try {
+          const [price, stale] = await Promise.all([
+            get(a.feed, "", "getPrice", [a.address], blockNumber),
+            get(a.feed, "", "isPriceStale", [a.address], blockNumber),
+          ]);
+          return {
+            ...a,
+            price: String(price),
+            healthy: price > 0n && !stale[0],
+            publishedAt: ["external-reference", "redemption-nav"].includes(a.kind) ? Number(stale[1]) : null,
+            evaluatedAt: Number(block.timestamp),
+            error: null,
+          };
+        } catch {
+          return {
+            ...a,
+            price: null,
+            healthy: false,
+            publishedAt: null,
+            evaluatedAt: Number(block.timestamp),
+            error:
+              a.kind === "external-reference" || a.kind === "redemption-nav"
+                ? "A fresh, verified Pyth MON price is required."
+                : "Price or vault state unavailable.",
+          };
+        }
+      }),
+    );
+    const poolRegistry = await discoverPools(blockNumber);
+    const markets = await Promise.all(
+      poolRegistry.map(async (p) => {
+        const shield = sources.find((a) => same(a.address, p.shieldedToken));
+        const backing = sources.find((a) => same(a.address, p.backingToken));
+        try {
+          const methods = [
+            "poolConfig",
+            "totalProtectorTokens",
+            "totalShieldedTokens",
+            "totalShieldCollateralAmount",
+            "totalValueAtDeposit",
+            "totalProtectorShares",
+            "paused",
+            "shieldReceiptNFT",
+            "protectorReceiptNFT",
+          ];
+          const values = await Promise.all(methods.map((f) => get(p.address, "SplitRiskPool", f, [], blockNumber)));
+          const [cfg, totalBacking, totalShielded, reserved, entryValue, juniorShares, paused, seniorNft, juniorNft] =
+            values;
+          const ready = Object.values(code).every(Boolean) && shield.healthy && backing.healthy && !paused;
+          const nativeCapacity = totalBacking > reserved ? totalBacking - reserved : 0n;
+          const backingPrice = BigInt(backing.price || 0);
+          const shieldPrice = BigInt(shield.price || 0);
+          const usdCapacity =
+            (((totalBacking * backingPrice) / 10n ** BigInt(backing.decimals)) * 10000n) / 15000n - entryValue;
+          const unitsByUsd =
+            shieldPrice > 0n && usdCapacity > 0n ? (usdCapacity * 10n ** BigInt(shield.decimals)) / shieldPrice : 0n;
+          const unitsByCap =
+            shieldPrice > 0n
+              ? (nativeCapacity * backingPrice * 10000n * 10n ** BigInt(shield.decimals)) /
+                (15000n * 10n ** BigInt(backing.decimals) * shieldPrice)
+              : 0n;
+          let capacity = unitsByUsd < unitsByCap ? unitsByUsd : unitsByCap;
+          if (capacity > cfg[1]) capacity = cfg[1];
+          return {
+            ...p,
+            shield,
+            backing,
+            ready,
+            paused,
+            reason: ready
+              ? null
+              : !shield.healthy
+                ? shield.error
+                : !backing.healthy
+                  ? backing.error
+                  : paused
+                    ? "Pool paused."
+                    : "Contract verification failed.",
+            totalBacking,
+            totalShielded,
+            reserved,
+            entryValue,
+            juniorShares,
+            seniorNft,
+            juniorNft,
+            capacity,
+            config: cfg,
+            actions: {
+              protect: ready && capacity >= cfg[0],
+              provide: ready,
+              withdrawAsset: !paused,
+              withdrawBacking: ready,
+              trade: p.environment === "scenario" && shield.healthy,
+            },
+          };
+        } catch {
+          return {
+            ...p,
+            shield,
+            backing,
+            ready: false,
+            reason: "Pool state unavailable. Please refresh.",
+            actions: { protect: false, provide: false, withdrawAsset: false, withdrawBacking: false, trade: false },
+          };
+        }
+      }),
+    );
+    let pyth = null;
+    try {
+      pyth = await rpc.readContract({
+        address: config.pyth.address,
+        abi: pythAbi,
+        functionName: "getPriceUnsafe",
+        args: [config.pyth.monUsdFeedId],
+        blockNumber,
+      });
+    } catch {}
+    return {
+      schemaVersion: 3,
+      chainId: 10143,
+      network: "Monad Testnet",
+      observedAt: Date.now(),
+      blockNumber,
+      blockTimestamp: block.timestamp,
+      deploymentStatus: registry.status,
+      contractsVerified: Object.values(code).every(Boolean),
+      code,
+      assets: sources,
+      markets,
+      pyth,
+      pythUpdateConfigured: Boolean(process.env.PYTH_API_KEY),
+      registry,
+      notice:
+        "Testnet assets have no monetary value. Scenario prices are formulas; reference prices are observations. shMON NAV is not an executable quote.",
+    };
+  });
+}
+async function positions(owner) {
+  return cached("positions:" + owner.toLowerCase(), 5000, async () => {
+    const state = await snapshot();
+    const result = [];
+    for (const p of state.markets) {
+      if (!p.seniorNft) throw new Error("Position data unavailable");
+      for (const [side, nft, artifact] of [
+        ["senior", p.seniorNft, "ShieldReceiptNFT"],
+        ["junior", p.juniorNft, "ProtectorReceiptNFT"],
+      ]) {
+        const count = await get(nft, artifact, "nextTokenId");
+        if (count > 2000n) throw new Error("Position index needs pagination");
+        for (let start = 0n; start < count; start += 30n) {
+          const ids = Array.from(
+            { length: Number(count - start > 30n ? 30n : count - start) },
+            (_, i) => start + BigInt(i),
+          );
+          const owners = await Promise.all(
+            ids.map(async (id) => {
+              try {
+                return await get(nft, artifact, "ownerOf", [id]);
+              } catch (e) {
+                let err = e;
+                while (err) {
+                  if (err.data?.errorName === "ERC721NonexistentToken") return null;
+                  err = err.cause;
+                }
+                throw e;
+              }
+            }),
+          );
+          for (let i = 0; i < ids.length; i++) {
+            if (!owners[i] || !same(owners[i], owner)) continue;
+            const id = ids[i],
+              position = await get(nft, artifact, "getPosition", [id]);
+            let available = null,
+              commission = null,
+              feeBaseline = null;
+            if (side === "junior") {
+              [available, commission] = await Promise.all([
+                get(p.address, "SplitRiskPool", "getAvailableForWithdrawal", [id]),
+                get(p.address, "SplitRiskPool", "getClaimableCommission", [id]),
+              ]);
+              position.amount = await get(p.address, "SplitRiskPool", "getProtectorPositionAmount", [id]);
+            } else {
+              feeBaseline = await get(p.address, "SplitRiskPool", "feeValueBaselineUsd", [id]);
+            }
+            result.push({
+              key: `${p.id}:${side}:${id}`,
+              poolId: p.id,
+              pool: p.address,
+              nft,
+              id,
+              side,
+              position,
+              available,
+              commission,
+              feeBaseline,
+            });
+          }
+        }
+      }
+    }
+    return { chainId: 10143, observedAt: Date.now(), owner, positions: result };
+  });
+}
+async function pythUpdate() {
+  return cached("pyth-update", 2000, async () => {
+    if (!process.env.PYTH_API_KEY) {
+      const error = new Error("Pyth account setup is pending. Reference actions require fresh signed prices.");
+      error.status = 503;
+      throw error;
+    }
+    const response = await fetch(
+      `https://pyth.dourolabs.app/hermes/v2/updates/price/latest?ids%5B%5D=${config.pyth.monUsdFeedId}`,
+      { headers: { Authorization: `Bearer ${process.env.PYTH_API_KEY}` }, signal: AbortSignal.timeout(10000) },
+    );
+    if (!response.ok) throw new Error("Pyth update service unavailable");
+    const update = await response.json();
+    if (!update.binary?.data?.length || update.binary.data.some((d) => !/^[a-fA-F0-9]+$/.test(d) || d.length > 200000))
+      throw new Error("Invalid Pyth update");
+    return {
+      chainId: 10143,
+      pyth: config.pyth.address,
+      feedId: config.pyth.monUsdFeedId,
+      updateData: update.binary.data.map((d) => "0x" + d),
+      price: update.parsed?.[0]?.price,
+      expiresAt: Date.now() + 30000,
+    };
+  });
+}
+const allowedOrigins = new Set(["https://monad.yieldshield.ai", "http://localhost:5173", "http://localhost:5174"]);
+const windows = new Map();
+export const server = createServer(async (req, res) => {
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("Cache-Control", "no-store");
+  if (allowedOrigins.has(req.headers.origin)) {
+    res.setHeader("Access-Control-Allow-Origin", req.headers.origin);
+    res.setHeader("Vary", "Origin");
+  }
+  if (req.method === "OPTIONS") {
+    res.writeHead(204);
+    res.end();
+    return;
+  }
+  if (req.method !== "GET") {
+    res.writeHead(405);
+    res.end(stringify({ error: "Read-only API" }));
+    return;
+  }
+  try {
+    const url = new URL(req.url, "http://localhost");
+    if (req.url.length > 1500) throw new Error("Request too long");
+    if (url.pathname === "/health" || url.pathname === "/api/health") {
+      res.end(stringify({ status: "ok", service: "yieldshield-monad-api", chainId: 10143 }));
+      return;
+    }
+    const ip = req.headers["x-forwarded-for"]?.split(",")[0] || req.socket.remoteAddress;
+    const now = Date.now();
+    let w = windows.get(ip);
+    if (!w || w.at + 60000 < now) {
+      w = { at: now, count: 0 };
+      windows.set(ip, w);
+    }
+    if (++w.count > 90) {
+      res.writeHead(429);
+      res.end(stringify({ error: "Please wait before refreshing." }));
+      return;
+    }
+    if (windows.size > 10000) windows.clear();
+    let data;
+    if (["/api/status", "/api/markets", "/api/protection-status"].includes(url.pathname)) data = await snapshot();
+    else if (url.pathname === "/api/positions") data = await positions(address(url.searchParams.get("owner")));
+    else if (url.pathname === "/api/pyth-update") data = await pythUpdate();
+    else if (url.pathname === "/api/quote") {
+      const id = url.searchParams.get("market");
+      const market = (await snapshot()).markets.find((p) => p.id === id);
+      if (!market || market.environment !== "scenario") throw new Error("Only scenario exchange quotes are enabled");
+      const amount = integer(url.searchParams.get("amount"));
+      const buy = url.searchParams.get("side") === "buy";
+      if (!["buy", "sell"].includes(url.searchParams.get("side"))) throw new Error("Invalid side");
+      const [total, fee, price] = await get(c("ScenarioExchange"), "MonadAssetExchange", "quote", [
+        market.shieldedToken,
+        buy,
+        amount,
+      ]);
+      data = {
+        chainId: 10143,
+        market: id,
+        amount,
+        total,
+        fee,
+        price,
+        buy,
+        exchange: c("ScenarioExchange"),
+        expiresAt: Date.now() + 20000,
+      };
+    } else if (url.pathname === "/api/registry") data = registry;
+    else {
+      res.writeHead(404);
+      data = { error: "Not found" };
+    }
+    res.end(stringify(data));
+  } catch (e) {
+    res.writeHead(e.status || 503);
+    res.end(
+      stringify({
+        error:
+          e.message?.startsWith("Invalid") || e.message?.startsWith("Pyth account")
+            ? e.message
+            : "Verified on-chain data is temporarily unavailable. Please refresh.",
+      }),
+    );
+  }
+});
+if (process.env.NODE_ENV !== "test")
+  server.listen(Number(process.env.PORT || 3001), "0.0.0.0", () =>
+    console.log("YieldShield Monad read-only API listening"),
+  );
