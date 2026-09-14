@@ -125,3 +125,41 @@ test('a confirmed resume must still belong to the canonical block',async()=>{
  client.getBlock=async()=>({number:1n,hash:'0x'+'33'.repeat(32),transactions:[]});
  await assert.rejects(run.transaction('operation',{to,data:'0x1234'}),/canonical block/);assert.equal(raws.length,1);
 });
+
+test('fresh canonical fees release unused reservations without raising the total spending cap',async()=>{
+ const {run,client,manifest}=fixture();const original=client.getTransactionReceipt;
+ client.getTransactionReceipt=async()=>({...await original(),effectiveGasPrice:5n});
+ await run.transaction('operation',{to,data:'0x1234',value:7n});
+ const request=manifest.transactions.operation.request;
+ const actual=21000n*5n+7n,maximum=BigInt(request.gas)*BigInt(request.maxFeePerGas)+7n;
+ run.spendLimit=actual+maximum;
+ await run.assertSubmissionLimits(request,true);
+ run.spendLimit--;
+ await assert.rejects(run.assertSubmissionLimits(request,true),/cumulative maximum fee budget exceeded/);
+});
+test('restart retains maximum reservations until the signed transaction and fresh receipt are reverified',async()=>{
+ const {run,client,manifest,path}=fixture();const original=client.getTransactionReceipt;
+ client.getTransactionReceipt=async()=>({...await original(),effectiveGasPrice:5n});
+ await run.transaction('operation',{to,data:'0x1234'});
+ const saved=JSON.parse(readFileSync(path));saved.transactions.operation.receipt.effectiveGasPrice='0';
+ const request=manifest.transactions.operation.request;
+ const resumed=new SequentialDeployment({client,account,broadcast:true,manifestPath:path,manifest:saved,nonce:1,maxFeePerGas:100n,spendLimit:21000n*5n+BigInt(request.gas)*10n});
+ await assert.rejects(resumed.assertSubmissionLimits(request,true),/cumulative maximum fee budget exceeded/);
+ await resumed.transaction('operation',{to,data:'0x1234'});
+ await resumed.assertSubmissionLimits(request,true);
+});
+test('changing a cached confirmed request invalidates its fee credit',async()=>{
+ const {run,client,manifest}=fixture();const original=client.getTransactionReceipt;
+ client.getTransactionReceipt=async()=>({...await original(),effectiveGasPrice:5n});
+ await run.transaction('operation',{to,data:'0x1234'});
+ const request=manifest.transactions.operation.request;
+ run.spendLimit=21000n*5n+BigInt(request.gas)*10n;
+ request.data='0xbeef';
+ await assert.rejects(run.assertSubmissionLimits(request,true),/cumulative maximum fee budget exceeded/);
+});
+for(const invalid of [{effectiveGasPrice:11n},{effectiveGasPrice:-1n},{effectiveGasPrice:5n,gasUsed:999999n}])test(`invalid canonical fee data cannot release the reservation: ${Object.keys(invalid).join(',')}`,async()=>{
+ const {run,client,manifest}=fixture();const original=client.getTransactionReceipt;
+ client.getTransactionReceipt=async()=>({...await original(),...invalid});
+ await assert.rejects(run.transaction('operation',{to,data:'0x1234'}),/Confirmed fee exceeds signed request bounds/);
+ assert.equal(manifest.transactions.operation.status,'submitted');
+});

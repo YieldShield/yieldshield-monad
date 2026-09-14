@@ -183,17 +183,39 @@ export class SequentialDeployment {
     this.plan = [];
     this.links = {};
     this.preparedResults = new Map();
+    this.confirmedCosts = new Map();
   }
   save() {
     if (this.broadcast) atomicJson(this.manifestPath, this.manifest);
+  }
+  rememberConfirmedCost(entry, receipt) {
+    // Only freshly verified canonical receipts may release unused fee reservations.
+    // Missing fee data retains the full signed maximum; persisted summaries are never trusted.
+    if (receipt.effectiveGasPrice === undefined) return;
+    assert(typeof receipt.gasUsed === "bigint" && receipt.gasUsed > 0n, "Invalid confirmed gas usage");
+    assert(
+      typeof receipt.effectiveGasPrice === "bigint" && receipt.effectiveGasPrice >= 0n &&
+        receipt.effectiveGasPrice <= BigInt(entry.request.maxFeePerGas) &&
+        receipt.gasUsed <= BigInt(entry.request.gas),
+      "Confirmed fee exceeds signed request bounds",
+    );
+    this.confirmedCosts.set(entry.hash, {
+      requestHash: sha(entry.request),
+      cost: receipt.gasUsed * receipt.effectiveGasPrice + BigInt(entry.request.value ?? 0),
+    });
   }
   async assertSubmissionLimits(request, additionalRequest = false) {
     const maximumCost = maximumExecutionCost(request) + BigInt(request.value ?? 0);
     assert(BigInt(request.gas) <= 16000000n, "Transaction exceeds conservative Monad gas cap");
     assert(BigInt(request.maxFeePerGas) <= this.maxFeePerGas, "Transaction fee exceeds configured deployment cap");
-    // Derive the reservation from signed request fields, never editable summary metadata.
+    // Confirmed spending plus worst-case unsettled spending must fit the same total cap.
     const reserved = Object.values(this.manifest.transactions).reduce(
-      (n, t) => n + maximumExecutionCost(t.request) + BigInt(t.request.value ?? 0),
+      (n, t) => {
+        const confirmed = this.confirmedCosts.get(t.hash);
+        return n + (t.status === "confirmed" && confirmed?.requestHash === sha(t.request)
+          ? confirmed.cost
+          : maximumExecutionCost(t.request) + BigInt(t.request.value ?? 0));
+      },
       0n,
     );
     assert(
@@ -246,6 +268,7 @@ export class SequentialDeployment {
       const receipt = await readCanonicalReceipt(this.client, previous.hash, id);
       assert.equal(receipt.blockHash, previous.receipt.blockHash, `${id}: confirmed transaction reorged`);
       assert.equal(receipt.blockNumber, BigInt(previous.receipt.blockNumber), `${id}: confirmed transaction moved`);
+      this.rememberConfirmedCost(previous, receipt);
       return receipt;
     }
     let entry = previous;
@@ -326,6 +349,7 @@ export class SequentialDeployment {
         await new Promise((resolve) => setTimeout(resolve, 2000));
       }
     }
+    this.rememberConfirmedCost(entry, receipt);
     entry.status = "confirmed";
     entry.receipt = {
       transactionHash: receipt.transactionHash,

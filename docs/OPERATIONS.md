@@ -30,7 +30,7 @@ Signing material is in ignored `contracts/.env.monad.local` with mode 0600. Requ
 npm run deploy:monad:prepare
 ```
 
-Use the locally pinned Monad-capable Foundry 1.8.1; an unrelated globally installed Forge may reject `network = "monad"`. Review the generated local plan and fund the dedicated testnet signer. The initial 4.8-MON cumulative maximum-fee cap stopped the partial rollout; it was raised to 9.8 after the second 5-MON faucet transfer was confirmed. Only raise the base recipe's cumulative cap and its `feePolicy` summary to 19.8 after the remaining requested funds arrive; retain the per-transaction cap and reserve checks. This is a conservative maximum-fee reservation, not an expected bill. Then:
+Use the locally pinned Monad-capable Foundry 1.8.1; an unrelated globally installed Forge may reject `network = "monad"`. Review the generated local plan and fund the dedicated testnet signer. The initial 4.8-MON cumulative cap stopped the partial rollout; it was raised to 9.8 after the second 5-MON faucet transfer was confirmed. The cap includes actual execution fees and transferred value from freshly verified canonical receipts, plus the maximum signed cost of every unsettled or unverified transaction. Receipt fee bounds and request identity are checked; persisted cost summaries cannot release reservations. On restart, each confirmed step must be verified again before its unused fee reservation is released. Only raise the base recipe's cumulative cap and its `feePolicy` summary to 19.8 after the remaining requested funds arrive; retain the per-transaction cap and reserve checks. Then:
 
 ```sh
 npm run deploy:monad
