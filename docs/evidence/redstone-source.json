@@ -1,0 +1,12 @@
+{
+  "provider": "RedStone",
+  "chainId": 10143,
+  "source": "0x92B14C0531A1f8fC0F85712FaF97d7302B4128C8",
+  "description": "RedStone Price Feed for MON",
+  "decimals": 8,
+  "runtimeCodehash": "0x4d9be648c5bf39973670d9f8b481d5d0b971e6a2db2deccc6b98cde21c5dd83e",
+  "directory": "https://app.redstone.finance/push-feeds/MON/monadTestnetBoltMultiFeed",
+  "checkedDate": "2026-09-14",
+  "maximumAcceptedAgeSeconds": 120,
+  "notes": "Official Monad oracle directory links RedStone's testnet feeds. Source identity and live rounds were read on chain, then verified with the adapter deployment. Provider rounds do not expose Pyth confidence or EMA fields. Historical Pyth deployment is retained but is not used by the reference factory. No paid Pyth plan was selected."
+}

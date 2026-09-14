@@ -1,0 +1,79 @@
+{
+  "checkedAt": "2026-09-14T10:37:17.237Z",
+  "url": "https://monad.yieldshield.ai/api/status",
+  "httpStatus": 200,
+  "elapsedMs": 11383,
+  "chainId": 10143,
+  "contractsVerified": true,
+  "referenceOracle": "redstone",
+  "blockNumber": "62442804",
+  "assets": [
+    {
+      "id": "test-usd",
+      "healthy": true,
+      "price": "100000000",
+      "publishedAt": null
+    },
+    {
+      "id": "scenario-mon",
+      "healthy": true,
+      "price": "8500000000",
+      "publishedAt": null
+    },
+    {
+      "id": "test-usd-vault",
+      "healthy": true,
+      "price": "100000200",
+      "publishedAt": null
+    },
+    {
+      "id": "wmon",
+      "healthy": true,
+      "price": "2327975",
+      "publishedAt": 1789382224
+    },
+    {
+      "id": "shmon",
+      "healthy": true,
+      "price": "30118263",
+      "publishedAt": 1789382224
+    }
+  ],
+  "markets": [
+    {
+      "id": "scenario-mon-usd",
+      "address": "0xe8E8c9fBe73C997E20b9c8FE5e67FE6b92E1a149",
+      "ready": true,
+      "capacity": "392067153670588235294",
+      "reason": null
+    },
+    {
+      "id": "scenario-mon-vault",
+      "address": "0xdB6424359232eBDAE2b7E5A10bF2C71B7C838DB7",
+      "ready": true,
+      "capacity": "392089083698117647058",
+      "reason": null
+    },
+    {
+      "id": "wmon-usd",
+      "address": "0xe0861e2a0a8b0E94377dC846fb00577c9028eb19",
+      "ready": true,
+      "capacity": "1000000000000000000000000",
+      "reason": null
+    },
+    {
+      "id": "shmon-usd",
+      "address": "0xBc5ACfF7aB888608D7Ba12144e17645d22FCd706",
+      "ready": true,
+      "capacity": "110674813389238283761583",
+      "reason": null
+    },
+    {
+      "id": "wmon-vault",
+      "address": "0xEF6bf7EA3dd2a425577965e0234B30b0B2A3306b",
+      "ready": true,
+      "capacity": "1000000000000000000000000",
+      "reason": null
+    }
+  ]
+}
