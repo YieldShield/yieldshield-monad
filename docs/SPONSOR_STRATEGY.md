@@ -1,6 +1,6 @@
 # Metropolis sponsor strategy
 
-Initial review: 9 September 2026. Public sponsor catalog rechecked: 11 September 2026. This is the sponsor selection and evidence plan for YieldShield on Monad, following the owner's request to consider sponsors throughout the build. It supplements the implementation plan; it does not claim that any bounty has been earned or any new integration is live.
+Initial review: 9 September 2026. Public sponsor catalog rechecked: 14 September 2026. This is the sponsor selection and evidence plan for YieldShield on Monad, following the owner's request to consider sponsors throughout the build. It supplements the implementation plan; it does not claim that any bounty has been earned or any new integration is live.
 
 ## Decisions
 
@@ -79,7 +79,7 @@ Do not add this workflow merely to display a sponsor logo. First determine wheth
 
 General participant resources listed on the same page: Quicknode Build for three months, Tenderly Pro access, Zerion API Builder for one month, Dwellir Developer for three months, and Spectrum Nodes Business for two months. Verify activation and expiry before relying on any perk in a deployed service.
 
-Separately, the page lists benefits for winning teams: ack3 security scans ($15,000 advertised value), Chainstack plans ($10,000), Crouton Digital RPC ($10,000), Zerion API ($6,000), Envio Cloud hosting ($5,000), and Spectrum Nodes plans ($3,000). Spectrum's winner card specifies one Business month per track winner and Enterprise for the champion; it does not specify the Enterprise duration. These are described as services/plans; do not count those advertised values as cash integration bounties or an independent security audit already received.
+Separately, the page lists benefits for winning teams: ack3 security scans ($15,000 advertised value), Chainstack plans ($10,000), Crouton Digital RPC ($10,000), Mercuryo product credits and integration support ($10,000), Zerion API ($6,000), Envio Cloud hosting ($5,000), and Spectrum Nodes plans ($3,000). Spectrum's winner card specifies one Business month per track winner and Enterprise for the champion; it does not specify the Enterprise duration. These are described as services, plans or credits; do not count those advertised values as cash integration bounties or an independent security audit already received. Mercuryo's card does not specify a per-team allocation, redemption process or expiry.
 
 ## Monitoring observations
 
@@ -87,7 +87,13 @@ Separately, the page lists benefits for winning teams: ack3 security scans ($15,
 
 **11 September — new Spectrum Nodes benefits:** the official [Metropolis page](https://monad.xyz/developers/hackathons/metropolis) added two months of Business access for every team and the separately advertised $3,000 winner-plan package described above. These are infrastructure benefits, not a new cash integration bounty. Spectrum's [pricing/catalog page](https://spectrumnodes.com/pricing) lists Monad mainnet and testnet. This makes it a candidate for an additional RPC endpoint during demo testing, after confirming the redemption process, exact chain 10143 access, relevant method limits, expiry and overage terms. No account, subscription or endpoint was provisioned during monitoring.
 
-The 21 public bounty/credit entries and 13 October submission date are unchanged. The Dynamic SDK direction, Kuru routing overview, Agora Monad deployment identities and CRE simulation/deployment distinction checked against official documentation still match this plan. Detailed portal requirements remain unverified because the portal still shows sign-in. Dynamic, Kuru, Agora and CRE priorities are unchanged; no application or deployment action was taken.
+**12–13 September:** the public catalog, dates and checked sponsor documentation matched the 11 September observation. The unchanged portal sign-in requirement was not alerted again.
+
+**14 September — new Mercuryo winner benefit:** the official [Metropolis page](https://monad.xyz/developers/hackathons/metropolis) added a $10,000 advertised package of product credits and integration support for winning teams. This brings the winner-benefit list to seven entries; it is not a new cash integration bounty or a general participant resource. Allocation, activation, expiry and detailed eligibility remain unspecified on the public card.
+
+Mercuryo's [on-ramp guide](https://widget.docs.mercuryo.io/guide/flows/on-ramp) describes card/Apple Pay/Google Pay purchases delivered to a user's wallet, with transaction tracking and currency/network availability checks by country. Product implication: consider a future wallet-funding step after Dynamic onboarding, before trading and protection, if MON on the intended network and the user's country are supported. Current target-network availability, merchant access and the benefit's terms still need verification; do not treat this as a source of testnet MON or add paid funding to the current testnet demo. Keep it on the later funding watchlist rather than changing the Dynamic/Kuru priorities. No account, purchase or integration was activated during this check.
+
+As of 14 September, the 21 public bounty/credit entries, five participant resources and 13 October submission date are unchanged. The Dynamic SDK direction, Kuru routing overview, Agora Monad deployment identities and CRE simulation/deployment distinction checked against official documentation still match this plan. Detailed portal requirements remain unverified because the portal still shows sign-in. Dynamic, Kuru, Agora and CRE priorities are unchanged; no application or deployment action was taken.
 
 ## Evidence and ongoing review
 
