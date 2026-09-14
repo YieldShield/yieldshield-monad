@@ -17,7 +17,7 @@ The frontend rewrites `/api/*` to the Railway API. Railway has its own Node 24 D
 
 ## Remaining activation inputs
 
-1. Add 15 valueless testnet MON to dedicated deployer `0xA437345Be29EC6802024A8e090E34b621b92E5E2`. The official faucet provided 5; 29 confirmed steps used approximately 3.9845, leaving approximately 1.0155 at the last check. Do not use mainnet MON.
+1. The official faucet supplied another 5 valueless testnet MON on 14 September. The dedicated deployer `0xA437345Be29EC6802024A8e090E34b621b92E5E2` then held `5.996506812` MON. The base deployment's cumulative fee reservation is now 9.8 MON, reflecting 10 MON received in total and retaining the reserve checks. Another 10 testnet MON would meet the previously requested funding target for the remaining deployment and journeys; read the current balance before resuming. Do not use mainnet MON.
 2. Complete Pyth Terminal sign-in and provision `PYTH_API_KEY`. The API must have a current account/plan that remains usable through the judging period. Creating paid subscriptions requires an explicit owner decision.
 3. Approve public source publication after reviewing the final payload. This is separate from hosting the app.
 
@@ -26,11 +26,11 @@ The frontend rewrites `/api/*` to the Railway API. Railway has its own Node 24 D
 Signing material is in ignored `contracts/.env.monad.local` with mode 0600. Required names are `MONAD_DEPLOYER_PRIVATE_KEY`, optional `MONAD_RPC_URL`, and `PYTH_API_KEY` for reference activation. Never copy the signing key to Vercel, Railway, GitHub Actions or a submitted document.
 
 ```sh
-forge build --root contracts
+.tools/foundry/forge build --root contracts
 npm run deploy:monad:prepare
 ```
 
-Review the generated local plan and fund the dedicated testnet signer. The initial cumulative maximum-fee cap is 4.8 testnet MON and intentionally stopped the partial rollout. After the requested funding is received, raise the base recipe's cumulative cap and its `feePolicy` summary to 19.8; retain the per-transaction cap and reserve checks. This is a conservative maximum-fee reservation, not an expected bill. Then:
+Use the locally pinned Monad-capable Foundry 1.8.1; an unrelated globally installed Forge may reject `network = "monad"`. Review the generated local plan and fund the dedicated testnet signer. The initial 4.8-MON cumulative maximum-fee cap stopped the partial rollout; it was raised to 9.8 after the second 5-MON faucet transfer was confirmed. Only raise the base recipe's cumulative cap and its `feePolicy` summary to 19.8 after the remaining requested funds arrive; retain the per-transaction cap and reserve checks. This is a conservative maximum-fee reservation, not an expected bill. Then:
 
 ```sh
 npm run deploy:monad

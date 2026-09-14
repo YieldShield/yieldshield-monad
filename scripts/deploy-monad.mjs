@@ -71,7 +71,7 @@ const run = new SequentialDeployment({
   manifest,
   nonce: await client.getTransactionCount({ address: account.address }),
   maxFeePerGas: 200000000000n,
-  spendLimit: parseEther("4.8"),
+  spendLimit: parseEther("9.8"),
 });
 async function native(id, to, name, fn, args, value) {
   return run.transaction(id, {
@@ -278,7 +278,7 @@ try {
   manifest.referenceStatus ||= "awaiting-authenticated-pyth-updates";
   manifest.feePolicy = {
     maxFeePerGas: "200000000000",
-    maximumTotalTestMon: "4.8",
+    maximumTotalTestMon: "9.8",
     minimumReserveTestMon: "0.1",
     gasLimitMultiplier: 1.1,
     mainnetBroadcasts: false,
