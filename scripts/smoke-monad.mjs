@@ -239,11 +239,11 @@ try {
       value: parseEther("0.1"),
     }));
     await gained("native:wrap", wrapped, c("WMON"), parseEther("0.1"));
-    const staked = await step("native:stake", () => ({
+    const staked = await step("native:stake", async () => ({
       address: c("StakingRouter"),
       name: "MonadStakingRouter",
       fn: "stake",
-      args: [parseEther("0.025"), BigInt(Math.floor(Date.now() / 1000) + 600)],
+      args: [parseEther("0.025"), (await client.getBlock()).timestamp + 300n],
       value: parseEther("0.4"),
     }));
     await gained("native:stake", staked, config.externalTokens.shMON, parseEther("0.025"));
@@ -254,11 +254,11 @@ try {
       fn: "approve",
       args: [c("ScenarioExchange"), 100n * 10n ** 6n],
     }));
-    const bought = await step("exchange:buy", () => ({
+    const bought = await step("exchange:buy", async () => ({
       address: c("ScenarioExchange"),
       name: "MonadAssetExchange",
       fn: "swap",
-      args: [c("ScenarioMON"), true, parseEther("0.2"), 100n * 10n ** 6n, BigInt(Math.floor(Date.now() / 1000) + 600)],
+      args: [c("ScenarioMON"), true, parseEther("0.2"), 100n * 10n ** 6n, (await client.getBlock()).timestamp + 300n],
     }));
     await gained("exchange:buy", bought, c("ScenarioMON"), parseEther("0.2"));
     await write("vault:approve", c("TestUSDC"), "MonadTestToken", "approve", [c("TestUSDVault"), 11n * 10n ** 6n]);
