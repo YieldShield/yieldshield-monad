@@ -28,7 +28,7 @@ assert(["scenario-complete", "complete"].includes(dep.status), "Finish scenario 
 const reference = process.argv.includes("--reference");
 if (reference) {
   assert.equal(dep.referenceStatus, "active");
-  assert(env.PYTH_API_KEY, "Authenticated Pyth access is required");
+  if (dep.referenceOracle !== "redstone") assert(env.PYTH_API_KEY, "Authenticated Pyth access is required");
 }
 const proof = JSON.parse(readFileSync(resolve(ROOT, "docs/evidence/deployment-verification.json")));
 assert(proof.scenarioReady && (!reference || proof.referenceReady), "Run deployment verification first");
@@ -126,6 +126,13 @@ const pythAbi = parseAbi([
   "function getUpdateFee(bytes[]) view returns(uint256)",
 ]);
 async function refresh() {
+  if (dep.referenceOracle === "redstone") {
+    assert(
+      (await read(c("RedstoneReferenceFeed"), "MonadRedstoneReferenceFeed", "getPrice", [c("WMON")])) > 0n,
+      "Strict MON reference unavailable",
+    );
+    return;
+  }
   const update = await fetchPythUpdate(env.PYTH_API_KEY, config.pyth.monUsdFeedId);
   const fee = await client.readContract({
     address: config.pyth.address,

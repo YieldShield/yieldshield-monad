@@ -23,5 +23,11 @@
     "ink": "#0E091C",
     "junior": "#85E6FF",
     "pending": "#FFAE45"
+  },
+  "redstone": {
+    "address": "0x92B14C0531A1f8fC0F85712FaF97d7302B4128C8",
+    "runtimeCodehash": "0x4d9be648c5bf39973670d9f8b481d5d0b971e6a2db2deccc6b98cde21c5dd83e",
+    "maxAgeSeconds": 120,
+    "sourceUrl": "https://app.redstone.finance/push-feeds/MON/monadTestnetBoltMultiFeed"
   }
 }

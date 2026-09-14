@@ -30,7 +30,7 @@
     "sync:monad": "node scripts/sync-monad.mjs",
     "deploy:monad:prepare": "node scripts/deploy-monad.mjs --prepare",
     "deploy:monad": "node scripts/deploy-monad.mjs --broadcast",
-    "deploy:reference": "node scripts/deploy-monad-reference.mjs --broadcast",
+    "deploy:reference": "node scripts/deploy-monad-redstone-reference.mjs --broadcast",
     "verify:monad": "node scripts/verify-monad.mjs",
     "smoke:monad": "node scripts/smoke-monad.mjs --broadcast",
     "smoke:reference": "node scripts/smoke-monad.mjs --broadcast --reference"

@@ -7,7 +7,7 @@ export function deploymentAssets(manifest, config) {
     vault = c("TestUSDVault"),
     scenario = c("ScenarioOracle"),
     backingFeed = c("VaultBackingFeed"),
-    reference = c("ReferenceFeed");
+    reference = c(manifest.referenceOracle === "redstone" ? "RedstoneReferenceFeed" : "ReferenceFeed");
   if (![usd, lab, wmon, vault, scenario, backingFeed, reference].every(Boolean)) return [];
   const assets = [
     {

@@ -13,6 +13,7 @@ const names = [
   "MonadYieldVault",
   "MonadStakingRouter",
   "MonadReferenceFeed",
+  "MonadRedstoneReferenceFeed",
   "MonadScenarioOracle",
   "MonadAssetExchange",
   "ConfigurableTokenFaucet",
@@ -83,6 +84,7 @@ const r = {
   assets: deploymentAssets(m, read("config/monad.json")),
   pools: m.pools,
   referenceStatus: m.referenceStatus,
+  referenceOracle: m.referenceOracle || "pyth",
   updatedAt: evidence.checkedAt,
 };
 writeFileSync(new URL("config/deployment.json", root), JSON.stringify(r, null, 2) + "\n");
