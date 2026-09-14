@@ -1,12 +1,12 @@
 # Metropolis sponsor strategy
 
-Initial review: 9 September 2026. Public sponsor catalog rechecked: 14 September 2026. This is the sponsor selection and evidence plan for YieldShield on Monad, following the owner's request to consider sponsors throughout the build. It supplements the implementation plan; it does not claim that any bounty has been earned or any new integration is live.
+Initial review: 9 September 2026. Public catalog and signed-in Dynamic, Kuru, Agora and CRE bounty details rechecked: 14 September 2026. This is the sponsor selection and evidence plan for YieldShield on Monad, following the owner's request to consider sponsors throughout the build. It supplements the implementation plan; it does not claim that any bounty has been earned or any new integration is live.
 
 ## Decisions
 
 1. **Prioritize Dynamic for onboarding.** A new user should be able to create or connect a wallet and complete the protection journey. This improves the consumer product and aligns with a published bounty.
 2. **Investigate executable Kuru trading next.** Acquiring an asset through Kuru and then protecting it is a coherent product journey. The current external Kuru link does not qualify as an integration.
-3. **Investigate Agora's mobile trading bounty alongside Kuru.** Confirm its exact AUSD and mobile requirements before adding an AUSD market. A responsive website and a token logo alone are insufficient evidence.
+3. **Defer Agora's mobile trading bounty for this release.** The signed-in requirements mandate Mera authentication, an AUSD balance and a Perpl trade together. That is a separate product path from the planned Dynamic/Kuru flow; adding AUSD or a responsive layout alone would not qualify.
 4. **Evaluate Chainlink CRE for a useful pool-health workflow.** Keep oracle selection separate from this bounty: replacing Pyth with a Chainlink price feed alone does not demonstrate CRE.
 5. Use relevant RPC, simulation and indexing resources when they solve a measured need. Keep cash awards, credits and winner benefits separate.
 
@@ -24,13 +24,24 @@ Chainlink is a relevant sponsored alternative to investigate for pricing. Its pu
 
 ## Verified public shortlist
 
-The following amounts and bounty names were read from the official [Metropolis landing page](https://monad.xyz/developers/hackathons/metropolis). These are advertised bounty amounts, not a verified per-team payout or a forecast of winnings. Detailed requirements are still pending access to the application portal; do not assume testnet acceptance, prize stacking, mandatory products or award splits from these titles.
+The following amounts and bounty names were read from the official [Metropolis landing page](https://monad.xyz/developers/hackathons/metropolis). These are advertised awards, not a forecast of winnings. The four portal pages reviewed below each describe a single prize. Requirements for other bounties, prize stacking and any unstated network constraints remain to be checked.
+
+## Signed-in requirements confirmed on 14 September
+
+| Bounty | Required work and evidence | Decision |
+| --- | --- | --- |
+| [Dynamic](https://hackathon.monad.xyz/tracks/best-use-of-dynamic) — $5,000 | A deployed, usable app incorporating its SDK for authentication, wallets or signing, within one of the four tracks. Judges assess integration quality, practical utility and creativity; deeper use of multiple primitives is a bonus. | First integration candidate. Existing contracts or a wallet-provider link do not establish qualification. |
+| [Kuru consumer trading](https://hackathon.monad.xyz/tracks/build-the-next-consumer-trading-app-on-kuru) — $5,000 | Working order-book integration, defined target users, evidence of demand through usage/trading, acquisition and retention strategy, and a continuation plan. The portal links its testnet documentation and faucet. | Second candidate. User research and actual trades are additional deliverables, not just API wiring. |
+| [Agora mobile trading](https://hackathon.monad.xyz/tracks/best-mobile-trading-app-on-monad-agora-onchain-trading-bount) — $10,000 | Mobile app with Mera passkey login, a held/displayed AUSD balance and at least one Perpl trade in the demo. | Defer; all three integrations are mandatory, and mobile-web acceptance is not specified. |
+| [Chainlink CRE](https://hackathon.monad.xyz/tracks/best-workflow-with-cre) — $3,000 | Meaningful CRE orchestration connecting at least one blockchain with an external API/system/data source/agent. A successful CRE CLI simulation or live CRE network deployment is accepted. | A capacity/oracle-health workflow may fit. Reading a Chainlink price feed alone does not. |
+
+The portal remains on the Onchain Finance & Trading primary track. No sponsor bounty has been added or represented as completed. Dynamic dashboard access and a project environment are still needed. General submission opens 22 September; the current Submission tab conceals its fields until then.
 
 | Priority | Sponsor and advertised bounty | Product contribution | Current gap / evidence needed |
 | --- | --- | --- | --- |
 | First | Dynamic — $5,000, Best Use of Dynamic | Email or passkey onboarding, embedded wallet and existing-wallet connection, leading into a complete protection journey | No Dynamic environment is configured in the Monad app. Verify exact bounty terms; configure the SDK environment; record real onboarding, signing, logout/reconnect and recovery. |
 | Next | Kuru — $5,000, consumer trading app | Quote, buy MON exposure, then open protection with the acquired asset | Current integration is an external link. Establish target-network route support, credentials and liquidity; verify minimum output, spender, destination, recipient and confirmed balance changes. |
-| Conditional | Agora — $10,000, mobile trading app | Phone-friendly buy/protect/exit journey with an actual AUSD role if required | Confirm whether mobile web is eligible and what AUSD usage is mandatory. Verify and fund official testnet AUSD, then demonstrate trading/backing/payout rather than simply listing it. |
+| Deferred | Agora — $10,000, mobile trading app | Mera login, AUSD balance and Perpl trading | These three integrations are mandatory. Mobile-web acceptance remains unspecified; the current Dynamic/Kuru plan does not satisfy this bounty. |
 | Conditional | Chainlink — $3,000, CRE workflow | Scheduled or event-driven report of pool capacity, collateral conditions and reference-price freshness | Needs an actual CRE workflow, supported network, runtime access and reproducible execution evidence. A normal backend task or a price-feed read alone does not demonstrate CRE. |
 | Supporting | Envio — $1,000, best use | Index pool and receipt events for position history and capacity views | The current API reads RPC directly. Integrate only if it improves history or load; test replay, partial-exit receipt replacement, lag, reorgs and source attribution. |
 | Later investigation | Perpl — $3,000, analytics/risk tool; separate $5,000 API bounty | Risk context tied to a real Perpl integration | Current YieldShield pools have no Perpl exposure. Do not imply a generic protection dashboard qualifies; read product-specific requirements first. |
@@ -93,7 +104,7 @@ Separately, the page lists benefits for winning teams: ack3 security scans ($15,
 
 Mercuryo's [on-ramp guide](https://widget.docs.mercuryo.io/guide/flows/on-ramp) describes card/Apple Pay/Google Pay purchases delivered to a user's wallet, with transaction tracking and currency/network availability checks by country. Product implication: consider a future wallet-funding step after Dynamic onboarding, before trading and protection, if MON on the intended network and the user's country are supported. Current target-network availability, merchant access and the benefit's terms still need verification; do not treat this as a source of testnet MON or add paid funding to the current testnet demo. Keep it on the later funding watchlist rather than changing the Dynamic/Kuru priorities. No account, purchase or integration was activated during this check.
 
-As of 14 September, the 21 public bounty/credit entries, five participant resources and 13 October submission date are unchanged. The Dynamic SDK direction, Kuru routing overview, Agora Monad deployment identities and CRE simulation/deployment distinction checked against official documentation still match this plan. Detailed portal requirements remain unverified because the portal still shows sign-in. Dynamic, Kuru, Agora and CRE priorities are unchanged; no application or deployment action was taken.
+The morning monitoring check on 14 September found the 21 public bounty/credit entries, five participant resources and 13 October submission date unchanged. Later that day, the owner authorized continued implementation and submission preparation. Google sign-in with the YieldShield account restored portal access; the exact requirements above were read, and Agora was deferred because Mera and Perpl are mandatory. Application and testnet deployment work resumed separately from the read-only monitoring task.
 
 ## Evidence and ongoing review
 
