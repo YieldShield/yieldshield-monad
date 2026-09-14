@@ -1,7 +1,7 @@
 {
   "chainId": 10143,
-  "checkedAt": "2026-09-14T09:44:58.315Z",
-  "deploymentStatus": "preparing",
+  "checkedAt": "2026-09-14T09:51:03.335Z",
+  "deploymentStatus": "scenario-complete",
   "contracts": [
     {
       "name": "TestUSDC",
@@ -280,10 +280,34 @@
           "runtimeCodehash": "0x1bbb1eaf8d8548b63fffff23afb1750fddd84705a5feb5524e46074516e6508c"
         }
       ]
+    },
+    {
+      "id": "scenario-mon-vault",
+      "address": "0xdB6424359232eBDAE2b7E5A10bF2C71B7C838DB7",
+      "shieldedToken": "0xf6d92E132ACBB85ff3c059f8ca71169d7d82EE9C",
+      "backingToken": "0x1feB5ae74eaBf81F8148C5396179d1aC9F9C77A5",
+      "symbol": "sMON-demo",
+      "backingSymbol": "vTestUSDC",
+      "environment": "scenario",
+      "priceKind": "synthetic",
+      "createdTx": "0x9483b75fb8c8eabc2da0f1d238c74709ad184d8676279d0bda01d7fac2372990",
+      "configurationVerified": true,
+      "receipts": [
+        {
+          "name": "ShieldReceiptNFT",
+          "address": "0x6CE7Fa45BD59e2D6C390d1d6D6A99854c637293B",
+          "runtimeCodehash": "0x0ece68f0406f3382ac8b93d9e84c99e1d81c64533b3f5ef7f33b336f09e61e3c"
+        },
+        {
+          "name": "ProtectorReceiptNFT",
+          "address": "0x890A54767A7f85F14Ab98b1C3D05CDfd941a857c",
+          "runtimeCodehash": "0x1bbb1eaf8d8548b63fffff23afb1750fddd84705a5feb5524e46074516e6508c"
+        }
+      ]
     }
   ],
   "allDeclaredContractsVerified": true,
-  "scenarioReady": false,
+  "scenarioReady": true,
   "referenceReady": false,
   "note": "Checks declared addresses, canonical receipts, runtime code and pool wiring. Passing partial deployment checks is not full application readiness."
 }
