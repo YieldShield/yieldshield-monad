@@ -1,0 +1,237 @@
+{
+  "chainId": 10143,
+  "account": "0xA437345Be29EC6802024A8e090E34b621b92E5E2",
+  "completedAt": "2026-09-14T09:59:59.496Z",
+  "observations": {
+    "exchange:buy": {
+      "token": "0xf6d92E132ACBB85ff3c059f8ca71169d7d82EE9C",
+      "before": "9400000000000000000000000",
+      "after": "9400000200000000000000000",
+      "received": "200000000000000000",
+      "txHash": "0x3c40b9c899a550725805eadfd0272ba378ce2b8bee1f621e179a3e52d1162a1a",
+      "blockNumber": "62434376"
+    },
+    "vault:deposit": {
+      "token": "0x1feB5ae74eaBf81F8148C5396179d1aC9F9C77A5",
+      "before": "437000000000",
+      "after": "437010000000",
+      "received": "10000000",
+      "txHash": "0x24bfa8bc7a5d0dbaf6194acd56b519f2bb261c31560c2359f99703e864707847",
+      "blockNumber": "62434394"
+    },
+    "vault:redeem": {
+      "token": "0xdf25A5f619a2bF7b9baC4A349D6C8381597e0604",
+      "before": "2448966808625",
+      "after": "2448976808644",
+      "received": "10000019",
+      "txHash": "0x538869b4edb218792ce2f73903cfbc1ddf6ad2bce5c0c76441802f2e6f2fa55b",
+      "blockNumber": "62434409"
+    },
+    "scenario-mon-usd:partial": {
+      "token": "0xf6d92E132ACBB85ff3c059f8ca71169d7d82EE9C",
+      "before": "9400000100000000000000000",
+      "after": "9400000120000000000000000",
+      "received": "20000000000000000",
+      "txHash": "0x5182832af233854227aa4e0012a76d5dfea0faf45a4f62c3374af68dcca12024",
+      "blockNumber": "62434449"
+    },
+    "scenario-mon-usd:asset-exit": {
+      "token": "0xf6d92E132ACBB85ff3c059f8ca71169d7d82EE9C",
+      "before": "9400000120000000000000000",
+      "after": "9400000199905171638012202",
+      "received": "79905171638012202",
+      "txHash": "0x673ca5d4f8d464b97a3f3b69820f46be78571ca074273874183ede3b1eafdb9a",
+      "blockNumber": "62434458"
+    },
+    "scenario-mon-usd:backing-exit": {
+      "token": "0xdf25A5f619a2bF7b9baC4A349D6C8381597e0604",
+      "before": "2447976808644",
+      "after": "2447988475310",
+      "received": "11666666",
+      "txHash": "0xb331c062798f9a99062a4b1420d0238d95e19476c203e42c904a74788436fe11",
+      "blockNumber": "62434670"
+    },
+    "scenario-mon-usd:junior-exit": {
+      "token": "0xdf25A5f619a2bF7b9baC4A349D6C8381597e0604",
+      "before": "2447988475310",
+      "after": "2448988246551",
+      "received": "999771241",
+      "txHash": "0x1ecb55b773deae737fb33bd8094b04b85ead8ee4fe5ae3e0eaf802653b611ae7",
+      "blockNumber": "62435078"
+    },
+    "scenario-mon-vault:partial": {
+      "token": "0xf6d92E132ACBB85ff3c059f8ca71169d7d82EE9C",
+      "before": "9400000001866416107131416",
+      "after": "9400000021866416107131416",
+      "received": "20000000000000000",
+      "txHash": "0xf752683795715be2efb305eb1887faa67154f9b89f9b19b5931c2d2ed58b9f7e",
+      "blockNumber": "62435121"
+    },
+    "scenario-mon-vault:asset-exit": {
+      "token": "0xf6d92E132ACBB85ff3c059f8ca71169d7d82EE9C",
+      "before": "9400000021866416107131416",
+      "after": "9400000101866416107131416",
+      "received": "80000000000000000",
+      "txHash": "0x640deff7698e9cd248993e27d14c1ed9ec9e6601caafdc8fdc198ddcc0d28200",
+      "blockNumber": "62435130"
+    },
+    "scenario-mon-vault:backing-exit": {
+      "token": "0x1feB5ae74eaBf81F8148C5396179d1aC9F9C77A5",
+      "before": "436000000000",
+      "after": "436008916648",
+      "received": "8916648",
+      "txHash": "0x254f57b2c1bbf071b775362d26789cfc3e230a478cc709df9308ec69bf58eb1d",
+      "blockNumber": "62435339"
+    },
+    "scenario-mon-vault:junior-exit": {
+      "token": "0x1feB5ae74eaBf81F8148C5396179d1aC9F9C77A5",
+      "before": "436008916648",
+      "after": "437008741811",
+      "received": "999825163",
+      "txHash": "0x9718d7905932d23f7f8ed8772451cb613320e420ff0bc7a1e6a7b30b701bc88b",
+      "blockNumber": "62435743"
+    }
+  },
+  "transactions": {
+    "exchange:approve": {
+      "hash": "0x6b9f5671ff43afdc8f93f14c97b1b59b0753a1e5d9333cba1e7d88cecf186cf5",
+      "blockNumber": "62434140",
+      "status": "confirmed"
+    },
+    "exchange:buy": {
+      "hash": "0x3c40b9c899a550725805eadfd0272ba378ce2b8bee1f621e179a3e52d1162a1a",
+      "blockNumber": "62434376",
+      "status": "confirmed"
+    },
+    "vault:approve": {
+      "hash": "0xd1f76faa0cc5a71a9aaca0bb01de46d3dca74c6b43f236ff9675a645da5b391b",
+      "blockNumber": "62434385",
+      "status": "confirmed"
+    },
+    "vault:deposit": {
+      "hash": "0x24bfa8bc7a5d0dbaf6194acd56b519f2bb261c31560c2359f99703e864707847",
+      "blockNumber": "62434394",
+      "status": "confirmed"
+    },
+    "vault:fund-yield": {
+      "hash": "0xace1a6a2ba5722009930c38c0972e214159de71ec9a4bae1c8830f3f8115acdc",
+      "blockNumber": "62434400",
+      "status": "confirmed"
+    },
+    "vault:redeem": {
+      "hash": "0x538869b4edb218792ce2f73903cfbc1ddf6ad2bce5c0c76441802f2e6f2fa55b",
+      "blockNumber": "62434409",
+      "status": "confirmed"
+    },
+    "scenario-mon-usd:junior-approve": {
+      "hash": "0x045fd016097717d480d81287f33ce1354debc243ec915a2a5036d70e8088d196",
+      "blockNumber": "62434418",
+      "status": "confirmed"
+    },
+    "scenario-mon-usd:junior-deposit": {
+      "hash": "0xc74637617f7d2e34ad0c610f86e646100b0ef1606abd247e8c9f707ea630eb31",
+      "blockNumber": "62434427",
+      "status": "confirmed"
+    },
+    "scenario-mon-usd:senior-approve": {
+      "hash": "0x4d6b0c4ae8e1d471c5296a9c5fab1f3e780ea3ff8b017169314cdf16b1cba96a",
+      "blockNumber": "62434436",
+      "status": "confirmed"
+    },
+    "scenario-mon-usd:senior-deposit": {
+      "hash": "0x7d6cd58af41b023fef38550d1388281f66fba3aec787dd370ddf0532d69bca45",
+      "blockNumber": "62434443",
+      "status": "confirmed"
+    },
+    "scenario-mon-usd:partial": {
+      "hash": "0x5182832af233854227aa4e0012a76d5dfea0faf45a4f62c3374af68dcca12024",
+      "blockNumber": "62434449",
+      "status": "confirmed"
+    },
+    "scenario-mon-usd:asset-exit": {
+      "hash": "0x673ca5d4f8d464b97a3f3b69820f46be78571ca074273874183ede3b1eafdb9a",
+      "blockNumber": "62434458",
+      "status": "confirmed"
+    },
+    "scenario-mon-usd:protected-deposit": {
+      "hash": "0x8a3b6c771ac5cb50ed0399d7d81c26eb40a22e4c78110d885c67694f08b7161d",
+      "blockNumber": "62434467",
+      "status": "confirmed"
+    },
+    "scenario-mon-usd:backing-exit": {
+      "hash": "0xb331c062798f9a99062a4b1420d0238d95e19476c203e42c904a74788436fe11",
+      "blockNumber": "62434670",
+      "status": "confirmed"
+    },
+    "scenario-mon-usd:claim-junior": {
+      "hash": "0x7739cdbe20820b6bed129d7f3cdc1589b960e28e75c0a90b5366f188c7f97318",
+      "blockNumber": "62434679",
+      "status": "confirmed"
+    },
+    "scenario-mon-usd:notice": {
+      "hash": "0x88084ed8738ce87dba5d6384529e8f1cff56162c5817cbb49a45d782a7c20b27",
+      "blockNumber": "62434688",
+      "status": "confirmed"
+    },
+    "scenario-mon-usd:junior-exit": {
+      "hash": "0x1ecb55b773deae737fb33bd8094b04b85ead8ee4fe5ae3e0eaf802653b611ae7",
+      "blockNumber": "62435078",
+      "status": "confirmed"
+    },
+    "scenario-mon-vault:junior-approve": {
+      "hash": "0x65e45a56a124e2bd9bc53bd4b83805924fc0a07d31cdf0b051e49493a2398505",
+      "blockNumber": "62435087",
+      "status": "confirmed"
+    },
+    "scenario-mon-vault:junior-deposit": {
+      "hash": "0xae683ec570fcc893e2ac3ff8c3d2c9492e3f5ca6670f920af1b1ab43aaa1c5f5",
+      "blockNumber": "62435096",
+      "status": "confirmed"
+    },
+    "scenario-mon-vault:senior-approve": {
+      "hash": "0x4677ddba57e642f971f01c7b2d6fa6292a92e159660936b321f13c6abf3c9e5d",
+      "blockNumber": "62435105",
+      "status": "confirmed"
+    },
+    "scenario-mon-vault:senior-deposit": {
+      "hash": "0x7c82e7ca89bb8cee80efde543a42304f8253aaf1997814b5b34692a21d6ce381",
+      "blockNumber": "62435112",
+      "status": "confirmed"
+    },
+    "scenario-mon-vault:partial": {
+      "hash": "0xf752683795715be2efb305eb1887faa67154f9b89f9b19b5931c2d2ed58b9f7e",
+      "blockNumber": "62435121",
+      "status": "confirmed"
+    },
+    "scenario-mon-vault:asset-exit": {
+      "hash": "0x640deff7698e9cd248993e27d14c1ed9ec9e6601caafdc8fdc198ddcc0d28200",
+      "blockNumber": "62435130",
+      "status": "confirmed"
+    },
+    "scenario-mon-vault:protected-deposit": {
+      "hash": "0x947f1c69f56e539ffe45449084d4f57b4217bfe41e8fbb09c352165fcfdd7892",
+      "blockNumber": "62435139",
+      "status": "confirmed"
+    },
+    "scenario-mon-vault:backing-exit": {
+      "hash": "0x254f57b2c1bbf071b775362d26789cfc3e230a478cc709df9308ec69bf58eb1d",
+      "blockNumber": "62435339",
+      "status": "confirmed"
+    },
+    "scenario-mon-vault:claim-junior": {
+      "hash": "0x3f479fc5e28de8bb62f55eec3d5c9a5ccda013e20e60816c9081b43e705b4b05",
+      "blockNumber": "62435346",
+      "status": "confirmed"
+    },
+    "scenario-mon-vault:notice": {
+      "hash": "0x4bee48e0916810a7014202fe7d95b72ffc615dcb2efe1bc5e1a7479946f20918",
+      "blockNumber": "62435353",
+      "status": "confirmed"
+    },
+    "scenario-mon-vault:junior-exit": {
+      "hash": "0x9718d7905932d23f7f8ed8772451cb613320e420ff0bc7a1e6a7b30b701bc88b",
+      "blockNumber": "62435743",
+      "status": "confirmed"
+    }
+  }
+}
