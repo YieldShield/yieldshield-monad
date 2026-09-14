@@ -130,10 +130,11 @@ function assertReceiptIdentity(receipt, hash, id) {
   assert.equal(receipt?.transactionHash, hash, `${id}: receipt transaction hash does not match saved transaction`);
 }
 /** Read sealed canonical receipts explicitly; confirmation waiters can retain preconfirmation data. */
-export async function readCanonicalReceipt(client, hash, id) {
+export async function readCanonicalReceipt(client, hash, id, expectedStatus = "success") {
+  assert(["success", "reverted"].includes(expectedStatus), "Invalid expected receipt status");
   const checkReceipt = (receipt) => {
     assertReceiptIdentity(receipt, hash, id);
-    assert.equal(receipt.status, "success", `${id}: transaction reverted`);
+    assert.equal(receipt.status, expectedStatus, `${id}: unexpected transaction status ${receipt.status}`);
     assert(typeof receipt.blockNumber === "bigint" && receipt.blockNumber > 0n, `${id}: invalid receipt block number`);
     assert(
       /^0x[0-9a-fA-F]{64}$/.test(receipt.blockHash ?? "") && receipt.blockHash !== zeroHash,
@@ -194,7 +195,8 @@ export class SequentialDeployment {
     if (receipt.effectiveGasPrice === undefined) return;
     assert(typeof receipt.gasUsed === "bigint" && receipt.gasUsed > 0n, "Invalid confirmed gas usage");
     assert(
-      typeof receipt.effectiveGasPrice === "bigint" && receipt.effectiveGasPrice >= 0n &&
+      typeof receipt.effectiveGasPrice === "bigint" &&
+        receipt.effectiveGasPrice >= 0n &&
         receipt.effectiveGasPrice <= BigInt(entry.request.maxFeePerGas) &&
         receipt.gasUsed <= BigInt(entry.request.gas),
       "Confirmed fee exceeds signed request bounds",
@@ -209,15 +211,15 @@ export class SequentialDeployment {
     assert(BigInt(request.gas) <= 16000000n, "Transaction exceeds conservative Monad gas cap");
     assert(BigInt(request.maxFeePerGas) <= this.maxFeePerGas, "Transaction fee exceeds configured deployment cap");
     // Confirmed spending plus worst-case unsettled spending must fit the same total cap.
-    const reserved = Object.values(this.manifest.transactions).reduce(
-      (n, t) => {
-        const confirmed = this.confirmedCosts.get(t.hash);
-        return n + (t.status === "confirmed" && confirmed?.requestHash === sha(t.request)
+    const reserved = Object.values(this.manifest.transactions).reduce((n, t) => {
+      const confirmed = this.confirmedCosts.get(t.hash);
+      return (
+        n +
+        (t.status === "confirmed" && confirmed?.requestHash === sha(t.request)
           ? confirmed.cost
-          : maximumExecutionCost(t.request) + BigInt(t.request.value ?? 0));
-      },
-      0n,
-    );
+          : maximumExecutionCost(t.request) + BigInt(t.request.value ?? 0))
+      );
+    }, 0n);
     assert(
       reserved + (additionalRequest ? maximumCost : 0n) <= this.spendLimit,
       "Deployment cumulative maximum fee budget exceeded",
@@ -277,7 +279,7 @@ export class SequentialDeployment {
       const pending = await this.client.getTransactionCount({ address: this.account.address, blockTag: "pending" });
       assert.equal(latest, pending, "Unrelated pending transaction; stop and reconcile before bootstrap");
       const estimated = await this.client.estimateGas({ account: this.account, to, data, value });
-      const gas = (estimated * 110n + 99n) / 100n;
+      const gas = (estimated * 150n + 99n) / 100n + 100000n;
       assert(gas <= 16000000n, "Transaction exceeds conservative Monad gas cap");
       const fees = await this.client.estimateFeesPerGas();
       const request = {

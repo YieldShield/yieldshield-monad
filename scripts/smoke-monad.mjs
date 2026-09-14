@@ -14,6 +14,7 @@ import {
   artifact,
   atomicJson,
   acquireDeploymentLock,
+  readCanonicalReceipt,
 } from "./monad-deployment-lib.mjs";
 import { fetchPythUpdate } from "../services/monad/pyth.mjs";
 assert(process.argv.includes("--broadcast"), "Use --broadcast only after deployment verification");
@@ -71,6 +72,28 @@ const erc20 = parseAbi(["function balanceOf(address) view returns(uint256)"]);
 const balance = (token, blockNumber) =>
   client.readContract({ address: token, abi: erc20, functionName: "balanceOf", args: [account.address], blockNumber });
 async function step(id, build) {
+  // Reviewed on 2026-09-14: this exact call exhausted its 515097 gas limit;
+  // a read-only replay at its mined block succeeds with 1500000 gas. Preserve
+  // the original intent/hash and require fresh canonical failure proof on resume.
+  if (reference && id === "shmon-usd:asset-exit") {
+    const originalHash = "0x934bd769809d21c51de90497cf7af8ccbd0212b79d6151a5c7d43c728a68a565";
+    const original = journal.transactions[id];
+    assert.equal(original?.hash, originalHash, "Reviewed recovery belongs to another transaction");
+    const failed = await readCanonicalReceipt(client, originalHash, id, "reverted");
+    assert.equal(failed.gasUsed, BigInt(original.request.gas), "Reviewed out-of-gas condition changed");
+    original.status = "reverted";
+    original.receipt = {
+      transactionHash: failed.transactionHash,
+      blockHash: failed.blockHash,
+      blockNumber: String(failed.blockNumber),
+      gasUsed: String(failed.gasUsed),
+    };
+    const retryId = `${id}:retry-1`;
+    if (journal.calls[retryId]) assert.deepEqual(journal.calls[retryId], journal.calls[id]);
+    else journal.calls[retryId] = { ...journal.calls[id] };
+    run.save();
+    id = retryId;
+  }
   if (!journal.calls[id]) {
     const s = await build();
     journal.calls[id] = {
