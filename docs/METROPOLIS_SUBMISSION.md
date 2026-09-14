@@ -1,12 +1,14 @@
 # Metropolis submission packet — working draft
 
-**Status: implementation and transaction evidence complete; final submission is not open yet.** David authorized submission preparation. The existing project draft has been updated with the new repository, and the team is confirmed. The portal opens final submissions on 22 September 2026. Public video, final form checks and the source-visibility decision remain outstanding.
+**Status: implementation and transaction evidence complete; final submission is not open yet.** David authorized submission preparation. The existing project draft has been updated with the new repository, and the team is confirmed. The portal opens final submissions on 22 September 2026. The public narrated overview is ready. Dynamic browser signing, final form checks and the source-visibility decision remain outstanding.
 
 ## Entry facts
 
 - Project: **YieldShield on Monad**
 - Track: **Onchain Finance & Trading**
 - Demo: https://monad.yieldshield.ai
+- Video (2:34): https://monad.yieldshield.ai/media/metropolis-overview.mp4
+- Public receipts and captioned player: https://monad.yieldshield.ai/evidence
 - Source: https://github.com/YieldShield/yieldshield-monad — private by owner instruction; resolve the rules discrepancy below before final submission.
 - Network: Monad **testnet**, chain 10143.
 - Operator: Hawig Ventures UG (haftungsbeschränkt), Herzogin-Juliana-Straße 7, 55469 Simmern, Germany. Managing Director David Hawig. HRB 24975, Amtsgericht Bad Kreuznach.
@@ -44,7 +46,7 @@ Career details and company data above were provided by David. No employment date
 | Exact source under an OSI-approved license             | MIT new code and retained file-level notices; repository publication requires explicit owner approval                  |
 | Substantial new build-window work and reuse disclosure | Import baseline, separate stage commits and new-work disclosure present; eligibility ultimately assessed by organizers |
 | Setup and technical documentation                      | README, architecture, operations and evidence files present                                                            |
-| Public video ≤3 minutes                                | Script prepared in DEMO_GUIDE.md; recording and public hosting pending                                                 |
+| Public video ≤3 minutes                                | 2:34 narrated screenshot overview with English captions and transcript at /evidence                                    |
 | Fresh external MON pricing                             | RedStone MON/USD read directly on chain; no paid API subscription needed                                               |
 | Team profile                                           | David and Santi confirmed in the portal                                                                                |
 | Honest usage/traction                                  | No external user adoption, non-demo TVL, revenue or independent audit claimed                                          |

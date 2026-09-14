@@ -36,7 +36,7 @@ Implementation uses OpenAI Codex for code, tests, documentation, debugging and d
 
 The first hosted CI run passed: https://github.com/YieldShield/yieldshield-monad/actions/runs/34365837836 . It ran 53 API/deployment checks, 4 UI calculation/timing tests, 16 Monad Solidity tests and 225 imported module regressions, plus the production build.
 
-Both scenario and reference transaction journeys completed on 14 September, with recipient balance checks and preserved journals. The core release has 39 named contracts, five pools and ten receipt NFTs verified. One shMON exit exhausted its gas limit; its canonical failed receipt and separately reviewed successful retry remain in the reference journal. Dynamic onboarding is configured and deployed; browser signing and the final public video remain to be evidenced.
+Both scenario and reference transaction journeys completed on 14 September, with recipient balance checks and preserved journals. The core release has 39 named contracts, five pools and ten receipt NFTs verified. One shMON exit exhausted its gas limit; its canonical failed receipt and separately reviewed successful retry remain in the reference journal. Dynamic onboarding is configured and deployed; browser signing remains to be evidenced. A 2:34 narrated product overview, captions and transcript are published with the receipt evidence page.
 
 Owner decision, 9 September 2026: keep the repository private for now. Do not change its visibility without a later explicit instruction. Keep that decision in force while resolving the rule discrepancy.
 
@@ -59,3 +59,5 @@ Sponsor review, 9 September 2026: recorded the official published bounties, sepa
 | 3f5b4f8 | Integrate Dynamic authentication and embedded wallets with guarded signing               |
 
 The existing Metropolis draft now points to the new private repository, and both David and Santi are confirmed on the team. Final submissions open on 22 September. No sponsor bounty has been selected or claimed.
+
+The full verification run passed after the reference release and Dynamic integration: https://github.com/YieldShield/yieldshield-monad/actions/runs/34834802478 . This includes 65 API/deployment tests, 8 UI tests, Monad Solidity tests, imported protocol regressions and the production build. The narrated screenshot overview is not a live wallet recording; its hash and chapter timings are in `docs/evidence/video-overview.json`.

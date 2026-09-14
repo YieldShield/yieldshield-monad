@@ -1,6 +1,6 @@
 # Judge walkthrough and three-minute video script
 
-Both `scenario-journey.json` and `reference-journey.json` now contain confirmed testnet evidence. The public video has not yet been recorded. Do not fill transaction links or adoption metrics with invented data.
+Both `scenario-journey.json` and `reference-journey.json` now contain confirmed testnet evidence. A public 2:34 narrated screenshot overview is available at https://monad.yieldshield.ai/evidence, with captions and a transcript. It does not show live wallet signing. The outline below remains the plan for an enhanced live transaction recording after the Dynamic walkthrough. Do not fill transaction links or adoption metrics with invented data.
 
 ## Prepare
 

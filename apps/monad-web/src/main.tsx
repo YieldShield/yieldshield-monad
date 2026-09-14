@@ -97,7 +97,7 @@ function Footer() {
       <p>Built for a different way to hold.</p>
       <div>
         <Link to="/legal">Legal & privacy</Link>
-          <Link to="/evidence">Build evidence</Link>
+        <Link to="/evidence">Build evidence</Link>
         <a href="https://github.com/YieldShield/yieldshield-monad" target="_blank" rel="noreferrer">
           Source ↗
         </a>
@@ -1681,6 +1681,28 @@ function Evidence() {
         adoption, real-money TVL or an independent audit.
       </div>
       <section className="status-panel">
+        <h2>Product overview</h2>
+        <p>
+          A narrated tour of the deployed testnet app, with English captions. It uses application screenshots and
+          synthetic narration; the transaction evidence is linked below. No live wallet signing is shown.
+        </p>
+        <video
+          controls
+          playsInline
+          preload="metadata"
+          aria-label="YieldShield on Monad narrated product overview"
+          style={{ width: "100%", maxHeight: "70vh", background: "#120b28", borderRadius: 12 }}
+        >
+          <source src="/media/metropolis-overview.mp4" type="video/mp4" />
+          <track default kind="captions" src="/media/metropolis-overview.vtt" srcLang="en" label="English" />
+          Your browser does not support embedded video. Use the download link below.
+        </video>
+        <p>
+          <a href="/media/metropolis-overview.mp4">Open video</a> ·{" "}
+          <a href="/media/metropolis-overview.txt">Read transcript</a>
+        </p>
+      </section>
+      <section className="status-panel">
         <h2>Five funded markets</h2>
         <p>
           39 named contracts, five pools and ten receipt NFTs were verified on 14 September 2026. Each pool was
@@ -1711,8 +1733,7 @@ function Evidence() {
         </p>
         <p>
           Dynamic email authentication and embedded wallets are deployed; their separate end-user signing walkthrough is
-          still being verified. The public video and final submission are pending. The final portal opens on 22
-          September.
+          still being verified. Final submission is pending; the portal opens on 22 September.
         </p>
         <p>
           The repository remains private by owner instruction while the operative submission-access requirements are

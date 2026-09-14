@@ -1,0 +1,61 @@
+{
+  "createdAt": "2026-09-14T10:56:15.098599+00:00",
+  "url": "https://monad.yieldshield.ai/media/metropolis-overview.mp4",
+  "evidencePage": "https://monad.yieldshield.ai/evidence",
+  "plannedDurationSeconds": 153.6,
+  "sizeBytes": 3914627,
+  "sha256": "905acc4e97e3ce16f71b2522bcb5fd7fe0e6da28688f30af3b16b9b4c3e483b0",
+  "format": "H.264/AAC, 1440x1080, 20 fps",
+  "description": "Actual application screenshots, synthetic macOS Samantha narration, English WebVTT captions. No live wallet transaction is shown. Internal canonical transaction evidence is linked separately.",
+  "chapters": [
+    {
+      "chapter": "Two exit choices",
+      "startSeconds": 0,
+      "audioSeconds": 19.312,
+      "segmentSeconds": 19.8
+    },
+    {
+      "chapter": "Five funded testnet markets",
+      "startSeconds": 19.8,
+      "audioSeconds": 20.748,
+      "segmentSeconds": 21.2
+    },
+    {
+      "chapter": "Protection and wallet onboarding",
+      "startSeconds": 41.0,
+      "audioSeconds": 21.885,
+      "segmentSeconds": 22.35
+    },
+    {
+      "chapter": "An isolated scenario lab",
+      "startSeconds": 63.35,
+      "audioSeconds": 18.983,
+      "segmentSeconds": 19.45
+    },
+    {
+      "chapter": "Test assets and native integrations",
+      "startSeconds": 82.8,
+      "audioSeconds": 21.281,
+      "segmentSeconds": 21.75
+    },
+    {
+      "chapter": "On-chain price and contract checks",
+      "startSeconds": 104.55,
+      "audioSeconds": 21.038,
+      "segmentSeconds": 21.5
+    },
+    {
+      "chapter": "Canonical transaction evidence",
+      "startSeconds": 126.05,
+      "audioSeconds": 27.079,
+      "segmentSeconds": 27.55
+    }
+  ],
+  "verifiedDurationSeconds": 153.621333,
+  "verification": {
+    "fullDecode": "passed: 3072 frames, audio stream decoded",
+    "browser": "metadata loaded, 1440x1080, readyState 4, English captions showing",
+    "visualReview": "decoded market frame inspected; source screenshots reviewed",
+    "audioMeanDb": -15.7
+  }
+}
