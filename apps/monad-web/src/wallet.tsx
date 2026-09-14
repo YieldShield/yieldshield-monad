@@ -15,7 +15,7 @@ import { monadTestnet } from "viem/chains";
 import useSWR, { mutate } from "swr";
 import config from "../../../config/monad.json";
 import deployment from "../../../config/deployment.json";
-import type { TxRequest } from "./types";
+import type { TxRequest, Registry } from "./types";
 import { errorMessage, fetcher, explorer, short } from "./lib";
 export const client = createPublicClient({
   chain: monadTestnet,
@@ -271,6 +271,21 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     await send({ address: token, abi: erc20, functionName: "approve", args: [spender, value] });
   }
   async function updatePrice() {
+    const registry = deployment as unknown as Registry;
+    if (registry.referenceOracle === "redstone") {
+      setStatus("Checking the on-chain MON reference");
+      const address = registry.contracts.RedstoneReferenceFeed?.address;
+      const token = registry.contracts.WMON?.address;
+      if (!address || !token) throw new Error("Reference adapter unavailable.");
+      const price = await client.readContract({
+        address,
+        abi: parseAbi(["function getPriceWithStrictCircuitBreaker(address) view returns(uint256)"]),
+        functionName: "getPriceWithStrictCircuitBreaker",
+        args: [token],
+      });
+      if (price <= 0n) throw new Error("A fresh MON reference is required.");
+      return;
+    }
     setStatus("Fetching signed MON price");
     const update = await fetcher("/api/pyth-update");
     if (

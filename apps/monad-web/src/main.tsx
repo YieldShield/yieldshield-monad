@@ -17,7 +17,7 @@ const useSnapshot = () => useSWR<Snapshot>("/api/status", fetcher, { refreshInte
 const same = (a?: string, b?: string) => Boolean(a && b && a.toLowerCase() === b.toLowerCase());
 const kind = (a: Asset) =>
   ({
-    "external-reference": "Pyth reference",
+    "external-reference": registry.referenceOracle === "redstone" ? "RedStone reference" : "Pyth reference",
     "redemption-nav": "Staking NAV",
     synthetic: "Scenario price",
     "synthetic-unit": "Test unit",
@@ -379,7 +379,7 @@ function MarketCard({ market: m }: { market: Market }) {
           ? "Synthetic market for a repeatable demo"
           : m.symbol === "shMON"
             ? "Liquid-staking withdrawal NAV"
-            : "MON with a Pyth reference price"}
+            : "MON with an external reference price"}
       </p>
       <div className="market-price">
         {usd(m.shield?.price)}
@@ -457,7 +457,7 @@ function Markets() {
               </h2>
               <p>
                 {environment === "reference"
-                  ? "The live-price route needs authenticated Pyth updates before protection can open. Native wrapping and shMON staking remain separate actions."
+                  ? "The live-price route requires a fresh, verified MON reference before protection can open. Native wrapping and shMON staking remain separate actions."
                   : "Contract deployment is in progress. No placeholder pool addresses are used."}
               </p>
               <div className="row">
@@ -1712,18 +1712,38 @@ function Status() {
             ))}
             <div className="status-row">
               <div>
-                <strong>Pyth update service</strong>
+                <strong>
+                  {data.referenceOracle === "redstone" ? "RedStone MON reference" : "Pyth update service"}
+                </strong>
                 <span>
-                  {data.pythUpdateConfigured
-                    ? "Authenticated signed price updates are configured."
-                    : "Awaiting account/API key setup. No synthetic price fallback."}
+                  {data.referenceOracle === "redstone"
+                    ? "Read directly from Monad testnet. Prices older than 120 seconds are rejected."
+                    : data.pythUpdateConfigured
+                      ? "Authenticated signed price updates are configured."
+                      : "Awaiting account/API key setup. No synthetic price fallback."}
                 </span>
               </div>
-              <Tag tone={data.pythUpdateConfigured ? "success" : "pending"}>
-                {data.pythUpdateConfigured ? "Configured" : "Setup needed"}
+              <Tag
+                tone={
+                  (
+                    data.referenceOracle === "redstone"
+                      ? data.assets.find((a) => a.id === "wmon")?.healthy
+                      : data.pythUpdateConfigured
+                  )
+                    ? "success"
+                    : "pending"
+                }
+              >
+                {data.referenceOracle === "redstone"
+                  ? data.assets.find((a) => a.id === "wmon")?.healthy
+                    ? "Fresh"
+                    : "Unavailable"
+                  : data.pythUpdateConfigured
+                    ? "Configured"
+                    : "Setup needed"}
               </Tag>
             </div>
-            {data.pythUpdateConfigured && (
+            {data.referenceOracle !== "redstone" && data.pythUpdateConfigured && (
               <Submit
                 label="Publish the latest signed MON price"
                 onClick={() => w.execute("Update Pyth price", w.updatePrice)}
@@ -1919,9 +1939,9 @@ function Legal() {
         </p>
         <h2>External integrations</h2>
         <p>
-          Pyth and shMonad are external protocols. Their use does not imply endorsement or partnership. Mainnet trading
-          links leave YieldShield and use separate services. No stock trading, tokenized equities or real-money payments
-          are enabled here.
+          RedStone, Pyth and shMonad are external protocols. Their use does not imply endorsement or partnership.
+          Mainnet trading links leave YieldShield and use separate services. No stock trading, tokenized equities or
+          real-money payments are enabled here.
         </p>
         <h2>Privacy</h2>
         <p>

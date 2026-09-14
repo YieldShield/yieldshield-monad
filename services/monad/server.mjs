@@ -1,3 +1,4 @@
+import { createCache } from "./cache.mjs";
 import { fetchPythUpdate } from "./pyth.mjs";
 import { throttledRpcFetch } from "./rpc-throttle.mjs";
 import { createServer } from "node:http";
@@ -31,19 +32,7 @@ const generic = parseAbi([
 const pythAbi = parseAbi([
   "function getPriceUnsafe(bytes32) view returns((int64 price,uint64 conf,int32 expo,uint256 publishTime))",
 ]);
-const cache = new Map();
-async function cached(key, ttl, fn) {
-  const item = cache.get(key);
-  if (item && item.expires > Date.now()) return item.promise;
-  const promise = fn();
-  cache.set(key, { expires: Date.now() + ttl, promise });
-  try {
-    return await promise;
-  } catch (e) {
-    cache.delete(key);
-    throw e;
-  }
-}
+const cached = createCache();
 const get = (target, artifact, fn, args = [], blockNumber) =>
   rpc.readContract({ address: target, abi: abis[artifact] || generic, functionName: fn, args, blockNumber });
 const c = (name) => registry.contracts[name]?.address;
@@ -133,7 +122,7 @@ async function snapshot() {
             evaluatedAt: Number(block.timestamp),
             error:
               a.kind === "external-reference" || a.kind === "redemption-nav"
-                ? "A fresh, verified Pyth MON price is required."
+                ? "A fresh, verified MON reference price is required."
                 : "Price or vault state unavailable.",
           };
         }
@@ -221,13 +210,14 @@ async function snapshot() {
     );
     let pyth = null;
     try {
-      pyth = await rpc.readContract({
-        address: config.pyth.address,
-        abi: pythAbi,
-        functionName: "getPriceUnsafe",
-        args: [config.pyth.monUsdFeedId],
-        blockNumber,
-      });
+      if (registry.referenceOracle !== "redstone")
+        pyth = await rpc.readContract({
+          address: config.pyth.address,
+          abi: pythAbi,
+          functionName: "getPriceUnsafe",
+          args: [config.pyth.monUsdFeedId],
+          blockNumber,
+        });
     } catch {}
     return {
       schemaVersion: 3,
@@ -241,6 +231,7 @@ async function snapshot() {
       code,
       assets: sources,
       markets,
+      referenceOracle: registry.referenceOracle || "pyth",
       pyth,
       pythUpdateConfigured: Boolean(process.env.PYTH_API_KEY),
       registry,

@@ -50,6 +50,7 @@ export type Registry = {
   assets: Asset[];
   pools: Market[];
   referenceStatus: string;
+  referenceOracle?: "redstone" | "pyth";
 };
 export type Snapshot = {
   schemaVersion: number;
@@ -60,6 +61,7 @@ export type Snapshot = {
   contractsVerified: boolean;
   assets: Asset[];
   markets: Market[];
+  referenceOracle: "redstone" | "pyth";
   pyth: any;
   pythUpdateConfigured: boolean;
   registry: Registry;

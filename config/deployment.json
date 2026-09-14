@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "chainId": 10143,
-  "status": "scenario-complete",
+  "status": "complete",
   "contracts": {
     "TestUSDC": {
       "address": "0xdf25A5f619a2bF7b9baC4A349D6C8381597e0604",
@@ -218,6 +218,24 @@
       "runtimeCodehash": "0xb6fe1ae817868e5b7399a5a3047e41309b3f5a0fc48138fe575ecb857d5d2b1c",
       "artifact": "CompositeOracle",
       "txHash": "0xfe0ebf939fa2bf5e35087b6ec9de528cb572d4c95919e06de605c24647b7b9fb"
+    },
+    "RedstoneReferenceFeed": {
+      "address": "0x244252325588eE70e8C763385480AB688f89d690",
+      "runtimeCodehash": "0xa70508b82531c1ab186e3e049b7532e80017ceb34ce3156c87653080947836fc",
+      "artifact": "MonadRedstoneReferenceFeed",
+      "txHash": "0xb1186a6ff98ae79fd36f4a8a2b06fdbcb9a1d764e0e6293a89f9aac87b6a0f9b"
+    },
+    "ReferenceFactory": {
+      "address": "0xa72E4a45a43322Fe0D77b0762f763D2658aAc84C",
+      "runtimeCodehash": "0x6364bede79b5d4f44a8298aadb9f95588cd32d481f813ae394af363ecfad858b",
+      "artifact": "ERC1967Proxy",
+      "txHash": "0x3f51351dab95cc11e353127da1d858acb01c4bca3e26d990ff28c7a6be4adddd"
+    },
+    "ReferenceCompositeOracle": {
+      "address": "0x754ece6dDdabEC58da86Daa9A33578BA9eF7A929",
+      "runtimeCodehash": "0xb6fe1ae817868e5b7399a5a3047e41309b3f5a0fc48138fe575ecb857d5d2b1c",
+      "artifact": "CompositeOracle",
+      "txHash": "0x3403099fc6d93a479b22fa7a82ec89381a5a923788b4d40c00e9b34e03fd522c"
     }
   },
   "assets": [
@@ -258,7 +276,7 @@
       "name": "Wrapped testnet MON",
       "decimals": 18,
       "kind": "external-reference",
-      "feed": "0x45F5DF2A69bc273082a203ee73D64922EAE8dD40",
+      "feed": "0x244252325588eE70e8C763385480AB688f89d690",
       "artifact": "MonadWrappedNative"
     },
     {
@@ -268,7 +286,7 @@
       "name": "Staked testnet MON",
       "decimals": 18,
       "kind": "redemption-nav",
-      "feed": "0x45F5DF2A69bc273082a203ee73D64922EAE8dD40",
+      "feed": "0x244252325588eE70e8C763385480AB688f89d690",
       "external": true
     }
   ],
@@ -294,8 +312,42 @@
       "environment": "scenario",
       "priceKind": "synthetic",
       "createdTx": "0x9483b75fb8c8eabc2da0f1d238c74709ad184d8676279d0bda01d7fac2372990"
+    },
+    {
+      "id": "wmon-usd",
+      "address": "0xe0861e2a0a8b0E94377dC846fb00577c9028eb19",
+      "shieldedToken": "0x23EA8b07fda821d2096dee02a3a662a5374B69Cb",
+      "backingToken": "0xdf25A5f619a2bF7b9baC4A349D6C8381597e0604",
+      "symbol": "WMON",
+      "backingSymbol": "TestUSDC",
+      "environment": "reference",
+      "priceKind": "external-reference",
+      "createdTx": "0xa67778a02281341dbd75611d8fe566488b1be8ff6819f8622930ac19dc5f9e2e"
+    },
+    {
+      "id": "shmon-usd",
+      "address": "0xBc5ACfF7aB888608D7Ba12144e17645d22FCd706",
+      "shieldedToken": "0x282BdDFF5e58793AcAb65438b257Dbd15A8745C9",
+      "backingToken": "0xdf25A5f619a2bF7b9baC4A349D6C8381597e0604",
+      "symbol": "shMON",
+      "backingSymbol": "TestUSDC",
+      "environment": "reference",
+      "priceKind": "redemption-nav",
+      "createdTx": "0x2ba8b62de1cd01b95815661f686ebddecd7a86b818d2501b987a3299264a6890"
+    },
+    {
+      "id": "wmon-vault",
+      "address": "0xEF6bf7EA3dd2a425577965e0234B30b0B2A3306b",
+      "shieldedToken": "0x23EA8b07fda821d2096dee02a3a662a5374B69Cb",
+      "backingToken": "0x1feB5ae74eaBf81F8148C5396179d1aC9F9C77A5",
+      "symbol": "WMON",
+      "backingSymbol": "vTestUSDC",
+      "environment": "reference",
+      "priceKind": "external-reference",
+      "createdTx": "0x44fc20197db62c88f41045797ec8074c19998c6e624ac07208dd1d38c0b390fa"
     }
   ],
-  "referenceStatus": "awaiting-authenticated-pyth-updates",
-  "updatedAt": "2026-09-14T09:51:03.335Z"
+  "referenceStatus": "active",
+  "referenceOracle": "redstone",
+  "updatedAt": "2026-09-14T10:16:52.556Z"
 }
