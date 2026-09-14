@@ -1945,12 +1945,13 @@ function Legal() {
         </p>
         <h2>Privacy</h2>
         <p>
-          The frontend is hosted on Vercel and the read-only API on Railway. Requests necessarily reach those providers
-          and the configured Monad RPC. Wallet addresses and on-chain transactions are public; the app uses an address
-          to read positions when you connect. It does not receive your wallet’s private keys. No advertising analytics,
-          marketing cookies or account database are configured. Fonts are loaded from Google Fonts, which receives those
-          requests. The browser temporarily stores a pending transaction hash to recover its confirmation after a
-          reload.
+          Dynamic provides optional email authentication and embedded wallets. Its authentication screens handle email
+          verification, device checks and wallet confirmations. The frontend is hosted on Vercel and the read-only API
+          on Railway. Requests necessarily reach those providers and the configured Monad RPC. Wallet addresses and
+          on-chain transactions are public; the app uses an address to read positions when you connect. It does not
+          receive your wallet’s private keys. No advertising analytics, marketing cookies or account database are
+          configured. Fonts are loaded from Google Fonts, which receives those requests. The browser temporarily stores
+          a pending transaction hash to recover its confirmation after a reload.
         </p>
         <p>
           Contact the operator for privacy questions or requests. This page describes this testnet release; it does not

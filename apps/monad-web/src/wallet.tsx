@@ -1,4 +1,14 @@
-import { createContext, useContext, useEffect, useState, useRef, type ReactNode } from "react";
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+  type ReactNode,
+} from "react";
 import {
   createPublicClient,
   createWalletClient,
@@ -8,6 +18,10 @@ import {
   parseAbi,
   keccak256,
   type Address,
+  type Account,
+  type Chain,
+  type Transport,
+  type WalletClient,
   type EIP1193Provider,
   type Hash,
 } from "viem";
@@ -17,6 +31,8 @@ import config from "../../../config/monad.json";
 import deployment from "../../../config/deployment.json";
 import type { TxRequest, Registry } from "./types";
 import { errorMessage, fetcher, explorer, short } from "./lib";
+import { ensureDynamicSession, type DynamicSession } from "./dynamic-session";
+const DynamicWallet = lazy(() => import("./DynamicWallet"));
 export const client = createPublicClient({
   chain: monadTestnet,
   transport: http(config.rpcUrl, { timeout: 15000, batch: { batchSize: 20, wait: 10 } }),
@@ -60,6 +76,34 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false);
   const pending = useRef(false);
+  const dynamicSession = useRef<DynamicSession | null>(null);
+  const [dynamicEnabled, setDynamicEnabled] = useState(() => {
+    try {
+      return localStorage.getItem("yieldshield-monad:dynamic-session") === "1";
+    } catch {
+      return false;
+    }
+  });
+  const [dynamicOpen, setDynamicOpen] = useState(0);
+  const onDynamicSession = useCallback((session: DynamicSession | null) => {
+    const previous = dynamicSession.current;
+    dynamicSession.current = session;
+    if (session) {
+      setProvider(null);
+      setAccount(session.address);
+      setChain(null);
+      setChooser(false);
+      try {
+        localStorage.setItem("yieldshield-monad:dynamic-session", "1");
+      } catch {}
+    } else if (previous) {
+      setAccount(null);
+      setChain(null);
+      try {
+        localStorage.removeItem("yieldshield-monad:dynamic-session");
+      } catch {}
+    }
+  }, []);
   useEffect(() => {
     const saved = savedTransaction();
     if (!saved) return;
@@ -143,6 +187,11 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     try {
       setError("");
       const accounts = await p.request({ method: "eth_requestAccounts" });
+      dynamicSession.current = null;
+      setDynamicEnabled(false);
+      try {
+        localStorage.removeItem("yieldshield-monad:dynamic-session");
+      } catch {}
       setProvider(p);
       setAccount(accounts[0]);
       setChain(Number(await p.request({ method: "eth_chainId" })));
@@ -151,7 +200,13 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       setError(errorMessage(e));
     }
   }
-  async function ensure() {
+  async function ensure(): Promise<WalletClient<Transport, Chain, Account>> {
+    if (dynamicSession.current && account) {
+      const wallet = await ensureDynamicSession(dynamicSession.current, account);
+      if ((await client.getChainId()) !== 10143) throw new Error("RPC returned the wrong network.");
+      setChain(10143);
+      return wallet;
+    }
     if (!provider || !account) throw new Error("Connect a wallet first.");
     let id = Number(await provider.request({ method: "eth_chainId" }));
     if (id !== 10143) {
@@ -229,7 +284,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     await client.simulateContract({ ...req, account: account! });
     const data = encodeFunctionData(req);
     const gasEstimate = await client.estimateGas({ account: account!, to: req.address, data, value: req.value || 0n });
-    const gas = (gasEstimate * 110n) / 100n;
+    const gas = (gasEstimate * 150n + 99n) / 100n + 100000n;
+    if (gas > 16000000n) throw new Error("Transaction exceeds the Monad gas limit for this app.");
     const fees = await client.estimateFeesPerGas();
     const [balance, accountCode] = await Promise.all([
       client.getBalance({ address: account! }),
@@ -356,6 +412,13 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     updatePrice,
     connect: () => setChooser(true),
     disconnect: () => {
+      const session = dynamicSession.current;
+      if (session) void session.logout().catch((error) => setError(errorMessage(error)));
+      dynamicSession.current = null;
+      setDynamicEnabled(false);
+      try {
+        localStorage.removeItem("yieldshield-monad:dynamic-session");
+      } catch {}
       setAccount(null);
       setProvider(null);
     },
@@ -364,6 +427,17 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   return (
     <WalletContext.Provider value={value}>
       {children}
+      {dynamicEnabled && (
+        <Suspense
+          fallback={
+            <aside className="tx-toast" role="status">
+              Loading secure wallet sign-in…
+            </aside>
+          }
+        >
+          <DynamicWallet openRequest={dynamicOpen} onSession={onDynamicSession} />
+        </Suspense>
+      )}
       {chooser && (
         <div className="modal-backdrop" onClick={() => setChooser(false)}>
           <section
@@ -377,16 +451,25 @@ export function WalletProvider({ children }: { children: ReactNode }) {
               ×
             </button>
             <h2 id="wallet-title">Connect your wallet</h2>
-            <p>Choose a browser wallet. Transactions use Monad testnet.</p>
+            <p>Sign in to create a wallet, or connect one you already use. Transactions use Monad testnet.</p>
+            <button
+              className="wallet-option"
+              onClick={() => {
+                setChooser(false);
+                setDynamicEnabled(true);
+                setDynamicOpen((value) => value + 1);
+              }}
+            >
+              Continue with Dynamic <span>↗</span>
+            </button>
+            <p>Email sign-in and embedded wallets, powered by Dynamic.</p>
             {options.map((w) => (
               <button className="wallet-option" key={w.info.uuid} onClick={() => connect(w.provider)}>
                 {w.info.name}
                 <span>↗</span>
               </button>
             ))}
-            {!options.length && (
-              <p>No browser wallet detected. Install a Monad-compatible wallet, then refresh this page.</p>
-            )}
+            {!options.length && <p>No browser extension detected. Continue with Dynamic to create a wallet.</p>}
             <a href="https://faucet.monad.xyz/add-network" target="_blank" rel="noreferrer">
               Monad wallet setup ↗
             </a>
