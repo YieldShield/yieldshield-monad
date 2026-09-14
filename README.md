@@ -7,21 +7,21 @@ A Monad testnet application for holding crypto exposure with two exit choices: w
 - Network: **Monad testnet, chain 10143**. All demonstration tokens have no monetary value.
 - Operator: Hawig Ventures UG (haftungsbeschränkt), Germany.
 
-## Current release status — 9 September 2026
+## Current release status — 14 September 2026
 
-The frontend and API are deployed. The new Monad contracts and interface are implemented, but the on-chain rollout is **incomplete**: 20 contracts / 30 confirmed deployment steps, with the pool modules and funded markets still pending additional testnet MON. Authenticated Pyth access is also pending. The UI exposes actual readiness and does not replace an unavailable MON reference with a scenario price.
+The chain rollout is complete: **39 named contracts and five funded pools**, with both scenario and reference journeys verified against canonical receipts and recipient balances. Each pool was initially seeded with 50,000 valueless backing units. RedStone MON/USD is read directly on chain with a 120-second freshness limit; the historical Pyth adapter remains attributed but is not used by the active reference factory. Dynamic email authentication and embedded wallets are configured in a separate Monad sandbox environment.
 
 **This is not yet a submission-ready release.** See [readiness and submission packet](docs/METROPOLIS_SUBMISSION.md), [build ledger](docs/BUILD_LEDGER.md), and [deployment verification](docs/evidence/deployment-verification.json). The public demo video and external walkthroughs have not been completed. Source publication awaits the owner's explicit approval.
 
 ## Product scope
 
-| Market | Assets and price | Implementation / activation |
-| --- | --- | --- |
-| WMON → TestUSDC | Native MON wrapper; Pyth MON/USD | Implemented; activation pending |
-| shMON → TestUSDC | Official shMonad testnet token; delayed withdrawal NAV × MON/USD | Implemented; activation pending |
-| WMON → vTestUSDC | Redeemable shares of an explicitly funded test vault | Implemented; activation pending |
-| sMON-demo → TestUSDC | Isolated synthetic price cycle | Implemented; deployment pending |
-| sMON-demo → vTestUSDC | Same isolated scenario with share-denominated backing | Implemented; deployment pending |
+| Market                | Assets and price                                                 | Implementation / activation |
+| --------------------- | ---------------------------------------------------------------- | --------------------------- |
+| WMON → TestUSDC       | Native MON wrapper; RedStone MON/USD                             | Deployed and funded         |
+| shMON → TestUSDC      | Official shMonad testnet token; delayed withdrawal NAV × MON/USD | Deployed and funded         |
+| WMON → vTestUSDC      | Redeemable shares of an explicitly funded test vault             | Deployed and funded         |
+| sMON-demo → TestUSDC  | Isolated synthetic price cycle                                   | Deployed and funded         |
+| sMON-demo → vTestUSDC | Same isolated scenario with share-denominated backing            | Deployed and funded         |
 
 TestUSDC is issued for this demonstration; it is **not Circle USDC**. The YieldShield WMON wrapper is a deployment-specific test wrapper, not a claim to be Monad's canonical WMON. sMON-demo is unrelated to Kintsu sMON. Scenario exchange prices are not live exchange quotes. shMON redemption NAV is not an executable sell price; unstaking has its own completion epoch.
 
@@ -39,7 +39,7 @@ npm ci --ignore-scripts
 npm run start:api
 ```
 
-In another terminal run `npm run dev`. Open http://localhost:5174. The service needs only public RPC access for normal reads. Set `PYTH_API_KEY` on the API server to enable fetching authenticated signed updates. Never put that key, or a wallet key, in a browser environment variable.
+In another terminal run `npm run dev`. Open http://localhost:5174. The service needs only public RPC access for normal reads. Active reference markets require no API key. Legacy Pyth tooling remains in the attributed source. Never put server credentials or wallet keys in browser environment variables.
 
 ```sh
 npm run test:monad
@@ -55,7 +55,7 @@ The service/deployment tests include a temporary local HTTP listener. Contract t
 
 - `apps/monad-web/`: active React/Vite app, Monad theme, wallet checks and transaction flows.
 - `services/monad/`: active read-only API, bounded RPC reads, verified registries and signed-price delivery.
-- `contracts/contracts/monad/`: new wrapper, Pyth/LST adapters, scenario contracts, vault and testnet initializer.
+- `contracts/contracts/monad/`: new wrapper, RedStone and historical Pyth/LST adapters, scenario contracts, vault and testnet initializer.
 - `contracts/contracts/base-modules/`: imported immutable protocol modules; retained names show provenance.
 - `contracts/test/monad/`: new/adapted Monad integration tests.
 - `config/`: explicit network identity plus generated ABIs and deployment registry.
@@ -64,13 +64,13 @@ The service/deployment tests include a temporary local HTTP listener. Contract t
 
 See [architecture and asset decisions](docs/ARCHITECTURE.md), [operations](docs/OPERATIONS.md), [new-work disclosure](docs/HACKATHON_DELTA.md), [provenance](docs/PROVENANCE.md), and [third-party notices](THIRD_PARTY_NOTICES.md).
 
-The [Metropolis sponsor strategy](docs/SPONSOR_STRATEGY.md) prioritizes Dynamic onboarding and evaluates Kuru, Agora, Chainlink CRE and other relevant sponsors. These are planned integrations with explicit evidence gates; the current release does not claim sponsor-bounty eligibility.
+The [Metropolis sponsor strategy](docs/SPONSOR_STRATEGY.md) prioritizes Dynamic onboarding and evaluates Kuru, Agora, Chainlink CRE and other relevant sponsors. Dynamic is implemented and configured; its browser signing evidence is pending. Other sponsor integrations have explicit evidence gates. No bounty eligibility or award is claimed.
 
 ## Deployment and evidence
 
 Follow [the release runbook](docs/OPERATIONS.md). Deployment commands require an explicit `--broadcast`, a dedicated ignored testnet signer file, and chain 10143. Requests and expected hashes are saved before broadcasting. An interrupted deployment resumes the exact intent; it does not replace an ambiguous nonce. No backend service has a wallet private key.
 
-Only publish `config/deployment.json` after `npm run verify:monad` succeeds. Verification of an incomplete manifest does not establish full application readiness. Public journey evidence will be generated only after real confirmed transactions and recipient balances have been checked.
+Only publish `config/deployment.json` after `npm run verify:monad` succeeds. Verification of an incomplete manifest does not establish full application readiness. Both journey evidence files contain confirmed transactions and recipient balance checks; they describe internal testing, not user adoption.
 
 ## License and attribution
 
