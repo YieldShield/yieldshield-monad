@@ -122,6 +122,102 @@
       "runtimeCodehash": "0x2cc17f6e62e92899fa081186b1765a2741733dae817b46a5dc7acc7137002b77",
       "artifact": "MonadPoolInitializeModule",
       "txHash": "0x968d03fbbfe5fd5a5f48b0d9aa4d410458cb1e1c087ddf0e9ee1d43420efbcd4"
+    },
+    "BasePoolPartialExitModule": {
+      "address": "0xf978A846C7fe949418f321788C51E2B2F9699312",
+      "runtimeCodehash": "0x132c37aadcfcbfbb29df5a78ac5f2b4dd85554ddc40de6800f592649f8b1d9f0",
+      "artifact": "BasePoolPartialExitModule",
+      "txHash": "0x11040162ee166033672a38dc5c58c33a6b0b593b5dfaaf876e873640442a7ef5"
+    },
+    "BasePoolProtectorModule": {
+      "address": "0xd32eA5460244899fBA59544806136338376B14a3",
+      "runtimeCodehash": "0xba37e5b4dc7c2fdb570b6adae68c3e9852a8924f3e2c09690de80f84a4c718f5",
+      "artifact": "BasePoolProtectorModule",
+      "txHash": "0x29c86ccea417b828a7782697c31e1b551c1873e59f3e5c5f4256f50369f996d1"
+    },
+    "BasePoolShieldExitModule": {
+      "address": "0x56B52cdE54E0fC5369618930Ea674df7a7e5B26d",
+      "runtimeCodehash": "0x345f85d46711ef88e293026eddd3ee61eb6a819ea83e0bbddff5124dfed1efdb",
+      "artifact": "BasePoolShieldExitModule",
+      "txHash": "0x53f8aa5b215c06285e10ef3e43d0cec2ecc05ef6eb9c5f930d104b36904dbdb6"
+    },
+    "BasePoolViewsModule": {
+      "address": "0x30312686180cD1B462AE315DdF23cc129d414b91",
+      "runtimeCodehash": "0x623de9592f64e3fd819198b776003586e2e750e3775523264a6ce2d541818f27",
+      "artifact": "BasePoolViewsModule",
+      "txHash": "0xc43ed9bb648e5a168c2d5cc40668138c05fa09196e2945df60f6af76f73853d9"
+    },
+    "BasePoolRouter": {
+      "address": "0xa5a0A6f7E3AF100d2809B960f9C26A38609B0943",
+      "runtimeCodehash": "0x22fac0cfc8670980d928014b49de2c468e77f49d9de27dd5c325112c89a4aab9",
+      "artifact": "BasePoolRouter",
+      "txHash": "0xb4b0ac24536e80842955f49c2b4ff7bf94f50edb4c218e95de81437f31cd605d"
+    },
+    "TokenWhitelistLib": {
+      "address": "0xc7925DEAff18A953Fc42263D20713Ecc25fcDB95",
+      "runtimeCodehash": "0x0e56bd5f9a99b4c6476e7cf41a681b7414122cc8f4535b791406a0a6c7642adb",
+      "artifact": "TokenWhitelistLib",
+      "txHash": "0xf04c7a9eaa4f2cf8627437058d52accc2296a34da7066568019e9473e83168d3"
+    },
+    "BaseFactoryAdminModule": {
+      "address": "0xD34D35f9C9898FF7dB6E079aB4A5C7a0a02A5D0F",
+      "runtimeCodehash": "0x2e67111c79ac2cc71228fea54a87282862391eb849c2ebe9e49aaea749ab9f79",
+      "artifact": "BaseFactoryAdminModule",
+      "txHash": "0x052e9587174f27d36e0084ced462f3ac29c4a355729981ccd962dad4f4976d56"
+    },
+    "PoolCreationLib": {
+      "address": "0xf4EEEf5F1926057798b26db94D11e1f1Fe2BD7fE",
+      "runtimeCodehash": "0xd357aa05b97b8fa0466a2cab1b274f3a66d2aa67f206ac06ea9b5860c7b15e0a",
+      "artifact": "PoolCreationLib",
+      "txHash": "0x5291bbcc9d9b5fa0dcf477cfddc360e9c846e0941ed7b94a103c90c979c2ac92"
+    },
+    "PoolValidationLib": {
+      "address": "0x2f55288320e85F5fAd14cEA01bF2CC5AF93e4623",
+      "runtimeCodehash": "0x0f4f8793170488dc5dc945ea4a2c472272bdd97b02ba3b60a0deceed4625e40b",
+      "artifact": "PoolValidationLib",
+      "txHash": "0x502141474431fc61cc3bd35326fca42ef5eb196760b4aa79c2ae6f211d634e54"
+    },
+    "BaseFactoryCreateModule": {
+      "address": "0xf727D271cB7f990BF9fa46Fc59785050bA6DEB80",
+      "runtimeCodehash": "0x3c477384907b32ba947cf59dbd9005e4b32ef9226b7d8d37b8ef42382aaac14b",
+      "artifact": "BaseFactoryCreateModule",
+      "txHash": "0x6a145da9b4186f6a7f331afdb08b460256d4ef126fa8dc485d80dfdf36374a31"
+    },
+    "BaseFactoryLifecycleModule": {
+      "address": "0x2a9A794e70198804260FdB6fC4527a523186577D",
+      "runtimeCodehash": "0xb21f07da32659209b9ee030274fc8e769da6c8cc6a6ceb3b58f1b6bfa2f5e394",
+      "artifact": "BaseFactoryLifecycleModule",
+      "txHash": "0x98e568e5e1cb208c898661ab25eb4a2192493ccb2951b1045e7f0820a7033bea"
+    },
+    "BaseFactoryOracleModule": {
+      "address": "0xF3F151D62463dED965A2A1617E5ec96933c54AeF",
+      "runtimeCodehash": "0x9b4de76b28d366ade2712ac903ee7ce1d7f71e14a9ce2da067097f963b005d66",
+      "artifact": "BaseFactoryOracleModule",
+      "txHash": "0x6d38a917d0f7fa989907d379fb64b43a4481246a5a00779c03b3d080db4186f0"
+    },
+    "BaseFactoryViewsModule": {
+      "address": "0xB892802DE8cD3a2371b6c7101fF8B991D5278e2A",
+      "runtimeCodehash": "0x0c9e9b29f0abf653fab85847ebeb2a0e5b47fbf107f22447ef5b8725f812edbe",
+      "artifact": "BaseFactoryViewsModule",
+      "txHash": "0x3eb1d27b38862a6a5a681c48c095e763827aa94257bcf9c6d733ca5ce5e8f9f1"
+    },
+    "BaseFactoryRouter": {
+      "address": "0xCd4eb925280e9c75aFF2f57fEB579Aea0981b0cB",
+      "runtimeCodehash": "0xe9583671091c65f683a48c82c0b832508da8dd9204dc269127f0b340be5e63c9",
+      "artifact": "BaseFactoryRouter",
+      "txHash": "0x4557a2d012ca641f2414508da73f6528f87d6375489cc70ab8b033b3a37baaa0"
+    },
+    "Factory": {
+      "address": "0x7c843F084fFa3325378A86d5617D012476dB5851",
+      "runtimeCodehash": "0x6364bede79b5d4f44a8298aadb9f95588cd32d481f813ae394af363ecfad858b",
+      "artifact": "ERC1967Proxy",
+      "txHash": "0xc23600711ab06c1108f49a4536534d4be78ea3b8fccef3eefe22abd7301ddae6"
+    },
+    "CompositeOracle": {
+      "address": "0xb8E440aDE48D91eEBC88fE61fDe59EED1Ad0607D",
+      "runtimeCodehash": "0xb6fe1ae817868e5b7399a5a3047e41309b3f5a0fc48138fe575ecb857d5d2b1c",
+      "artifact": "CompositeOracle",
+      "txHash": "0xfe0ebf939fa2bf5e35087b6ec9de528cb572d4c95919e06de605c24647b7b9fb"
     }
   },
   "assets": [
@@ -176,6 +272,18 @@
       "external": true
     }
   ],
-  "pools": [],
-  "updatedAt": "2026-09-09T14:30:22.217Z"
+  "pools": [
+    {
+      "id": "scenario-mon-usd",
+      "address": "0xe8E8c9fBe73C997E20b9c8FE5e67FE6b92E1a149",
+      "shieldedToken": "0xf6d92E132ACBB85ff3c059f8ca71169d7d82EE9C",
+      "backingToken": "0xdf25A5f619a2bF7b9baC4A349D6C8381597e0604",
+      "symbol": "sMON-demo",
+      "backingSymbol": "TestUSDC",
+      "environment": "scenario",
+      "priceKind": "synthetic",
+      "createdTx": "0x48707ada852eb38752f951008bf113d0f226d20888fbbc5f0d5bf32b498983e1"
+    }
+  ],
+  "updatedAt": "2026-09-14T09:44:58.315Z"
 }
