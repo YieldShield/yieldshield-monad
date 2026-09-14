@@ -35,6 +35,7 @@ jobs:
         run: |
           node --check scripts/deploy-monad.mjs
           node --check scripts/deploy-monad-reference.mjs
+          node --check scripts/deploy-monad-redstone-reference.mjs
           node --check scripts/smoke-monad.mjs
           node --check scripts/verify-monad.mjs
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

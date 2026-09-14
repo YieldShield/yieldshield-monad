@@ -3,6 +3,8 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route, Link, NavLink, useParams, useNavigate } from "react-router-dom";
 import useSWR from "swr";
 import { parseAbi, formatUnits, type Abi, type Address } from "viem";
+import scenarioEvidence from "../../../docs/evidence/scenario-journey.json";
+import referenceEvidence from "../../../docs/evidence/reference-journey.json";
 import config from "../../../config/monad.json";
 import registryJson from "../../../config/deployment.json";
 import abisJson from "../../../config/browser-abis.json";
@@ -95,6 +97,7 @@ function Footer() {
       <p>Built for a different way to hold.</p>
       <div>
         <Link to="/legal">Legal & privacy</Link>
+          <Link to="/evidence">Build evidence</Link>
         <a href="https://github.com/YieldShield/yieldshield-monad" target="_blank" rel="noreferrer">
           Source ↗
         </a>
@@ -294,6 +297,7 @@ function Shell({ children }: { children: ReactNode }) {
           </a>
           <Link to="/how-it-works">How it works</Link>
           <Link to="/legal">Legal & privacy</Link>
+          <Link to="/evidence">Build evidence</Link>
           <span>Built for Metropolis</span>
         </div>
       </aside>
@@ -1660,6 +1664,93 @@ function Lab({ standalone = false }: { standalone?: boolean }) {
     <Shell>{content}</Shell>
   );
 }
+function Evidence() {
+  const journeys = [
+    { name: "Scenario markets", data: scenarioEvidence },
+    { name: "Reference markets", data: referenceEvidence },
+  ];
+  return (
+    <Shell>
+      <PageTitle
+        kicker="Metropolis / Build evidence"
+        title="Follow the receipts."
+        copy="Internal tests on Monad testnet: deployed pools, real transactions and received-token checks."
+      />
+      <div className="notice">
+        All assets are valueless test tokens. These transactions demonstrate internal testing; they are not user
+        adoption, real-money TVL or an independent audit.
+      </div>
+      <section className="status-panel">
+        <h2>Five funded markets</h2>
+        <p>
+          39 named contracts, five pools and ten receipt NFTs were verified on 14 September 2026. Each pool was
+          initially seeded with 50,000 test backing units. Current availability is shown on{" "}
+          <Link to="/status">Status</Link>.
+        </p>
+        {registry.pools.map((pool) => (
+          <div className="status-row" key={pool.id}>
+            <div>
+              <strong>
+                {pool.symbol} / {pool.backingSymbol}
+              </strong>
+              <span>{pool.environment === "reference" ? "External MON reference" : "Isolated synthetic scenario"}</span>
+            </div>
+            <a href={explorer("address", pool.address)} target="_blank" rel="noreferrer">
+              Inspect pool ↗
+            </a>
+          </div>
+        ))}
+      </section>
+      <section className="status-panel">
+        <h2>What was built for Monad</h2>
+        <p>
+          The dedicated Monad app and API, native MON wrapper, shMON staking router, strict RedStone reference adapter,
+          separate scenario environment, Dynamic authentication, wallet checks and deployment evidence are this
+          milestone. YieldShield's protocol and accounting foundation predate Metropolis and are reused with
+          attribution. OpenAI Codex assisted with code, tests, documentation and deployment.
+        </p>
+        <p>
+          Dynamic email authentication and embedded wallets are deployed; their separate end-user signing walkthrough is
+          still being verified. The public video and final submission are pending. The final portal opens on 22
+          September.
+        </p>
+        <p>
+          The repository remains private by owner instruction while the operative submission-access requirements are
+          clarified.
+        </p>
+      </section>
+      {journeys.map(({ name, data }) => (
+        <section className="status-panel" key={name}>
+          <h2>{name}</h2>
+          <p>
+            Completed {new Date(data.completedAt).toLocaleDateString()}. Transactions below cover deposits, exits and
+            actual withdrawal waits. Successful payouts were checked against recipient token balances.
+          </p>
+          {name === "Reference markets" && (
+            <p>
+              The journal retains one shMON exit that exhausted its gas limit and the separately reviewed successful
+              retry. Native wrapping and shMON staking are confirmed; completing an unstake queue is a separate action.
+            </p>
+          )}
+          <details>
+            <summary>Inspect {Object.keys(data.transactions).length} recorded transactions</summary>
+            {Object.entries(data.transactions).map(([step, tx]) => (
+              <div className="status-row" key={step}>
+                <div>
+                  <strong>{step.replaceAll(":", " · ")}</strong>
+                  <span>{tx.status === "confirmed" ? "Confirmed" : "Reverted; retained in the record"}</span>
+                </div>
+                <a href={explorer("tx", tx.hash)} target="_blank" rel="noreferrer">
+                  {short(tx.hash)} ↗
+                </a>
+              </div>
+            ))}
+          </details>
+        </section>
+      ))}
+    </Shell>
+  );
+}
 function Status() {
   const { data, error } = useSnapshot();
   const w = useWallet();
@@ -2010,6 +2101,7 @@ function App() {
             <Route path="/lab" element={<Lab />} />
             <Route path="/how-it-works" element={<Lab standalone />} />
             <Route path="/status" element={<Status />} />
+            <Route path="/evidence" element={<Evidence />} />
             <Route path="/create-pool" element={<CreatePool />} />
             <Route path="/legal" element={<Legal />} />
             <Route
