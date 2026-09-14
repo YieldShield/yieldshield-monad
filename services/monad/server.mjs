@@ -1,4 +1,5 @@
 import { fetchPythUpdate } from "./pyth.mjs";
+import { throttledRpcFetch } from "./rpc-throttle.mjs";
 import { createServer } from "node:http";
 import { readFileSync } from "node:fs";
 import { createPublicClient, http, parseAbi, keccak256 } from "viem";
@@ -12,7 +13,8 @@ const rpc = createPublicClient({
   transport: http(process.env.MONAD_RPC_URL || config.rpcUrl, {
     timeout: 12000,
     retryCount: 1,
-    batch: { batchSize: 30, wait: 10 },
+    batch: { batchSize: 10, wait: 10 },
+    fetchFn: throttledRpcFetch(),
   }),
 });
 const generic = parseAbi([
@@ -204,7 +206,8 @@ async function snapshot() {
               trade: p.environment === "scenario" && shield.healthy,
             },
           };
-        } catch {
+        } catch (error) {
+          console.warn("Monad pool snapshot failed", p.id, error.name, error.shortMessage || error.message);
           return {
             ...p,
             shield,
