@@ -93,56 +93,83 @@ function WalletButton() {
   );
 }
 const primaryNav = [
-  ["/protect", "Protect"],
-  ["/provide", "Provide"],
-  ["/positions", "Positions"],
-  ["/faucet", "Faucet"],
+  ["/protect", "Protect", "◇"],
+  ["/provide", "Provide", "＋"],
+  ["/positions", "Positions", "▤"],
+  ["/faucet", "Faucet", "◉"],
 ];
 const moreNav = [
-  ["/markets", "Compare pools"],
-  ["/trade", "Demo trade"],
-  ["/how-it-works", "How it works"],
-  ["/status", "Network status"],
-  ["/evidence", "Build evidence"],
-  ["/create-pool", "Create a pool"],
+  ["/markets", "Compare pools", "◈"],
+  ["/trade", "Demo trade", "⇄"],
+  ["/how-it-works", "How it works", "↗"],
+  ["/status", "Network status", "≋"],
+  ["/evidence", "Build evidence", "▧"],
+  ["/create-pool", "Create a pool", "⊕"],
 ];
 function Header() {
   const { pathname } = useLocation();
   return (
     <>
-      <div className="network-strip">
-        Monad testnet · Test tokens only. <Link to="/legal">Details</Link>
-      </div>
-      <header className="simple-header">
+      <aside className="sidebar" aria-label="Sidebar">
         <Brand />
-        <nav className="primary-nav" aria-label="Main navigation">
-          {primaryNav.map(([to, label]) => (
+        <div className="network-label">
+          <span className="dot purple" /> Monad Testnet <small>10143</small>
+        </div>
+        <nav aria-label="Main navigation">
+          {primaryNav.map(([to, label, icon]) => (
             <NavLink key={to} to={to}>
+              <span aria-hidden="true">{icon}</span>
               {label}
             </NavLink>
           ))}
-          <details
-            className="more-menu"
-            key={pathname}
-            onKeyDown={(event) => {
-              if (event.key === "Escape") {
-                event.currentTarget.open = false;
-                event.currentTarget.querySelector("summary")?.focus();
-              }
-            }}
-          >
-            <summary>More</summary>
-            <div className="more-links">
-              {moreNav.map(([to, label]) => (
-                <Link key={to} to={to}>
-                  {label}
-                </Link>
-              ))}
-            </div>
-          </details>
         </nav>
+        <nav className="sidebar-secondary" aria-label="More tools">
+          {moreNav.map(([to, label, icon]) => (
+            <NavLink key={to} to={to}>
+              <span aria-hidden="true">{icon}</span>
+              {label}
+            </NavLink>
+          ))}
+        </nav>
+        <div className="sidebar-bottom">
+          <a href={monadFaucet} target="_blank" rel="noreferrer">
+            Get testnet MON ↗
+          </a>
+        </div>
+      </aside>
+      <header className="simple-header">
+        <Brand />
+        <div className="header-notice">
+          Monad testnet · Test tokens only. <Link to="/legal">Details</Link>
+        </div>
         <WalletButton />
       </header>
+      <nav className="primary-nav" aria-label="Mobile navigation">
+        {primaryNav.map(([to, label]) => (
+          <NavLink key={to} to={to}>
+            {label}
+          </NavLink>
+        ))}
+        <details
+          className="more-menu"
+          key={pathname}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") {
+              event.currentTarget.open = false;
+              event.currentTarget.querySelector("summary")?.focus();
+            }
+          }}
+        >
+          <summary>More</summary>
+          <div className="more-links">
+            {moreNav.map(([to, label]) => (
+              <NavLink key={to} to={to}>
+                {label}
+              </NavLink>
+            ))}
+          </div>
+        </details>
+      </nav>
     </>
   );
 }

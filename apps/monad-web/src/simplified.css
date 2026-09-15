@@ -2,6 +2,7 @@
   --muted: #655f70;
   --line: #e4e0e9;
   min-height: 100vh;
+  padding-left: 234px;
   background: #faf9f7;
   color: var(--ink);
 }
@@ -22,16 +23,14 @@
   transform: none;
 }
 
-.network-strip {
-  padding: 9px 20px;
-  background: #eee9ff;
-  color: #443278;
-  text-align: center;
+.header-notice {
+  margin-right: auto;
+  color: var(--muted);
   font-size: 12px;
   line-height: 1.5;
 }
 
-.network-strip a,
+.header-notice a,
 .home-exits > small a {
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -41,14 +40,15 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  max-width: 1180px;
-  min-height: 98px;
+  min-height: 80px;
   margin: 0 auto;
   padding: 22px 32px;
   border-bottom: 1px solid var(--line);
+  background: #fff;
 }
 
 .simple-header .brand {
+  display: none;
   margin-right: auto;
   flex-shrink: 0;
 }
@@ -58,9 +58,31 @@
 }
 
 .primary-nav {
-  display: flex;
+  display: none;
   align-items: center;
   gap: 4px;
+}
+
+.simple-site .sidebar {
+  width: 234px;
+  padding: 30px 20px;
+  overflow-y: auto;
+}
+
+.simple-site .sidebar nav a {
+  min-height: 44px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.simple-site .sidebar nav a.active {
+  color: #6043e9;
+}
+
+.sidebar-secondary {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
 }
 
 .primary-nav a,
@@ -172,6 +194,11 @@
   margin-bottom: 28px;
 }
 
+.simple-site .explain-page,
+.simple-site .legal-page {
+  width: calc(100% - 64px);
+}
+
 .simple-site .page-heading h1 {
   margin-bottom: 10px;
   font-size: 38px;
@@ -190,6 +217,7 @@
   justify-content: space-between;
   gap: 16px 24px;
   max-width: 1116px;
+  width: calc(100% - 64px);
   margin: 0 auto;
   padding: 24px 0 28px;
   border-top: 1px solid var(--line);
@@ -227,7 +255,7 @@
 }
 
 .simple-hero h1 {
-  font-size: clamp(44px, 5.3vw, 68px);
+  font-size: clamp(44px, 4.3vw, 60px);
   font-weight: 550;
   line-height: 1.05;
   letter-spacing: -0.055em;
@@ -550,6 +578,14 @@
 }
 
 @media (max-width: 920px) {
+  .simple-site {
+    padding-left: 0;
+  }
+
+  .simple-site .sidebar {
+    display: none;
+  }
+
   .simple-header {
     flex-wrap: wrap;
     gap: 10px;
@@ -557,7 +593,14 @@
   }
 
   .simple-header .brand {
+    display: flex;
     order: 0;
+  }
+
+  .header-notice {
+    order: 2;
+    flex-basis: 100%;
+    font-size: 11px;
   }
 
   .simple-header > .button,
@@ -566,8 +609,10 @@
   }
 
   .primary-nav {
-    order: 2;
-    flex: 1 0 100%;
+    display: flex;
+    padding: 8px 32px;
+    border-bottom: 1px solid var(--line);
+    background: #fff;
   }
 
   .more-menu {
@@ -594,11 +639,6 @@
 }
 
 @media (max-width: 620px) {
-  .network-strip {
-    padding-inline: 16px;
-    font-size: 11px;
-  }
-
   .simple-header {
     padding: 16px 20px 10px;
     gap: 8px;
@@ -628,6 +668,7 @@
     flex-basis: 100%;
     min-width: 0;
     gap: 0;
+    padding: 6px 15px;
   }
 
   .primary-nav a,
@@ -722,9 +763,15 @@
   }
 
   .simple-footer {
+    width: calc(100% - 40px);
     margin-inline: 20px;
     padding: 20px 0 24px;
     gap: 12px;
+  }
+
+  .simple-site .explain-page,
+  .simple-site .legal-page {
+    width: calc(100% - 40px);
   }
 
   .simple-footer > div,
