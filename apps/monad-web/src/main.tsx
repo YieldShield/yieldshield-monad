@@ -23,6 +23,7 @@ import { FundingNotice, FundingGate, AssetFundingHint, monadFaucet, type Funding
 import { amount, minOut, netAsset, noticeState, fmt, usd, short, fetcher, explorer, errorMessage } from "./lib";
 import type { Asset, Market, Position, Snapshot, Registry } from "./types";
 import { selectMarket } from "./market-selection";
+import { reviewedQuoteDeadline } from "./reviewed-quote";
 import "./styles.css";
 import "./simplified.css";
 const registry = registryJson as unknown as Registry;
@@ -1033,7 +1034,7 @@ function Trade() {
                 disabled={!quote || !!quoteError}
                 onClick={() =>
                   w.execute("Prepare scenario trade", async () => {
-                    if (quote.expiresAt < Date.now()) throw new Error("Quote expired. Wait for a fresh quote.");
+                    reviewedQuoteDeadline(quote.expiresAt);
                     const usdToken = registry.assets.find((a) => a.id === "test-usd")!;
                     const total = BigInt(quote.total),
                       limit = side === "buy" ? (total * 1005n + 999n) / 1000n : minOut(total);
@@ -1042,11 +1043,12 @@ function Trade() {
                       contract("ScenarioExchange"),
                       side === "buy" ? limit : value,
                     );
+                    const deadline = reviewedQuoteDeadline(quote.expiresAt);
                     await w.send({
                       address: contract("ScenarioExchange"),
                       abi: abi("MonadAssetExchange"),
                       functionName: "swap",
-                      args: [m.shieldedToken, side === "buy", value, limit, BigInt(Math.floor(Date.now() / 1000) + 60)],
+                      args: [m.shieldedToken, side === "buy", value, limit, deadline],
                     });
                   })
                 }
