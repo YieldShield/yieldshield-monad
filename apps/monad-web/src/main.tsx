@@ -32,6 +32,7 @@ import { TokenIcon, AssetPair } from "./AssetImage";
 import { assetVisual } from "./asset-visuals";
 import { MarketSelect } from "./MarketSelect";
 import { Landing } from "./Landing";
+import { TaskAside } from "./TaskAside";
 const registry = registryJson as unknown as Registry;
 const abi = (name: string) => (abisJson as unknown as Record<string, Abi>)[name];
 const contract = (name: string) => registry.contracts[name]?.address;
@@ -448,129 +449,150 @@ function PositionForm({ side }: { side: "senior" | "junior" }) {
             <Link to="/markets">Choose a pool ↗</Link>
           </div>
         ) : (
-          <section className={`action-panel ${side}`}>
-            <MarketSelect data={data} id={id} setId={setId} />
-            <div className="pool-context">
-              <Tag>{m.environment === "scenario" ? "Synthetic demo asset" : "Monad asset"}</Tag>
-              <Link className="text-link" to="/markets">
-                Compare pools
-              </Link>
-            </div>
-            <label className="field">
-              {side === "senior" ? "Amount to protect" : "Backing to provide"}
-              <div className="amount-field">
-                <input
-                  name="amount"
-                  inputMode="decimal"
-                  aria-label={side === "senior" ? "Amount to protect" : "Backing to provide"}
-                  aria-describedby="deposit-balance"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  autoComplete="off"
-                />
-                <b className="amount-token">
-                  <TokenIcon asset={token} />
-                  {token?.symbol}
-                </b>
+          <div className="task-layout">
+            <section className={`action-panel ${side}`}>
+              <MarketSelect data={data} id={id} setId={setId} />
+              <div className="pool-context">
+                <Tag>{m.environment === "scenario" ? "Synthetic demo asset" : "Monad asset"}</Tag>
               </div>
-              <span className="field-hint" id="deposit-balance">
-                Balance: {fmt(balance, token?.decimals, 5)} {token?.symbol}
-              </span>
-            </label>
-            <AssetFundingHint asset={fundingAsset} />
-            <dl className="review-list">
-              <div>
-                <dt>Entry value</dt>
-                <dd>{usd(entry)}</dd>
-              </div>
-              {side === "senior" ? (
-                <>
-                  <div>
-                    <dt>Backing reserved</dt>
-                    <dd>
-                      {fmt(reserve, m.backing.decimals, 4)} {m.backingSymbol}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>Fee</dt>
-                    <dd>12% of realized gains</dd>
-                  </div>
-                  <div>
-                    <dt>Backing exit after</dt>
-                    <dd>60 seconds</dd>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div>
-                    <dt>Reward share</dt>
-                    <dd>10% of realized gains, shared by providers</dd>
-                  </div>
-                  <div>
-                    <dt>Withdrawal notice</dt>
-                    <dd>120 seconds</dd>
-                  </div>
-                </>
-              )}
-            </dl>
-            <p className="compact-risk">
-              {side === "senior"
-                ? `Withdraw your ${m.symbol} after fees, or surrender it for backing capped by entry value and reserved backing.`
-                : "Your backing absorbs losses first. Only unreserved backing can be withdrawn."}
-            </p>
-            {side === "junior" && (
-              <p className="compact-risk">Rewards are paid in {m.symbol}; returns are not guaranteed.</p>
-            )}
-            {m.symbol === "shMON" && (
-              <p className="compact-risk">shMON uses withdrawal value, not a spot price. Unstaking is delayed.</p>
-            )}
-            {m.backingSymbol === "vTestUSDC" && (
-              <p className="compact-risk">Backing is paid in vault shares. Redeem them separately for TestUSDC.</p>
-            )}
-            {(!available || validation || tooMuch || overCapacity) && (
-              <p className="inline-warning" role="status">
-                {validation ||
-                  (!available
-                    ? m.reason || "No capacity available."
-                    : tooMuch
-                      ? "Insufficient token balance."
-                      : overCapacity
-                        ? "Amount exceeds available protection."
-                        : "")}
+              <label className="field">
+                {side === "senior" ? "Amount to protect" : "Backing to provide"}
+                <div className="amount-field">
+                  <input
+                    name="amount"
+                    inputMode="decimal"
+                    aria-label={side === "senior" ? "Amount to protect" : "Backing to provide"}
+                    aria-describedby="deposit-balance"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    autoComplete="off"
+                  />
+                  <b className="amount-token">
+                    <TokenIcon asset={token} />
+                    {token?.symbol}
+                  </b>
+                </div>
+                <span className="field-hint" id="deposit-balance">
+                  {!w.account
+                    ? "Connect to see your balance"
+                    : tokenBalance.error
+                      ? "Balance unavailable"
+                      : `Balance: ${fmt(balance, token?.decimals, 5)} ${token?.symbol}`}
+                </span>
+              </label>
+              <AssetFundingHint asset={fundingAsset} />
+              <dl className="review-list">
+                <div>
+                  <dt>Entry value</dt>
+                  <dd>{usd(entry)}</dd>
+                </div>
+                {side === "senior" ? (
+                  <>
+                    <div>
+                      <dt>Backing reserved</dt>
+                      <dd>
+                        {fmt(reserve, m.backing.decimals, 4)} {m.backingSymbol}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>Fee</dt>
+                      <dd>12% of realized gains</dd>
+                    </div>
+                    <div>
+                      <dt>Backing exit after</dt>
+                      <dd>60 seconds</dd>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div>
+                      <dt>Reward share</dt>
+                      <dd>10% of realized gains, shared by providers</dd>
+                    </div>
+                    <div>
+                      <dt>Withdrawal notice</dt>
+                      <dd>120 seconds</dd>
+                    </div>
+                  </>
+                )}
+              </dl>
+              <p className="compact-risk">
+                {side === "senior"
+                  ? `Withdraw your ${m.symbol} after fees, or surrender it for backing capped by entry value and reserved backing.`
+                  : "Your backing absorbs losses first. Only unreserved backing can be withdrawn."}
               </p>
-            )}
-            <Submit
-              label={side === "senior" ? "Approve & protect" : "Approve & provide"}
-              asset={fundingAsset}
-              disabled={!available || !!validation || tooMuch || overCapacity || value === 0n}
-              onClick={submit}
-            />
-            <details className="disclosure">
-              <summary>Pool details</summary>
-              <div className="disclosure-body">
-                <dl className="review-list">
-                  <div>
-                    <dt>Reserve requirement</dt>
-                    <dd>150%</dd>
-                  </div>
-                  <div>
-                    <dt>Total backing</dt>
-                    <dd>
-                      {fmt(m.totalBacking, m.backing.decimals)} {m.backingSymbol}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>Price source</dt>
-                    <dd>{kind(m.shield)}</dd>
-                  </div>
-                </dl>
-                <p>Your receipt NFT controls the position. Fees already paid are not refunded after later losses.</p>
-                <a href={explorer("address", m.address)} target="_blank" rel="noreferrer">
-                  View pool contract ↗
-                </a>
-              </div>
-            </details>
-          </section>
+              {side === "junior" && (
+                <p className="compact-risk">Rewards are paid in {m.symbol}; returns are not guaranteed.</p>
+              )}
+              {m.symbol === "shMON" && (
+                <p className="compact-risk">shMON uses withdrawal value, not a spot price. Unstaking is delayed.</p>
+              )}
+              {m.backingSymbol === "vTestUSDC" && (
+                <p className="compact-risk">Backing is paid in vault shares. Redeem them separately for TestUSDC.</p>
+              )}
+              {(!available || validation || tooMuch || overCapacity) && (
+                <p className="inline-warning" role="status">
+                  {validation ||
+                    (!available
+                      ? m.reason || "No capacity available."
+                      : tooMuch
+                        ? "Insufficient token balance."
+                        : overCapacity
+                          ? "Amount exceeds available protection."
+                          : "")}
+                </p>
+              )}
+              <Submit
+                label={side === "senior" ? "Approve & protect" : "Approve & provide"}
+                asset={fundingAsset}
+                disabled={!available || !!validation || tooMuch || overCapacity || value === 0n}
+                onClick={submit}
+              />
+              <details className="disclosure">
+                <summary>Pool details</summary>
+                <div className="disclosure-body">
+                  <dl className="review-list">
+                    <div>
+                      <dt>Reserve requirement</dt>
+                      <dd>150%</dd>
+                    </div>
+                    <div>
+                      <dt>Total backing</dt>
+                      <dd>
+                        {fmt(m.totalBacking, m.backing.decimals)} {m.backingSymbol}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>Price source</dt>
+                      <dd>{kind(m.shield)}</dd>
+                    </div>
+                  </dl>
+                  <p>Your receipt NFT controls the position. Fees already paid are not refunded after later losses.</p>
+                  <a href={explorer("address", m.address)} target="_blank" rel="noreferrer">
+                    View pool contract ↗
+                  </a>
+                </div>
+              </details>
+            </section>
+            <TaskAside
+              title={side === "senior" ? "Choose your exit." : "Supply the backing."}
+              asset={m.shield}
+              backing={m.backing}
+            >
+              <p>
+                {side === "senior"
+                  ? `Keep your ${m.symbol} after fees, or take capped ${m.backingSymbol} backing.`
+                  : `Provide ${m.backingSymbol} to earn a share of realized gains, paid in ${m.symbol}.`}
+              </p>
+              <p>
+                {side === "senior"
+                  ? "Waiting periods and pool checks apply."
+                  : "Backing takes losses first. Returns are not guaranteed."}
+              </p>
+              <Link to="/how-it-works">How it works ↗</Link>
+              <Link to="/markets">Compare pools ↗</Link>
+            </TaskAside>
+          </div>
         )}
       </div>
     </Shell>
@@ -941,99 +963,112 @@ function Trade() {
             <Link to="/faucet">Get test tokens ↗</Link>
           </div>
         ) : (
-          <div>
-            <section className="action-panel">
-              <div className="segmented">
-                <button className={side === "buy" ? "selected" : ""} onClick={() => setSide("buy")}>
-                  Buy
-                </button>
-                <button className={side === "sell" ? "selected" : ""} onClick={() => setSide("sell")}>
-                  Sell
-                </button>
-              </div>
-              <MarketSelect
-                data={{ ...data, markets: data.markets.filter((m) => m.environment === "scenario") }}
-                id={id}
-                setId={setId}
-              />
-              <label className="field">
-                {m.symbol} amount
-                <div className="amount-field">
-                  <input
-                    aria-label={`${m.symbol} amount`}
-                    value={input}
-                    inputMode="decimal"
-                    onChange={(e) => setInput(e.target.value)}
-                  />
-                  <b className="amount-token">
-                    <TokenIcon asset={m.shield} />
-                    {m.symbol}
-                  </b>
+          <div className="task-layout">
+            <div>
+              <section className="action-panel">
+                <div className="segmented">
+                  <button
+                    className={side === "buy" ? "selected" : ""}
+                    aria-pressed={side === "buy"}
+                    onClick={() => setSide("buy")}
+                  >
+                    Buy
+                  </button>
+                  <button
+                    className={side === "sell" ? "selected" : ""}
+                    aria-pressed={side === "sell"}
+                    onClick={() => setSide("sell")}
+                  >
+                    Sell
+                  </button>
                 </div>
-                <span className="field-hint">
-                  Maximum 25 tokens per trade · Balance: {fmt(fundingAsset?.balance, tradeToken?.decimals, 5)}{" "}
-                  {tradeToken?.symbol}
-                </span>
-              </label>
-              <AssetFundingHint asset={fundingAsset} />
-              <dl className="review-list">
-                <div>
-                  <dt>{side === "buy" ? "You pay" : "You receive"}</dt>
-                  <dd>{fmt(quote?.total, 6, 4)} TestUSDC</dd>
+                <MarketSelect
+                  data={{ ...data, markets: data.markets.filter((m) => m.environment === "scenario") }}
+                  id={id}
+                  setId={setId}
+                />
+                <label className="field">
+                  {m.symbol} amount
+                  <div className="amount-field">
+                    <input
+                      aria-label={`${m.symbol} amount`}
+                      value={input}
+                      inputMode="decimal"
+                      onChange={(e) => setInput(e.target.value)}
+                    />
+                    <b className="amount-token">
+                      <TokenIcon asset={m.shield} />
+                      {m.symbol}
+                    </b>
+                  </div>
+                  <span className="field-hint">
+                    Maximum 25 tokens per trade · Balance: {fmt(fundingAsset?.balance, tradeToken?.decimals, 5)}{" "}
+                    {tradeToken?.symbol}
+                  </span>
+                </label>
+                <AssetFundingHint asset={fundingAsset} />
+                <dl className="review-list">
+                  <div>
+                    <dt>{side === "buy" ? "You pay" : "You receive"}</dt>
+                    <dd>{fmt(quote?.total, 6, 4)} TestUSDC</dd>
+                  </div>
+                  <div>
+                    <dt>Exchange fee</dt>
+                    <dd>0.30%</dd>
+                  </div>
+                  <div>
+                    <dt>Price source</dt>
+                    <dd>Synthetic formula</dd>
+                  </div>
+                  <div>
+                    <dt>Slippage limit</dt>
+                    <dd>0.50%</dd>
+                  </div>
+                </dl>
+                {quoteError && <p className="inline-warning">{quoteError.message}</p>}
+                <Submit
+                  label={side === "buy" ? "Approve & buy" : "Approve & sell"}
+                  asset={fundingAsset}
+                  disabled={!quote || !!quoteError}
+                  onClick={() =>
+                    w.execute("Prepare scenario trade", async () => {
+                      reviewedQuoteDeadline(quote.expiresAt);
+                      const usdToken = registry.assets.find((a) => a.id === "test-usd")!;
+                      const total = BigInt(quote.total),
+                        limit = side === "buy" ? (total * 1005n + 999n) / 1000n : minOut(total);
+                      await w.approve(
+                        side === "buy" ? usdToken.address : m.shieldedToken,
+                        contract("ScenarioExchange"),
+                        side === "buy" ? limit : value,
+                      );
+                      const deadline = reviewedQuoteDeadline(quote.expiresAt);
+                      await w.send({
+                        address: contract("ScenarioExchange"),
+                        abi: abi("MonadAssetExchange"),
+                        functionName: "swap",
+                        args: [m.shieldedToken, side === "buy", value, limit, deadline],
+                      });
+                    })
+                  }
+                />
+              </section>
+
+              <details className="disclosure">
+                <summary>Other trading venues</summary>
+                <div className="disclosure-body">
+                  <p>Kuru is an external Monad venue; it is not connected to this demo exchange.</p>
+                  <a href="https://www.kuru.io/" target="_blank" rel="noreferrer">
+                    Visit Kuru ↗
+                  </a>
                 </div>
-                <div>
-                  <dt>Exchange fee</dt>
-                  <dd>0.30%</dd>
-                </div>
-                <div>
-                  <dt>Price source</dt>
-                  <dd>Synthetic formula</dd>
-                </div>
-                <div>
-                  <dt>Slippage limit</dt>
-                  <dd>0.50%</dd>
-                </div>
-              </dl>
-              {quoteError && <p className="inline-warning">{quoteError.message}</p>}
-              <Submit
-                label={side === "buy" ? "Approve & buy" : "Approve & sell"}
-                asset={fundingAsset}
-                disabled={!quote || !!quoteError}
-                onClick={() =>
-                  w.execute("Prepare scenario trade", async () => {
-                    reviewedQuoteDeadline(quote.expiresAt);
-                    const usdToken = registry.assets.find((a) => a.id === "test-usd")!;
-                    const total = BigInt(quote.total),
-                      limit = side === "buy" ? (total * 1005n + 999n) / 1000n : minOut(total);
-                    await w.approve(
-                      side === "buy" ? usdToken.address : m.shieldedToken,
-                      contract("ScenarioExchange"),
-                      side === "buy" ? limit : value,
-                    );
-                    const deadline = reviewedQuoteDeadline(quote.expiresAt);
-                    await w.send({
-                      address: contract("ScenarioExchange"),
-                      abi: abi("MonadAssetExchange"),
-                      functionName: "swap",
-                      args: [m.shieldedToken, side === "buy", value, limit, deadline],
-                    });
-                  })
-                }
-              />
-            </section>
-            <p className="compact-risk">
-              Synthetic prices. Test tokens have no monetary value.{" "}
+              </details>
+            </div>
+            <TaskAside title="Try a demo trade." asset={m.shield} backing={m.backing}>
+              <p>Buy or sell {m.symbol} with TestUSDC at synthetic prices.</p>
+              <p>Test tokens have no monetary value.</p>
               <Link to={`/protect?market=${id}`}>Protect tokens ↗</Link>
-            </p>
-            <details className="disclosure">
-              <summary>Other trading venues</summary>
-              <div className="disclosure-body">
-                <p>Kuru is an external Monad venue; it is not connected to this demo exchange.</p>
-                <a href="https://www.kuru.io/" target="_blank" rel="noreferrer">
-                  Visit Kuru ↗
-                </a>
-              </div>
-            </details>
+              <Link to="/faucet">Get test tokens ↗</Link>
+            </TaskAside>
           </div>
         )}
       </div>

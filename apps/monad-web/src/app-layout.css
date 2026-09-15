@@ -244,14 +244,14 @@
 
 .task-page {
   width: 100%;
-  max-width: 650px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
 .simple-site .action-panel {
   min-width: 0;
   padding: 28px;
-  border-radius: 14px;
+  border-radius: 18px;
 }
 
 .simple-site .action-panel h2 {
@@ -277,7 +277,8 @@
 }
 
 .simple-site .amount-field input {
-  font-size: 28px;
+  font-family: var(--font-heading);
+  font-size: 36px;
 }
 
 .simple-site .amount-field b {
@@ -605,7 +606,7 @@
 }
 .simple-site .funding-notice {
   padding: 10px 16px;
-  max-width: 650px;
+  max-width: 1000px;
   margin-inline: auto;
   gap: 12px;
 }
@@ -669,5 +670,114 @@
 @media (max-width: 620px) {
   :root {
     --gutter: 20px;
+  }
+}
+
+.task-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 230px;
+  gap: 36px;
+  align-items: start;
+}
+.task-layout > * {
+  min-width: 0;
+}
+.task-aside {
+  padding: 16px 0;
+  color: var(--muted);
+}
+.task-aside h2 {
+  font-size: 23px;
+  line-height: 1.2;
+  color: var(--ink);
+  margin: 22px 0 12px;
+}
+.task-aside p {
+  font-size: 14px;
+  margin: 0 0 16px;
+}
+.task-aside > a {
+  display: block;
+  padding: 10px 0;
+  min-height: 44px;
+  font-size: 13px;
+  color: var(--accent);
+}
+.task-aside-art {
+  width: 116px;
+  height: 86px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  background: var(--soft);
+  border-radius: 18px;
+}
+.task-aside-art::after {
+  content: "";
+  position: absolute;
+  inset: 20px -12px -10px 25px;
+  background: #d5edf0;
+  border-radius: 18px;
+  transform: rotate(8deg);
+  z-index: -1;
+}
+.simple-site .amount-field {
+  padding: 18px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.simple-site .amount-field:focus-within {
+  border-color: var(--accent);
+}
+.simple-site .review-list {
+  border: 0;
+  padding: 0;
+  gap: 0;
+}
+.simple-site .review-list > div {
+  padding: 13px 0;
+  border-bottom: 1px solid var(--line);
+}
+.simple-site .pool-context {
+  margin-bottom: 18px;
+}
+.simple-site .market-select-trigger {
+  background: var(--paper);
+}
+.simple-site .segmented {
+  background: var(--paper);
+  border-color: var(--line);
+}
+.simple-site .segmented button {
+  min-height: 44px;
+  font-size: 14px;
+  color: var(--muted);
+  padding: 10px 20px;
+}
+.simple-site .segmented .selected {
+  background: var(--soft);
+  color: var(--accent);
+  box-shadow: none;
+}
+@media (max-width: 1120px) {
+  .task-layout {
+    grid-template-columns: minmax(0, 1fr) 200px;
+    gap: 24px;
+  }
+}
+@media (max-width: 760px) {
+  .task-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+  .task-aside {
+    padding: 4px;
+  }
+  .task-aside-art {
+    display: none;
+  }
+  .task-aside h2 {
+    margin-top: 0;
   }
 }
