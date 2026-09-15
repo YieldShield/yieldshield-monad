@@ -30,6 +30,7 @@ import "./simplified.css";
 import "./asset-images.css";
 import { TokenIcon, AssetPair } from "./AssetImage";
 import { assetVisual } from "./asset-visuals";
+import { MarketSelect } from "./MarketSelect";
 const registry = registryJson as unknown as Registry;
 const abi = (name: string) => (abisJson as unknown as Record<string, Abi>)[name];
 const contract = (name: string) => registry.contracts[name]?.address;
@@ -435,27 +436,6 @@ function useSelectedMarket(data: Snapshot | undefined) {
     setParams(next, { replace: true });
   };
   return { m, id: m?.id || "", setId };
-}
-function MarketSelect({ data, id, setId }: { data: Snapshot; id: string; setId: (id: string) => void }) {
-  return (
-    <label className="field">
-      Asset / backing
-      <select name="market" value={id} onChange={(e) => setId(e.target.value)}>
-        {(["reference", "scenario"] as const).map((environment) => {
-          const markets = data.markets.filter((m) => m.environment === environment);
-          return markets.length ? (
-            <optgroup key={environment} label={environment === "reference" ? "Monad assets" : "Demo assets"}>
-              {markets.map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.symbol} / {m.backingSymbol}
-                </option>
-              ))}
-            </optgroup>
-          ) : null;
-        })}
-      </select>
-    </label>
-  );
 }
 function PositionForm({ side }: { side: "senior" | "junior" }) {
   const { data, error } = useSnapshot();
