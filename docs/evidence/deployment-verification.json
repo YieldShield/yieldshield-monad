@@ -1,14 +1,14 @@
 {
   "chainId": 10143,
-  "checkedAt": "2026-09-14T10:16:52.556Z",
+  "checkedAt": "2026-09-15T14:12:55.953Z",
   "deploymentStatus": "complete",
   "referenceOracle": {
     "provider": "redstone",
     "adapter": "0x244252325588eE70e8C763385480AB688f89d690",
     "source": "0x92B14C0531A1f8fC0F85712FaF97d7302B4128C8",
     "runtimeCodehash": "0x4d9be648c5bf39973670d9f8b481d5d0b971e6a2db2deccc6b98cde21c5dd83e",
-    "price": "2323605",
-    "publishedAt": "1789381004",
+    "price": "2216980",
+    "publishedAt": "1789481568",
     "maxAgeSeconds": 120
   },
   "contracts": [
