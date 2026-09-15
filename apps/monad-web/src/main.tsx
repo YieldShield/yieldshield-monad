@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Routes, Route, Link, NavLink, useParams, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, NavLink, Navigate, useLocation, useParams } from "react-router-dom";
 import useSWR from "swr";
 import { parseAbi, formatUnits, type Abi, type Address } from "viem";
 import scenarioEvidence from "../../../docs/evidence/scenario-journey.json";
@@ -8,7 +8,8 @@ import referenceEvidence from "../../../docs/evidence/reference-journey.json";
 import config from "../../../config/monad.json";
 import registryJson from "../../../config/deployment.json";
 import abisJson from "../../../config/browser-abis.json";
-import { WalletProvider, useWallet, useBalance, client } from "./wallet";
+import { WalletProvider, useWallet, useBalance, useNativeBalance, client } from "./wallet";
+import { FundingNotice, FundingGate, AssetFundingHint, monadFaucet, type FundingAsset } from "./Funding";
 import { amount, minOut, netAsset, noticeState, fmt, usd, short, fetcher, explorer, errorMessage } from "./lib";
 import type { Asset, Market, Position, Snapshot, Registry } from "./types";
 import "./styles.css";
@@ -271,7 +272,7 @@ const nav = [
   ["/protect", "◇", "Get protection"],
   ["/positions", "▤", "My positions"],
   ["/provide", "＋", "Provide liquidity"],
-  ["/tokens", "◉", "Test assets"],
+  ["/faucet", "◉", "Faucet"],
   ["/lab", "↗", "Scenario lab"],
   ["/status", "≋", "Network status"],
 ];
@@ -321,6 +322,7 @@ function Shell({ children }: { children: ReactNode }) {
         </nav>
         <main id="main" className="workspace">
           <ReleaseNotice />
+          <FundingNotice />
           {children}
         </main>
         <div className="app-foot">
@@ -421,8 +423,8 @@ function Markets() {
     <Shell>
       <PageTitle
         kicker="Explore / Monad"
-        title="Make room for your upside."
-        copy="Choose an asset, understand its backing, and find your place in the pool."
+        title="Compare protection markets."
+        copy="Compare assets, available backing and reserve requirements before you protect or provide."
       />
       <div className="filter-row">
         <div className="segmented">
@@ -465,8 +467,8 @@ function Markets() {
                   : "Contract deployment is in progress. No placeholder pool addresses are used."}
               </p>
               <div className="row">
-                <Link className="button purple-button" to="/tokens">
-                  Explore test assets ↗
+                <Link className="button purple-button" to="/faucet">
+                  Go to Faucet ↗
                 </Link>
                 {environment === "reference" && (
                   <button className="button outline" onClick={() => setEnvironment("scenario")}>
@@ -490,16 +492,28 @@ function Markets() {
     </Shell>
   );
 }
-function Submit({ label, onClick, disabled = false }: { label: string; onClick: () => void; disabled?: boolean }) {
+function Submit({
+  label,
+  onClick,
+  disabled = false,
+  asset,
+}: {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+  asset?: FundingAsset;
+}) {
   const w = useWallet();
   return (
-    <button
-      className="button purple-button full"
-      disabled={w.busy || (!!w.account && disabled)}
-      onClick={w.account ? onClick : w.connect}
-    >
-      {w.busy ? "Transaction in progress…" : !w.account ? "Connect wallet" : label}
-    </button>
+    <FundingGate asset={asset}>
+      <button
+        className="button purple-button full"
+        disabled={w.busy || (!!w.account && disabled)}
+        onClick={w.account ? onClick : w.connect}
+      >
+        {w.busy ? "Transaction in progress…" : !w.account ? "Connect wallet" : label}
+      </button>
+    </FundingGate>
   );
 }
 function useSelectedMarket(data: Snapshot | undefined) {
@@ -527,7 +541,9 @@ function PositionForm({ side }: { side: "senior" | "junior" }) {
   const [input, setInput] = useState(side === "senior" ? "1" : "1000");
   const w = useWallet();
   const token = side === "senior" ? m?.shield : m?.backing;
-  const { data: balance } = useBalance(token?.address);
+  const tokenBalance = useBalance(token?.address);
+  const balance = tokenBalance.error ? undefined : tokenBalance.data;
+  const fundingAsset = token ? { symbol: token.symbol, balance } : undefined;
   let value = 0n,
     validation = "";
   try {
@@ -602,6 +618,7 @@ function PositionForm({ side }: { side: "senior" | "junior" }) {
                 Balance: {fmt(balance, token?.decimals, 5)} {token?.symbol}
               </span>
             </label>
+            <AssetFundingHint asset={fundingAsset} />
             <dl className="review-list">
               <div>
                 <dt>Reference entry value</dt>
@@ -655,6 +672,7 @@ function PositionForm({ side }: { side: "senior" | "junior" }) {
             )}
             <Submit
               label={side === "senior" ? "Approve & protect" : "Approve & provide"}
+              asset={fundingAsset}
               disabled={!available || !!validation || tooMuch || overCapacity || value === 0n}
               onClick={submit}
             />
@@ -943,7 +961,7 @@ function PositionDetail() {
               }
             />
             {m.backingSymbol === "vTestUSDC" && (
-              <p className="consent-note">Payout is vault shares. Redeem them separately on the Test assets page.</p>
+              <p className="consent-note">Payout is vault shares. Redeem them separately on the Faucet page.</p>
             )}
           </section>
         </div>
@@ -1063,6 +1081,11 @@ function Trade() {
   const [input, setInput] = useState("1"),
     [side, setSide] = useState<"buy" | "sell">("buy");
   const w = useWallet();
+  const tradeToken = side === "buy" ? registry.assets.find((a) => a.id === "test-usd") : m?.shield;
+  const tradeBalance = useBalance(tradeToken?.address);
+  const fundingAsset = tradeToken
+    ? { symbol: tradeToken.symbol, balance: tradeBalance.error ? undefined : tradeBalance.data }
+    : undefined;
   let value = 0n;
   try {
     if (m) value = amount(input, m.shield.decimals);
@@ -1084,7 +1107,7 @@ function Trade() {
       ) : !m ? (
         <div className="empty-state">
           <h2>The test exchange is being prepared.</h2>
-          <Link to="/tokens">Wrap MON or stake with shMON ↗</Link>
+          <Link to="/faucet">Open Faucet to prepare assets ↗</Link>
         </div>
       ) : (
         <div className="form-layout">
@@ -1113,8 +1136,12 @@ function Trade() {
                 />
                 <b>{m.symbol}</b>
               </div>
-              <span className="field-hint">Maximum 25 tokens per trade</span>
+              <span className="field-hint">
+                Maximum 25 tokens per trade · Balance: {fmt(fundingAsset?.balance, tradeToken?.decimals, 5)}{" "}
+                {tradeToken?.symbol}
+              </span>
             </label>
+            <AssetFundingHint asset={fundingAsset} />
             <dl className="review-list">
               <div>
                 <dt>{side === "buy" ? "You pay" : "You receive"}</dt>
@@ -1136,6 +1163,7 @@ function Trade() {
             {quoteError && <p className="inline-warning">{quoteError.message}</p>}
             <Submit
               label={side === "buy" ? "Approve & buy test asset" : "Approve & sell test asset"}
+              asset={fundingAsset}
               disabled={!quote || !!quoteError}
               onClick={() =>
                 w.execute("Prepare scenario trade", async () => {
@@ -1195,6 +1223,7 @@ const nativeAbi = parseAbi([
 ]);
 function Tokens() {
   const w = useWallet();
+  const native = useNativeBalance();
   const [wrap, setWrap] = useState("0.01"),
     [stake, setStake] = useState("0.01"),
     [vaultInput, setVaultInput] = useState("100"),
@@ -1238,17 +1267,58 @@ function Tokens() {
   return (
     <Shell>
       <PageTitle
-        kicker="Prepare / Test assets"
-        title="Start with the right assets."
-        copy="Wrap native MON, stake through shMON, or try the scenario with free test tokens."
+        kicker="Prepare / Faucet"
+        title="Your first stop: the Faucet."
+        copy="Get testnet MON for fees first, then claim free tokens or prepare the asset you want to use."
       />
       <div className="notice">
         Every transaction here uses Monad testnet. TestUSDC and sMON-demo have no monetary value and are not issued by
         Circle or Kintsu.
       </div>
-      <section className="faucet-banner">
+      <section
+        className={`faucet-banner gas-step ${w.account && !native.error && native.data === 0n ? "needs-gas" : ""}`}
+        id="monad-gas"
+        aria-labelledby="gas-title"
+      >
         <div>
-          <span className="eyebrow">Your scenario starter kit</span>
+          <span className="eyebrow">Step 1 / Transaction fees</span>
+          <h2 id="gas-title">Get Monad testnet MON</h2>
+          <p>
+            Every claim, trade and deposit needs MON for fees. The official Monad faucet provides testnet MON; return
+            here afterward for your test tokens.
+          </p>
+          <p role="status">
+            {!w.account
+              ? "Connect your wallet to check its MON balance."
+              : native.error
+                ? "We couldn't read your MON balance. Try checking again."
+                : native.data === undefined
+                  ? "Checking your Monad testnet MON balance…"
+                  : native.data === 0n
+                    ? "This wallet has no testnet MON. Visit the Monad faucet before continuing."
+                    : `Your balance: ${fmt(native.data, 18, 6)} MON. Keep some MON available for transaction fees.`}
+          </p>
+        </div>
+        <div>
+          <a className="button purple-button full" href={monadFaucet} target="_blank" rel="noreferrer">
+            Open Monad faucet ↗
+          </a>
+          {w.account ? (
+            <button
+              className="button outline full"
+              disabled={native.isValidating}
+              onClick={() => void native.mutate().catch(() => undefined)}
+            >
+              {native.isValidating ? "Checking balance…" : "Check MON balance again"}
+            </button>
+          ) : (
+            <WalletButton />
+          )}
+        </div>
+      </section>
+      <section className="faucet-banner" id="test-tokens">
+        <div>
+          <span className="eyebrow">Step 2 / Free test tokens</span>
           <h2>25 sMON-demo + 10,000 TestUSDC</h2>
           <p>One free claim per wallet every 24 hours, while the faucet has inventory.</p>
         </div>
@@ -1274,13 +1344,10 @@ function Tokens() {
                 : "The test-token faucet is being funded or is temporarily unavailable."}
             </p>
           )}
-          <a href="https://faucet.monad.xyz" target="_blank" rel="noreferrer">
-            Need MON for gas? Official faucet ↗
-          </a>
         </div>
       </section>
       <div className="token-tools">
-        <section className="action-panel">
+        <section className="action-panel" id="wrap-mon">
           <div className="panel-heading">
             <TokenIcon />
             <h2>Wrap MON</h2>
@@ -1327,7 +1394,7 @@ function Tokens() {
             Unwrap WMON
           </button>
         </section>
-        <section className="action-panel">
+        <section className="action-panel" id="stake-mon">
           <div className="panel-heading">
             <TokenIcon symbol="shMON" />
             <h2>Stake MON</h2>
@@ -1375,7 +1442,7 @@ function Tokens() {
             Understand the staking rate ↗
           </a>
         </section>
-        <section className="action-panel">
+        <section className="action-panel" id="test-vault">
           <div className="panel-heading">
             <TokenIcon symbol="vTestUSDC" />
             <h2>Test USD vault</h2>
@@ -1407,8 +1474,14 @@ function Tokens() {
             </span>
           </label>
           <p className="field-hint">1 share ≈ {fmt(nav, 6, 6)} TestUSDC</p>
+          {vaultMode === "deposit" && (
+            <AssetFundingHint asset={{ symbol: "TestUSDC", balance: ub.error ? undefined : ub.data }} />
+          )}
           <Submit
             label={vaultMode === "deposit" ? "Approve & deposit into vault" : "Redeem vault shares"}
+            asset={
+              vaultMode === "deposit" ? { symbol: "TestUSDC", balance: ub.error ? undefined : ub.data } : undefined
+            }
             disabled={!vault}
             onClick={() =>
               parseAction("Use test vault", async () => {
@@ -1450,6 +1523,7 @@ function Tokens() {
           </label>
           <Submit
             label="Request native unstaking"
+            asset={{ symbol: "shMON", balance: sb.error ? undefined : sb.data }}
             disabled={Boolean(request && request[0] > 0n)}
             onClick={() =>
               parseAction("Request shMonad unstake", async () => {
@@ -1633,7 +1707,7 @@ function Lab({ standalone = false }: { standalone?: boolean }) {
         </div>
         <ol>
           <li>
-            <Link to="/tokens">Claim test assets</Link>
+            <Link to="/faucet">Get started at the Faucet</Link>
             <span>Keep testnet MON for gas.</span>
           </li>
           <li>
@@ -2102,10 +2176,22 @@ class Boundary extends React.Component<{ children: ReactNode }, { error: boolean
     );
   }
 }
+function LegacyTokensRedirect() {
+  const { search, hash } = useLocation();
+  return <Navigate replace to={`/faucet${search}${hash}`} />;
+}
+function ScrollToSection() {
+  const { pathname, hash } = useLocation();
+  useEffect(() => {
+    if (hash) document.getElementById(hash.slice(1))?.scrollIntoView({ block: "start" });
+  }, [pathname, hash]);
+  return null;
+}
 function App() {
   return (
     <Boundary>
       <BrowserRouter>
+        <ScrollToSection />
         <WalletProvider>
           <a href="#main" className="skip-link">
             Skip to content
@@ -2118,7 +2204,8 @@ function App() {
             <Route path="/positions" element={<Positions />} />
             <Route path="/positions/:key" element={<PositionDetail />} />
             <Route path="/trade" element={<Trade />} />
-            <Route path="/tokens" element={<Tokens />} />
+            <Route path="/faucet" element={<Tokens />} />
+            <Route path="/tokens" element={<LegacyTokensRedirect />} />
             <Route path="/lab" element={<Lab />} />
             <Route path="/how-it-works" element={<Lab standalone />} />
             <Route path="/status" element={<Status />} />

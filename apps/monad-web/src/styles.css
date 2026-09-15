@@ -1248,6 +1248,51 @@ footer > small {
   text-align: center;
   margin-top: 14px;
 }
+.faucet-banner a.button {
+  display: flex;
+  color: #fff;
+  font-size: 12px;
+  margin: 0 0 12px;
+}
+.gas-step {
+  background: #fff;
+}
+.gas-step.needs-gas {
+  border-color: #a78bfa;
+  background: #f5f1ff;
+}
+.funding-notice {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px 24px;
+  color: #58426f;
+}
+.funding-notice > div {
+  flex: 1 1 280px;
+}
+.funding-notice strong {
+  font-size: 13px;
+}
+.funding-notice p {
+  margin: 4px 0 0;
+}
+.asset-funding-hint {
+  font-size: 12px;
+  line-height: 1.7;
+  padding: 12px 14px;
+  background: #f4f1fa;
+  border-radius: 8px;
+  color: #58426f;
+}
+.asset-funding-hint a {
+  font-weight: 600;
+  text-decoration: underline;
+}
+.faucet-banner[id],
+.token-tools > section[id] {
+  scroll-margin-top: 24px;
+}
 .token-tools {
   display: grid;
   grid-template-columns: 1fr 1fr;

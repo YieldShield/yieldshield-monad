@@ -522,3 +522,12 @@ export function useBalance(token: Address | undefined) {
     { refreshInterval: 15000 },
   );
 }
+
+export function useNativeBalance() {
+  const { account } = useWallet();
+  return useSWR(account ? `balance:${account}:native` : null, () => client.getBalance({ address: account! }), {
+    refreshInterval: 12000,
+    errorRetryCount: 2,
+    keepPreviousData: false,
+  });
+}
