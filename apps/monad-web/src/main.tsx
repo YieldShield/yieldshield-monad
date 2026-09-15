@@ -668,7 +668,7 @@ function Positions() {
 function PositionDetail() {
   const { key } = useParams();
   const w = useWallet();
-  const { data: state } = useSnapshot();
+  const { data: state, error: stateError } = useSnapshot();
   const { data, error } = useSWR<{ positions: Position[] }>(
     w.account ? `/api/positions?owner=${w.account}` : null,
     fetcher,
@@ -687,7 +687,7 @@ function PositionDetail() {
   if (!data || !state)
     return (
       <Shell>
-        <Loading error={error} />
+        <Loading error={error || stateError} />
       </Shell>
     );
   if (!p || !m)
