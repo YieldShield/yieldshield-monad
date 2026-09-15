@@ -1,6 +1,7 @@
 import { createCache } from "./cache.mjs";
 import { fetchPythUpdate } from "./pyth.mjs";
 import { throttledRpcFetch } from "./rpc-throttle.mjs";
+import { retryRateLimitedReads } from "./rpc-retry.mjs";
 import { createServer } from "node:http";
 import { readFileSync } from "node:fs";
 import { createPublicClient, http, parseAbi, keccak256 } from "viem";
@@ -11,12 +12,14 @@ const registry = validateRegistry(JSON.parse(readFileSync(new URL("../../config/
 const abis = JSON.parse(readFileSync(new URL("../../config/abis.json", import.meta.url)));
 const rpc = createPublicClient({
   chain: monadTestnet,
-  transport: http(process.env.MONAD_RPC_URL || config.rpcUrl, {
-    timeout: 12000,
-    retryCount: 1,
-    batch: { batchSize: 10, wait: 10 },
-    fetchFn: throttledRpcFetch(),
-  }),
+  transport: retryRateLimitedReads(
+    http(process.env.MONAD_RPC_URL || config.rpcUrl, {
+      timeout: 12000,
+      retryCount: 1,
+      batch: { batchSize: 10, wait: 10 },
+      fetchFn: throttledRpcFetch(),
+    }),
+  ),
 });
 const generic = parseAbi([
   "function getPrice(address) view returns(uint256)",
@@ -196,7 +199,10 @@ async function snapshot() {
             },
           };
         } catch (error) {
-          console.warn("Monad pool snapshot failed", p.id, error.name, error.shortMessage || error.message);
+          const rpcError = error.walk?.((cause) => typeof cause.code === "number");
+          console.warn("Monad pool snapshot failed", p.id, error.name, error.shortMessage || error.message, {
+            rpcCode: rpcError?.code ?? null,
+          });
           return {
             ...p,
             shield,
