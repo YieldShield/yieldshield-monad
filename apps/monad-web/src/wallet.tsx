@@ -431,7 +431,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         <Suspense
           fallback={
             <aside className="tx-toast" role="status">
-              Loading secure wallet sign-in…
+              Loading wallet sign-in…
             </aside>
           }
         >
@@ -451,7 +451,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
               ×
             </button>
             <h2 id="wallet-title">Connect your wallet</h2>
-            <p>Sign in to create a wallet, or connect one you already use. Transactions use Monad testnet.</p>
+            <p>Use email to create a wallet, or connect an existing one.</p>
             <button
               className="wallet-option"
               onClick={() => {
@@ -462,14 +462,12 @@ export function WalletProvider({ children }: { children: ReactNode }) {
             >
               Continue with Dynamic <span>↗</span>
             </button>
-            <p>Email sign-in and embedded wallets, powered by Dynamic.</p>
             {options.map((w) => (
               <button className="wallet-option" key={w.info.uuid} onClick={() => connect(w.provider)}>
                 {w.info.name}
                 <span>↗</span>
               </button>
             ))}
-            {!options.length && <p>No browser extension detected. Continue with Dynamic to create a wallet.</p>}
             <a href="https://faucet.monad.xyz/add-network" target="_blank" rel="noreferrer">
               Monad wallet setup ↗
             </a>

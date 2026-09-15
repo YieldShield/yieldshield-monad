@@ -63,3 +63,5 @@ Verified in the in-app browser:
 - 35 frontend tests pass, including zero/unknown/error balance handling and explicit/default market selection. TypeScript and production Vite build pass. The existing lazily loaded Dynamic wallet bundle still triggers the known size advisory.
 
 Implementation commits: `5b496da` navigation/home, `421235a` action screens, `00a1702` Faucet/funding. Verification refinements align the demo trade heading with its form and make visible input labels match their accessible names.
+
+Production follow-up: the initial release `08f503f` was deployed as `dpl_BuQ9trFMaxa44eJbxtHuUesK9uXs`. Live Home/Faucet/Protect rendered the expected copy and WMON default. Dynamic’s email and wallet dialog opened without browser warnings/errors; no login code or transaction was sent. This check found two redundant paragraphs in the preceding wallet chooser, removed in a separate copy commit. The live Protect view also reproduced the already documented intermittent pool-read failure before a subsequent successful refresh. This presentation change does not resolve or conceal it.
