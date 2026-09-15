@@ -1,9 +1,7 @@
 .simple-site {
-  --muted: #655f70;
-  --line: #e4e0e9;
   min-height: 100vh;
-  padding-left: 234px;
-  background: #faf9f7;
+  padding-left: var(--sidebar-width);
+  background: var(--paper);
   color: var(--ink);
 }
 
@@ -42,9 +40,9 @@
   gap: 12px;
   min-height: 80px;
   margin: 0 auto;
-  padding: 22px 32px;
+  padding: 18px var(--gutter);
   border-bottom: 1px solid var(--line);
-  background: #fff;
+  background: var(--paper);
 }
 
 .simple-header .brand {
@@ -64,7 +62,7 @@
 }
 
 .simple-site .sidebar {
-  width: 234px;
+  width: var(--sidebar-width);
   padding: 30px 20px;
   overflow-y: auto;
 }
@@ -184,10 +182,10 @@
 .simple-workspace,
 .simple-home {
   width: 100%;
-  max-width: 1180px;
+  max-width: 1280px;
   min-height: calc(100vh - 242px);
   margin: 0 auto;
-  padding: 48px 32px 64px;
+  padding: 48px var(--gutter) 56px;
 }
 
 .simple-site .page-heading {
@@ -196,7 +194,7 @@
 
 .simple-site .explain-page,
 .simple-site .legal-page {
-  width: calc(100% - 64px);
+  width: calc(100% - var(--gutter) * 2);
 }
 
 .simple-site .page-heading h1 {
@@ -216,8 +214,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px 24px;
-  max-width: 1116px;
-  width: calc(100% - 64px);
+  max-width: calc(1280px - var(--gutter) * 2);
+  width: calc(100% - var(--gutter) * 2);
   margin: 0 auto;
   padding: 24px 0 28px;
   border-top: 1px solid var(--line);
@@ -600,7 +598,7 @@
   .header-notice {
     order: 2;
     flex-basis: 100%;
-    font-size: 11px;
+    font-size: 12px;
   }
 
   .simple-header > .button,
@@ -659,7 +657,7 @@
     min-height: 42px;
     padding: 10px 12px;
     margin-left: 0;
-    font-size: 11px;
+    font-size: 12px;
   }
 
   .primary-nav {
@@ -823,4 +821,44 @@
   margin-top: 24px;
   padding-top: 20px;
   scroll-margin-top: 24px;
+}
+
+.simple-header > .button.dark {
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  min-height: 44px;
+}
+.simple-header > .button.dark:hover {
+  border-color: var(--accent);
+}
+.sidebar-secondary a {
+  font-size: 12px !important;
+}
+.simple-site .sidebar .brand {
+  font-size: 19px;
+  padding: 0;
+  gap: 8px;
+}
+.simple-site .sidebar nav a {
+  padding: 11px 12px;
+  border-radius: 9px;
+}
+.simple-site .sidebar .network-label {
+  margin: 28px 7px;
+}
+.simple-workspace > .release-notice {
+  margin-bottom: 24px;
+  border-radius: var(--radius);
+}
+@media (max-width: 1120px) {
+  :root {
+    --gutter: 32px;
+  }
+}
+@media (max-width: 620px) {
+  :root {
+    --gutter: 20px;
+  }
 }

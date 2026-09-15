@@ -26,7 +26,7 @@ import { selectMarket } from "./market-selection";
 import { reviewedQuoteDeadline } from "./reviewed-quote";
 import { scenarioExits } from "./scenario-model";
 import "./styles.css";
-import "./simplified.css";
+import "./app-layout.css";
 import "./asset-images.css";
 import { TokenIcon, AssetPair } from "./AssetImage";
 import { assetVisual } from "./asset-visuals";
@@ -108,7 +108,7 @@ function Header() {
       <aside className="sidebar" aria-label="Sidebar">
         <Brand />
         <div className="network-label">
-          <span className="dot purple" /> Monad Testnet <small>10143</small>
+          <span className="dot purple" /> Monad testnet
         </div>
         <nav aria-label="Main navigation">
           {primaryNav.map(([to, label, icon]) => (
@@ -2043,8 +2043,8 @@ function Legal() {
           on Railway. Requests necessarily reach those providers and the configured Monad RPC. Wallet addresses and
           on-chain transactions are public; the app uses an address to read positions when you connect. It does not
           receive your wallet’s private keys. No advertising analytics, marketing cookies or account database are
-          configured. Fonts are loaded from Google Fonts, which receives those requests. The browser temporarily stores
-          a pending transaction hash to recover its confirmation after a reload.
+          configured. Interface fonts are hosted with the app. The browser temporarily stores a pending transaction hash
+          to recover its confirmation after a reload.
         </p>
         <p>
           Contact the operator for privacy questions or requests. This page describes this testnet release; it does not
