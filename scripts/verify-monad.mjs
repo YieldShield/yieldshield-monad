@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { throttledRpcFetch } from "../services/monad/rpc-throttle.mjs";
+import { retryRateLimitedReads } from "../services/monad/rpc-retry.mjs";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -10,12 +11,14 @@ const network = JSON.parse(readFileSync(resolve(ROOT, "config/monad.json")));
 const m = JSON.parse(readFileSync(resolve(ROOT, "contracts/deployments/monad-testnet.json")));
 const client = createPublicClient({
   chain: monadTestnet,
-  transport: http(process.env.MONAD_RPC_URL || "https://testnet-rpc.monad.xyz", {
-    timeout: 20000,
-    retryCount: 2,
-    batch: { batchSize: 10, wait: 10 },
-    fetchFn: throttledRpcFetch(),
-  }),
+  transport: retryRateLimitedReads(
+    http(process.env.MONAD_RPC_URL || "https://testnet-rpc.monad.xyz", {
+      timeout: 20000,
+      retryCount: 2,
+      batch: { batchSize: 10, wait: 10 },
+      fetchFn: throttledRpcFetch(),
+    }),
+  ),
 });
 assert.equal(await client.getChainId(), 10143);
 assert.equal(m.chainId, 10143);
