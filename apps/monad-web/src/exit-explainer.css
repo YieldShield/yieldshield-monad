@@ -152,3 +152,109 @@
     font-size: 12px;
   }
 }
+.exit-plate {
+  transition:
+    transform 0.65s cubic-bezier(0.2, 0.7, 0.2, 1),
+    opacity 0.5s;
+}
+.exit-bridge {
+  transition:
+    transform 0.65s,
+    opacity 0.4s;
+}
+.exit-stage[data-state="asset"] .exit-plate.asset {
+  transform: translate(-12px, -16px) rotate(0deg) scale(1.03);
+}
+.exit-stage[data-state="asset"] .exit-plate.backing {
+  transform: translate(6px, 10px) rotate(11deg) scale(0.92);
+  opacity: 0.43;
+}
+.exit-stage[data-state="backing"] .exit-plate.asset {
+  transform: translate(3px, 1px) rotate(-12deg) scale(0.89);
+  opacity: 0.42;
+}
+.exit-stage[data-state="backing"] .exit-plate.backing {
+  transform: translate(-18px, -35px) rotate(0deg) scale(1.04);
+  z-index: 4;
+}
+.exit-stage:not([data-state="position"]) .exit-bridge {
+  opacity: 0;
+  transform: scale(0.8);
+}
+.exit-choices {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 18px;
+}
+.exit-choices button {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 10px;
+  min-height: 44px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.exit-choices button[aria-pressed="true"] {
+  background: var(--card);
+  border-color: var(--line);
+  color: var(--ink);
+}
+.exit-choices button:hover {
+  color: var(--accent);
+  background: var(--soft);
+}
+.exit-motion-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 4px 16px;
+  min-height: 44px;
+}
+.exit-replay {
+  color: var(--accent);
+  font-size: 12px;
+  min-height: 44px;
+}
+.exit-motion-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+.exit-motion-toggle input {
+  margin: 0;
+  accent-color: var(--purple);
+}
+.exit-explainer.motion-reduced *,
+.exit-explainer.motion-reduced *::before {
+  animation: none;
+  transition: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .clarity-hero-copy {
+    animation: clarity-enter 0.45s both;
+  }
+  .exit-explainer {
+    animation: clarity-enter 0.55s both;
+  }
+}
+@keyframes clarity-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (max-width: 720px) {
+  .exit-choices {
+    margin-top: 4px;
+  }
+}
