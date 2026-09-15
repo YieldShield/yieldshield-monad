@@ -38,4 +38,24 @@ describe("pending transaction recovery", () => {
     store.set(null);
     expect(store.get()).toBeNull();
   });
+
+  it("observes another tab's pending transaction when storage is available", () => {
+    let saved: string | null = null;
+    const storage = {
+      getItem: () => saved,
+      setItem: (_key: string, value: string) => {
+        saved = value;
+      },
+      removeItem: () => {
+        saved = null;
+      },
+    };
+    const first = createPendingTransactionStore(() => storage);
+    const second = createPendingTransactionStore(() => storage);
+    expect(first.get()).toBeNull();
+    second.set(hash);
+    expect(first.get()).toBe(hash);
+    second.set(null);
+    expect(first.get()).toBeNull();
+  });
 });
