@@ -1,6 +1,16 @@
 import React, { useState, useEffect, useMemo, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Routes, Route, Link, NavLink, Navigate, useLocation, useParams } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Link,
+  NavLink,
+  Navigate,
+  useLocation,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import useSWR from "swr";
 import { parseAbi, formatUnits, type Abi, type Address } from "viem";
 import scenarioEvidence from "../../../docs/evidence/scenario-journey.json";
@@ -12,6 +22,7 @@ import { WalletProvider, useWallet, useBalance, useNativeBalance, client } from 
 import { FundingNotice, FundingGate, AssetFundingHint, monadFaucet, type FundingAsset } from "./Funding";
 import { amount, minOut, netAsset, noticeState, fmt, usd, short, fetcher, explorer, errorMessage } from "./lib";
 import type { Asset, Market, Position, Snapshot, Registry } from "./types";
+import { selectMarket } from "./market-selection";
 import "./styles.css";
 import "./simplified.css";
 const registry = registryJson as unknown as Registry;
@@ -232,23 +243,12 @@ function Shell({ children }: { children: ReactNode }) {
     </div>
   );
 }
-function PageTitle({
-  kicker,
-  title,
-  copy,
-  children,
-}: {
-  kicker: string;
-  title: string;
-  copy: string;
-  children?: ReactNode;
-}) {
+function PageTitle({ title, copy, children }: { title: string; copy?: string; children?: ReactNode }) {
   return (
     <div className="page-heading">
       <div>
-        <p className="eyebrow">{kicker}</p>
         <h1>{title}</h1>
-        <p>{copy}</p>
+        {copy && <p>{copy}</p>}
       </div>
       {children}
     </div>
@@ -257,7 +257,7 @@ function PageTitle({
 function Loading({ error }: { error?: Error }) {
   return (
     <div className={`notice ${error ? "warning" : ""}`} role="status">
-      {error ? error.message : "Reading the latest verified Monad state…"}
+      {error ? error.message : "Loading pools…"}
       {error && (
         <button className="text-link" onClick={() => location.reload()}>
           Refresh
@@ -279,10 +279,10 @@ function MarketCard({ market: m }: { market: Market }) {
       </h3>
       <p>
         {m.environment === "scenario"
-          ? "Synthetic market for a repeatable demo"
+          ? "Synthetic test asset"
           : m.symbol === "shMON"
-            ? "Liquid-staking withdrawal NAV"
-            : "MON with an external reference price"}
+            ? "Valued at delayed withdrawal rate"
+            : "Wrapped MON"}
       </p>
       <div className="market-price">
         {usd(m.shield?.price)}
@@ -290,7 +290,7 @@ function MarketCard({ market: m }: { market: Market }) {
       </div>
       <div className="mini-metrics">
         <div>
-          <span>Junior backing</span>
+          <span>Total backing</span>
           <strong>
             {fmt(m.totalBacking, m.backing?.decimals)} {m.backingSymbol}
           </strong>
@@ -318,18 +318,14 @@ function Markets() {
   const markets = data?.markets.filter((m) => m.environment === environment) || [];
   return (
     <Shell>
-      <PageTitle
-        kicker="Explore / Monad"
-        title="Compare protection markets."
-        copy="Compare assets, available backing and reserve requirements before you protect or provide."
-      />
+      <PageTitle title="Compare pools" />
       <div className="filter-row">
         <div className="segmented">
           <button className={environment === "reference" ? "selected" : ""} onClick={() => setEnvironment("reference")}>
-            Monad reference markets
+            Monad assets
           </button>
           <button className={environment === "scenario" ? "selected" : ""} onClick={() => setEnvironment("scenario")}>
-            Scenario markets
+            Demo assets
           </button>
         </div>
         <Link to="/create-pool" className="text-link">
@@ -342,8 +338,8 @@ function Markets() {
         <>
           <div className="notice">
             {environment === "reference"
-              ? "Reference markets use external MON prices. shMON is valued at delayed withdrawal NAV; it is not a spot-market sell quote."
-              : "Scenario assets have a predictable 8-minute price cycle. They are separate tokens and contracts, with no claim on MON."}
+              ? "shMON uses its delayed withdrawal value, not a spot sell quote."
+              : "Synthetic tokens follow an 8-minute price cycle and have no claim on MON."}
           </div>
           <div className="market-grid">
             {markets.map((m) => (
@@ -375,15 +371,10 @@ function Markets() {
               </div>
             </div>
           )}
-          <section className="understand-panel">
-            <h3>What does protection mean here?</h3>
-            <p>
-              Your position records its entry value in USD terms. The backing exit exchanges your remaining deposited
-              asset for a capped quantity of backing tokens. It does not promise a fixed number of MON or make the
-              junior side risk-free.
-            </p>
-            <Link to="/how-it-works">Read the rules ↗</Link>
-          </section>
+          <p className="compact-risk">
+            Backing exits exchange your asset for a payout capped by entry value and reserved backing.{" "}
+            <Link to="/how-it-works">How it works ↗</Link>
+          </p>
         </>
       )}
     </Shell>
@@ -414,20 +405,32 @@ function Submit({
   );
 }
 function useSelectedMarket(data: Snapshot | undefined) {
-  const [id, setId] = useState(new URLSearchParams(location.search).get("market") || "");
-  const m = data?.markets.find((m) => m.id === id) || data?.markets[0];
+  const [params, setParams] = useSearchParams();
+  const m = selectMarket(data?.markets || [], params.get("market"));
+  const setId = (id: string) => {
+    const next = new URLSearchParams(params);
+    next.set("market", id);
+    setParams(next, { replace: true });
+  };
   return { m, id: m?.id || "", setId };
 }
 function MarketSelect({ data, id, setId }: { data: Snapshot; id: string; setId: (id: string) => void }) {
   return (
     <label className="field">
-      Market
-      <select value={id} onChange={(e) => setId(e.target.value)}>
-        {data.markets.map((m) => (
-          <option key={m.id} value={m.id}>
-            {m.symbol} / {m.backingSymbol} · {m.environment === "scenario" ? "Scenario" : "Reference"}
-          </option>
-        ))}
+      Asset / backing
+      <select name="market" value={id} onChange={(e) => setId(e.target.value)}>
+        {(["reference", "scenario"] as const).map((environment) => {
+          const markets = data.markets.filter((m) => m.environment === environment);
+          return markets.length ? (
+            <optgroup key={environment} label={environment === "reference" ? "Monad assets" : "Demo assets"}>
+              {markets.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.symbol} / {m.backingSymbol}
+                </option>
+              ))}
+            </optgroup>
+          ) : null;
+        })}
       </select>
     </label>
   );
@@ -473,52 +476,46 @@ function PositionForm({ side }: { side: "senior" | "junior" }) {
   }
   return (
     <Shell>
-      <PageTitle
-        kicker={side === "senior" ? "Senior / Protected holder" : "Junior / Liquidity provider"}
-        title={side === "senior" ? "A second way out." : "Back the upside."}
-        copy={
-          side === "senior"
-            ? "Hold a supported asset with an additional, capped backing-token exit."
-            : "Supply the backing. Share realized gains. Accept the first losses."
-        }
-      />
-      {!data ? (
-        <Loading error={error} />
-      ) : !m ? (
-        <div className="empty-state">
-          <h2>No executable pools yet.</h2>
-          <p>Verified pools appear here when deployment is complete.</p>
-          <Link to="/markets">Back to markets ↗</Link>
-        </div>
-      ) : (
-        <div className="form-layout">
+      <div className="task-page">
+        <PageTitle title={side === "senior" ? "Protect" : "Provide liquidity"} />
+        {!data ? (
+          <Loading error={error} />
+        ) : !m ? (
+          <div className="empty-state">
+            <h2>Pool unavailable</h2>
+            <Link to="/markets">Choose a pool ↗</Link>
+          </div>
+        ) : (
           <section className={`action-panel ${side}`}>
-            <div className="panel-heading">
-              <TokenIcon symbol={token?.symbol} />
-              <h2>{side === "senior" ? "Get protection" : "Provide liquidity"}</h2>
-              <Tag>{m.environment === "scenario" ? "Scenario" : "Reference"}</Tag>
-            </div>
             <MarketSelect data={data} id={id} setId={setId} />
+            <div className="pool-context">
+              <Tag>{m.environment === "scenario" ? "Synthetic demo asset" : "Monad asset"}</Tag>
+              <Link className="text-link" to="/markets">
+                Compare pools
+              </Link>
+            </div>
             <label className="field">
-              {side === "senior" ? "Asset to protect" : "Backing to provide"}
+              {side === "senior" ? "Amount to protect" : "Backing to provide"}
               <div className="amount-field">
                 <input
+                  name="amount"
                   inputMode="decimal"
-                  aria-label="Deposit amount"
+                  aria-label={side === "senior" ? "Amount to protect" : "Backing to provide"}
+                  aria-describedby="deposit-balance"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   autoComplete="off"
                 />
                 <b>{token?.symbol}</b>
               </div>
-              <span className="field-hint">
+              <span className="field-hint" id="deposit-balance">
                 Balance: {fmt(balance, token?.decimals, 5)} {token?.symbol}
               </span>
             </label>
             <AssetFundingHint asset={fundingAsset} />
             <dl className="review-list">
               <div>
-                <dt>Reference entry value</dt>
+                <dt>Entry value</dt>
                 <dd>{usd(entry)}</dd>
               </div>
               {side === "senior" ? (
@@ -530,40 +527,50 @@ function PositionForm({ side }: { side: "senior" | "junior" }) {
                     </dd>
                   </div>
                   <div>
-                    <dt>Gain-sharing fee</dt>
+                    <dt>Fee</dt>
                     <dd>12% of realized gains</dd>
                   </div>
                   <div>
-                    <dt>Backing exit available after</dt>
+                    <dt>Backing exit after</dt>
                     <dd>60 seconds</dd>
                   </div>
                 </>
               ) : (
                 <>
                   <div>
-                    <dt>Share of realized gains</dt>
-                    <dd>10% distributed to junior holders</dd>
+                    <dt>Reward share</dt>
+                    <dd>10% of realized gains, shared by providers</dd>
                   </div>
                   <div>
                     <dt>Withdrawal notice</dt>
                     <dd>120 seconds</dd>
                   </div>
-                  <div>
-                    <dt>Principal protection</dt>
-                    <dd>None — first-loss capital</dd>
-                  </div>
                 </>
               )}
             </dl>
+            <p className="compact-risk">
+              {side === "senior"
+                ? `Withdraw your ${m.symbol} after fees, or surrender it for backing capped by entry value and reserved backing.`
+                : "Your backing absorbs losses first. Only unreserved backing can be withdrawn."}
+            </p>
+            {side === "junior" && (
+              <p className="compact-risk">Rewards are paid in {m.symbol}; returns are not guaranteed.</p>
+            )}
+            {m.symbol === "shMON" && (
+              <p className="compact-risk">shMON uses withdrawal value, not a spot price. Unstaking is delayed.</p>
+            )}
+            {m.backingSymbol === "vTestUSDC" && (
+              <p className="compact-risk">Backing is paid in vault shares. Redeem them separately for TestUSDC.</p>
+            )}
             {(!available || validation || tooMuch || overCapacity) && (
-              <p className="inline-warning">
+              <p className="inline-warning" role="status">
                 {validation ||
                   (!available
-                    ? m.reason || "No capacity is currently available."
+                    ? m.reason || "No capacity available."
                     : tooMuch
-                      ? "Your token balance is too low."
+                      ? "Insufficient token balance."
                       : overCapacity
-                        ? "This amount exceeds currently available protection capacity."
+                        ? "Amount exceeds available protection."
                         : "")}
               </p>
             )}
@@ -573,48 +580,34 @@ function PositionForm({ side }: { side: "senior" | "junior" }) {
               disabled={!available || !!validation || tooMuch || overCapacity || value === 0n}
               onClick={submit}
             />
-            <p className="consent-note">
-              You approve only this token amount. The pool issues a receipt NFT that controls your position.
-            </p>
-          </section>
-          <aside className="explanation-panel">
-            <span className="step-number">{side === "senior" ? "01" : "02"}</span>
-            <h2>{side === "senior" ? "One position.\nTwo choices." : "Rewards come\nwith responsibility."}</h2>
-            {side === "senior" ? (
-              <>
-                <h3>Take your asset</h3>
-                <p>Withdraw the remaining asset after any gain-sharing fees. This also closes its protection.</p>
-                <h3>Use the backing exit</h3>
-                <p>
-                  Surrender the remaining asset and receive backing tokens up to the position’s entry-value and
-                  collateral limits. You do not keep both.
-                </p>
-                {m.backingSymbol === "vTestUSDC" && (
-                  <div className="notice">
-                    This pool pays vault shares. Redeeming those shares for TestUSDC is a separate action.
+            <details className="disclosure">
+              <summary>Pool details</summary>
+              <div className="disclosure-body">
+                <dl className="review-list">
+                  <div>
+                    <dt>Reserve requirement</dt>
+                    <dd>150%</dd>
                   </div>
-                )}
-              </>
-            ) : (
-              <>
-                <h3>Earn when holders realize gains</h3>
-                <p>Junior rewards are paid in the protected asset. There is no promised yield or fixed APY.</p>
-                <h3>Absorb the first loss</h3>
-                <p>
-                  When protection is used, junior capital pays the backing exit and receives the surrendered asset
-                  through the pool’s accounting.
-                </p>
-                <h3>Only excess backing can leave</h3>
-                <p>
-                  Finishing the notice period does not release collateral that is still reserved for protected
-                  positions.
-                </p>
-              </>
-            )}
-            <Link to="/positions">View your positions ↗</Link>
-          </aside>
-        </div>
-      )}
+                  <div>
+                    <dt>Total backing</dt>
+                    <dd>
+                      {fmt(m.totalBacking, m.backing.decimals)} {m.backingSymbol}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Price source</dt>
+                    <dd>{kind(m.shield)}</dd>
+                  </div>
+                </dl>
+                <p>Your receipt NFT controls the position. Fees already paid are not refunded after later losses.</p>
+                <a href={explorer("address", m.address)} target="_blank" rel="noreferrer">
+                  View pool contract ↗
+                </a>
+              </div>
+            </details>
+          </section>
+        )}
+      </div>
     </Shell>
   );
 }
@@ -628,26 +621,20 @@ function Positions() {
   );
   return (
     <Shell>
-      <PageTitle
-        kicker="Portfolio / Monad"
-        title="Your positions."
-        copy="Your receipt NFTs hold the record. Choose the next step for each position."
-      />
+      <PageTitle title="Positions" />
       {!w.account ? (
         <div className="empty-state">
           <span className="big-glyph">▤</span>
-          <h2>Your wallet, your positions.</h2>
-          <p>Connect to view protected assets and junior liquidity.</p>
+          <p>Connect your wallet to view positions.</p>
           <WalletButton />
         </div>
       ) : !data ? (
         <Loading error={error} />
       ) : !data.positions.length ? (
         <div className="empty-state">
-          <h2>Your first position starts here.</h2>
-          <p>Try the scenario market with free test assets, or explore Monad reference assets.</p>
-          <Link className="button purple-button" to="/markets">
-            Explore markets ↗
+          <h2>No positions yet</h2>
+          <Link className="button purple-button" to="/protect">
+            Protect tokens ↗
           </Link>
         </div>
       ) : (
@@ -659,10 +646,11 @@ function Positions() {
                 <TokenIcon symbol={p.side === "senior" ? m?.symbol : m?.backingSymbol} />
                 <div>
                   <strong>
-                    {p.side === "senior" ? "Protected" : "Junior"} {p.side === "senior" ? m?.symbol : m?.backingSymbol}
+                    {p.side === "senior" ? "Protected" : "Liquidity"}{" "}
+                    {p.side === "senior" ? m?.symbol : m?.backingSymbol}
                   </strong>
                   <span>
-                    {m?.environment === "scenario" ? "Scenario market" : "Reference market"} · Receipt #{p.id}
+                    {m?.environment === "scenario" ? "Demo asset" : "Monad asset"} · Receipt #{p.id}
                   </span>
                 </div>
                 <b>{fmt(p.position.amount, p.side === "senior" ? m?.shield.decimals : m?.backing.decimals, 5)}</b>
@@ -745,11 +733,8 @@ function PositionDetail() {
         ← All positions
       </Link>
       <PageTitle
-        kicker={`${senior ? "Senior" : "Junior"} / Receipt #${p.id}`}
         title={`${senior ? "Protected " + m.symbol : m.backingSymbol + " liquidity"}`}
-        copy={
-          m.environment === "scenario" ? "A position in the synthetic scenario market." : "A position on Monad testnet."
-        }
+        copy={m.environment === "scenario" ? "Synthetic test asset" : undefined}
       >
         <Tag tone={senior ? "senior" : "junior"}>{senior ? "Protected holder" : "First-loss provider"}</Tag>
       </PageTitle>
@@ -781,17 +766,13 @@ function PositionDetail() {
       {senior ? (
         <div className="exit-grid">
           <section className="exit-card">
-            <span className="eyebrow">Option 01</span>
-            <h2>Take your asset.</h2>
+            <h2>Withdraw your asset</h2>
             <p>Close this position and receive the remaining {m.symbol}, after realized-gain fees.</p>
             <strong className="exit-amount">
               {fmt(assetExit, m.shield.decimals, 6)} <small>{m.symbol}</small>
             </strong>
             {!m.shield.healthy && (
-              <p className="inline-warning">
-                A current asset price is needed to settle gain-sharing fees. Refresh the signed MON price on Market
-                status.
-              </p>
+              <p className="inline-warning">A fresh price is needed to settle fees. Refresh it on Network status.</p>
             )}
             <Submit
               label="Withdraw asset & close"
@@ -839,8 +820,7 @@ function PositionDetail() {
             </details>
           </section>
           <section className="exit-card protected">
-            <span className="eyebrow">Option 02</span>
-            <h2>Use your backing exit.</h2>
+            <h2>Take the backing</h2>
             <p>Surrender your remaining {m.symbol} for the backing payout. This closes the position.</p>
             <strong className="exit-amount">
               {fmt(backingExit, m.backing.decimals, 6)} <small>{m.backingSymbol}</small>
@@ -946,17 +926,9 @@ function PositionDetail() {
               Claim {fmt(p.commission, m.shield.decimals, 5)} {m.symbol} rewards
             </button>
           </section>
-          <aside className="explanation-panel">
-            <h2>Reserved means reserved.</h2>
-            <p>
-              The notice period only controls timing. The pool must still have enough backing for every active protected
-              position.
-            </p>
-            <p>
-              Rewards and surrendered assets are accounted for on-chain. Your backing amount can decrease when the pool
-              pays protection.
-            </p>
-          </aside>
+          <p className="compact-risk">
+            Only unreserved backing can be withdrawn. Your backing absorbs losses when the pool pays protection.
+          </p>
         </div>
       )}
       <div className="receipt-links">
@@ -994,20 +966,16 @@ function Trade() {
   );
   return (
     <Shell>
-      <PageTitle
-        kicker="Trade / Scenario exchange"
-        title="A trade is just the beginning."
-        copy="Buy or sell test assets. Protection is a separate choice after the trade."
-      />
+      <PageTitle title="Demo trade" copy="Buy or sell synthetic test tokens." />
       {!data ? (
         <Loading error={error} />
       ) : !m ? (
         <div className="empty-state">
-          <h2>The test exchange is being prepared.</h2>
-          <Link to="/faucet">Open Faucet to prepare assets ↗</Link>
+          <h2>Demo pool unavailable</h2>
+          <Link to="/faucet">Get test tokens ↗</Link>
         </div>
       ) : (
-        <div className="form-layout">
+        <div className="task-page">
           <section className="action-panel">
             <div className="segmented">
               <button className={side === "buy" ? "selected" : ""} onClick={() => setSide("buy")}>
@@ -1045,12 +1013,12 @@ function Trade() {
                 <dd>{fmt(quote?.total, 6, 4)} TestUSDC</dd>
               </div>
               <div>
-                <dt>Included exchange fee</dt>
+                <dt>Exchange fee</dt>
                 <dd>0.30%</dd>
               </div>
               <div>
                 <dt>Price source</dt>
-                <dd>Synthetic scenario formula</dd>
+                <dd>Synthetic formula</dd>
               </div>
               <div>
                 <dt>Slippage limit</dt>
@@ -1059,7 +1027,7 @@ function Trade() {
             </dl>
             {quoteError && <p className="inline-warning">{quoteError.message}</p>}
             <Submit
-              label={side === "buy" ? "Approve & buy test asset" : "Approve & sell test asset"}
+              label={side === "buy" ? "Approve & buy" : "Approve & sell"}
               asset={fundingAsset}
               disabled={!quote || !!quoteError}
               onClick={() =>
@@ -1083,26 +1051,19 @@ function Trade() {
               }
             />
           </section>
-          <aside className="explanation-panel">
-            <span className="step-number">⇄</span>
-            <h2>
-              Trade first.
-              <br />
-              Protect next.
-            </h2>
-            <p>
-              This inventory-funded test exchange lets you experience buying and selling, with synthetic prices and
-              valueless assets.
-            </p>
-            <p>
-              It is not a live market venue. For Monad ecosystem trading, use a supported external venue and bring an
-              eligible token back to YieldShield.
-            </p>
-            <a href="https://www.kuru.io/" target="_blank" rel="noreferrer">
-              Explore Kuru ↗
-            </a>
-            <Link to={`/protect?market=${id}`}>Protect a test position ↗</Link>
-          </aside>
+          <p className="compact-risk">
+            Synthetic prices. Test tokens have no monetary value.{" "}
+            <Link to={`/protect?market=${id}`}>Protect tokens ↗</Link>
+          </p>
+          <details className="disclosure">
+            <summary>Other trading venues</summary>
+            <div className="disclosure-body">
+              <p>Kuru is an external Monad venue; it is not connected to this demo exchange.</p>
+              <a href="https://www.kuru.io/" target="_blank" rel="noreferrer">
+                Visit Kuru ↗
+              </a>
+            </div>
+          </details>
         </div>
       )}
     </Shell>
@@ -1164,7 +1125,6 @@ function Tokens() {
   return (
     <Shell>
       <PageTitle
-        kicker="Prepare / Faucet"
         title="Your first stop: the Faucet."
         copy="Get testnet MON for fees first, then claim free tokens or prepare the asset you want to use."
       />
@@ -1492,11 +1452,7 @@ function Lab({ standalone = false }: { standalone?: boolean }) {
     junior = backing - payout + market;
   const content = (
     <>
-      <PageTitle
-        kicker="Scenario lab / Learn by doing"
-        title="See where the risk goes."
-        copy="An illustrative $100 position, with $150 of junior backing. Move the market and compare the exits."
-      />
+      <PageTitle title="How it works" copy="Compare the exits for a $100 asset with $150 in backing." />
       <div className="scenario-layout">
         <section className="scenario-controls">
           <div className="control-label">
@@ -1533,9 +1489,7 @@ function Lab({ standalone = false }: { standalone?: boolean }) {
             value={backingYield}
             onChange={(e) => setBackingYield(Number(e.target.value))}
           />
-          <p>
-            Share appreciation changes the number of shares paid. It does not increase the recorded USD entry value.
-          </p>
+          <p>Vault appreciation changes the shares paid, not your entry value.</p>
           <div className="scenario-ledger">
             <div>
               <span>Original asset value</span>
@@ -1576,10 +1530,7 @@ function Lab({ standalone = false }: { standalone?: boolean }) {
           <div className="scenario-divider" />
           <Tag tone="junior">Junior provider</Tag>
           <h3>What happens when backing is used?</h3>
-          <p>
-            Junior capital pays the backing exit and receives the surrendered asset through the pool. The holder does
-            not also keep the asset.
-          </p>
+          <p>Providers pay the backing exit and receive the surrendered asset.</p>
           <div className="junior-outcome">
             <span>Illustrative residual value</span>
             <strong>${(junior + (backing * backingYield) / 100).toFixed(2)}</strong>
@@ -1594,33 +1545,14 @@ function Lab({ standalone = false }: { standalone?: boolean }) {
         This calculator is an illustration, not an on-chain quote. Fees already realized earlier are not refunded after
         a later loss. Actual positions keep a fixed cap in backing-token units.
       </div>
-      <section className="lab-next">
-        <div>
-          <h2>Now try it on-chain.</h2>
-          <p>
-            The separate scenario token moves through an 8-minute cycle: baseline → +25% → baseline → −25% → baseline.
-            Every transaction gets a Monad receipt.
-          </p>
-        </div>
-        <ol>
-          <li>
-            <Link to="/faucet">Get started at the Faucet</Link>
-            <span>Keep testnet MON for gas.</span>
-          </li>
-          <li>
-            <Link to="/provide">Provide junior liquidity</Link>
-            <span>See the first-loss side of the pool.</span>
-          </li>
-          <li>
-            <Link to="/protect">Open protection</Link>
-            <span>Record the entry value and reserved backing.</span>
-          </li>
-          <li>
-            <Link to="/positions">Choose an exit</Link>
-            <span>After a price drop, use the backing option.</span>
-          </li>
-        </ol>
-      </section>
+      <div className="row lab-next">
+        <Link className="button purple-button" to="/protect">
+          Protect tokens ↗
+        </Link>
+        <Link className="button outline" to="/faucet">
+          Get test tokens
+        </Link>
+      </div>
     </>
   );
   return standalone ? (
@@ -1643,7 +1575,6 @@ function Evidence() {
   return (
     <Shell>
       <PageTitle
-        kicker="Metropolis / Build evidence"
         title="Follow the receipts."
         copy="Internal tests on Monad testnet: deployed pools, real transactions and received-token checks."
       />
@@ -1749,7 +1680,6 @@ function Status() {
   return (
     <Shell>
       <PageTitle
-        kicker="Transparency / Network status"
         title="Know what is live."
         copy="Contract verification, price provenance and action availability — in one place."
       />
@@ -1886,7 +1816,6 @@ function CreatePool() {
   return (
     <Shell>
       <PageTitle
-        kicker="Build / New pool"
         title="Create a protection market."
         copy="Use the verified scenario assets and fixed demonstration settings."
       />
@@ -2096,8 +2025,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/markets" element={<Markets />} />
-            <Route path="/protect" element={<PositionForm side="senior" />} />
-            <Route path="/provide" element={<PositionForm side="junior" />} />
+            <Route path="/protect" element={<PositionForm key="senior" side="senior" />} />
+            <Route path="/provide" element={<PositionForm key="junior" side="junior" />} />
             <Route path="/positions" element={<Positions />} />
             <Route path="/positions/:key" element={<PositionDetail />} />
             <Route path="/trade" element={<Trade />} />

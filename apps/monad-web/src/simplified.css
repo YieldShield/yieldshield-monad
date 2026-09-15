@@ -732,3 +732,16 @@
     gap: 4px 18px;
   }
 }
+
+.pool-context {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+.simple-site .pool-context .tag {
+  color: #554366;
+  font-size: 12px;
+}
