@@ -24,6 +24,7 @@ import { amount, minOut, netAsset, noticeState, fmt, usd, short, fetcher, explor
 import type { Asset, Market, Position, Snapshot, Registry } from "./types";
 import { selectMarket } from "./market-selection";
 import { reviewedQuoteDeadline } from "./reviewed-quote";
+import { scenarioExits } from "./scenario-model";
 import "./styles.css";
 import "./simplified.css";
 const registry = registryJson as unknown as Registry;
@@ -1465,15 +1466,7 @@ function Tokens() {
 function Lab({ standalone = false }: { standalone?: boolean }) {
   const [change, setChange] = useState(-20),
     [backingYield, setBackingYield] = useState(0);
-  const entry = 100,
-    backing = 150,
-    market = entry * (1 + change / 100),
-    fee = change > 0 ? change * 0.12 : 0;
-  const assetExit = market - fee,
-    payout = 100,
-    sharePrice = 1 + backingYield / 100,
-    shares = payout / sharePrice,
-    junior = backing - payout + market;
+  const { market, fee, assetExit, sharePrice, shares, junior } = scenarioExits(change, backingYield);
   const content = (
     <>
       <PageTitle title="How it works" copy="Compare the exits for a $100 asset with $150 in backing." />
@@ -1557,11 +1550,11 @@ function Lab({ standalone = false }: { standalone?: boolean }) {
           <p>Providers pay the backing exit and receive the surrendered asset.</p>
           <div className="junior-outcome">
             <span>Illustrative residual value</span>
-            <strong>${(junior + (backing * backingYield) / 100).toFixed(2)}</strong>
+            <strong>${junior.toFixed(2)}</strong>
           </div>
           <small>
-            Remaining backing value + surrendered asset value. No earlier fees, delays, trading costs or asset-sale
-            discounts are included.
+            Remaining backing + surrendered asset + provider fees. Excludes creator/protocol fees. Earlier fees, token
+            rounding, delays and sale costs are omitted.
           </small>
         </section>
       </div>
