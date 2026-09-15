@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>YieldShield — design directions</title>
+    <link rel="icon" href="assets/yieldshield.svg" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap");
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #e9e7ec;
+        color: #20192a;
+        font:
+          14px "DM Sans",
+          sans-serif;
+      }
+      button,
+      select {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+      }
+      header {
+        padding: 24px 32px 18px;
+        background: #fff;
+        border-bottom: 1px solid #dcd7e2;
+      }
+      h1 {
+        font-size: 21px;
+        letter-spacing: -0.04em;
+        margin: 0;
+      }
+      header > p {
+        font-size: 13px;
+        color: #716878;
+        margin: 6px 0 18px;
+      }
+      .toolbar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .directions {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .directions button {
+        padding: 11px 17px;
+        border: 1px solid #e3deea;
+        border-radius: 9px;
+        background: #fff;
+        color: #675d72;
+      }
+      .directions button[aria-pressed="true"] {
+        background: #211832;
+        color: #fff;
+        border-color: #211832;
+      }
+      .toolbar label {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 12px;
+        color: #675d72;
+      }
+      .toolbar select {
+        background: #f7f5f9;
+        border: 1px solid #e3deea;
+        padding: 10px;
+        border-radius: 8px;
+      }
+      .toolbar .screen-control {
+        margin-left: auto;
+      }
+      .toolbar a {
+        color: #675d72;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        font-size: 12px;
+      }
+      .direction-note {
+        padding: 14px 32px;
+        color: #62596b;
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+      .stage {
+        padding: 0 24px 28px;
+        display: flex;
+        justify-content: center;
+      }
+      .stage iframe {
+        background: #fff;
+        display: block;
+        width: 100%;
+        max-width: 1500px;
+        height: calc(100vh - 223px);
+        min-height: 660px;
+        border: 1px solid #d3ceda;
+        border-radius: 14px;
+        box-shadow: 0 10px 40px #25153509;
+      }
+      .stage.mobile iframe {
+        width: 390px;
+        height: 844px;
+        min-height: 0;
+        border-radius: 24px;
+        box-shadow: 0 14px 50px #2515351c;
+      }
+      button:focus-visible,
+      select:focus-visible,
+      a:focus-visible,
+      input:focus-visible {
+        outline: 3px solid #6e54ff;
+        outline-offset: 3px;
+      }
+      @media (max-width: 700px) {
+        header {
+          padding: 20px;
+        }
+        .toolbar .screen-control {
+          margin-left: 0;
+        }
+        .stage {
+          padding: 0 12px 20px;
+        }
+        .direction-note {
+          padding: 12px 20px;
+        }
+        .directions button {
+          padding: 10px;
+        }
+        .stage iframe {
+          min-height: 750px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>YieldShield · Design directions</h1>
+      <p>Interactive mockups. Try the exit animation and explore the app screens. Wallet actions are previews.</p>
+      <div class="toolbar">
+        <div class="directions" role="group" aria-label="Design direction">
+          <button data-direction="clarity" aria-pressed="true">A · Clarity</button
+          ><button data-direction="nightfall" aria-pressed="false">B · Nightfall</button
+          ><button data-direction="direct" aria-pressed="false">C · Direct</button>
+        </div>
+        <label class="screen-control"
+          >Screen
+          <select id="screen">
+            <option value="landing">Landing page</option>
+            <option value="protect">Protect</option>
+            <option value="provide">Provide</option>
+            <option value="positions">Positions</option>
+            <option value="faucet">Faucet</option>
+          </select></label
+        ><label><input type="checkbox" id="mobile" /> Mobile</label
+        ><label><input type="checkbox" id="reduce-motion" /> Reduce motion</label
+        ><a id="open-preview" href="mockup.html?direction=clarity&amp;screen=landing" target="_blank" rel="noreferrer"
+          >Open full size ↗</a
+        >
+      </div>
+    </header>
+    <p class="direction-note" id="direction-note">
+      Recommended · Warm white, generous space, and a visual explanation of the two exits. Best fit for a clear,
+      approachable product.
+    </p>
+    <div class="stage" id="stage">
+      <iframe
+        id="preview"
+        title="YieldShield Clarity mockup"
+        src="mockup.html?direction=clarity&amp;screen=landing"
+      ></iframe>
+    </div>
+    <script>
+      const notes = {
+        clarity:
+          "Recommended · Warm white, generous space, and a visual explanation of the two exits. Best fit for a clear, approachable product.",
+        nightfall:
+          "A bolder Monad expression · A dark landing canvas and luminous purple accents. More dramatic, while the navigation and forms stay familiar.",
+        direct:
+          "The shortest route to action · Select an asset directly from the landing page. Best for returning users who already understand protection.",
+      };
+      let direction = "clarity";
+      const screen = document.getElementById("screen"),
+        mobile = document.getElementById("mobile"),
+        reduced = document.getElementById("reduce-motion");
+      reduced.checked = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      function update() {
+        const url =
+          "mockup.html?" +
+          new URLSearchParams({ direction, screen: screen.value, motion: reduced.checked ? "off" : "on" });
+        document.getElementById("preview").src = url;
+        document.getElementById("open-preview").href = url;
+        document.getElementById("stage").classList.toggle("mobile", mobile.checked);
+        document.getElementById("direction-note").textContent = notes[direction];
+        document.getElementById("preview").title = "YieldShield " + direction + " " + screen.value + " mockup";
+      }
+      document.querySelectorAll("[data-direction]").forEach((b) =>
+        b.addEventListener("click", () => {
+          direction = b.dataset.direction;
+          document.querySelectorAll("[data-direction]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+          update();
+        }),
+      );
+      screen.addEventListener("change", update);
+      mobile.addEventListener("change", () =>
+        document.getElementById("stage").classList.toggle("mobile", mobile.checked),
+      );
+      reduced.addEventListener("change", update);
+      if (reduced.checked) update();
+    </script>
+  </body>
+</html>

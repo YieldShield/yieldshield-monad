@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>YieldShield · Design preview</title>
+    <link rel="icon" href="assets/yieldshield.svg" />
+    <link rel="stylesheet" href="mockup.css" />
+  </head>
+  <body>
+    <a class="skip" href="#content">Skip to content</a>
+    <aside class="sidebar">
+      <a class="brand" href="#landing"
+        ><svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <rect x="3" y="3" width="18" height="18" rx="6" fill="#0E1114" />
+          <rect x="11" y="11" width="18" height="18" rx="6" fill="#6E54FF" fill-opacity=".92" />
+          <rect x="11" y="11" width="10" height="10" rx="4" fill="#0E1114" fill-opacity=".45" /></svg
+        ><span>YieldShield<small>on Monad</small></span></a
+      >
+      <div class="network"><i></i>Monad testnet</div>
+      <nav aria-label="Main navigation">
+        <a href="#protect" data-route="protect"><span>◇</span>Protect</a
+        ><a href="#provide" data-route="provide"><span>＋</span>Provide</a
+        ><a href="#positions" data-route="positions"><span>▤</span>Positions</a
+        ><a href="#faucet" data-route="faucet"><span>◉</span>Faucet</a>
+      </nav>
+      <nav class="secondary" aria-label="Explore">
+        <a href="#landing" data-route="landing"><span>◈</span>Overview</a
+        ><a href="#how-it-works"><span>↗</span>How it works</a><a href="#details"><span>≋</span>Pool details</a>
+      </nav>
+      <div class="sidebar-foot">
+        <small>YieldShield · Metropolis</small>
+      </div>
+    </aside>
+    <div class="app">
+      <header class="topbar">
+        <a class="mobile-brand brand" href="#landing"
+          ><img src="assets/yieldshield.svg" alt="" width="32" height="32" /><span
+            >YieldShield<small>Monad testnet</small></span
+          ></a
+        ><span class="network-pill"><i></i>Test tokens only</span
+        ><button class="connect" data-preview>Connect wallet <span>↗</span></button>
+      </header>
+      <nav class="mobile-nav" aria-label="Mobile navigation">
+        <a href="#protect">Protect</a><a href="#provide">Provide</a><a href="#positions">Positions</a
+        ><a href="#faucet">Faucet</a>
+      </nav>
+      <main id="content" tabindex="-1"></main>
+      <footer>
+        <span>YieldShield on Monad</span>
+        <div><a href="#details">Pool details</a><a href="#legal">Legal & privacy</a></div>
+      </footer>
+    </div>
+    <div class="preview-note" role="status" id="preview-note" hidden></div>
+    <dialog id="info-dialog" aria-labelledby="dialog-title">
+      <article>
+        <button class="close" aria-label="Close details">×</button>
+        <h2 id="dialog-title">How protection works</h2>
+        <div id="dialog-body"></div>
+      </article>
+    </dialog>
+    <script src="mockup.js"></script>
+  </body>
+</html>
