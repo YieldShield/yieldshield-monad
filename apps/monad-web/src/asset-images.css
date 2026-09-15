@@ -231,3 +231,100 @@
     transition: none;
   }
 }
+
+.pool-art {
+  position: relative;
+  isolation: isolate;
+  min-height: 116px;
+  margin: -23px -23px 22px;
+  padding: 24px;
+  overflow: hidden;
+  border-radius: 12px 12px 0 0;
+  background: #efebff;
+}
+.pool-art::before,
+.pool-art::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 140px;
+  height: 140px;
+  border: 1px solid #b5a6ee66;
+  border-radius: 32%;
+  transform: rotate(-22deg);
+  right: -30px;
+  top: -60px;
+}
+.pool-art::after {
+  right: -65px;
+  top: 5px;
+}
+.pool-art.staking {
+  background: #efeee8;
+}
+.pool-art.staking::before,
+.pool-art.staking::after {
+  border-color: #bcb9a866;
+  border-radius: 50%;
+}
+.pool-art.scenario {
+  background: #fff3df;
+}
+.pool-art.scenario::before,
+.pool-art.scenario::after {
+  border-color: #d5ac6a66;
+  border-radius: 12px;
+}
+.pool-art .asset-pair {
+  width: 90px;
+  height: 68px;
+}
+.pool-art .asset-pair > .asset-image:first-child {
+  width: 64px;
+  height: 64px;
+}
+.pool-art .asset-pair > .asset-image + .asset-image {
+  width: 36px;
+  height: 36px;
+  margin-left: -10px;
+  margin-top: 32px;
+}
+.pool-art .asset-image.staking {
+  padding: 12px;
+}
+.pool-art .tag {
+  align-self: flex-start;
+  background: #fffffff2;
+}
+.faucet-step-images {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+  margin-bottom: 16px;
+}
+.faucet-step > div:first-child {
+  width: 100%;
+}
+.faucet-step .faucet-step-images .step-number {
+  margin: 0;
+}
+.asset-tool-title {
+  display: inline-flex;
+  gap: 12px;
+  align-items: center;
+  vertical-align: middle;
+}
+.asset-tool-title .token-icon.asset-image {
+  width: 32px;
+  height: 32px;
+}
+.asset-tool-title .token-icon.asset-image.staking {
+  padding: 6px;
+}
+@media (max-width: 720px) {
+  .pool-art {
+    margin: -24px -24px 20px;
+    padding: 24px;
+  }
+}

@@ -292,7 +292,7 @@ function Loading({ error }: { error?: Error }) {
 function MarketCard({ market: m }: { market: Market }) {
   return (
     <article className="market-card">
-      <div className="card-top">
+      <div className={`card-top pool-art ${assetVisual(m.shield).theme}`}>
         <AssetPair asset={m.shield} backing={m.backing} />
         <Tag tone={m.ready ? "success" : "pending"}>{m.ready ? "Available" : "Action needed"}</Tag>
       </div>
@@ -1098,7 +1098,7 @@ function Disclosure({
   forceOpen = false,
 }: {
   id: string;
-  title: string;
+  title: ReactNode;
   children: ReactNode;
   anchors?: string[];
   forceOpen?: boolean;
@@ -1175,9 +1175,12 @@ function Tokens() {
           aria-labelledby="gas-title"
         >
           <div>
-            <span className="step-number" aria-hidden="true">
-              1
-            </span>
+            <div className="faucet-step-images">
+              <span className="step-number" aria-hidden="true">
+                1
+              </span>
+              <TokenIcon asset={{ symbol: "MON" }} />
+            </div>
             <h2 id="gas-title">Get testnet MON</h2>
             <p>MON pays transaction fees.</p>
             <p role="status">
@@ -1211,9 +1214,15 @@ function Tokens() {
         </section>
         <section className="faucet-step" id="test-tokens">
           <div>
-            <span className="step-number" aria-hidden="true">
-              2
-            </span>
+            <div className="faucet-step-images">
+              <span className="step-number" aria-hidden="true">
+                2
+              </span>
+              <AssetPair
+                asset={registry.assets.find((a) => a.id === "scenario-mon")}
+                backing={registry.assets.find((a) => a.id === "test-usd")}
+              />
+            </div>
             <h2>Claim test tokens</h2>
             <p>25 sMON-demo + 10,000 TestUSDC. Once every 24 hours, while supplies last.</p>
           </div>
@@ -1247,7 +1256,15 @@ function Tokens() {
       </p>
       <div className="asset-tools">
         <h2>Prepare other assets</h2>
-        <Disclosure id="wrap-mon" title="Wrap or unwrap MON">
+        <Disclosure
+          id="wrap-mon"
+          title={
+            <span className="asset-tool-title">
+              <TokenIcon asset={{ address: wmon }} />
+              Wrap or unwrap MON
+            </span>
+          }
+        >
           <p>Wrap MON 1:1 using YieldShield’s testnet wrapper.</p>
           <label className="field">
             Amount
@@ -1258,7 +1275,10 @@ function Tokens() {
                 value={wrap}
                 onChange={(e) => setWrap(e.target.value)}
               />
-              <b>MON</b>
+              <b className="amount-token">
+                <TokenIcon asset={{ symbol: "MON" }} />
+                MON
+              </b>
             </div>
             <span className="field-hint">Wrapped balance: {fmt(wb.data, 18, 6)} WMON</span>
           </label>
@@ -1292,7 +1312,12 @@ function Tokens() {
         </Disclosure>
         <Disclosure
           id="stake-mon"
-          title="Stake or unstake MON"
+          title={
+            <span className="asset-tool-title">
+              <TokenIcon asset={{ address: shmon }} />
+              Stake or unstake MON
+            </span>
+          }
           anchors={["unstake-mon"]}
           forceOpen={Boolean(request && request[0] > 0n)}
         >
@@ -1306,7 +1331,10 @@ function Tokens() {
                 value={stake}
                 onChange={(e) => setStake(e.target.value)}
               />
-              <b>MON</b>
+              <b className="amount-token">
+                <TokenIcon asset={{ symbol: "MON" }} />
+                MON
+              </b>
             </div>
             <span className="field-hint">Balance: {fmt(sb.data, 18, 6)} shMON</span>
           </label>
@@ -1347,7 +1375,10 @@ function Tokens() {
                   inputMode="decimal"
                   onChange={(e) => setUnstake(e.target.value)}
                 />
-                <b>shMON</b>
+                <b className="amount-token">
+                  <TokenIcon asset={{ address: shmon }} />
+                  shMON
+                </b>
               </div>
             </label>
             <Submit
@@ -1386,7 +1417,15 @@ function Tokens() {
             )}
           </section>
         </Disclosure>
-        <Disclosure id="test-vault" title="Deposit or redeem vault shares">
+        <Disclosure
+          id="test-vault"
+          title={
+            <span className="asset-tool-title">
+              <TokenIcon asset={{ address: vault }} />
+              Deposit or redeem vault shares
+            </span>
+          }
+        >
           <p>Deposit TestUSDC for vault shares, or redeem shares. Demo yield comes from funded donations.</p>
           <div className="segmented">
             <button className={vaultMode === "deposit" ? "selected" : ""} onClick={() => setVaultMode("deposit")}>
@@ -1405,7 +1444,10 @@ function Tokens() {
                 value={vaultInput}
                 onChange={(e) => setVaultInput(e.target.value)}
               />
-              <b>{vaultMode === "deposit" ? "TestUSDC" : "vTestUSDC"}</b>
+              <b className="amount-token">
+                <TokenIcon asset={{ address: vaultMode === "deposit" ? usdToken : vault }} />
+                {vaultMode === "deposit" ? "TestUSDC" : "vTestUSDC"}
+              </b>
             </div>
             <span className="field-hint">
               {fmt(ub.data, 6)} TestUSDC · {fmt(vb.data, 6)} vault shares
