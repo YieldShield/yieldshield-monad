@@ -31,6 +31,7 @@ import "./asset-images.css";
 import { TokenIcon, AssetPair } from "./AssetImage";
 import { assetVisual } from "./asset-visuals";
 import { MarketSelect } from "./MarketSelect";
+import { Landing } from "./Landing";
 const registry = registryJson as unknown as Registry;
 const abi = (name: string) => (abisJson as unknown as Record<string, Abi>)[name];
 const contract = (name: string) => registry.contracts[name]?.address;
@@ -184,19 +185,6 @@ function Footer() {
     </footer>
   );
 }
-function HeroArt() {
-  return (
-    <aside className="simple-art" aria-label="Your asset is supported by separately supplied backing">
-      <div className="backing-layer">
-        <span>Backing</span>
-      </div>
-      <div className="asset-layer">
-        <span aria-hidden="true">◈</span>
-        <span>Your asset</span>
-      </div>
-    </aside>
-  );
-}
 function ReleaseNotice() {
   if (registry.status === "complete") return null;
   return (
@@ -212,43 +200,14 @@ function ReleaseNotice() {
   );
 }
 function Home() {
+  const { data, error } = useSnapshot();
   return (
     <div className="simple-site">
       <Header />
       <ReleaseNotice />
       <main id="main" className="simple-home">
-        <section className="simple-hero">
-          <div>
-            <h1>
-              Keep your upside.
-              <br />
-              <em>Choose your exit.</em>
-            </h1>
-            <p>Protect your tokens with a capped exit into backing tokens.</p>
-            <div className="hero-actions">
-              <Link className="button purple-button" to="/protect">
-                Protect tokens ↗
-              </Link>
-              <Link className="text-link" to="/faucet">
-                Get test tokens
-              </Link>
-            </div>
-          </div>
-          <HeroArt />
-        </section>
-        <section className="home-exits" aria-label="Two ways to exit">
-          <div>
-            <h2>Keep your asset</h2>
-            <p>Withdraw it, less fees on gains.</p>
-          </div>
-          <div>
-            <h2>Take the backing</h2>
-            <p>Exchange your asset for backing, up to your entry value and reserved cap.</p>
-          </div>
-          <small>
-            Waiting periods and pool checks apply. <Link to="/how-it-works">How it works ↗</Link>
-          </small>
-        </section>
+        <FundingNotice />
+        <Landing data={data} error={error} />
       </main>
       <Footer />
     </div>

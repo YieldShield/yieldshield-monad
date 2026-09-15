@@ -91,6 +91,13 @@ describe("faucet onboarding before a transaction", () => {
     },
   );
 
+  it("guides an empty connected wallet from the landing page to the Faucet", () => {
+    Object.assign(balances, { account: "0x123", native: 0n, token: 0n });
+    expect(renderFunding("TestUSDC", "/")).toContain("Get testnet MON to pay fees.");
+    Object.assign(balances, { native: 100n });
+    expect(renderFunding("TestUSDC", "/")).toContain("Get tokens before you start.");
+  });
+
   it("puts native gas before the creator bond on pool creation", () => {
     Object.assign(balances, { account: "0x123", native: 0n, token: 0n });
     const html = renderFunding("TestUSDC", "/create-pool");
