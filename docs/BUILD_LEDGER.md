@@ -61,3 +61,9 @@ Sponsor review, 9 September 2026: recorded the official published bounties, sepa
 The existing Metropolis draft now points to the new private repository, and both David and Santi are confirmed on the team. Final submissions open on 22 September. No sponsor bounty has been selected or claimed.
 
 The full verification run passed after the reference release and Dynamic integration: https://github.com/YieldShield/yieldshield-monad/actions/runs/34834802478 . This includes 65 API/deployment tests, 8 UI tests, Monad Solidity tests, imported protocol regressions and the production build. The narrated screenshot overview is not a live wallet recording; its hash and chapter timings are in `docs/evidence/video-overview.json`.
+
+## 15 September usability and deployment review
+
+The production API at 13:02 UTC reported chain 10143, all 39 code checks passing, five ready and unpaused pools, and a one-second-old MON reference. Railway reported a successful deployment. The older banner in an already-open browser tab disappeared after refresh. The wallet selection dialog opened successfully; a completed Dynamic browser signing journey is still not claimed. Existing confirmed receipt suites remain the contract-execution evidence. Kuru orderbook trading is not integrated, and the full shMON unstake queue remains untested.
+
+Renamed Test assets to Faucet at `/faucet`, retaining the old `/tokens` route as a redirect. Added MON-first onboarding, balance-aware action links, and specific claim/wrap/stake/vault preparation links for empty input balances. Markets now explicitly presents itself as a pool comparison page. The 18 UI tests cover visitors, empty native/token balances, funded wallets, unknown or failed reads, and pending transactions; the production build passes. The local browser verified the redirect, two-step Faucet layout, market data and Trade quote without console errors. These are UI and read-only checks, not a signed wallet journey.

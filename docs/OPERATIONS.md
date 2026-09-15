@@ -21,7 +21,7 @@ All five pools are funded and both scenario/reference receipt journeys are compl
 
 Dynamic uses the isolated **YieldShield Monad / Sandbox** environment `71020229-55c2-4143-8352-9bf007358fff`. Its environment ID is public SDK configuration, not a secret. Embedded wallets, creation on sign-up and transaction confirmations are enabled. Delegated access, developer recovery shares and private-key exports are disabled. The app restricts wallet transactions to chain 10143. Production CORS origin: `https://monad.yieldshield.ai`; local verification origin: `http://localhost:5174`. The original YieldShield Dynamic project was not modified. No server API token is needed by this integration.
 
-Public source publication still needs a later explicit owner instruction. The final submission form opens 22 September; public video and final rule checks remain outstanding.
+Public source publication still needs a later explicit owner instruction. The final submission form opens 22 September. The public 2:34 overview is available at `/evidence`; Dynamic browser signing and final rule checks remain outstanding.
 
 ## Resume the deployment
 
@@ -70,7 +70,9 @@ No Pyth key is required by the active reference factory. Verify `/api/status`, p
 
 ## Demo preparation and refill
 
-Use the official Monad faucet for gas and the app's Test assets faucet for TestUSDC/sMON-demo. The app faucet has a 24-hour account cooldown. Its initial inventory is 5 million TestUSDC and 500,000 sMON-demo; exchange inventory is separately funded. Read actual balances before recording. Existing treasury inventory can refill test token contracts through normal transfers; do not bypass faucet limits or mislabel external assets.
+Start at `/faucet`: the official Monad faucet provides gas, then the app faucet supplies TestUSDC/sMON-demo. The legacy `/tokens` route redirects while preserving query strings and section links. Connected wallets with a verified zero MON balance see the official gas faucet before transaction actions; zero input-token balances link to the relevant claim, wrap, stake or vault section. Unknown or failed balance reads are not treated as zero. Native balances refresh on return to the tab, after transactions and every 12 seconds; the Faucet also offers a manual refresh.
+
+The app faucet has a 24-hour account cooldown. Its initial inventory is 5 million TestUSDC and 500,000 sMON-demo; exchange inventory is separately funded. Read actual balances before recording. Existing treasury inventory can refill test token contracts through normal transfers; do not bypass faucet limits or mislabel external assets.
 
 Prepare at least two senior receipts and a junior receipt in advance so the demo can show a matured exit without implying a waiting period was skipped. Record visible network, pool, token symbols and explorer links. Keep the video under three minutes and publish it where signed-out judges can view it.
 
