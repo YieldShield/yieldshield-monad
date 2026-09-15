@@ -966,106 +966,108 @@ function Trade() {
   );
   return (
     <Shell>
-      <PageTitle title="Demo trade" copy="Buy or sell synthetic test tokens." />
-      {!data ? (
-        <Loading error={error} />
-      ) : !m ? (
-        <div className="empty-state">
-          <h2>Demo pool unavailable</h2>
-          <Link to="/faucet">Get test tokens ↗</Link>
-        </div>
-      ) : (
-        <div className="task-page">
-          <section className="action-panel">
-            <div className="segmented">
-              <button className={side === "buy" ? "selected" : ""} onClick={() => setSide("buy")}>
-                Buy
-              </button>
-              <button className={side === "sell" ? "selected" : ""} onClick={() => setSide("sell")}>
-                Sell
-              </button>
-            </div>
-            <MarketSelect
-              data={{ ...data, markets: data.markets.filter((m) => m.environment === "scenario") }}
-              id={id}
-              setId={setId}
-            />
-            <label className="field">
-              {m.symbol} amount
-              <div className="amount-field">
-                <input
-                  aria-label="Trade amount"
-                  value={input}
-                  inputMode="decimal"
-                  onChange={(e) => setInput(e.target.value)}
-                />
-                <b>{m.symbol}</b>
+      <div className="task-page">
+        <PageTitle title="Demo trade" copy="Buy or sell synthetic test tokens." />
+        {!data ? (
+          <Loading error={error} />
+        ) : !m ? (
+          <div className="empty-state">
+            <h2>Demo pool unavailable</h2>
+            <Link to="/faucet">Get test tokens ↗</Link>
+          </div>
+        ) : (
+          <div>
+            <section className="action-panel">
+              <div className="segmented">
+                <button className={side === "buy" ? "selected" : ""} onClick={() => setSide("buy")}>
+                  Buy
+                </button>
+                <button className={side === "sell" ? "selected" : ""} onClick={() => setSide("sell")}>
+                  Sell
+                </button>
               </div>
-              <span className="field-hint">
-                Maximum 25 tokens per trade · Balance: {fmt(fundingAsset?.balance, tradeToken?.decimals, 5)}{" "}
-                {tradeToken?.symbol}
-              </span>
-            </label>
-            <AssetFundingHint asset={fundingAsset} />
-            <dl className="review-list">
-              <div>
-                <dt>{side === "buy" ? "You pay" : "You receive"}</dt>
-                <dd>{fmt(quote?.total, 6, 4)} TestUSDC</dd>
+              <MarketSelect
+                data={{ ...data, markets: data.markets.filter((m) => m.environment === "scenario") }}
+                id={id}
+                setId={setId}
+              />
+              <label className="field">
+                {m.symbol} amount
+                <div className="amount-field">
+                  <input
+                    aria-label={`${m.symbol} amount`}
+                    value={input}
+                    inputMode="decimal"
+                    onChange={(e) => setInput(e.target.value)}
+                  />
+                  <b>{m.symbol}</b>
+                </div>
+                <span className="field-hint">
+                  Maximum 25 tokens per trade · Balance: {fmt(fundingAsset?.balance, tradeToken?.decimals, 5)}{" "}
+                  {tradeToken?.symbol}
+                </span>
+              </label>
+              <AssetFundingHint asset={fundingAsset} />
+              <dl className="review-list">
+                <div>
+                  <dt>{side === "buy" ? "You pay" : "You receive"}</dt>
+                  <dd>{fmt(quote?.total, 6, 4)} TestUSDC</dd>
+                </div>
+                <div>
+                  <dt>Exchange fee</dt>
+                  <dd>0.30%</dd>
+                </div>
+                <div>
+                  <dt>Price source</dt>
+                  <dd>Synthetic formula</dd>
+                </div>
+                <div>
+                  <dt>Slippage limit</dt>
+                  <dd>0.50%</dd>
+                </div>
+              </dl>
+              {quoteError && <p className="inline-warning">{quoteError.message}</p>}
+              <Submit
+                label={side === "buy" ? "Approve & buy" : "Approve & sell"}
+                asset={fundingAsset}
+                disabled={!quote || !!quoteError}
+                onClick={() =>
+                  w.execute("Prepare scenario trade", async () => {
+                    if (quote.expiresAt < Date.now()) throw new Error("Quote expired. Wait for a fresh quote.");
+                    const usdToken = registry.assets.find((a) => a.id === "test-usd")!;
+                    const total = BigInt(quote.total),
+                      limit = side === "buy" ? (total * 1005n + 999n) / 1000n : minOut(total);
+                    await w.approve(
+                      side === "buy" ? usdToken.address : m.shieldedToken,
+                      contract("ScenarioExchange"),
+                      side === "buy" ? limit : value,
+                    );
+                    await w.send({
+                      address: contract("ScenarioExchange"),
+                      abi: abi("MonadAssetExchange"),
+                      functionName: "swap",
+                      args: [m.shieldedToken, side === "buy", value, limit, BigInt(Math.floor(Date.now() / 1000) + 60)],
+                    });
+                  })
+                }
+              />
+            </section>
+            <p className="compact-risk">
+              Synthetic prices. Test tokens have no monetary value.{" "}
+              <Link to={`/protect?market=${id}`}>Protect tokens ↗</Link>
+            </p>
+            <details className="disclosure">
+              <summary>Other trading venues</summary>
+              <div className="disclosure-body">
+                <p>Kuru is an external Monad venue; it is not connected to this demo exchange.</p>
+                <a href="https://www.kuru.io/" target="_blank" rel="noreferrer">
+                  Visit Kuru ↗
+                </a>
               </div>
-              <div>
-                <dt>Exchange fee</dt>
-                <dd>0.30%</dd>
-              </div>
-              <div>
-                <dt>Price source</dt>
-                <dd>Synthetic formula</dd>
-              </div>
-              <div>
-                <dt>Slippage limit</dt>
-                <dd>0.50%</dd>
-              </div>
-            </dl>
-            {quoteError && <p className="inline-warning">{quoteError.message}</p>}
-            <Submit
-              label={side === "buy" ? "Approve & buy" : "Approve & sell"}
-              asset={fundingAsset}
-              disabled={!quote || !!quoteError}
-              onClick={() =>
-                w.execute("Prepare scenario trade", async () => {
-                  if (quote.expiresAt < Date.now()) throw new Error("Quote expired. Wait for a fresh quote.");
-                  const usdToken = registry.assets.find((a) => a.id === "test-usd")!;
-                  const total = BigInt(quote.total),
-                    limit = side === "buy" ? (total * 1005n + 999n) / 1000n : minOut(total);
-                  await w.approve(
-                    side === "buy" ? usdToken.address : m.shieldedToken,
-                    contract("ScenarioExchange"),
-                    side === "buy" ? limit : value,
-                  );
-                  await w.send({
-                    address: contract("ScenarioExchange"),
-                    abi: abi("MonadAssetExchange"),
-                    functionName: "swap",
-                    args: [m.shieldedToken, side === "buy", value, limit, BigInt(Math.floor(Date.now() / 1000) + 60)],
-                  });
-                })
-              }
-            />
-          </section>
-          <p className="compact-risk">
-            Synthetic prices. Test tokens have no monetary value.{" "}
-            <Link to={`/protect?market=${id}`}>Protect tokens ↗</Link>
-          </p>
-          <details className="disclosure">
-            <summary>Other trading venues</summary>
-            <div className="disclosure-body">
-              <p>Kuru is an external Monad venue; it is not connected to this demo exchange.</p>
-              <a href="https://www.kuru.io/" target="_blank" rel="noreferrer">
-                Visit Kuru ↗
-              </a>
-            </div>
-          </details>
-        </div>
-      )}
+            </details>
+          </div>
+        )}
+      </div>
     </Shell>
   );
 }
@@ -1290,7 +1292,7 @@ function Tokens() {
             Native MON to stake
             <div className="amount-field">
               <input
-                aria-label="MON stake amount"
+                aria-label="Native MON to stake"
                 inputMode="decimal"
                 value={stake}
                 onChange={(e) => setStake(e.target.value)}
@@ -1331,7 +1333,7 @@ function Tokens() {
               Shares to unstake
               <div className="amount-field">
                 <input
-                  aria-label="shMON unstake amount"
+                  aria-label="Shares to unstake"
                   value={unstake}
                   inputMode="decimal"
                   onChange={(e) => setUnstake(e.target.value)}
@@ -1389,7 +1391,7 @@ function Tokens() {
             {vaultMode === "deposit" ? "TestUSDC to deposit" : "Vault shares to redeem"}
             <div className="amount-field">
               <input
-                aria-label="Vault amount"
+                aria-label={vaultMode === "deposit" ? "TestUSDC to deposit" : "Vault shares to redeem"}
                 inputMode="decimal"
                 value={vaultInput}
                 onChange={(e) => setVaultInput(e.target.value)}

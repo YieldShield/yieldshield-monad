@@ -39,3 +39,27 @@ These are product design decisions based on the sources, not claims of measured 
 ## Scope limits
 
 This pass changes presentation and task navigation. The previously recorded intermittent RPC failures, incomplete Dynamic signing walkthrough, untested full shMON unstake queue and absent Kuru orderbook integration remain separately tracked; simpler screens do not establish that those issues are resolved.
+
+## Verification results
+
+15 September 2026, logged-out browser with live testnet API data:
+
+| Main region | Before | After | Reduction |
+| --- | ---: | ---: | ---: |
+| Homepage | 219 words | 61 words | 72% |
+| Protect | 174 words | 73 words | 58% |
+| Faucet, tools collapsed | 292 words | 79 words | 73% |
+
+Counts use `main.innerText.trim().split(/\s+/).length`. Native select option text is included by the browser; closed disclosure bodies are excluded. Dynamic errors and connected-wallet balances can change counts. Protection now defaults to WMON/TestUSDC; the previous default was a scenario pool. These are content measurements, not a usability study.
+
+Verified in the in-app browser:
+
+- Four primary links and six destinations under More. Escape closes More and returns focus to its summary.
+- Pool details toggle with Space and Enter. Financial terms remain outside that disclosure.
+- Default WMON, explicit shMON/scenario selection and shareable market query updates. Switching Protect to Provide resets the role-specific default amount to 1,000 backing tokens.
+- Direct wrapping/vault links, switching between Faucet hashes, and legacy `/tokens#unstake-mon` redirect open the relevant tool. Closing/reopening wrapping retains the entered amount.
+- Home, Protect, Provide, Faucet, Demo trade and Compare pools fit at a 390px frame width without horizontal overflow. Desktop and mobile screenshots reviewed. The local responsive harness was removed before the production build.
+- Independent review confirmed all eight Faucet transaction callbacks and existing funding guards were unchanged. Pending unstake expansion was checked in code; no unstake transaction was submitted in this UI pass.
+- 35 frontend tests pass, including zero/unknown/error balance handling and explicit/default market selection. TypeScript and production Vite build pass. The existing lazily loaded Dynamic wallet bundle still triggers the known size advisory.
+
+Implementation commits: `5b496da` navigation/home, `421235a` action screens, `00a1702` Faucet/funding. Verification refinements align the demo trade heading with its form and make visible input labels match their accessible names.
