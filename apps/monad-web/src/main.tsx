@@ -206,7 +206,7 @@ function Home() {
     <div className="simple-site">
       <Header />
       <ReleaseNotice />
-      <main id="main" className="simple-home">
+      <main id="main" tabIndex={-1} className="simple-home">
         <FundingNotice />
         <Landing data={data} error={error} />
       </main>
@@ -218,7 +218,7 @@ function Shell({ children }: { children: ReactNode }) {
   return (
     <div className="simple-site">
       <Header />
-      <main id="main" className="simple-workspace">
+      <main id="main" tabIndex={-1} className="simple-workspace">
         <ReleaseNotice />
         <FundingNotice />
         {children}
@@ -1618,7 +1618,7 @@ function Lab({ standalone = false }: { standalone?: boolean }) {
   return standalone ? (
     <div className="simple-site">
       <Header />
-      <main className="explain-page" id="main">
+      <main className="explain-page" id="main" tabIndex={-1}>
         {content}
       </main>
       <Footer />
@@ -1983,7 +1983,7 @@ function Legal() {
   return (
     <div className="simple-site">
       <Header />
-      <main className="legal-page" id="main">
+      <main className="legal-page" id="main" tabIndex={-1}>
         <p className="eyebrow">Legal / Privacy / Risk</p>
         <h1>
           Clear terms.
@@ -2085,6 +2085,10 @@ function ScrollToSection() {
   const { pathname, hash } = useLocation();
   useEffect(() => {
     if (hash) document.getElementById(hash.slice(1))?.scrollIntoView({ block: "start" });
+    else {
+      window.scrollTo({ top: 0, behavior: "instant" });
+      document.getElementById("main")?.focus({ preventScroll: true });
+    }
   }, [pathname, hash]);
   return null;
 }

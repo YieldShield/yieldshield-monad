@@ -781,3 +781,7 @@
     margin-top: 0;
   }
 }
+
+main#main:focus {
+  outline: none;
+}
