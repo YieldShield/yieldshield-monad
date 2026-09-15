@@ -598,6 +598,14 @@ function PositionForm({ side }: { side: "senior" | "junior" }) {
     </Shell>
   );
 }
+function PositionStack() {
+  return (
+    <span className="position-stack" aria-hidden="true">
+      <i />
+      <i />
+    </span>
+  );
+}
 function Positions() {
   const w = useWallet();
   const { data: state } = useSnapshot();
@@ -608,17 +616,19 @@ function Positions() {
   );
   return (
     <Shell>
-      <PageTitle title="Positions" />
+      <PageTitle title="Your positions" />
       {!w.account ? (
         <div className="empty-state">
-          <span className="big-glyph">▤</span>
-          <p>Connect your wallet to view positions.</p>
+          <PositionStack />
+          <h2>Your positions, in one place.</h2>
+          <p>Connect to view protected assets and supplied backing.</p>
           <WalletButton />
         </div>
       ) : !data ? (
         <Loading error={error} />
       ) : !data.positions.length ? (
         <div className="empty-state">
+          <PositionStack />
           <h2>No positions yet</h2>
           <Link className="button purple-button" to="/protect">
             Protect tokens ↗
@@ -626,25 +636,37 @@ function Positions() {
         </div>
       ) : (
         <div className="position-list">
-          {data.positions.map((p) => {
-            const m = state?.markets.find((m) => m.id === p.poolId);
-            return (
-              <Link key={p.key} className="position-row" to={`/positions/${encodeURIComponent(p.key)}`}>
-                <TokenIcon asset={p.side === "senior" ? m?.shield : m?.backing} />
-                <div>
-                  <strong>
-                    {p.side === "senior" ? "Protected" : "Liquidity"}{" "}
-                    {p.side === "senior" ? m?.symbol : m?.backingSymbol}
-                  </strong>
-                  <span>
-                    {m?.environment === "scenario" ? "Demo asset" : "Monad asset"} · Receipt #{p.id}
-                  </span>
-                </div>
-                <b>{fmt(p.position.amount, p.side === "senior" ? m?.shield.decimals : m?.backing.decimals, 5)}</b>
-                <Tag tone={p.side}>{p.side === "senior" ? "Protected" : "First loss"}</Tag>
-                <span>↗</span>
-              </Link>
-            );
+          {(["senior", "junior"] as const).map((side) => {
+            const positions = data.positions.filter((p) => p.side === side);
+            return positions.length ? (
+              <section
+                className="position-group"
+                key={side}
+                aria-label={side === "senior" ? "Protected assets" : "Supplied backing"}
+              >
+                <h2>{side === "senior" ? "Protected assets" : "Supplied backing"}</h2>
+                {positions.map((p) => {
+                  const m = state?.markets.find((m) => m.id === p.poolId);
+                  return (
+                    <Link key={p.key} className="position-row" to={`/positions/${encodeURIComponent(p.key)}`}>
+                      <TokenIcon asset={p.side === "senior" ? m?.shield : m?.backing} />
+                      <div>
+                        <strong>
+                          {p.side === "senior" ? "Protected" : "Liquidity"}{" "}
+                          {p.side === "senior" ? m?.symbol : m?.backingSymbol}
+                        </strong>
+                        <span>
+                          {m?.environment === "scenario" ? "Demo asset" : "Monad asset"} · Receipt #{p.id}
+                        </span>
+                      </div>
+                      <b>{fmt(p.position.amount, p.side === "senior" ? m?.shield.decimals : m?.backing.decimals, 5)}</b>
+                      <Tag tone={p.side}>{p.side === "senior" ? "Protected" : "First loss"}</Tag>
+                      <span>↗</span>
+                    </Link>
+                  );
+                })}
+              </section>
+            ) : null;
           })}
         </div>
       )}
@@ -1162,7 +1184,7 @@ function Tokens() {
   const parseAction = (label: string, fn: () => Promise<unknown>) => w.execute(label, fn);
   return (
     <Shell>
-      <PageTitle title="Faucet" copy="Get MON for fees, then claim test tokens." />
+      <PageTitle title="Faucet" />
       <div className="faucet-steps">
         <section
           className={`faucet-step gas-step ${w.account && !native.error && native.data === 0n ? "needs-gas" : ""}`}
@@ -1176,8 +1198,7 @@ function Tokens() {
               </span>
               <TokenIcon asset={{ symbol: "MON" }} />
             </div>
-            <h2 id="gas-title">Get testnet MON</h2>
-            <p>MON pays transaction fees.</p>
+            <h2 id="gas-title">MON for fees.</h2>
             <p role="status">
               {!w.account
                 ? "Connect to check your balance."
@@ -1218,7 +1239,7 @@ function Tokens() {
                 backing={registry.assets.find((a) => a.id === "test-usd")}
               />
             </div>
-            <h2>Claim test tokens</h2>
+            <h2>Tokens to try it.</h2>
             <p>25 sMON-demo + 10,000 TestUSDC. Once every 24 hours, while supplies last.</p>
           </div>
           <div>
@@ -1635,7 +1656,7 @@ function Evidence() {
   return (
     <Shell>
       <PageTitle
-        title="Follow the receipts."
+        title="Build evidence"
         copy="Internal tests on Monad testnet: deployed pools, real transactions and received-token checks."
       />
       <div className="notice">
@@ -1881,14 +1902,11 @@ function CreatePool() {
   const insufficientBond = fundingAsset?.balance != null && fundingAsset.balance < bond;
   return (
     <Shell>
-      <PageTitle
-        title="Create a protection market."
-        copy="Use the verified scenario assets and fixed demonstration settings."
-      />
+      <PageTitle title="Create a pool" copy="Use the verified scenario assets and fixed demonstration settings." />
       {!data ? (
         <Loading error={error} />
       ) : (
-        <div className="form-layout">
+        <div className="task-layout">
           <section className="action-panel">
             <h2>New scenario pool</h2>
             <label className="field">
@@ -1958,12 +1976,7 @@ function CreatePool() {
               </p>
             )}
           </section>
-          <aside className="explanation-panel">
-            <h2>
-              A pool starts
-              <br />
-              with responsibility.
-            </h2>
+          <TaskAside title="Fund the pool." asset={token} backing={usdAsset}>
             <p>
               The creation bond is locked by the factory. Recovery depends on its closure rules; creating a pool is not
               a way to withdraw the bond immediately.
@@ -1973,7 +1986,7 @@ function CreatePool() {
               part of the on-chain record.
             </p>
             <Link to="/markets">View markets ↗</Link>
-          </aside>
+          </TaskAside>
         </div>
       )}
     </Shell>
@@ -1984,12 +1997,7 @@ function Legal() {
     <div className="simple-site">
       <Header />
       <main className="legal-page" id="main" tabIndex={-1}>
-        <p className="eyebrow">Legal / Privacy / Risk</p>
-        <h1>
-          Clear terms.
-          <br />
-          Open development.
-        </h1>
+        <h1>Legal & privacy</h1>
         <h2>Operator</h2>
         <p>
           Hawig Ventures UG (haftungsbeschränkt)

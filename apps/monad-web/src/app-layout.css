@@ -785,3 +785,217 @@
 main#main:focus {
   outline: none;
 }
+/* Supporting screens use the same surfaces and type scale as the task forms. */
+.position-stack {
+  position: relative;
+  display: block;
+  width: 118px;
+  height: 100px;
+  margin: 0 auto 8px;
+}
+.position-stack i {
+  display: block;
+  position: absolute;
+  width: 82px;
+  height: 64px;
+  top: 5px;
+  left: 4px;
+  border: 1px solid #b2a0d0;
+  border-radius: 14px;
+  background: var(--soft);
+  transform: rotate(-12deg);
+}
+.position-stack i + i {
+  top: 28px;
+  left: 30px;
+  transform: rotate(8deg);
+  background: var(--card);
+}
+.position-group {
+  display: grid;
+  gap: 12px;
+}
+.position-group + .position-group {
+  margin-top: 16px;
+}
+.position-group h2 {
+  font-size: 20px;
+  margin: 4px 0;
+}
+.simple-site .empty-state {
+  border-radius: 18px;
+  min-height: 380px;
+  padding: 40px;
+  gap: 16px;
+}
+.simple-site .empty-state p {
+  font-size: 14px;
+  max-width: 36ch;
+}
+.simple-site .empty-state .button.dark {
+  background: var(--purple);
+  border-radius: 10px;
+}
+.simple-site .position-row {
+  border-radius: 14px;
+  padding: 22px 24px;
+}
+.simple-site .position-row:hover {
+  color: var(--ink);
+  border-color: var(--accent);
+  background: #fdfcff;
+}
+.simple-site .summary-grid,
+.simple-site .exit-card {
+  border-radius: var(--radius);
+}
+.simple-site .exit-card {
+  padding: 28px;
+}
+.simple-site .exit-card p {
+  font-size: 14px;
+  max-width: none;
+}
+.simple-site .exit-card h2 {
+  font-size: 27px;
+}
+.simple-site .market-card {
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+}
+.simple-site .market-card > p {
+  font-size: 14px;
+}
+.simple-site .card-actions {
+  margin-top: auto;
+  padding-top: 20px;
+}
+.simple-site .card-actions .button {
+  min-height: 44px;
+}
+.simple-site .faucet-step {
+  border-radius: var(--radius);
+  padding: 28px;
+}
+.simple-site .faucet-step h2 {
+  font-size: 26px;
+  margin: 0 0 12px;
+}
+.simple-site .faucet-step p {
+  margin: 8px 0;
+}
+.simple-site .faucet-step .step-number {
+  border: 0;
+  width: auto;
+  height: auto;
+  padding: 0;
+  color: var(--muted);
+  font-family: var(--font-heading);
+}
+.simple-site .status-panel {
+  padding: 28px;
+  border-radius: var(--radius);
+}
+.simple-site .status-panel > p {
+  margin: 12px 0 22px;
+  max-width: 80ch;
+}
+.simple-site .status-panel > h2 {
+  font-size: 24px;
+}
+.simple-site .status-row {
+  gap: 16px;
+}
+.simple-site .status-row > div:first-of-type {
+  min-width: 0;
+}
+.simple-site .status-row strong {
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.simple-site .status-row span:not(.tag):not(.token-icon),
+.simple-site .contract-row code {
+  color: var(--muted);
+}
+.simple-site .status-row a,
+.simple-site .contract-row a {
+  padding: 10px 0;
+  min-height: 44px;
+  font-size: 13px;
+  color: var(--accent);
+}
+.simple-site .status-panel details > summary {
+  min-height: 44px;
+  padding: 12px 0;
+  cursor: pointer;
+  font-weight: 500;
+}
+.simple-site .action-tags {
+  flex-wrap: wrap;
+}
+.simple-site .legal-page {
+  max-width: 740px;
+  padding: 48px 0 56px;
+}
+.simple-site .legal-page h1 {
+  font-size: 38px;
+  margin: 0 0 36px;
+}
+.simple-site .legal-page p {
+  font-size: 15px;
+  line-height: 1.75;
+}
+.simple-site .explain-page {
+  padding-top: 48px;
+}
+.simple-site .scenario-controls,
+.simple-site .scenario-result,
+.simple-site .lab-next {
+  border-radius: var(--radius);
+}
+.simple-site .scenario-controls > p,
+.simple-site .scenario-result > p,
+.simple-site .lab-next p {
+  font-size: 14px;
+}
+.simple-site .back-link,
+.simple-site .receipt-links {
+  color: var(--accent);
+}
+.simple-site .receipt-links {
+  flex-wrap: wrap;
+}
+.simple-site .positive {
+  color: #257651;
+}
+.simple-site .negative {
+  color: #a64831;
+}
+.simple-site .field > input,
+.simple-site .field > select,
+.simple-site .amount-field {
+  border-color: #958b9f;
+}
+@media (max-width: 620px) {
+  .simple-site .empty-state {
+    padding: 28px 20px;
+  }
+  .simple-site .status-panel,
+  .simple-site .faucet-step,
+  .simple-site .exit-card {
+    padding: 22px;
+  }
+  .simple-site .status-row {
+    align-items: flex-start;
+  }
+  .simple-site .status-row > div:first-of-type {
+    flex-basis: 65%;
+  }
+  .simple-site .contract-row {
+    flex-wrap: wrap;
+  }
+  .simple-site .legal-page h1 {
+    font-size: 33px;
+  }
+}

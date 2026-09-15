@@ -197,7 +197,7 @@
   font-size: 18px;
 }
 .market-choice-state small {
-  font-size: 10px;
+  font-size: 12px;
   color: #82510e;
 }
 @media (max-width: 620px) {
@@ -215,7 +215,7 @@
     font-size: 14px;
   }
   .market-choice-label small {
-    font-size: 11px;
+    font-size: 12px;
   }
   .market-picker-content {
     padding: 20px 16px;

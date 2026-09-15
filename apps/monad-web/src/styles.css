@@ -180,7 +180,7 @@ small {
   font-size: 12px;
   line-height: 1.5;
   font-weight: 650;
-  color: #83748f;
+  color: var(--muted);
 }
 .brand {
   display: flex;
@@ -213,7 +213,7 @@ small {
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.08em;
-  color: #857c92;
+  color: var(--muted);
   margin-top: 2px;
 }
 .wallet-connected {
@@ -317,7 +317,7 @@ small {
   flex-direction: column;
   gap: 17px;
   font-size: 12px;
-  color: #8b8492;
+  color: var(--muted);
 }
 .sidebar-bottom > a:first-child {
   color: #725ab7;
@@ -367,7 +367,7 @@ small {
   padding: 9px 15px;
   font-size: 12px;
   border-radius: 5px;
-  color: #8c8298;
+  color: var(--muted);
   white-space: normal;
 }
 .segmented .selected {
@@ -381,7 +381,7 @@ small {
   border: 1px solid #e9e4f2;
   background: #f4f1fa;
   border-radius: 9px;
-  color: #8b7c9c;
+  color: var(--muted);
   font-size: 12px;
   line-height: 1.8;
   margin: 18px 0;
@@ -434,11 +434,11 @@ small {
 .token-icon.lab {
   background: #eeeafb;
   border: 1px dashed #bbaae4;
-  color: #8c70bd;
+  color: var(--muted);
 }
 .token-icon.staking {
   background: #fcf1cf;
-  color: #a3810b;
+  color: var(--muted);
   font-family: Georgia, serif;
   font-style: italic;
   font-size: 30px;
@@ -448,7 +448,7 @@ small {
   align-items: center;
   border-radius: 100px;
   background: #f3f1f7;
-  color: #8c819c;
+  color: var(--muted);
   padding: 5px 9px;
   font-size: 12px;
   white-space: nowrap;
@@ -476,7 +476,7 @@ small {
 .market-card h3 span {
   font-size: 12px;
   font-weight: 450;
-  color: #9e94a9;
+  color: var(--muted);
   letter-spacing: 0;
 }
 .market-card > p {
@@ -510,7 +510,7 @@ small {
   font-size: 12px;
 }
 .mini-metrics span {
-  color: #998da6;
+  color: var(--muted);
 }
 .mini-metrics strong {
   font-weight: 500;
@@ -575,7 +575,7 @@ small {
 }
 .big-glyph {
   font-size: 46px;
-  color: #c5b8e7;
+  color: var(--muted);
 }
 .form-layout {
   display: grid;
@@ -665,12 +665,12 @@ small {
 .amount-field b {
   font-size: 12px;
   font-weight: 500;
-  color: #8a7b98;
+  color: var(--muted);
   white-space: nowrap;
 }
 .field-hint {
   font-size: 12px;
-  color: #a498af;
+  color: var(--muted);
   font-weight: 400;
 }
 .review-list {
@@ -688,7 +688,7 @@ small {
   gap: 20px;
 }
 .review-list dt {
-  color: #94879f;
+  color: var(--muted);
   font-size: 12px;
 }
 .review-list dd {
@@ -700,16 +700,16 @@ small {
   line-height: 1.5;
 }
 .consent-note {
-  font-size: 9px !important;
+  font-size: 12px !important;
   text-align: center;
-  color: #a79bad !important;
+  color: var(--muted) !important;
   margin: 15px 0 0 !important;
   line-height: 1.75;
 }
 .inline-warning {
-  font-size: 10px !important;
+  font-size: 12px !important;
   line-height: 1.7;
-  color: #997027 !important;
+  color: var(--muted) !important;
   background: #fff5e6;
   border-radius: 6px;
   padding: 10px 12px;
@@ -747,7 +747,7 @@ small {
   border: 1px solid #d4c8e2;
   border-radius: 50%;
   padding: 13px;
-  color: #9d89b2;
+  color: var(--muted);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -780,7 +780,7 @@ small {
 }
 .position-row span:not(.token-icon):not(.tag) {
   font-size: 12px;
-  color: #9a8caa;
+  color: var(--muted);
 }
 .position-row > b {
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
@@ -808,7 +808,7 @@ small {
 }
 .summary-grid span {
   font-size: 12px;
-  color: #9b8caa;
+  color: var(--muted);
 }
 .summary-grid strong {
   font-size: 29px;
@@ -861,13 +861,13 @@ small {
   display: flex;
   gap: 22px;
   font-size: 12px;
-  color: #9f8bae;
+  color: var(--muted);
   margin-top: 27px;
 }
 .back-link {
   display: inline-block;
   font-size: 12px;
-  color: #9a85ae;
+  color: var(--muted);
   margin-bottom: 27px;
 }
 .reward-button {
@@ -897,7 +897,7 @@ small {
 .faucet-banner a {
   display: block;
   font-size: 12px;
-  color: #9678b9;
+  color: var(--muted);
   text-align: center;
   margin-top: 14px;
 }
@@ -993,10 +993,10 @@ small {
   letter-spacing: -0.05em;
 }
 .positive {
-  color: #2e906b;
+  color: var(--muted);
 }
 .negative {
-  color: #b57348;
+  color: var(--muted);
 }
 input[type="range"] {
   accent-color: var(--purple);
@@ -1008,7 +1008,7 @@ input[type="range"] {
   display: flex;
   justify-content: space-between;
   font-size: 12px;
-  color: #a390b2;
+  color: var(--muted);
   margin: 13px 0 38px;
 }
 .scenario-controls > p {
@@ -1031,7 +1031,7 @@ input[type="range"] {
   font-size: 12px;
 }
 .scenario-ledger span {
-  color: #9a87aa;
+  color: var(--muted);
 }
 .scenario-ledger b {
   font-weight: 500;
@@ -1053,7 +1053,7 @@ input[type="range"] {
 }
 .result-comparison span {
   font-size: 12px;
-  color: #9781a9;
+  color: var(--muted);
 }
 .result-comparison strong {
   font-size: 31px;
@@ -1088,12 +1088,12 @@ input[type="range"] {
 }
 .junior-outcome span {
   font-size: 12px;
-  color: #887396;
+  color: var(--muted);
 }
 .junior-outcome strong {
   font-size: 26px;
   font-weight: 500;
-  color: #468593;
+  color: var(--muted);
   letter-spacing: -0.05em;
 }
 .scenario-result > small {
@@ -1134,7 +1134,7 @@ input[type="range"] {
 .lab-next li > span {
   display: block;
   font-size: 12px;
-  color: #a28ab2;
+  color: var(--muted);
   margin-top: 7px;
 }
 .explain-page {
@@ -1172,7 +1172,7 @@ input[type="range"] {
 }
 .status-row span:not(.tag):not(.token-icon) {
   font-size: 12px;
-  color: #a289b3;
+  color: var(--muted);
   line-height: 1.6;
 }
 .status-row b {
@@ -1197,7 +1197,7 @@ input[type="range"] {
 .contract-row code {
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   font-size: 12px;
-  color: #a28bb2;
+  color: var(--muted);
 }
 .legal-page {
   max-width: 730px;
@@ -1249,7 +1249,7 @@ input[type="range"] {
 .modal > a {
   display: block;
   font-size: 12px;
-  color: #8f6cb9;
+  color: var(--muted);
   margin-top: 25px;
 }
 .close {
@@ -1257,7 +1257,7 @@ input[type="range"] {
   top: 10px;
   right: 12px;
   font-size: 22px;
-  color: #aa9bb3;
+  color: var(--muted);
   padding: 4px 8px;
   line-height: 1;
 }
@@ -1296,7 +1296,7 @@ input[type="range"] {
 }
 .tx-toast a {
   font-size: 12px;
-  color: #9473b9;
+  color: var(--muted);
 }
 .tx-toast.error {
   border-color: #edc895;
