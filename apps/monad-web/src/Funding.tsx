@@ -45,7 +45,8 @@ export function FundingNotice() {
     [usd, scenario, wrapped, staked, vault].map((balance) => (balance.error ? undefined : balance.data)),
   );
   const needsFunding =
-    ["/protect", "/provide", "/positions", "/trade"].includes(pathname) || pathname.startsWith("/positions/");
+    ["/protect", "/provide", "/positions", "/trade", "/create-pool"].includes(pathname) ||
+    pathname.startsWith("/positions/");
   if (!needsFunding || !step) return null;
   return (
     <section className="notice funding-notice" aria-label="Get started with test tokens" role="status">

@@ -84,12 +84,25 @@ describe("faucet onboarding before a transaction", () => {
     expect(renderFunding()).toContain("<button>Transaction in progress</button>");
   });
 
-  it.each(["/protect", "/provide", "/positions", "/positions/receipt-1", "/trade"])(
+  it.each(["/protect", "/provide", "/positions", "/positions/receipt-1", "/trade", "/create-pool"])(
     "shows the funding notice on %s",
     (pathname) => {
       expect(renderFunding("TestUSDC", pathname)).toContain("funding-notice");
     },
   );
+
+  it("puts native gas before the creator bond on pool creation", () => {
+    Object.assign(balances, { account: "0x123", native: 0n, token: 0n });
+    const html = renderFunding("TestUSDC", "/create-pool");
+    expect(html).toContain("Get testnet MON to pay fees.");
+    expect(html).toContain('href="https://faucet.monad.xyz"');
+    expect(html).not.toContain("Claim TestUSDC");
+  });
+
+  it("points a funded creator with no bond tokens to test tokens", () => {
+    Object.assign(balances, { account: "0x123", native: 100n, token: 0n });
+    expect(renderFunding("TestUSDC", "/create-pool")).toContain('href="/faucet#test-tokens"');
+  });
 
   it.each(["/", "/markets", "/status", "/evidence", "/lab", "/how-it-works", "/faucet", "/legal"])(
     "keeps the funding notice off %s",
