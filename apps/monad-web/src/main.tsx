@@ -1837,6 +1837,12 @@ function CreatePool() {
   const [created, setCreated] = useState(false);
   const token = data?.assets.find((a) => a.id === "scenario-mon");
   const usdAsset = data?.assets.find((a) => a.id === backing);
+  const bondBalance = useBalance(usdAsset?.address);
+  const bond = usdAsset ? 1000n * 10n ** BigInt(usdAsset.decimals) : 0n;
+  const fundingAsset = usdAsset
+    ? { symbol: usdAsset.symbol, balance: bondBalance.error ? undefined : bondBalance.data }
+    : undefined;
+  const insufficientBond = fundingAsset?.balance != null && fundingAsset.balance < bond;
   return (
     <Shell>
       <PageTitle
@@ -1874,12 +1880,21 @@ function CreatePool() {
                 <dd>1,000 {usdAsset?.symbol}</dd>
               </div>
             </dl>
+            <p className="field-hint">
+              Balance: {fmt(fundingAsset?.balance, usdAsset?.decimals)} {usdAsset?.symbol}
+            </p>
+            <AssetFundingHint asset={fundingAsset} />
+            {insufficientBond && (
+              <p className="inline-warning" role="status">
+                The creation bond needs 1,000 {usdAsset?.symbol}.
+              </p>
+            )}
             <Submit
               label="Approve bond & create pool"
-              disabled={!token || !usdAsset || !contract("Factory")}
+              asset={fundingAsset}
+              disabled={!token || !usdAsset || !contract("Factory") || insufficientBond}
               onClick={() =>
                 w.execute("Create scenario pool", async () => {
-                  const bond = 1000n * 10n ** 6n;
                   await w.approve(usdAsset!.address, contract("Factory"), bond);
                   await w.send({
                     address: contract("Factory"),
