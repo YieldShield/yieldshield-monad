@@ -1079,6 +1079,39 @@ const nativeAbi = parseAbi([
   "function previewRedeem(uint256) view returns(uint256)",
   "function totalAssets() view returns(uint256)",
 ]);
+function Disclosure({
+  id,
+  title,
+  children,
+  anchors = [],
+  forceOpen = false,
+}: {
+  id: string;
+  title: string;
+  children: ReactNode;
+  anchors?: string[];
+  forceOpen?: boolean;
+}) {
+  const { hash } = useLocation();
+  const requested = hash === `#${id}` || anchors.some((anchor) => hash === `#${anchor}`);
+  const [open, setOpen] = useState(requested || forceOpen);
+  useEffect(() => {
+    if (requested || forceOpen) setOpen(true);
+  }, [hash, requested, forceOpen]);
+  useEffect(() => {
+    if (!open || !requested) return;
+    const frame = requestAnimationFrame(() =>
+      document.getElementById(hash.slice(1))?.scrollIntoView({ block: "start" }),
+    );
+    return () => cancelAnimationFrame(frame);
+  }, [open, requested, hash]);
+  return (
+    <details id={id} className="disclosure" open={open} onToggle={(event) => setOpen(event.currentTarget.open)}>
+      <summary>{title}</summary>
+      <div className="disclosure-body">{children}</div>
+    </details>
+  );
+}
 function Tokens() {
   const w = useWallet();
   const native = useNativeBalance();
@@ -1096,7 +1129,6 @@ function Tokens() {
     vb = useBalance(vault),
     ub = useBalance(usdToken);
   const [vaultMode, setVaultMode] = useState<"deposit" | "redeem">("deposit");
-  const { data: state } = useSnapshot();
   const { data: faucetStatus } = useSWR(
     w.account && faucet ? `faucet:${w.account}` : null,
     () =>
@@ -1124,92 +1156,88 @@ function Tokens() {
   const parseAction = (label: string, fn: () => Promise<unknown>) => w.execute(label, fn);
   return (
     <Shell>
-      <PageTitle
-        title="Your first stop: the Faucet."
-        copy="Get testnet MON for fees first, then claim free tokens or prepare the asset you want to use."
-      />
-      <div className="notice">
-        Every transaction here uses Monad testnet. TestUSDC and sMON-demo have no monetary value and are not issued by
-        Circle or Kintsu.
-      </div>
-      <section
-        className={`faucet-banner gas-step ${w.account && !native.error && native.data === 0n ? "needs-gas" : ""}`}
-        id="monad-gas"
-        aria-labelledby="gas-title"
-      >
-        <div>
-          <span className="eyebrow">Step 1 / Transaction fees</span>
-          <h2 id="gas-title">Get Monad testnet MON</h2>
-          <p>
-            Every claim, trade and deposit needs MON for fees. The official Monad faucet provides testnet MON; return
-            here afterward for your test tokens.
-          </p>
-          <p role="status">
-            {!w.account
-              ? "Connect your wallet to check its MON balance."
-              : native.error
-                ? "We couldn't read your MON balance. Try checking again."
-                : native.data === undefined
-                  ? "Checking your Monad testnet MON balance…"
-                  : native.data === 0n
-                    ? "This wallet has no testnet MON. Visit the Monad faucet before continuing."
-                    : `Your balance: ${fmt(native.data, 18, 6)} MON. Keep some MON available for transaction fees.`}
-          </p>
-        </div>
-        <div>
-          <a className="button purple-button full" href={monadFaucet} target="_blank" rel="noreferrer">
-            Open Monad faucet ↗
-          </a>
-          {w.account ? (
-            <button
-              className="button outline full"
-              disabled={native.isValidating}
-              onClick={() => void native.mutate().catch(() => undefined)}
-            >
-              {native.isValidating ? "Checking balance…" : "Check MON balance again"}
-            </button>
-          ) : (
-            <WalletButton />
-          )}
-        </div>
-      </section>
-      <section className="faucet-banner" id="test-tokens">
-        <div>
-          <span className="eyebrow">Step 2 / Free test tokens</span>
-          <h2>25 sMON-demo + 10,000 TestUSDC</h2>
-          <p>One free claim per wallet every 24 hours, while the faucet has inventory.</p>
-        </div>
-        <div>
-          <Submit
-            label="Claim free test assets"
-            disabled={!faucetStatus?.[0]}
-            onClick={() =>
-              parseAction("Claim scenario assets", async () => {
-                await w.send({
-                  address: faucet,
-                  abi: abi("ConfigurableTokenFaucet"),
-                  functionName: "dripAll",
-                  args: [w.account!],
-                });
-              })
-            }
-          />
-          {w.account && faucetStatus && !faucetStatus[0] && (
-            <p className="field-hint">
-              {faucetStatus[1] > 0n
-                ? `Next claim: ${new Date(Number(faucetStatus[1]) * 1000).toLocaleString()}`
-                : "The test-token faucet is being funded or is temporarily unavailable."}
+      <PageTitle title="Faucet" copy="Get MON for fees, then claim test tokens." />
+      <div className="faucet-steps">
+        <section
+          className={`faucet-step gas-step ${w.account && !native.error && native.data === 0n ? "needs-gas" : ""}`}
+          id="monad-gas"
+          aria-labelledby="gas-title"
+        >
+          <div>
+            <span className="step-number" aria-hidden="true">
+              1
+            </span>
+            <h2 id="gas-title">Get testnet MON</h2>
+            <p>MON pays transaction fees.</p>
+            <p role="status">
+              {!w.account
+                ? "Connect to check your balance."
+                : native.error
+                  ? "MON balance unavailable. Retry below."
+                  : native.data === undefined
+                    ? "Checking MON balance…"
+                    : native.data === 0n
+                      ? "No MON. Use the faucet before continuing."
+                      : `Balance: ${fmt(native.data, 18, 6)} MON. Keep some for fees.`}
             </p>
-          )}
-        </div>
-      </section>
-      <div className="token-tools">
-        <section className="action-panel" id="wrap-mon">
-          <div className="panel-heading">
-            <TokenIcon />
-            <h2>Wrap MON</h2>
           </div>
-          <p>Convert native testnet MON into YieldShield WMON, 1:1. This is our explicitly deployed wrapper.</p>
+          <div>
+            <a className="button purple-button full" href={monadFaucet} target="_blank" rel="noreferrer">
+              Open Monad faucet ↗
+            </a>
+            {w.account ? (
+              <button
+                className="button outline full"
+                disabled={native.isValidating}
+                onClick={() => void native.mutate().catch(() => undefined)}
+              >
+                {native.isValidating ? "Checking balance…" : "Refresh balance"}
+              </button>
+            ) : (
+              <WalletButton />
+            )}
+          </div>
+        </section>
+        <section className="faucet-step" id="test-tokens">
+          <div>
+            <span className="step-number" aria-hidden="true">
+              2
+            </span>
+            <h2>Claim test tokens</h2>
+            <p>25 sMON-demo + 10,000 TestUSDC. Once every 24 hours, while supplies last.</p>
+          </div>
+          <div>
+            <Submit
+              label="Claim test tokens"
+              disabled={!faucetStatus?.[0]}
+              onClick={() =>
+                parseAction("Claim scenario assets", async () => {
+                  await w.send({
+                    address: faucet,
+                    abi: abi("ConfigurableTokenFaucet"),
+                    functionName: "dripAll",
+                    args: [w.account!],
+                  });
+                })
+              }
+            />
+            {w.account && faucetStatus && !faucetStatus[0] && (
+              <p className="field-hint">
+                {faucetStatus[1] > 0n
+                  ? `Next claim: ${new Date(Number(faucetStatus[1]) * 1000).toLocaleString()}`
+                  : "Faucet temporarily unavailable."}
+              </p>
+            )}
+          </div>
+        </section>
+      </div>
+      <p className="compact-risk">
+        TestUSDC and sMON-demo have no monetary value. They are not issued by Circle or Kintsu.
+      </p>
+      <div className="asset-tools">
+        <h2>Prepare other assets</h2>
+        <Disclosure id="wrap-mon" title="Wrap or unwrap MON">
+          <p>Wrap MON 1:1 using YieldShield’s testnet wrapper.</p>
           <label className="field">
             Amount
             <div className="amount-field">
@@ -1250,16 +1278,14 @@ function Tokens() {
           >
             Unwrap WMON
           </button>
-        </section>
-        <section className="action-panel" id="stake-mon">
-          <div className="panel-heading">
-            <TokenIcon symbol="shMON" />
-            <h2>Stake MON</h2>
-          </div>
-          <p>
-            Receive shMON from the external shMonad protocol. The exchange rate reflects staking NAV, not a guaranteed
-            sell price.
-          </p>
+        </Disclosure>
+        <Disclosure
+          id="stake-mon"
+          title="Stake or unstake MON"
+          anchors={["unstake-mon"]}
+          forceOpen={Boolean(request && request[0] > 0n)}
+        >
+          <p>Receive shMON through shMonad. Its withdrawal value is not a spot sell quote.</p>
           <label className="field">
             Native MON to stake
             <div className="amount-field">
@@ -1296,17 +1322,61 @@ function Tokens() {
             }
           />
           <a className="text-link" href="https://docs.shmonad.xyz/exchange-rate/" target="_blank" rel="noreferrer">
-            Understand the staking rate ↗
+            shMonad exchange rate ↗
           </a>
-        </section>
-        <section className="action-panel" id="test-vault">
-          <div className="panel-heading">
-            <TokenIcon symbol="vTestUSDC" />
-            <h2>Test USD vault</h2>
-          </div>
-          <p>
-            Vault shares are backed by actual TestUSDC balances. Any demonstrated yield comes from funded donations.
-          </p>
+          <section id="unstake-mon">
+            <h3>Unstake shMON</h3>
+            <p>Unstaking is delayed until shMonad’s completion epoch.</p>
+            <label className="field">
+              Shares to unstake
+              <div className="amount-field">
+                <input
+                  aria-label="shMON unstake amount"
+                  value={unstake}
+                  inputMode="decimal"
+                  onChange={(e) => setUnstake(e.target.value)}
+                />
+                <b>shMON</b>
+              </div>
+            </label>
+            <Submit
+              label="Request unstaking"
+              asset={{ symbol: "shMON", balance: sb.error ? undefined : sb.data }}
+              disabled={Boolean(request && request[0] > 0n)}
+              onClick={() =>
+                parseAction("Request shMonad unstake", async () => {
+                  await w.send({
+                    address: shmon,
+                    abi: nativeAbi,
+                    functionName: "requestUnstake",
+                    args: [amount(unstake, 18)],
+                  });
+                })
+              }
+            />
+            {request && request[0] > 0n && (
+              <>
+                <p className="notice">
+                  Pending: {fmt(request[0], 18, 6)} MON · Completion epoch {String(request[1])}. shMonad checks
+                  readiness on completion.
+                </p>
+                <button
+                  className="button outline full"
+                  disabled={w.busy}
+                  onClick={() =>
+                    parseAction("Complete shMonad unstake", async () => {
+                      await w.send({ address: shmon, abi: nativeAbi, functionName: "completeUnstake" });
+                    })
+                  }
+                >
+                  Complete unstaking
+                </button>
+              </>
+            )}
+          </section>
+        </Disclosure>
+        <Disclosure id="test-vault" title="Deposit or redeem vault shares">
+          <p>Deposit TestUSDC for vault shares, or redeem shares. Demo yield comes from funded donations.</p>
           <div className="segmented">
             <button className={vaultMode === "deposit" ? "selected" : ""} onClick={() => setVaultMode("deposit")}>
               Deposit
@@ -1335,7 +1405,7 @@ function Tokens() {
             <AssetFundingHint asset={{ symbol: "TestUSDC", balance: ub.error ? undefined : ub.data }} />
           )}
           <Submit
-            label={vaultMode === "deposit" ? "Approve & deposit into vault" : "Redeem vault shares"}
+            label={vaultMode === "deposit" ? "Approve & deposit" : "Redeem shares"}
             asset={
               vaultMode === "deposit" ? { symbol: "TestUSDC", balance: ub.error ? undefined : ub.data } : undefined
             }
@@ -1359,82 +1429,32 @@ function Tokens() {
               })
             }
           />
-        </section>
-        <section className="action-panel">
-          <div className="panel-heading">
-            <TokenIcon symbol="shMON" />
-            <h2>Unstake shMON</h2>
-          </div>
-          <p>Native unstaking is a separate, delayed protocol flow. Its completion epoch is determined by shMonad.</p>
-          <label className="field">
-            Shares to unstake
-            <div className="amount-field">
-              <input
-                aria-label="shMON unstake amount"
-                value={unstake}
-                inputMode="decimal"
-                onChange={(e) => setUnstake(e.target.value)}
-              />
-              <b>shMON</b>
-            </div>
-          </label>
-          <Submit
-            label="Request native unstaking"
-            asset={{ symbol: "shMON", balance: sb.error ? undefined : sb.data }}
-            disabled={Boolean(request && request[0] > 0n)}
+        </Disclosure>
+        <Disclosure id="demo-yield" title="Fund demo yield">
+          <p>
+            Donate TestUSDC without receiving shares: 0.1% of vault assets per contribution, capped at 2% total
+            share-rate growth. This demonstrates funded yield, not lending returns.
+          </p>
+          <button
+            className="button outline"
+            disabled={!w.account || w.busy}
             onClick={() =>
-              parseAction("Request shMonad unstake", async () => {
-                await w.send({
-                  address: shmon,
+              parseAction("Fund test vault yield", async () => {
+                const total = await client.readContract({
+                  address: vault,
                   abi: nativeAbi,
-                  functionName: "requestUnstake",
-                  args: [amount(unstake, 18)],
+                  functionName: "totalAssets",
                 });
+                const n = total / 1000n;
+                await w.approve(usdToken, vault, n);
+                await w.send({ address: vault, abi: abi("MonadYieldVault"), functionName: "fundTestYield", args: [n] });
               })
             }
-          />
-          {request && request[0] > 0n && (
-            <>
-              <p className="notice">
-                Pending: {fmt(request[0], 18, 6)} MON · Completion epoch {String(request[1])}. The protocol validates
-                readiness when you complete.
-              </p>
-              <button
-                className="button outline full"
-                disabled={w.busy}
-                onClick={() =>
-                  parseAction("Complete shMonad unstake", async () => {
-                    await w.send({ address: shmon, abi: nativeAbi, functionName: "completeUnstake" });
-                  })
-                }
-              >
-                Complete unstaking
-              </button>
-            </>
-          )}
-        </section>
+          >
+            Donate 0.1% of vault assets
+          </button>
+        </Disclosure>
       </div>
-      <section className="understand-panel">
-        <h3>Fund an explicit test-yield demonstration</h3>
-        <p>
-          Add real TestUSDC to the vault without minting shares. Each contribution is capped at 0.1% of its accounted
-          assets, with a 2% total share-rate budget. This is a funded demonstration, not a lending strategy or APY.
-        </p>
-        <button
-          className="button outline"
-          disabled={!w.account || w.busy}
-          onClick={() =>
-            parseAction("Fund test vault yield", async () => {
-              const total = await client.readContract({ address: vault, abi: nativeAbi, functionName: "totalAssets" });
-              const n = total / 1000n;
-              await w.approve(usdToken, vault, n);
-              await w.send({ address: vault, abi: abi("MonadYieldVault"), functionName: "fundTestYield", args: [n] });
-            })
-          }
-        >
-          Fund the next 0.1% test-yield step
-        </button>
-      </section>
     </Shell>
   );
 }

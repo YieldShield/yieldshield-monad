@@ -16,9 +16,9 @@ vi.mock("./wallet", () => ({
   useBalance: () => ({ data: balances.token }),
 }));
 
-function renderFunding(symbol = "TestUSDC") {
+function renderFunding(symbol = "TestUSDC", pathname = "/protect") {
   return renderToStaticMarkup(
-    <MemoryRouter initialEntries={["/protect"]}>
+    <MemoryRouter initialEntries={[pathname]}>
       <FundingNotice />
       <FundingGate asset={{ symbol, balance: balances.token }}>
         <button>
@@ -50,15 +50,16 @@ describe("faucet onboarding before a transaction", () => {
   });
 
   it.each([
-    ["TestUSDC", "test-tokens"],
-    ["sMON-demo", "test-tokens"],
-    ["WMON", "wrap-mon"],
-    ["shMON", "stake-mon"],
-    ["vTestUSDC", "test-vault"],
-  ])("takes an empty %s balance to the relevant preparation section", (symbol, anchor) => {
+    ["TestUSDC", "test-tokens", "Claim TestUSDC"],
+    ["sMON-demo", "test-tokens", "Claim sMON-demo"],
+    ["WMON", "wrap-mon", "Wrap MON"],
+    ["shMON", "stake-mon", "Stake MON"],
+    ["vTestUSDC", "test-vault", "Get vault shares"],
+  ])("takes an empty %s balance to the relevant preparation section", (symbol, anchor, label) => {
     Object.assign(balances, { account: "0x123", native: 100n, token: 0n });
     const html = renderFunding(symbol);
     expect(html).toContain(`href="/faucet#${anchor}"`);
+    expect(html).toContain(label);
     expect(html).not.toContain("Approve &amp; protect");
   });
 
@@ -82,4 +83,18 @@ describe("faucet onboarding before a transaction", () => {
     Object.assign(balances, { account: "0x123", busy: true, native: 0n, token: 0n });
     expect(renderFunding()).toContain("<button>Transaction in progress</button>");
   });
+
+  it.each(["/protect", "/provide", "/positions", "/positions/receipt-1", "/trade"])(
+    "shows the funding notice on %s",
+    (pathname) => {
+      expect(renderFunding("TestUSDC", pathname)).toContain("funding-notice");
+    },
+  );
+
+  it.each(["/", "/markets", "/status", "/evidence", "/lab", "/how-it-works", "/faucet", "/legal"])(
+    "keeps the funding notice off %s",
+    (pathname) => {
+      expect(renderFunding("TestUSDC", pathname)).not.toContain("funding-notice");
+    },
+  );
 });

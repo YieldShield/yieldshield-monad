@@ -745,3 +745,35 @@
   color: #554366;
   font-size: 12px;
 }
+
+.simple-site .action-panel > .field:first-child {
+  margin-top: 0;
+}
+.simple-site .funding-notice {
+  padding: 10px 16px;
+  max-width: 650px;
+  margin-inline: auto;
+  gap: 12px;
+}
+.simple-site .funding-notice .button {
+  padding: 9px 16px;
+  min-height: 40px;
+}
+.faucet-step > div:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+  width: 100%;
+}
+.faucet-step .step-number {
+  color: #554366;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+#unstake-mon {
+  border-top: 1px solid var(--line);
+  margin-top: 24px;
+  padding-top: 20px;
+  scroll-margin-top: 24px;
+}
