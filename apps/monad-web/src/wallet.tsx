@@ -33,6 +33,7 @@ import type { TxRequest, Registry } from "./types";
 import { errorMessage, fetcher, explorer, short } from "./lib";
 import { ensureDynamicSession, type DynamicSession } from "./dynamic-session";
 import { createWalletSelectionGuard } from "./wallet-selection";
+import { createPendingTransactionStore } from "./pending-transaction";
 const DynamicWallet = lazy(() => import("./DynamicWallet"));
 export const client = createPublicClient({
   chain: monadTestnet,
@@ -48,23 +49,9 @@ const pythAbi = parseAbi([
   "function updatePriceFeeds(bytes[]) payable",
 ]);
 const WalletContext = createContext<any>(null);
-const pendingKey = "yieldshield-monad:pending-transaction";
-function savedTransaction(): Hash | null {
-  try {
-    const value = localStorage.getItem(pendingKey);
-    return value && /^0x[0-9a-f]{64}$/i.test(value) ? (value as Hash) : null;
-  } catch {
-    return null;
-  }
-}
-function saveTransaction(hash: Hash | null) {
-  try {
-    if (hash) localStorage.setItem(pendingKey, hash);
-    else localStorage.removeItem(pendingKey);
-  } catch {
-    /* Wallet receipt remains the source of truth when storage is unavailable. */
-  }
-}
+const transactionStore = createPendingTransactionStore(() => localStorage);
+const savedTransaction = transactionStore.get;
+const saveTransaction = transactionStore.set;
 type WalletOption = { info: { uuid: string; name: string; icon: string; rdns: string }; provider: EIP1193Provider };
 export function WalletProvider({ children }: { children: ReactNode }) {
   const [options, setOptions] = useState<WalletOption[]>([]),
