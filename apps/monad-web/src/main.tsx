@@ -653,13 +653,22 @@ function Positions() {
                       <div>
                         <strong>
                           {p.side === "senior" ? "Protected" : "Liquidity"}{" "}
-                          {p.side === "senior" ? m?.symbol : m?.backingSymbol}
+                          {m ? (p.side === "senior" ? m.symbol : m.backingSymbol) : "position"}
                         </strong>
                         <span>
-                          {m?.environment === "scenario" ? "Demo asset" : "Monad asset"} · Receipt #{p.id}
+                          {!m
+                            ? "Asset details unavailable"
+                            : m.environment === "scenario"
+                              ? "Demo asset"
+                              : "Monad asset"}{" "}
+                          · Receipt #{p.id}
                         </span>
                       </div>
-                      <b>{fmt(p.position.amount, p.side === "senior" ? m?.shield.decimals : m?.backing.decimals, 5)}</b>
+                      <b>
+                        {m
+                          ? fmt(p.position.amount, p.side === "senior" ? m.shield.decimals : m.backing.decimals, 5)
+                          : "—"}
+                      </b>
                       <Tag tone={p.side}>{p.side === "senior" ? "Protected" : "First loss"}</Tag>
                       <span>↗</span>
                     </Link>
