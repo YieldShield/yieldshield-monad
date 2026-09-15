@@ -32,6 +32,7 @@ import deployment from "../../../config/deployment.json";
 import type { TxRequest, Registry } from "./types";
 import { errorMessage, fetcher, explorer, short } from "./lib";
 import { ensureDynamicSession, type DynamicSession } from "./dynamic-session";
+import { createWalletSelectionGuard } from "./wallet-selection";
 const DynamicWallet = lazy(() => import("./DynamicWallet"));
 export const client = createPublicClient({
   chain: monadTestnet,
@@ -76,6 +77,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false);
   const pending = useRef(false);
+  const selection = useRef(createWalletSelectionGuard());
+  const activeSelection = useRef<(() => void) | null>(null);
+  const connectionRequest = useRef(0);
+  const dynamicConnector = useRef({});
   const dynamicSession = useRef<DynamicSession | null>(null);
   const [dynamicEnabled, setDynamicEnabled] = useState(() => {
     try {
@@ -89,6 +94,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     const previous = dynamicSession.current;
     dynamicSession.current = session;
     if (session) {
+      connectionRequest.current++;
+      selection.current.select({ address: session.address, connector: dynamicConnector.current });
       setProvider(null);
       setAccount(session.address);
       setChain(null);
@@ -97,6 +104,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         localStorage.setItem("yieldshield-monad:dynamic-session", "1");
       } catch {}
     } else if (previous) {
+      selection.current.select(null);
       setAccount(null);
       setChain(null);
       try {
@@ -172,6 +180,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!provider) return;
     const accounts = (v: any) => {
+      selection.current.select(v[0] ? { address: v[0], connector: provider } : null);
       setAccount(v[0] || null);
       void mutate((k) => typeof k === "string" && k.startsWith("/api/positions"));
     };
@@ -184,9 +193,14 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     };
   }, [provider]);
   async function connect(p: EIP1193Provider) {
+    const request = ++connectionRequest.current;
     try {
       setError("");
       const accounts = await p.request({ method: "eth_requestAccounts" });
+      const network = Number(await p.request({ method: "eth_chainId" }));
+      if (request !== connectionRequest.current) return;
+      if (!accounts[0]) throw new Error("No wallet account was selected.");
+      selection.current.select({ address: accounts[0], connector: p });
       dynamicSession.current = null;
       setDynamicEnabled(false);
       try {
@@ -194,26 +208,31 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       } catch {}
       setProvider(p);
       setAccount(accounts[0]);
-      setChain(Number(await p.request({ method: "eth_chainId" })));
+      setChain(network);
       setChooser(false);
     } catch (e) {
       setError(errorMessage(e));
     }
   }
   async function ensure(): Promise<WalletClient<Transport, Chain, Account>> {
+    const assertSelected = activeSelection.current || selection.current.capture(account);
+    assertSelected();
     if (dynamicSession.current && account) {
       const wallet = await ensureDynamicSession(dynamicSession.current, account);
       if ((await client.getChainId()) !== 10143) throw new Error("RPC returned the wrong network.");
+      assertSelected();
       setChain(10143);
       return wallet;
     }
     if (!provider || !account) throw new Error("Connect a wallet first.");
     let id = Number(await provider.request({ method: "eth_chainId" }));
+    assertSelected();
     if (id !== 10143) {
       try {
         await provider.request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0x279f" }] });
       } catch (e) {
         if ((e as any).code !== 4902) throw e;
+        assertSelected();
         await provider.request({
           method: "wallet_addEthereumChain",
           params: [
@@ -233,6 +252,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     setChain(id);
     if ((await client.getChainId()) !== 10143) throw new Error("RPC returned the wrong network.");
     const accounts = await provider.request({ method: "eth_accounts" });
+    assertSelected();
     if (accounts[0]?.toLowerCase() !== account.toLowerCase())
       throw new Error("Wallet account changed. Reconnect before continuing.");
     return createWalletClient({ account, chain: monadTestnet, transport: custom(provider) });
@@ -382,6 +402,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         throw new Error(
           "A previous transaction still needs confirmation. Open its receipt and reload before sending another.",
         );
+      activeSelection.current = selection.current.capture(account);
       await ensure();
       await fn();
       setStatus("Confirmed — your balances will refresh.");
@@ -398,6 +419,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       setError(errorMessage(e));
       setStatus("");
     } finally {
+      activeSelection.current = null;
       pending.current = false;
       setBusy(false);
     }
@@ -412,6 +434,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     updatePrice,
     connect: () => setChooser(true),
     disconnect: () => {
+      connectionRequest.current++;
+      selection.current.select(null);
       const session = dynamicSession.current;
       if (session) void session.logout().catch((error) => setError(errorMessage(error)));
       dynamicSession.current = null;
@@ -420,6 +444,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         localStorage.removeItem("yieldshield-monad:dynamic-session");
       } catch {}
       setAccount(null);
+      setChain(null);
       setProvider(null);
     },
     setError,
