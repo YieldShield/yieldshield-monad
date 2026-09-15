@@ -13,6 +13,7 @@ import { FundingNotice, FundingGate, AssetFundingHint, monadFaucet, type Funding
 import { amount, minOut, netAsset, noticeState, fmt, usd, short, fetcher, explorer, errorMessage } from "./lib";
 import type { Asset, Market, Position, Snapshot, Registry } from "./types";
 import "./styles.css";
+import "./simplified.css";
 const registry = registryJson as unknown as Registry;
 const abi = (name: string) => (abisJson as unknown as Record<string, Abi>)[name];
 const contract = (name: string) => registry.contracts[name]?.address;
@@ -78,74 +79,87 @@ function WalletButton() {
     </button>
   );
 }
+const primaryNav = [
+  ["/protect", "Protect"],
+  ["/provide", "Provide"],
+  ["/positions", "Positions"],
+  ["/faucet", "Faucet"],
+];
+const moreNav = [
+  ["/markets", "Compare pools"],
+  ["/trade", "Demo trade"],
+  ["/how-it-works", "How it works"],
+  ["/status", "Network status"],
+  ["/evidence", "Build evidence"],
+  ["/create-pool", "Create a pool"],
+];
 function Header() {
+  const { pathname } = useLocation();
   return (
-    <header className="public-header">
-      <Brand />
-      <nav aria-label="Main navigation">
-        <Link to="/markets">Explore</Link>
-        <Link to="/how-it-works">How it works</Link>
-        <Link to="/status">Status</Link>
-      </nav>
-      <WalletButton />
-    </header>
+    <>
+      <div className="network-strip">
+        Monad testnet · Test tokens only. <Link to="/legal">Details</Link>
+      </div>
+      <header className="simple-header">
+        <Brand />
+        <nav className="primary-nav" aria-label="Main navigation">
+          {primaryNav.map(([to, label]) => (
+            <NavLink key={to} to={to}>
+              {label}
+            </NavLink>
+          ))}
+          <details
+            className="more-menu"
+            key={pathname}
+            onKeyDown={(event) => {
+              if (event.key === "Escape") {
+                event.currentTarget.open = false;
+                event.currentTarget.querySelector("summary")?.focus();
+              }
+            }}
+          >
+            <summary>More</summary>
+            <div className="more-links">
+              {moreNav.map(([to, label]) => (
+                <Link key={to} to={to}>
+                  {label}
+                </Link>
+              ))}
+            </div>
+          </details>
+        </nav>
+        <WalletButton />
+      </header>
+    </>
   );
 }
 function Footer() {
   return (
-    <footer>
-      <Brand />
-      <p>Built for a different way to hold.</p>
-      <div>
+    <footer className="simple-footer">
+      <span>YieldShield on Monad</span>
+      <nav aria-label="Project information">
         <Link to="/legal">Legal & privacy</Link>
-        <Link to="/evidence">Build evidence</Link>
         <a href="https://github.com/YieldShield/yieldshield-monad" target="_blank" rel="noreferrer">
           Source ↗
         </a>
-        <a href="https://x.com/yieldshield_ai" target="_blank" rel="noreferrer">
-          X ↗
+        <a href="https://www.monad.xyz/developers/hackathons/metropolis" target="_blank" rel="noreferrer">
+          Metropolis ↗
         </a>
-      </div>
-      <small>Monad testnet · Experimental software · Test tokens have no monetary value</small>
+      </nav>
     </footer>
   );
 }
 function HeroArt() {
   return (
-    <div className="hero-art" aria-label="Protected holders and liquidity providers form two sides of one pool">
-      <div className="orbital orbit-one" />
-      <div className="orbital orbit-two" />
-      <div className="asset-coin">
-        <span>◈</span>
-        <small>MON</small>
+    <aside className="simple-art" aria-label="Your asset is supported by separately supplied backing">
+      <div className="backing-layer">
+        <span>Backing</span>
       </div>
-      <div className="tranche-card senior-art">
-        <span className="eyebrow">01 / Protected holder</span>
-        <strong>Keep the upside.</strong>
-        <div className="art-chart">
-          <svg viewBox="0 0 220 55">
-            <path d="M0 44 30 40 52 47 81 19 100 29 122 17 151 27 180 10 220 0" />
-          </svg>
-        </div>
-        <span>Your asset. Two ways to exit.</span>
+      <div className="asset-layer">
+        <span aria-hidden="true">◈</span>
+        <span>Your asset</span>
       </div>
-      <div className="tranche-card junior-art">
-        <span className="eyebrow">02 / Liquidity provider</span>
-        <strong>Provide the backing.</strong>
-        <div className="backing-blocks">
-          <i />
-          <i />
-          <i />
-          <i />
-          <i />
-          <i />
-        </div>
-        <span>Earn a share of realized gains.</span>
-      </div>
-      <div className="art-label">
-        <span className="dot" /> One pool. Clear priorities.
-      </div>
-    </div>
+    </aside>
   );
 }
 function ReleaseNotice() {
@@ -164,174 +178,57 @@ function ReleaseNotice() {
 }
 function Home() {
   return (
-    <div className="public-page">
+    <div className="simple-site">
       <Header />
       <ReleaseNotice />
-      <main id="main">
-        <section className="hero">
+      <main id="main" className="simple-home">
+        <section className="simple-hero">
           <div>
-            <p className="eyebrow">A new way to hold · Monad edition</p>
             <h1>
-              Keep your
-              <br />
-              upside.
+              Keep your upside.
               <br />
               <em>Choose your exit.</em>
             </h1>
-            <p className="hero-copy">
-              Hold MON with a second way out.
-              <br />
-              Choose protection, or provide the backing.
-            </p>
+            <p>Protect your tokens with a capped exit into backing tokens.</p>
             <div className="hero-actions">
-              <Link className="button dark" to="/markets">
-                Explore markets <span>↗</span>
+              <Link className="button purple-button" to="/protect">
+                Protect tokens ↗
               </Link>
-              <Link className="text-link" to="/how-it-works">
-                See how it works
+              <Link className="text-link" to="/faucet">
+                Get test tokens
               </Link>
             </div>
-            <p className="hero-note">
-              <span className="dot purple" /> Built on Monad testnet. Try it with free test assets.
-            </p>
           </div>
           <HeroArt />
         </section>
-        <section className="benefit-strip">
+        <section className="home-exits" aria-label="Two ways to exit">
           <div>
-            <b>Two ways to exit</b>
-            <span>Take your asset or use your backing option.</span>
+            <h2>Keep your asset</h2>
+            <p>Withdraw it, less fees on gains.</p>
           </div>
           <div>
-            <b>No recurring premium</b>
-            <span>Fees come from realized gains.</span>
+            <h2>Take the backing</h2>
+            <p>Exchange your asset for backing, up to your entry value and reserved cap.</p>
           </div>
-          <div>
-            <b>Backing comes first</b>
-            <span>Protection opens only when reserves permit.</span>
-          </div>
-        </section>
-        <section className="two-roles">
-          <div>
-            <p className="eyebrow">Your risk. Your role.</p>
-            <h2>
-              Pick your side
-              <br />
-              of the pool.
-            </h2>
-            <p>Each role has different rewards and responsibilities. The rules stay visible before you commit.</p>
-          </div>
-          <Link to="/protect" className="role-card senior">
-            <span>01 / Senior position</span>
-            <h3>
-              I want
-              <br />
-              protection.
-            </h3>
-            <p>Deposit a supported asset. Keep its upside after gain-sharing fees, with a capped backing-token exit.</p>
-            <b>Get protection ↗</b>
-          </Link>
-          <Link to="/provide" className="role-card junior">
-            <span>02 / Junior position</span>
-            <h3>
-              I want to
-              <br />
-              provide liquidity.
-            </h3>
-            <p>
-              Provide backing tokens, earn a share of realized gains, and accept first losses when protection is used.
-            </p>
-            <b>Provide liquidity ↗</b>
-          </Link>
-        </section>
-        <section className="lab-banner">
-          <div>
-            <p className="eyebrow">Try the whole story</p>
-            <h2>
-              A market drop.
-              <br />
-              An exit you can see.
-            </h2>
-            <p>
-              The scenario lab uses clearly labeled synthetic prices so you can experience both sides of a protected
-              exit in minutes.
-            </p>
-          </div>
-          <Link to="/lab" className="button light">
-            Open scenario lab ↗
-          </Link>
+          <small>
+            Waiting periods and pool checks apply. <Link to="/how-it-works">How it works ↗</Link>
+          </small>
         </section>
       </main>
       <Footer />
     </div>
   );
 }
-const nav = [
-  ["/markets", "◈", "Explore markets"],
-  ["/trade", "⇄", "Trade"],
-  ["/protect", "◇", "Get protection"],
-  ["/positions", "▤", "My positions"],
-  ["/provide", "＋", "Provide liquidity"],
-  ["/faucet", "◉", "Faucet"],
-  ["/lab", "↗", "Scenario lab"],
-  ["/status", "≋", "Network status"],
-];
 function Shell({ children }: { children: ReactNode }) {
   return (
-    <div className="app-shell">
-      <aside className="sidebar">
-        <Brand />
-        <div className="network-label">
-          <span className="dot purple" /> Monad Testnet <small>10143</small>
-        </div>
-        <nav aria-label="App navigation">
-          {nav.map(([to, icon, label]) => (
-            <NavLink to={to} key={to}>
-              <span aria-hidden>{icon}</span>
-              {label}
-            </NavLink>
-          ))}
-        </nav>
-        <div className="sidebar-bottom">
-          <a href="https://faucet.monad.xyz" target="_blank" rel="noreferrer">
-            Get testnet MON ↗
-          </a>
-          <Link to="/how-it-works">How it works</Link>
-          <Link to="/legal">Legal & privacy</Link>
-          <Link to="/evidence">Build evidence</Link>
-          <span>Built for Metropolis</span>
-        </div>
-      </aside>
-      <div className="app-body">
-        <header className="app-topbar">
-          <Link className="mobile-brand" to="/">
-            <Mark small />
-            YieldShield
-          </Link>
-          <div className="testnet-label">
-            Experiment with confidence<span> · Test tokens, no monetary value</span>
-          </div>
-          <WalletButton />
-        </header>
-        <nav className="mobile-nav" aria-label="Mobile app navigation">
-          {nav.map(([to, _, label]) => (
-            <NavLink to={to} key={to}>
-              {label}
-            </NavLink>
-          ))}
-        </nav>
-        <main id="main" className="workspace">
-          <ReleaseNotice />
-          <FundingNotice />
-          {children}
-        </main>
-        <div className="app-foot">
-          YieldShield · Monad testnet{" "}
-          <a href="https://www.monad.xyz/developers/hackathons/metropolis" target="_blank" rel="noreferrer">
-            Metropolis ↗
-          </a>
-        </div>
-      </div>
+    <div className="simple-site">
+      <Header />
+      <main id="main" className="simple-workspace">
+        <ReleaseNotice />
+        <FundingNotice />
+        {children}
+      </main>
+      <Footer />
     </div>
   );
 }
@@ -1727,7 +1624,7 @@ function Lab({ standalone = false }: { standalone?: boolean }) {
     </>
   );
   return standalone ? (
-    <div className="public-page">
+    <div className="simple-site">
       <Header />
       <main className="explain-page" id="main">
         {content}
@@ -2080,7 +1977,7 @@ function CreatePool() {
 }
 function Legal() {
   return (
-    <div className="public-page">
+    <div className="simple-site">
       <Header />
       <main className="legal-page" id="main">
         <p className="eyebrow">Legal / Privacy / Risk</p>
