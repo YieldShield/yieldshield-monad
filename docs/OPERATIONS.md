@@ -80,4 +80,6 @@ Prepare at least two senior receipts and a junior receipt in advance so the demo
 
 An API or oracle outage should show unavailable data and a retry path. No stale data may authorize a new reference position. Do not change a deployed contract's source and expect its old runtime hash to match: deploy a separately identified version if logic must change. Keep existing Base/Robinhood infrastructure isolated. This testnet build is not approval to accept production funds.
 
+15 September review: the hosted API intermittently fails individual pool reads even while runtime and oracle checks pass. Railway logs show `RPC Request failed`; the underlying cause is still unconfirmed. Local cold/warm status checks succeeded. Treat this as an open reliability issue, preserve the fail-closed behavior and investigate the active deployment's RPC error details before claiming the app is consistently available. When retrieving logs, use the active successful deployment ID: a newer deployment may be `SKIPPED` because a frontend-only commit did not match Railway's watched paths.
+
 Owner decision, 9 September 2026: keep the repository private for now. Do not change its visibility without a later explicit instruction. The recorded registration rules and public FAQ disagree on source publication; recheck the operative final form without changing visibility silently.
