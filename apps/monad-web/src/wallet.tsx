@@ -34,10 +34,13 @@ import { errorMessage, fetcher, explorer, short } from "./lib";
 import { ensureDynamicSession, type DynamicSession } from "./dynamic-session";
 import { createWalletSelectionGuard } from "./wallet-selection";
 import { createPendingTransactionStore } from "./pending-transaction";
+import { retryRateLimitedReads } from "./rpc-read-retry";
 const DynamicWallet = lazy(() => import("./DynamicWallet"));
 export const client = createPublicClient({
   chain: monadTestnet,
-  transport: http(config.rpcUrl, { timeout: 15000, batch: { batchSize: 20, wait: 10 } }),
+  transport: retryRateLimitedReads(
+    http(config.rpcUrl, { timeout: 15000, retryCount: 1, batch: { batchSize: 10, wait: 10 } }),
+  ),
 });
 const erc20 = parseAbi([
   "function allowance(address,address) view returns(uint256)",
