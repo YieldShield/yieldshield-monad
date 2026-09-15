@@ -176,19 +176,15 @@ small {
 .brandmark {
   display: inline-flex;
   width: 34px;
-  height: 38px;
+  height: 34px;
 }
 .brandmark svg {
   width: 100%;
-  fill: none;
-  stroke: var(--purple);
-  stroke-width: 2.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  height: 100%;
 }
 .brandmark.small {
   width: 23px;
-  height: 25px;
+  height: 23px;
 }
 .brand-network {
   display: block;

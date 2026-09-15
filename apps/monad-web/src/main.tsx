@@ -47,9 +47,10 @@ const kind = (a: Asset) =>
 function Mark({ small = false }: { small?: boolean }) {
   return (
     <span className={`brandmark ${small ? "small" : ""}`} aria-hidden="true">
-      <svg viewBox="0 0 32 34">
-        <path d="M4 4h24v15c0 6-12 12-12 12S4 25 4 19Z" />
-        <path d="m10 12 6 5 6-5M16 17v8" />
+      <svg viewBox="0 0 32 32" fill="none">
+        <rect x="3" y="3" width="18" height="18" rx="6" fill="#0E1114" />
+        <rect x="11" y="11" width="18" height="18" rx="6" fill="#6E54FF" fillOpacity="0.92" />
+        <rect x="11" y="11" width="10" height="10" rx="4" fill="#0E1114" fillOpacity="0.45" />
       </svg>
     </span>
   );
