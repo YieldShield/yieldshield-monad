@@ -1,0 +1,46 @@
+.token-icon.asset-image {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: hidden;
+}
+.token-icon.asset-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.token-icon.asset-image.staking {
+  background: #292727;
+  padding: 8px;
+}
+.asset-pair {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: 68px;
+  height: 48px;
+}
+.asset-pair > .asset-image + .asset-image {
+  width: 30px;
+  height: 30px;
+  margin-left: -8px;
+  margin-top: 22px;
+  outline: 3px solid #fff;
+}
+.amount-token {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+.amount-token .token-icon.asset-image {
+  width: 24px;
+  height: 24px;
+}
+.amount-token .token-icon.asset-image.staking {
+  padding: 4px;
+}

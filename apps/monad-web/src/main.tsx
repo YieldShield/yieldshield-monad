@@ -27,6 +27,9 @@ import { reviewedQuoteDeadline } from "./reviewed-quote";
 import { scenarioExits } from "./scenario-model";
 import "./styles.css";
 import "./simplified.css";
+import "./asset-images.css";
+import { TokenIcon, AssetPair } from "./AssetImage";
+import { assetVisual } from "./asset-visuals";
 const registry = registryJson as unknown as Registry;
 const abi = (name: string) => (abisJson as unknown as Record<string, Abi>)[name];
 const contract = (name: string) => registry.contracts[name]?.address;
@@ -58,16 +61,6 @@ function Brand() {
         YieldShield<span className="brand-network">on Monad</span>
       </span>
     </Link>
-  );
-}
-function TokenIcon({ symbol = "MON" }: { symbol?: string }) {
-  return (
-    <span
-      className={`token-icon ${symbol.includes("USD") ? "usd" : symbol.includes("demo") ? "lab" : symbol === "shMON" ? "staking" : ""}`}
-      aria-hidden="true"
-    >
-      {symbol.includes("USD") ? "$" : symbol === "shMON" ? "s" : symbol.includes("demo") ? "◇" : "◈"}
-    </span>
   );
 }
 function Tag({ children, tone = "" }: { children: ReactNode; tone?: string }) {
@@ -299,7 +292,7 @@ function MarketCard({ market: m }: { market: Market }) {
   return (
     <article className="market-card">
       <div className="card-top">
-        <TokenIcon symbol={m.symbol} />
+        <AssetPair asset={m.shield} backing={m.backing} />
         <Tag tone={m.ready ? "success" : "pending"}>{m.ready ? "Available" : "Action needed"}</Tag>
       </div>
       <h3>
@@ -535,7 +528,10 @@ function PositionForm({ side }: { side: "senior" | "junior" }) {
                   onChange={(e) => setInput(e.target.value)}
                   autoComplete="off"
                 />
-                <b>{token?.symbol}</b>
+                <b className="amount-token">
+                  <TokenIcon asset={token} />
+                  {token?.symbol}
+                </b>
               </div>
               <span className="field-hint" id="deposit-balance">
                 Balance: {fmt(balance, token?.decimals, 5)} {token?.symbol}
@@ -672,7 +668,7 @@ function Positions() {
             const m = state?.markets.find((m) => m.id === p.poolId);
             return (
               <Link key={p.key} className="position-row" to={`/positions/${encodeURIComponent(p.key)}`}>
-                <TokenIcon symbol={p.side === "senior" ? m?.symbol : m?.backingSymbol} />
+                <TokenIcon asset={p.side === "senior" ? m?.shield : m?.backing} />
                 <div>
                   <strong>
                     {p.side === "senior" ? "Protected" : "Liquidity"}{" "}
@@ -1029,7 +1025,10 @@ function Trade() {
                     inputMode="decimal"
                     onChange={(e) => setInput(e.target.value)}
                   />
-                  <b>{m.symbol}</b>
+                  <b className="amount-token">
+                    <TokenIcon asset={m.shield} />
+                    {m.symbol}
+                  </b>
                 </div>
                 <span className="field-hint">
                   Maximum 25 tokens per trade · Balance: {fmt(fundingAsset?.balance, tradeToken?.decimals, 5)}{" "}
@@ -1755,7 +1754,7 @@ function Status() {
             <h2>Price sources</h2>
             {data.assets.map((a) => (
               <div className="status-row" key={a.id}>
-                <TokenIcon symbol={a.symbol} />
+                <TokenIcon asset={a} />
                 <div>
                   <strong>{a.symbol}</strong>
                   <span>
