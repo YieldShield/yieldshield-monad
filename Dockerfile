@@ -8,6 +8,7 @@ WORKDIR /app
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY services/monad ./services/monad
 COPY config ./config
+COPY scripts/monad-factories.mjs ./scripts/monad-factories.mjs
 USER node
 EXPOSE 3001
 CMD ["node","services/monad/server.mjs"]
