@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 const root = fileURLToPath(new URL("../", import.meta.url));
 export const manifestPaths = [
   "package.json", "apps/monad-web/package.json", "services/monad/package.json", "contracts/package.json",
+  "integrations/chainlink-cre/pool-health/package.json",
 ];
 const dependencyFields = ["dependencies", "devDependencies", "peerDependencies", "optionalDependencies"];
 const solanaDependency = /^(?:@solana(?:-program)?\/|@codama\/|codama(?:@|$)|@yieldshield\/(?:sdk|adapter-solana)(?:@|$))/;
@@ -22,6 +23,8 @@ export function checkMonadScope(manifests, lock, trackedFiles) {
   for (const [file, manifest] of Object.entries(manifests)) {
     for (const field of dependencyFields) {
       for (const [name, version] of Object.entries(manifest[field] ?? {})) {
+        assert(name !== "@chainlink/cre-sdk" || file === "integrations/chainlink-cre/pool-health/package.json",
+          "The CRE SDK belongs only in its isolated workflow toolchain");
         const alias = typeof version === "string" && version.startsWith("npm:") ? version.slice(4) : "";
         assert(!solanaDependency.test(name) && !solanaDependency.test(alias),
           `${file}: direct Solana/codegen dependency ${name}; Dynamic's transitive dependencies are allowed`);

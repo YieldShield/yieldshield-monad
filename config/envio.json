@@ -1,0 +1,15 @@
+{
+  "chainId": 10143,
+  "endpoint": "https://monad-testnet.hypersync.xyz",
+  "startBlock": 62432610,
+  "startBlockTransaction": "0x48707ada852eb38752f951008bf113d0f226d20888fbbc5f0d5bf32b498983e1",
+  "confirmationBlocks": 20,
+  "refreshMs": 120000,
+  "staleMs": 180000,
+  "maxRequestsPerHour": 60,
+  "maxRequestsPerDay": 500,
+  "maxPages": 4,
+  "maxEvents": 10000,
+  "maxResponseBytes": 2097152,
+  "requestTimeoutMs": 8000
+}

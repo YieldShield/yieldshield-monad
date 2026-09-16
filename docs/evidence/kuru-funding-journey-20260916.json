@@ -1,0 +1,186 @@
+{
+  "kind": "internal-testnet-smoke",
+  "chainId": 10143,
+  "account": "0xA437345Be29EC6802024A8e090E34b621b92E5E2",
+  "identity": {
+    "chainId": 10143,
+    "market": "0xfdbE356828c8f5A5d5ed4f69ddE0816f4058Ef61",
+    "blockNumber": "63060134",
+    "timestamp": "1789571137"
+  },
+  "initial": {
+    "account": "0xA437345Be29EC6802024A8e090E34b621b92E5E2",
+    "userId": "0",
+    "usdc": "0",
+    "mon": "0",
+    "walletUsdc": "0"
+  },
+  "quote": {
+    "chainId": 10143,
+    "market": "0xfdbE356828c8f5A5d5ed4f69ddE0816f4058Ef61",
+    "blockNumber": "63060168",
+    "timestamp": "1789571148",
+    "account": "0xA437345Be29EC6802024A8e090E34b621b92E5E2",
+    "userId": "79",
+    "amountIn": "10000000",
+    "amountOut": "199397497800000000000",
+    "minAmountOut": "198400510311000000000",
+    "quotedAt": 1789571147854,
+    "expiresAt": 1789571207854
+  },
+  "fill": {
+    "amountInUsed": "10000000",
+    "amountOut": "199397497800000000000"
+  },
+  "final": {
+    "account": "0xA437345Be29EC6802024A8e090E34b621b92E5E2",
+    "userId": "79",
+    "usdc": "0",
+    "mon": "0",
+    "walletUsdc": "9990000000"
+  },
+  "walletMonBeforeWithdrawal": "2078819692000000000",
+  "walletMonAfterWithdrawal": "201450111958000000000",
+  "reservedGasCost": "253766100000000000",
+  "transactions": [
+    {
+      "step": "claim-kuru-test-bundle",
+      "hash": "0x4103741cc51fe5bdea8b499e2d9b02f7d7718c0a2b22310d45678a747c2e548c",
+      "blockNumber": "63060149",
+      "maximumGasCost": "60006432000000000"
+    },
+    {
+      "step": "approve-exact-kuru-usdc",
+      "hash": "0x738eb198ec08424052679dbf5a5824c94753fcf5794a0834a9d57b6efdb316c2",
+      "blockNumber": "63060157",
+      "maximumGasCost": "21730152000000000"
+    },
+    {
+      "step": "deposit-kuru-usdc",
+      "hash": "0x29a29344ee3e66a2b1a526bafacfab3f7a64ac0e3ae83f1a0b4ea1f963b6b2d9",
+      "blockNumber": "63060163",
+      "maximumGasCost": "58324662000000000"
+    },
+    {
+      "step": "buy-mon-on-kuru",
+      "hash": "0xc29230b7826db8f37becb670c4c3b2442e446c434d6353910dd5ec43595d5203",
+      "blockNumber": "63060184",
+      "maximumGasCost": "82360980000000000"
+    },
+    {
+      "step": "withdraw-bought-mon",
+      "hash": "0x20c4a78db41d963648debe645331d38070f4ef6719a55e61205348bcdc01fdaf",
+      "blockNumber": "63060195",
+      "maximumGasCost": "31343874000000000"
+    }
+  ],
+  "protectionOpened": false,
+  "checkedAt": "2026-09-16T15:05:57.900Z",
+  "canonicalTransactions": [
+    {
+      "step": "claim-kuru-test-bundle",
+      "chainId": 10143,
+      "account": "0xA437345Be29EC6802024A8e090E34b621b92E5E2",
+      "to": "0x25B1416FcD3400bE2D8F50bbe7Cf1101b8B891E9",
+      "functionName": "claim",
+      "args": [],
+      "expectedHash": "0x4103741cc51fe5bdea8b499e2d9b02f7d7718c0a2b22310d45678a747c2e548c",
+      "nonce": 206,
+      "gas": "491856",
+      "maxFeePerGas": "122000000000",
+      "maximumGasCost": "60006432000000000",
+      "status": "success",
+      "blockNumber": "63060149",
+      "blockHash": "0xd5add000abdcf0b7a6dc1029fbd07806326213816fc61d9c151334ef55c2cacb",
+      "gasUsed": "491856",
+      "effectiveGasPrice": "102000000000"
+    },
+    {
+      "step": "approve-exact-kuru-usdc",
+      "chainId": 10143,
+      "account": "0xA437345Be29EC6802024A8e090E34b621b92E5E2",
+      "to": "0xEe0722ead54f1B4fe97bE399Be43BC0226a6f97E",
+      "functionName": "approve",
+      "args": [
+        "0x6384e9b2Bf3b65e1535403a0A543b5FDA905eE22",
+        "10000000"
+      ],
+      "expectedHash": "0x738eb198ec08424052679dbf5a5824c94753fcf5794a0834a9d57b6efdb316c2",
+      "nonce": 207,
+      "gas": "178116",
+      "maxFeePerGas": "122000000000",
+      "maximumGasCost": "21730152000000000",
+      "status": "success",
+      "blockNumber": "63060157",
+      "blockHash": "0x96e365f567d9fe782289fc2ec02f8d1ae80649413d6e17c8557d97c85deb4889",
+      "gasUsed": "178116",
+      "effectiveGasPrice": "102000000000"
+    },
+    {
+      "step": "deposit-kuru-usdc",
+      "chainId": 10143,
+      "account": "0xA437345Be29EC6802024A8e090E34b621b92E5E2",
+      "to": "0x6384e9b2Bf3b65e1535403a0A543b5FDA905eE22",
+      "functionName": "deposit",
+      "args": [
+        "0xEe0722ead54f1B4fe97bE399Be43BC0226a6f97E",
+        "10000000"
+      ],
+      "expectedHash": "0x29a29344ee3e66a2b1a526bafacfab3f7a64ac0e3ae83f1a0b4ea1f963b6b2d9",
+      "nonce": 208,
+      "gas": "478071",
+      "maxFeePerGas": "122000000000",
+      "maximumGasCost": "58324662000000000",
+      "status": "success",
+      "blockNumber": "63060163",
+      "blockHash": "0x6a304698debca7306108ddd21c5be40ed3ba595c698e96534c0d93af64654487",
+      "gasUsed": "478071",
+      "effectiveGasPrice": "102000000000"
+    },
+    {
+      "step": "buy-mon-on-kuru",
+      "chainId": 10143,
+      "account": "0xA437345Be29EC6802024A8e090E34b621b92E5E2",
+      "to": "0xfdbE356828c8f5A5d5ed4f69ddE0816f4058Ef61",
+      "functionName": "swap",
+      "args": [
+        79,
+        true,
+        "10000000",
+        "198400510311000000000",
+        "1789571207"
+      ],
+      "expectedHash": "0xc29230b7826db8f37becb670c4c3b2442e446c434d6353910dd5ec43595d5203",
+      "nonce": 209,
+      "gas": "675090",
+      "maxFeePerGas": "122000000000",
+      "maximumGasCost": "82360980000000000",
+      "status": "success",
+      "blockNumber": "63060184",
+      "blockHash": "0x66861eb438b4e833662c2b82ff2280610c50b56b6d022d5e2d5869d51f760507",
+      "gasUsed": "675090",
+      "effectiveGasPrice": "102000000000"
+    },
+    {
+      "step": "withdraw-bought-mon",
+      "chainId": 10143,
+      "account": "0xA437345Be29EC6802024A8e090E34b621b92E5E2",
+      "to": "0x6384e9b2Bf3b65e1535403a0A543b5FDA905eE22",
+      "functionName": "withdraw",
+      "args": [
+        "0x0000000000000000000000000000000000000000",
+        "199397497800000000000"
+      ],
+      "expectedHash": "0x20c4a78db41d963648debe645331d38070f4ef6719a55e61205348bcdc01fdaf",
+      "nonce": 210,
+      "gas": "256917",
+      "maxFeePerGas": "122000000000",
+      "maximumGasCost": "31343874000000000",
+      "status": "success",
+      "blockNumber": "63060195",
+      "blockHash": "0x4235a2d0da9a48b8fdaa678cab9574b1c0fea8d67e673a3e11a74c917904dce3",
+      "gasUsed": "256917",
+      "effectiveGasPrice": "102000000000"
+    }
+  ]
+}

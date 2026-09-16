@@ -1,0 +1,78 @@
+{
+  "checkedAt": "2026-09-16T15:02:40.882Z",
+  "network": "Monad testnet",
+  "chainId": 10143,
+  "kind": "internal-browser-wallet-check",
+  "walletPath": "Continue with Dynamic → external MetaMask wallet",
+  "embeddedEmailWalletTested": false,
+  "account": "0xfa9605a2c38a0b4f16f689fdd07b63f295b86d1c",
+  "browserObservations": [
+    "Wrapped 0.01 MON and saw WMON balance refresh",
+    "Approved and protected 0.01 WMON in WMON/TestUSDC pool",
+    "Receipt #2 appeared under Positions",
+    "A full page reload restored the Dynamic wallet and receipt #2",
+    "Withdrew the asset; UI reported confirmation and closed position"
+  ],
+  "receiptId": "2",
+  "receiptContract": "0xe787Ab9bAEbca39eeE33eAFd96a7895578D2E561",
+  "receiptBurnVerified": true,
+  "transactions": [
+    {
+      "step": "wrap",
+      "hash": "0xfd48063b12c0d55306011ce5cbc0f8093aabfa3c060f956f43e45cb131851686",
+      "from": "0xfa9605a2c38a0b4f16f689fdd07b63f295b86d1c",
+      "to": "0x23ea8b07fda821d2096dee02a3a662a5374b69cb",
+      "value": "10000000000000000",
+      "status": "success",
+      "blockNumber": "63057421",
+      "blockHash": "0x544849b72e66cd20bde7d900cf82672e7bd4505db3a54eb7360ba5c3546d1eb4",
+      "timestamp": "1789570317",
+      "transfers": [
+        {
+          "token": "0x23ea8b07fda821d2096dee02a3a662a5374b69cb",
+          "from": "0x0000000000000000000000000000000000000000",
+          "to": "0xfa9605A2c38a0B4f16f689FDD07B63F295b86d1C",
+          "value": "10000000000000000"
+        }
+      ]
+    },
+    {
+      "step": "protect",
+      "hash": "0xc5a653efaab5b53f411ca6c59e512d289ac27cb6357fe90785fc2ba122c1b7c7",
+      "from": "0xfa9605a2c38a0b4f16f689fdd07b63f295b86d1c",
+      "to": "0xe0861e2a0a8b0e94377dc846fb00577c9028eb19",
+      "value": "0",
+      "status": "success",
+      "blockNumber": "63058171",
+      "blockHash": "0x222d1be0f9b107bad4c8369e270c46904b5a20a452cee0b63fd0005d7d2670b2",
+      "timestamp": "1789570544",
+      "transfers": [
+        {
+          "token": "0x23ea8b07fda821d2096dee02a3a662a5374b69cb",
+          "from": "0xfa9605A2c38a0B4f16f689FDD07B63F295b86d1C",
+          "to": "0xe0861e2a0a8b0E94377dC846fb00577c9028eb19",
+          "value": "10000000000000000"
+        }
+      ]
+    },
+    {
+      "step": "withdraw",
+      "hash": "0xbc52ca718018dc555528a36dcefdd6db2440b1185e649add4127bebc812cc2ce",
+      "from": "0xfa9605a2c38a0b4f16f689fdd07b63f295b86d1c",
+      "to": "0xe0861e2a0a8b0e94377dc846fb00577c9028eb19",
+      "value": "0",
+      "status": "success",
+      "blockNumber": "63059311",
+      "blockHash": "0x54175b97df97fc984059731241f958d893b1badaacb60d95146160cf202cabda",
+      "timestamp": "1789570889",
+      "transfers": [
+        {
+          "token": "0x23ea8b07fda821d2096dee02a3a662a5374b69cb",
+          "from": "0xe0861e2a0a8b0E94377dC846fb00577c9028eb19",
+          "to": "0xfa9605A2c38a0B4f16f689FDD07B63F295b86d1C",
+          "value": "9997311176230438"
+        }
+      ]
+    }
+  ]
+}

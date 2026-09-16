@@ -1,0 +1,7 @@
+monad-testnet:
+  user-workflow:
+    workflow-name: yieldshield-monad-pool-health
+  workflow-artifacts:
+    workflow-path: ./main.ts
+    config-path: ./config.json
+    secrets-path: ""

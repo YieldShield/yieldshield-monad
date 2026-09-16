@@ -2,6 +2,11 @@
 contracts
 output
 artifacts
-services
+services/*
+!services/monad/
+services/monad/*
+!services/monad/kuru-contracts.mjs
+!services/monad/kuru-contracts.d.mts
+integrations
 **/.env*
 .git

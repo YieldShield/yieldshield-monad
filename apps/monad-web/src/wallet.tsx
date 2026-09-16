@@ -36,6 +36,7 @@ import { ensureDynamicSession, type DynamicSession } from "./dynamic-session";
 import { createWalletSelectionGuard } from "./wallet-selection";
 import { createPendingTransactionStore } from "./pending-transaction";
 import { retryRateLimitedReads } from "./rpc-read-retry";
+import { isKuruTarget, verifyKuruTarget } from "../../../services/monad/kuru-contracts.mjs";
 const DynamicWallet = lazy(() => import("./DynamicWallet"));
 export const client = createPublicClient({
   chain: monadTestnet,
@@ -249,6 +250,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     return createWalletClient({ account, chain: monadTestnet, transport: custom(provider) });
   }
   async function verifyTarget(address: Address) {
+    if (isKuruTarget(address)) return verifyKuruTarget(client, address);
     const registry = deployment as any;
     const entry = Object.values(registry.contracts).find(
       (v: any) => v.address.toLowerCase() === address.toLowerCase(),
