@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, type ReactNode } from "react";
+import React, { useState, useEffect, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import {
   BrowserRouter,
@@ -13,8 +13,6 @@ import {
 } from "react-router-dom";
 import useSWR from "swr";
 import { parseAbi, formatUnits, type Abi, type Address } from "viem";
-import scenarioEvidence from "../../../docs/evidence/scenario-journey.json";
-import referenceEvidence from "../../../docs/evidence/reference-journey.json";
 import config from "../../../config/monad.json";
 import registryJson from "../../../config/deployment.json";
 import abisJson from "../../../config/browser-abis.json";
@@ -23,7 +21,6 @@ import { FundingNotice, FundingGate, AssetFundingHint, monadFaucet, type Funding
 import { amount, minOut, netAsset, noticeState, fmt, usd, short, fetcher, explorer, errorMessage } from "./lib";
 import type { Asset, Market, Position, Snapshot, Registry } from "./types";
 import { selectMarket } from "./market-selection";
-import { scenarioExits } from "./scenario-model";
 import "./styles.css";
 import "./app-layout.css";
 import "./asset-images.css";
@@ -31,12 +28,12 @@ import { TokenIcon, AssetPair } from "./AssetImage";
 import { assetVisual } from "./asset-visuals";
 import { MarketSelect } from "./MarketSelect";
 import { Landing } from "./Landing";
+import { HowItWorks } from "./HowItWorks";
 import { TaskAside } from "./TaskAside";
 const registry = registryJson as unknown as Registry;
 const abi = (name: string) => (abisJson as unknown as Record<string, Abi>)[name];
 const contract = (name: string) => registry.contracts[name]?.address;
 const useSnapshot = () => useSWR<Snapshot>("/api/status", fetcher, { refreshInterval: 12000, errorRetryCount: 2 });
-const same = (a?: string, b?: string) => Boolean(a && b && a.toLowerCase() === b.toLowerCase());
 const kind = (a: Asset) =>
   ({
     "external-reference": registry.referenceOracle === "redstone" ? "RedStone reference" : "Pyth reference",
@@ -98,7 +95,6 @@ const moreNav = [
   ["/markets", "Compare pools", "◈"],
   ["/how-it-works", "How it works", "↗"],
   ["/status", "Network status", "≋"],
-  ["/evidence", "Build evidence", "▧"],
   ["/create-pool", "Create a pool", "⊕"],
 ];
 function Header() {
@@ -1388,232 +1384,15 @@ function Tokens() {
     </Shell>
   );
 }
-function Lab({ standalone = false }: { standalone?: boolean }) {
-  const [change, setChange] = useState(-20),
-    [backingYield, setBackingYield] = useState(0);
-  const { market, fee, assetExit, sharePrice, shares, junior } = scenarioExits(change, backingYield);
-  const content = (
-    <>
-      <PageTitle title="How it works" copy="Compare the exits for a $100 asset with $150 in backing." />
-      <div className="scenario-layout">
-        <section className="scenario-controls">
-          <div className="control-label">
-            <label htmlFor="change">Asset price change</label>
-            <strong className={change >= 0 ? "positive" : "negative"}>
-              {change > 0 ? "+" : ""}
-              {change}%
-            </strong>
-          </div>
-          <input
-            id="change"
-            type="range"
-            min="-80"
-            max="80"
-            step="1"
-            value={change}
-            onChange={(e) => setChange(Number(e.target.value))}
-          />
-          <div className="range-labels">
-            <span>−80%</span>
-            <span>Unchanged</span>
-            <span>+80%</span>
-          </div>
-          <div className="control-label">
-            <label htmlFor="yield">Backing vault appreciation</label>
-            <strong>+{backingYield}%</strong>
-          </div>
-          <input
-            id="yield"
-            type="range"
-            min="0"
-            max="2"
-            step=".1"
-            value={backingYield}
-            onChange={(e) => setBackingYield(Number(e.target.value))}
-          />
-          <p>Vault appreciation changes the shares paid, not your entry value.</p>
-          <div className="scenario-ledger">
-            <div>
-              <span>Original asset value</span>
-              <b>$100.00</b>
-            </div>
-            <div>
-              <span>Junior backing at entry</span>
-              <b>$150.00</b>
-            </div>
-            <div>
-              <span>Current asset value</span>
-              <b>${market.toFixed(2)}</b>
-            </div>
-            <div>
-              <span>Gain-sharing fee on asset exit</span>
-              <b>${fee.toFixed(2)}</b>
-            </div>
-          </div>
-        </section>
-        <section className="scenario-result">
-          <Tag tone="senior">Protected holder</Tag>
-          <h2>Choose your exit.</h2>
-          <div className="result-comparison">
-            <div>
-              <span>Take the asset</span>
-              <strong>${assetExit.toFixed(2)}</strong>
-              <small>After realized-gain fees</small>
-            </div>
-            <span className="or">or</span>
-            <div>
-              <span>Use the backing exit</span>
-              <strong>$100.00</strong>
-              <small>
-                {shares.toFixed(4)} vault shares at ${sharePrice.toFixed(3)}/share
-              </small>
-            </div>
-          </div>
-          <div className="scenario-divider" />
-          <Tag tone="junior">Junior provider</Tag>
-          <h3>What happens when backing is used?</h3>
-          <p>Providers pay the backing exit and receive the surrendered asset.</p>
-          <div className="junior-outcome">
-            <span>Illustrative residual value</span>
-            <strong>${junior.toFixed(2)}</strong>
-          </div>
-          <small>
-            Remaining backing + surrendered asset + provider fees. Excludes creator/protocol fees. Earlier fees, token
-            rounding, delays and sale costs are omitted.
-          </small>
-        </section>
-      </div>
-      <div className="notice">
-        This calculator is an illustration, not an on-chain quote. Fees already realized earlier are not refunded after
-        a later loss. Actual positions keep a fixed cap in backing-token units.
-      </div>
-      <div className="row lab-next">
-        <Link className="button purple-button" to="/protect">
-          Protect tokens ↗
-        </Link>
-        <Link className="button outline" to="/faucet">
-          Get test tokens
-        </Link>
-      </div>
-    </>
-  );
-  return standalone ? (
+function HowItWorksPage() {
+  return (
     <div className="simple-site">
       <Header />
       <main className="explain-page" id="main" tabIndex={-1}>
-        {content}
+        <HowItWorks />
       </main>
       <Footer />
     </div>
-  ) : (
-    <Shell>{content}</Shell>
-  );
-}
-function Evidence() {
-  const journeys = [
-    { name: "Scenario markets", data: scenarioEvidence },
-    { name: "Reference markets", data: referenceEvidence },
-  ];
-  return (
-    <Shell>
-      <PageTitle
-        title="Build evidence"
-        copy="Internal tests on Monad testnet: deployed pools, real transactions and received-token checks."
-      />
-      <div className="notice">
-        All assets are valueless test tokens. These transactions demonstrate internal testing; they are not user
-        adoption, real-money TVL or an independent audit.
-      </div>
-      <section className="status-panel">
-        <h2>Product overview</h2>
-        <p>
-          A narrated tour of the deployed testnet app, with English captions. It uses application screenshots and
-          synthetic narration; the transaction evidence is linked below. No live wallet signing is shown.
-        </p>
-        <video
-          controls
-          playsInline
-          preload="metadata"
-          aria-label="YieldShield on Monad narrated product overview"
-          style={{ width: "100%", maxHeight: "70vh", background: "#120b28", borderRadius: 12 }}
-        >
-          <source src="/media/metropolis-overview.mp4" type="video/mp4" />
-          <track default kind="captions" src="/media/metropolis-overview.vtt" srcLang="en" label="English" />
-          Your browser does not support embedded video. Use the download link below.
-        </video>
-        <p>
-          <a href="/media/metropolis-overview.mp4">Open video</a> ·{" "}
-          <a href="/media/metropolis-overview.txt">Read transcript</a>
-        </p>
-      </section>
-      <section className="status-panel">
-        <h2>Five funded markets</h2>
-        <p>
-          39 named contracts, five pools and ten receipt NFTs were verified on 14 September 2026. Each pool was
-          initially seeded with 50,000 test backing units. Current availability is shown on{" "}
-          <Link to="/status">Status</Link>.
-        </p>
-        {registry.pools.map((pool) => (
-          <div className="status-row" key={pool.id}>
-            <div>
-              <strong>
-                {pool.symbol} / {pool.backingSymbol}
-              </strong>
-              <span>{pool.environment === "reference" ? "External MON reference" : "Isolated synthetic scenario"}</span>
-            </div>
-            <a href={explorer("address", pool.address)} target="_blank" rel="noreferrer">
-              Inspect pool ↗
-            </a>
-          </div>
-        ))}
-      </section>
-      <section className="status-panel">
-        <h2>What was built for Monad</h2>
-        <p>
-          The dedicated Monad app and API, native MON wrapper, shMON staking router, strict RedStone reference adapter,
-          separate scenario environment, Dynamic authentication, wallet checks and deployment evidence are this
-          milestone. YieldShield's protocol and accounting foundation predate Metropolis and are reused with
-          attribution. OpenAI Codex assisted with code, tests, documentation and deployment.
-        </p>
-        <p>
-          Dynamic email authentication and embedded wallets are deployed; their separate end-user signing walkthrough is
-          still being verified. Final submission is pending; the portal opens on 22 September.
-        </p>
-        <p>
-          The repository remains private by owner instruction while the operative submission-access requirements are
-          clarified.
-        </p>
-      </section>
-      {journeys.map(({ name, data }) => (
-        <section className="status-panel" key={name}>
-          <h2>{name}</h2>
-          <p>
-            Completed {new Date(data.completedAt).toLocaleDateString()}. Transactions below cover deposits, exits and
-            actual withdrawal waits. Successful payouts were checked against recipient token balances.
-          </p>
-          {name === "Reference markets" && (
-            <p>
-              The journal retains one shMON exit that exhausted its gas limit and the separately reviewed successful
-              retry. Native wrapping and shMON staking are confirmed; completing an unstake queue is a separate action.
-            </p>
-          )}
-          <details>
-            <summary>Inspect {Object.keys(data.transactions).length} recorded transactions</summary>
-            {Object.entries(data.transactions).map(([step, tx]) => (
-              <div className="status-row" key={step}>
-                <div>
-                  <strong>{step.replaceAll(":", " · ")}</strong>
-                  <span>{tx.status === "confirmed" ? "Confirmed" : "Reverted; retained in the record"}</span>
-                </div>
-                <a href={explorer("tx", tx.hash)} target="_blank" rel="noreferrer">
-                  {short(tx.hash)} ↗
-                </a>
-              </div>
-            ))}
-          </details>
-        </section>
-      ))}
-    </Shell>
   );
 }
 function Status() {
@@ -1978,10 +1757,10 @@ function App() {
             <Route path="/positions/:key" element={<PositionDetail />} />
             <Route path="/faucet" element={<Tokens />} />
             <Route path="/tokens" element={<LegacyTokensRedirect />} />
-            <Route path="/lab" element={<Lab />} />
-            <Route path="/how-it-works" element={<Lab standalone />} />
+            <Route path="/lab" element={<Navigate replace to="/how-it-works#calculator" />} />
+            <Route path="/how-it-works" element={<HowItWorksPage />} />
             <Route path="/status" element={<Status />} />
-            <Route path="/evidence" element={<Evidence />} />
+            <Route path="/evidence" element={<Navigate replace to="/how-it-works" />} />
             <Route path="/create-pool" element={<CreatePool />} />
             <Route path="/legal" element={<Legal />} />
             <Route

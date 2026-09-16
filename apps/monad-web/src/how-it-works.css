@@ -1,0 +1,323 @@
+.how-it-works {
+  --how-space: 64px;
+}
+.how-it-works section[id] {
+  scroll-margin-top: 32px;
+}
+.how-intro {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  align-items: end;
+  gap: 40px;
+  padding: 8px 0 36px;
+}
+.how-intro .eyebrow {
+  margin-bottom: 18px;
+}
+.how-intro h1 {
+  font-size: clamp(38px, 4.2vw, 60px);
+  line-height: 1.12;
+  letter-spacing: -0.06em;
+}
+.how-intro h1 em {
+  color: var(--accent);
+  font-style: normal;
+}
+.how-lead {
+  font-size: 16px;
+  max-width: 43ch;
+  padding-bottom: 3px;
+}
+.how-sections {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 28px;
+  border-block: 1px solid var(--line);
+  padding-block: 8px;
+}
+.how-sections a {
+  display: inline-flex;
+  gap: 12px;
+  align-items: center;
+  min-height: 44px;
+  font-size: 13px;
+}
+.how-sections a span {
+  color: var(--accent);
+}
+.how-video-section,
+.how-terms {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.6fr);
+  gap: 40px;
+}
+.how-video-section {
+  margin-top: var(--how-space);
+  align-items: center;
+}
+.how-section-copy h2,
+.how-section-heading h2,
+.how-start h2 {
+  font-size: clamp(26px, 2.6vw, 34px);
+  line-height: 1.2;
+  margin: 12px 0 16px;
+}
+.how-section-copy > p:not(.eyebrow),
+.how-section-heading > p:not(.eyebrow) {
+  font-size: 15px;
+  max-width: 66ch;
+}
+.how-section-copy > a {
+  display: inline-block;
+  padding-block: 12px;
+  margin-top: 12px;
+  font-size: 13px;
+}
+.how-video {
+  margin: 0;
+  min-width: 0;
+}
+.how-video video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.how-video figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 16px;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.how-video figcaption a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--accent);
+}
+.how-video-note {
+  font-size: 12px;
+}
+.how-section {
+  border-top: 1px solid var(--line);
+  margin-top: var(--how-space);
+  padding-top: var(--how-space);
+}
+.how-section-heading {
+  margin-bottom: 28px;
+}
+.how-roles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+.how-role {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 30px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+}
+.how-holder {
+  background: #f1edff;
+  border-color: #ded6fa;
+}
+.how-role h3 {
+  font-size: 27px;
+  margin: 20px 0 14px;
+}
+.how-role p,
+.how-role dd {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.how-role dl {
+  margin: 24px 0 12px;
+  width: 100%;
+}
+.how-role dl > div {
+  border-top: 1px solid var(--line);
+  padding: 18px 0;
+}
+.how-holder dl > div {
+  border-color: #ded6fa;
+}
+.how-role dt {
+  font-weight: 600;
+  margin-bottom: 7px;
+}
+.how-role dd {
+  margin: 0;
+}
+.how-role > a {
+  margin-top: auto;
+  padding-block: 12px;
+  font-size: 14px;
+}
+.how-journey {
+  margin-top: 36px;
+}
+.how-journey > h3 {
+  font-size: 23px;
+}
+.how-journey ol {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+  padding: 0;
+  margin: 26px 0 0;
+  list-style: none;
+}
+.how-step {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid #c5b8ee;
+  border-radius: 50%;
+  color: var(--accent);
+  font-size: 12px;
+}
+.how-journey h4 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 16px 0 8px;
+}
+.how-journey p {
+  font-size: 14px;
+}
+.how-it-works .calculator-exit-title {
+  font-size: 28px;
+  margin: 20px 0 27px;
+}
+.how-calculator-note {
+  font-size: 12px;
+  margin-top: 14px;
+  max-width: 90ch;
+}
+.how-questions details {
+  border-bottom: 1px solid var(--line);
+}
+.how-questions summary {
+  cursor: pointer;
+  padding: 22px 4px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.how-questions details:first-child summary {
+  padding-top: 0;
+}
+.how-questions summary:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+.how-questions details > p {
+  padding: 0 4px 22px;
+  font-size: 14px;
+}
+.how-questions a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.how-start {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  background: #f0ebff;
+  padding: 32px;
+  margin-top: var(--how-space);
+  border-radius: var(--radius);
+}
+.how-start h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+.how-start-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.how-start-actions .text-link {
+  font-size: 13px;
+  padding: 12px;
+}
+@media (max-width: 1000px) {
+  .how-intro {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .how-lead {
+    max-width: 62ch;
+  }
+  .how-video-section,
+  .how-terms {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+@media (max-width: 620px) {
+  .how-it-works {
+    --how-space: 40px;
+  }
+  .how-intro {
+    padding-top: 0;
+  }
+  .how-intro h1 {
+    font-size: clamp(34px, 8.6vw, 48px);
+  }
+  .how-lead {
+    font-size: 15px;
+  }
+  .how-sections {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px 12px;
+  }
+  .how-sections a {
+    justify-content: space-between;
+    gap: 4px;
+    font-size: 12px;
+  }
+  .how-roles,
+  .how-journey ol {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .how-role {
+    padding: 24px;
+  }
+  .how-journey li {
+    position: relative;
+    padding-left: 46px;
+  }
+  .how-journey .how-step {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  .how-journey h4 {
+    margin-top: 4px;
+  }
+  .how-start {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 24px;
+  }
+  .how-start-actions {
+    align-items: flex-start;
+  }
+}

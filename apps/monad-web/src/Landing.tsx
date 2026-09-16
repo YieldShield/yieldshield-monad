@@ -76,7 +76,9 @@ export function Landing({ data, error }: { data?: Snapshot; error?: Error }) {
       </section>
       <div className="built-with" aria-label="Product integrations">
         <span>Built with</span>
-        <Link to="/evidence">Dynamic</Link>
+        <a href="https://www.dynamic.xyz/" target="_blank" rel="noreferrer">
+          Dynamic
+        </a>
         <Link to="/faucet#stake-mon">shMonad</Link>
         <Link to="/status">RedStone</Link>
         <span>on Monad</span>

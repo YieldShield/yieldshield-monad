@@ -11,7 +11,7 @@ A Monad testnet application for holding crypto exposure with two exit choices: w
 
 The chain rollout is complete: **39 named contracts and five funded pools**, with both scenario and reference journeys verified against canonical receipts and recipient balances. Each pool was initially seeded with 50,000 valueless backing units. RedStone MON/USD is read directly on chain with a 120-second freshness limit; the historical Pyth adapter remains attributed but is not used by the active reference factory. Dynamic email authentication and embedded wallets are configured in a separate Monad sandbox environment.
 
-**This is not yet a submission-ready release.** See [readiness and submission packet](docs/METROPOLIS_SUBMISSION.md), [build ledger](docs/BUILD_LEDGER.md), and [deployment verification](docs/evidence/deployment-verification.json). A [2:34 narrated product overview and public receipt links](https://monad.yieldshield.ai/evidence) are available. Dynamic browser signing and external walkthroughs remain outstanding. Source publication awaits the owner's explicit approval.
+**This is not yet a submission-ready release.** See [readiness and submission packet](docs/METROPOLIS_SUBMISSION.md), [build ledger](docs/BUILD_LEDGER.md), and [deployment verification](docs/evidence/deployment-verification.json). A [2:34 narrated product overview and product guide](https://monad.yieldshield.ai/how-it-works) are available. Dynamic browser signing and external walkthroughs remain outstanding. Source publication awaits the owner's explicit approval.
 
 ## Product scope
 

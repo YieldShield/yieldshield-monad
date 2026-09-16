@@ -1,5 +1,13 @@
 # Monad build ledger
 
+## Product guide — 16 September 2026
+
+At the owner's request, replaced the calculator-only How it works page with a complete product guide: the existing captioned video and transcript, holder/provider roles, deposit-to-exit steps, the interactive calculator, and explanations of caps, fees, withdrawal conditions and testnet assets. Removed Build evidence from the app and stopped importing transaction journals into the browser bundle. The old `/evidence` URL redirects to `/how-it-works`; `/lab` redirects to its calculator section. Internal verification journals remain available in the repository.
+
+Validation: all 74 frontend tests and the production build passed. Browser checks confirmed video playback with captions, calculator keyboard interactions, FAQ expansion, legacy URL navigation, and responsive layouts down to a 320px viewport without horizontal overflow. No browser console errors were captured on the product guide.
+
+## Implementation history
+
 Each implementation stage is committed separately. The import is prior work, not a new Metropolis contribution.
 
 1. **Attributed foundation** — imported tracked source from YieldShield Base, preserving third-party notices and pinned submodules. Baseline commit `b44fba0`.
