@@ -38,6 +38,10 @@ export type Market = {
   juniorNft?: Address;
   capacity?: string;
   config?: string[];
+  collateralBps?: string;
+  juniorFeeBps?: string;
+  creatorFeeBps?: string;
+  protocolFeeBps?: string;
   actions: Record<string, boolean>;
 };
 export type FactoryVersion = {
@@ -59,7 +63,22 @@ export type CreationOption = FactoryVersion & {
   protocolFeeBps: string;
   minimumPoolTime: number;
   unlockDuration: number;
-  backing: { id: string; available: boolean; reason: string | null; price?: string; bond?: string }[];
+  limits: {
+    minCollateralBps: string;
+    maxCollateralBps: string;
+    minJuniorFeeBps: string;
+    maxJuniorFeeBps: string;
+    minCreatorFeeBps: string;
+    maxCreatorFeeBps: string;
+  };
+  backing: {
+    id: string;
+    available: boolean;
+    reason: string | null;
+    price?: string;
+    bond?: string;
+    minCollateralBps?: string;
+  }[];
 };
 export type Registry = {
   factories: FactoryVersion[];

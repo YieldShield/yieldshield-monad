@@ -53,13 +53,13 @@ export function HowItWorks() {
             aria-label="YieldShield on Monad product overview"
             aria-describedby="overview-caption"
           >
-            <source src="/media/how-it-works-20260916.mp4" type="video/mp4" />
-            <track default kind="captions" src="/media/how-it-works-20260916.vtt" srcLang="en" label="English" />
-            <a href="/media/how-it-works-20260916.mp4">Watch the product overview</a>
+            <source src="/media/how-it-works-20260916-v2.mp4" type="video/mp4" />
+            <track default kind="captions" src="/media/how-it-works-20260916-v2.vtt" srcLang="en" label="English" />
+            <a href="/media/how-it-works-20260916-v2.mp4">Watch the product overview</a>
           </video>
           <figcaption id="overview-caption">
             <span>2:08 · 1080p · English captions</span>
-            <a href="/media/how-it-works-20260916.mp4">Open video ↗</a>
+            <a href="/media/how-it-works-20260916-v2.mp4">Open video ↗</a>
           </figcaption>
           <p className="how-video-note">
             Recorded September 2026 with the current testnet app. Examples are illustrative; wallet signing is not
@@ -168,7 +168,8 @@ export function HowItWorks() {
         <ExitCalculator />
         <p className="how-calculator-note">
           This example assumes 12% of realized asset gains goes to fees: 10% to providers and 2% to the creator and
-          protocol. Check the selected pool for its actual terms.
+          protocol. Creators can choose different collateral and gain shares. Check the selected pool for its actual
+          terms.
         </p>
       </section>
 

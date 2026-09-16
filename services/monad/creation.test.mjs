@@ -22,6 +22,7 @@ const state = {
   MAX_POOLS: 200n,
   compositeOracle: a,
   getValue: 100000000n,
+  tokenInfo: ["Test USD", "TestUSDC", b, a, zero, 15000n],
 };
 const options = (overrides) =>
   creationOptions(
@@ -59,4 +60,20 @@ test("failed backing price does not produce a zero bond", async () => {
   assert(v.available);
   assert(!v.backing[0].available);
   assert.equal(v.backing[0].bond, undefined);
+});
+
+test("creation exposes protocol limits and the backing token collateral minimum", async () => {
+  const [v] = await options({ tokenInfo: ["", "", b, a, zero, 20000n] });
+  assert.equal(v.backing[0].minCollateralBps, "20000");
+  assert.equal(v.limits.maxCollateralBps, "50000");
+  assert.equal(v.limits.minJuniorFeeBps, "100");
+  assert.equal(v.limits.maxCreatorFeeBps, "2000");
+  assert.equal((await options({ tokenInfo: ["", "", b, a, zero, 0n] }))[0].backing[0].minCollateralBps, "10000");
+  assert.equal((await options({ tokenInfo: [] }))[0].backing[0].available, false);
+});
+test("a zero governance bond minimum produces a valid zero quote", async () => {
+  assert.equal(creationBond(0n, 100000000n, 6), 0n);
+  const [v] = await options({ minimumCreationBondUsd: 0n });
+  assert.equal(v.backing[0].bond, "0");
+  assert.equal(v.backing[0].available, true);
 });

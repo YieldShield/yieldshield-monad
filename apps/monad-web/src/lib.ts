@@ -1,4 +1,5 @@
 import { formatUnits, parseUnits } from "viem";
+import type { Market } from "./types";
 export const fmt = (v: string | bigint | undefined | null, decimals = 6, digits = 2) =>
   v == null
     ? "—"
@@ -17,16 +18,20 @@ export function amount(text: string, decimals: number) {
   return value;
 }
 export const minOut = (n: bigint) => (n * 995n) / 1000n || 1n;
-export function netAsset(amount: bigint, entry: bigint, baseline: bigint, price: bigint, decimals: number) {
+export function netAsset(
+  amount: bigint,
+  entry: bigint,
+  baseline: bigint,
+  price: bigint,
+  decimals: number,
+  feeBps: readonly bigint[],
+) {
   if (price <= 0n) throw new Error("A current price is needed to preview fees.");
   const current = (amount * price) / 10n ** BigInt(decimals);
   const base = baseline || entry;
   const gain = current > base ? current - base : 0n;
   const ceil = (n: bigint, d: bigint) => (n + d - 1n) / d;
-  const fees = [1000n, 100n, 100n].reduce(
-    (sum, bps) => sum + ceil(ceil(gain * bps, 10000n) * 10n ** BigInt(decimals), price),
-    0n,
-  );
+  const fees = feeBps.reduce((sum, bps) => sum + ceil(ceil(gain * bps, 10000n) * 10n ** BigInt(decimals), price), 0n);
   return fees >= amount ? 0n : amount - fees;
 }
 export const explorer = (kind: "tx" | "address", a: string) => `https://testnet.monadexplorer.com/${kind}/${a}`;
@@ -51,4 +56,28 @@ export function noticeState(maturity: string | undefined, now: number) {
     active: readyAt > 0 && now >= readyAt && now <= readyAt + 7 * 86400000,
     expired: readyAt > 0 && now > readyAt + 7 * 86400000,
   };
+}
+
+export const percent = (bps: string | bigint | undefined) => (bps == null ? "—" : `${formatUnits(BigInt(bps), 2)}%`);
+export function marketTerms(m: Market | undefined) {
+  if (!m || m.collateralBps == null || m.juniorFeeBps == null || m.creatorFeeBps == null || m.protocolFeeBps == null)
+    return null;
+  const feeBps = [BigInt(m.juniorFeeBps), BigInt(m.creatorFeeBps), BigInt(m.protocolFeeBps)] as const;
+  return { collateralBps: BigInt(m.collateralBps), feeBps, totalFeeBps: feeBps.reduce((a, b) => a + b, 0n) };
+}
+export function backingReserve(entryUsd: bigint, collateralBps: bigint, price: bigint, decimals: number) {
+  if (price <= 0n) throw new Error("Backing price unavailable.");
+  return (((entryUsd * collateralBps + 9999n) / 10000n) * 10n ** BigInt(decimals)) / price;
+}
+export function duration(seconds: string | number | undefined) {
+  if (seconds == null) return "—";
+  const value = Number(seconds);
+  for (const [unit, divisor] of [
+    ["day", 86400],
+    ["hour", 3600],
+    ["minute", 60],
+  ] as const) {
+    if (value > 0 && value % divisor === 0) return `${value / divisor} ${unit}${value / divisor === 1 ? "" : "s"}`;
+  }
+  return `${value} second${value === 1 ? "" : "s"}`;
 }

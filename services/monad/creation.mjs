@@ -1,7 +1,7 @@
 import { factoryVersions } from "../../scripts/monad-factories.mjs";
 const same = (a, b) => String(a).toLowerCase() === String(b).toLowerCase();
 export function creationBond(minimumUsd, price, decimals) {
-  if (minimumUsd <= 0n || price <= 0n || !Number.isInteger(decimals) || decimals < 0 || decimals > 18)
+  if (minimumUsd < 0n || price <= 0n || !Number.isInteger(decimals) || decimals < 0 || decimals > 18)
     throw new Error("Creation valuation unavailable");
   return (minimumUsd * 10n ** BigInt(decimals) + price - 1n) / price;
 }
@@ -19,6 +19,14 @@ export async function creationOptions(registry, get, code, blockNumber) {
         protocolFeeBps: "100",
         minimumPoolTime: 60,
         unlockDuration: 120,
+        limits: {
+          minCollateralBps: "10000",
+          maxCollateralBps: "50000",
+          minJuniorFeeBps: "100",
+          maxJuniorFeeBps: "5000",
+          minCreatorFeeBps: "0",
+          maxCreatorFeeBps: "2000",
+        },
       };
       try {
         const [paused, minimumUsd, whitelist, router, pending, pools, configuredLimit, composite, defaultLimit] =
@@ -52,22 +60,23 @@ export async function creationOptions(registry, get, code, blockNumber) {
             if (!asset || !whitelist.some((t) => same(t, asset.address)))
               return { id, available: false, reason: "Token unavailable." };
             try {
-              const price = await get(
-                composite,
-                "",
-                "getValue",
-                [asset.address, 10n ** BigInt(asset.decimals)],
-                blockNumber,
-              );
+              const [price, tokenInfo] = await Promise.all([
+                get(composite, "", "getValue", [asset.address, 10n ** BigInt(asset.decimals)], blockNumber),
+                get(factory, "SplitRiskPoolFactory", "tokenInfo", [asset.address], blockNumber),
+              ]);
+              const tokenMinimum = tokenInfo[5];
+              if (typeof tokenMinimum !== "bigint" || tokenMinimum < 0n || tokenMinimum > 50000n)
+                throw new Error("Collateral requirement unavailable");
               return {
                 id,
                 available: true,
                 price: String(price),
+                minCollateralBps: String(tokenMinimum > 10000n ? tokenMinimum : 10000n),
                 bond: String(creationBond(minimumUsd, price, asset.decimals)),
                 reason: null,
               };
             } catch {
-              return { id, available: false, reason: "Backing valuation unavailable." };
+              return { id, available: false, reason: "Backing valuation or collateral requirement unavailable." };
             }
           }),
         );

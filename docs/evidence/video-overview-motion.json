@@ -1,0 +1,35 @@
+{
+  "revision": 2,
+  "fps": 30,
+  "frames": 3836,
+  "durationSeconds": 127.86666666666666,
+  "sourceAudioMd5": "MD5=6e58130837fe6009eb5d5999a8d67f66",
+  "audioPreserved": true,
+  "animationReviewFrames": 38,
+  "decodedExportSamples": [
+    3.8,
+    3.83,
+    4.4,
+    6.1,
+    33.5,
+    34.2,
+    48.4,
+    49.9,
+    56.9,
+    64.3,
+    65.1,
+    67.6,
+    70.9,
+    89.9,
+    108.3,
+    111.9
+  ],
+  "motionRules": [
+    "One shot per frame; no crossfade between different headings or values.",
+    "One-time eased entrances; no looping markers or tokens.",
+    "Values remain fixed; arithmetic steps appear in narration order.",
+    "Entry and backing bars share a consistent scale within each comparison.",
+    "Chapter progress is cumulative."
+  ],
+  "captionCues": 39
+}

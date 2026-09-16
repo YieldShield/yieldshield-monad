@@ -18,7 +18,22 @@ import registryJson from "../../../config/deployment.json";
 import abisJson from "../../../config/browser-abis.json";
 import { WalletProvider, useWallet, useBalance, useNativeBalance, client } from "./wallet";
 import { FundingNotice, FundingGate, AssetFundingHint, monadFaucet, type FundingAsset } from "./Funding";
-import { amount, minOut, netAsset, noticeState, fmt, usd, short, fetcher, explorer, errorMessage } from "./lib";
+import {
+  amount,
+  minOut,
+  netAsset,
+  noticeState,
+  fmt,
+  usd,
+  short,
+  fetcher,
+  explorer,
+  errorMessage,
+  percent,
+  marketTerms,
+  backingReserve,
+  duration,
+} from "./lib";
 import type { Asset, Market, Position, Snapshot, Registry, CreationOption } from "./types";
 import { selectMarket } from "./market-selection";
 import "./styles.css";
@@ -29,7 +44,17 @@ import { assetVisual } from "./asset-visuals";
 import { ExpandedFunding } from "./ExpandedFunding";
 import { AssetCatalog } from "./AssetCatalog";
 import { AssetSelect } from "./AssetSelect";
-import { creationVersion, creationFingerprint, assertCreationIdentity } from "./creation";
+import {
+  creationVersion,
+  creationFingerprint,
+  assertCreationIdentity,
+  creationInputs,
+  validateCreationTerms,
+  createPoolArgs,
+  type CreationInputs,
+  type CreationTerms,
+} from "./creation";
+import { PoolTermsFields } from "./PoolTermsFields";
 import { MarketSelect } from "./MarketSelect";
 import { Landing } from "./Landing";
 import { HowItWorks } from "./HowItWorks";
@@ -250,6 +275,7 @@ function Loading({ error }: { error?: Error }) {
   );
 }
 function MarketCard({ market: m }: { market: Market }) {
+  const terms = marketTerms(m);
   return (
     <article className="market-card">
       <div className={`card-top pool-art ${assetVisual(m.shield).theme}`}>
@@ -280,9 +306,22 @@ function MarketCard({ market: m }: { market: Market }) {
         </div>
         <div>
           <span>Reserve requirement</span>
-          <strong>150%</strong>
+          <strong>{percent(m.collateralBps)}</strong>
         </div>
       </div>
+      <div className="mini-metrics">
+        <div>
+          <span>Gains shared</span>
+          <strong>{percent(terms?.totalFeeBps)}</strong>
+        </div>
+        <div>
+          <span>Provider share</span>
+          <strong>{percent(m.juniorFeeBps)}</strong>
+        </div>
+      </div>
+      <a className="pool-address" href={explorer("address", m.address)} target="_blank" rel="noreferrer">
+        Pool {short(m.address)} ↗
+      </a>
       {m.reason && <p className="inline-warning">{m.reason}</p>}
       <div className="card-actions">
         <Link className="button purple-button" to={`/protect?market=${m.id}`}>
@@ -400,6 +439,7 @@ function useSelectedMarket(data: Snapshot | undefined) {
 function PositionForm({ side }: { side: "senior" | "junior" }) {
   const { data, error } = useSnapshot();
   const { m, id, setId } = useSelectedMarket(data);
+  const terms = marketTerms(m);
   const [input, setInput] = useState(side === "senior" ? "1" : "1000");
   const w = useWallet();
   const token = side === "senior" ? m?.shield : m?.backing;
@@ -415,10 +455,10 @@ function PositionForm({ side }: { side: "senior" | "junior" }) {
   }
   const entry = token?.price ? (value * BigInt(token.price)) / 10n ** BigInt(token.decimals) : null;
   const reserve =
-    entry && m?.backing.price
-      ? (((entry * 15000n + 9999n) / 10000n) * 10n ** BigInt(m.backing.decimals)) / BigInt(m.backing.price)
+    entry && terms && m?.backing.price && BigInt(m.backing.price) > 0n
+      ? backingReserve(entry, terms.collateralBps, BigInt(m.backing.price), m.backing.decimals)
       : null;
-  const available = Boolean(m?.actions[side === "senior" ? "protect" : "provide"]);
+  const available = Boolean(terms && m?.actions[side === "senior" ? "protect" : "provide"]);
   const tooMuch = balance != null && value > balance;
   const overCapacity = side === "senior" && m?.capacity != null && value > BigInt(m.capacity);
   async function submit() {
@@ -495,22 +535,22 @@ function PositionForm({ side }: { side: "senior" | "junior" }) {
                     </div>
                     <div>
                       <dt>Fee</dt>
-                      <dd>12% of realized gains</dd>
+                      <dd>{percent(terms?.totalFeeBps)} of realized gains</dd>
                     </div>
                     <div>
                       <dt>Backing exit after</dt>
-                      <dd>60 seconds</dd>
+                      <dd>{duration(m.config?.[5])}</dd>
                     </div>
                   </>
                 ) : (
                   <>
                     <div>
                       <dt>Reward share</dt>
-                      <dd>10% of realized gains, shared by providers</dd>
+                      <dd>{percent(m.juniorFeeBps)} of realized gains, shared by providers</dd>
                     </div>
                     <div>
                       <dt>Withdrawal notice</dt>
-                      <dd>120 seconds</dd>
+                      <dd>{duration(m.config?.[6])}</dd>
                     </div>
                   </>
                 )}
@@ -553,7 +593,14 @@ function PositionForm({ side }: { side: "senior" | "junior" }) {
                   <dl className="review-list">
                     <div>
                       <dt>Reserve requirement</dt>
-                      <dd>150%</dd>
+                      <dd>{percent(m.collateralBps)}</dd>
+                    </div>
+                    <div>
+                      <dt>Gains shared</dt>
+                      <dd>
+                        {percent(m.juniorFeeBps)} provider · {percent(m.creatorFeeBps)} creator ·{" "}
+                        {percent(m.protocolFeeBps)} protocol
+                      </dd>
                     </div>
                     <div>
                       <dt>Total backing</dt>
@@ -717,7 +764,9 @@ function PositionDetail() {
     );
   const senior = p.side === "senior",
     pos = p.position;
-  const unlocked = Number(pos.depositTime) * 1000 + 60000 <= now;
+  const terms = marketTerms(m);
+  const exitReadyAt = m.config?.[5] == null ? null : Number(pos.depositTime) * 1000 + Number(m.config[5]) * 1000;
+  const unlocked = exitReadyAt != null && exitReadyAt <= now;
   const {
     readyAt: noticeReady,
     active: activeNotice,
@@ -726,12 +775,14 @@ function PositionDetail() {
   let assetExit: bigint | null = null,
     backingExit: bigint | null = null;
   try {
+    if (!terms) throw new Error("Pool fee terms unavailable.");
     assetExit = netAsset(
       BigInt(pos.amount),
       BigInt(pos.valueAtDeposit || 0),
       BigInt(p.feeBaseline || 0),
       BigInt(m.shield.price || 0),
       m.shield.decimals,
+      terms.feeBps,
     );
     if (m.backing.price && pos.valueAtDeposit) {
       backingExit = (BigInt(pos.valueAtDeposit) * 10n ** BigInt(m.backing.decimals)) / BigInt(m.backing.price);
@@ -844,7 +895,9 @@ function PositionDetail() {
             </strong>
             {!unlocked && (
               <p className="inline-warning">
-                Available in {Math.max(0, Math.ceil((Number(pos.depositTime) * 1000 + 60000 - now) / 1000))} seconds.
+                {exitReadyAt == null
+                  ? "Withdrawal timing is unavailable. Refresh to try again."
+                  : `Available in ${Math.max(0, Math.ceil((exitReadyAt - now) / 1000))} seconds.`}
               </p>
             )}
             <Submit
@@ -866,7 +919,7 @@ function PositionDetail() {
             <dl className="review-list">
               <div>
                 <dt>Notice period</dt>
-                <dd>120 seconds</dd>
+                <dd>{duration(m.config?.[6])}</dd>
               </div>
               <div>
                 <dt>Withdrawal window</dt>
@@ -1540,6 +1593,7 @@ function CreatePool() {
   const protectedId = params.get("asset") || "wmon",
     backingId = params.get("backing") || "test-usd";
   const [created, setCreated] = useState<string>();
+  const [draft, setDraft] = useState<Partial<CreationInputs>>({});
   const versions = data?.creation || [];
   const protectedAssets = data?.assets.filter((a) => versions.some((v) => v.protectedAssets.includes(a.id))) || [];
   const backingAssets =
@@ -1550,12 +1604,14 @@ function CreatePool() {
     backing = backingAssets.find((a) => a.id === backingId);
   const version = creationVersion(versions, protectedId, backingId),
     quote = version?.backing.find((b) => b.id === backingId);
-  const balance = useBalance(backing?.address),
-    bond = BigInt(quote?.bond || "0");
+  const input = creationInputs(version, backingId, backing?.decimals || 6, draft);
+  const { terms, errors } = validateCreationTerms(version, backingId, backing?.decimals || 6, input);
+  const balance = useBalance(backing?.address);
+  const bond = terms?.bond ?? 0n;
   const fundingAsset = backing
     ? { id: backing.id, symbol: backing.symbol, balance: balance.error ? undefined : balance.data }
     : undefined;
-  const insufficient = !!w.account && (fundingAsset?.balance == null || fundingAsset.balance < bond);
+  const insufficient = !!w.account && bond > 0n && (fundingAsset?.balance == null || fundingAsset.balance < bond);
   const unavailable =
     !token || !backing
       ? "Choose a supported asset and backing token."
@@ -1571,8 +1627,13 @@ function CreatePool() {
     next.set(key, value);
     setParams(next, { replace: true });
     setCreated(undefined);
+    setDraft((previous) => ({ junior: previous.junior, creator: previous.creator }));
   };
-  async function checkReview(review: string, chosen: CreationOption) {
+  const editTerms = (field: keyof CreationInputs, value: string) => {
+    setDraft((previous) => ({ ...previous, [field]: value }));
+    setCreated(undefined);
+  };
+  async function checkReview(review: string, chosen: CreationOption, selected: CreationTerms) {
     const fresh = await fetcher("/api/creation");
     if (
       !Number.isFinite(fresh.observedAt) ||
@@ -1582,15 +1643,17 @@ function CreatePool() {
     )
       throw new Error("Refresh the creation review.");
     const next = (fresh.creation as CreationOption[]).find((v) => v.id === chosen.id);
-    if (!next || creationFingerprint(next, protectedId, backingId) !== review) {
+    if (!next || creationFingerprint(next, protectedId, backingId, selected) !== review) {
       await mutate();
       throw new Error("Creation terms changed. Review the updated bond and try again.");
     }
     assertCreationIdentity(next, registry, protectedId, backingId);
+    const refreshed = validateCreationTerms(next, backingId, backing!.decimals, input);
+    if (!refreshed.terms) throw new Error("Creation requirements changed. Review the updated pool terms.");
   }
   return (
     <Shell>
-      <PageTitle title="Create a pool" copy="Choose an asset and its backing." />
+      <PageTitle title="Create a pool" copy="Choose your assets, collateral and share of gains." />
       {!data ? (
         <Loading error={error} />
       ) : (
@@ -1610,34 +1673,47 @@ function CreatePool() {
               onChange={(v) => select("backing", v)}
               disabled={w.busy}
             />
+            {version && backing && (
+              <PoolTermsFields
+                version={version}
+                backingId={backingId}
+                symbol={backing.symbol}
+                decimals={backing.decimals}
+                input={input}
+                errors={errors}
+                disabled={w.busy}
+                onChange={editTerms}
+              />
+            )}
             {version && (
               <dl className="review-list">
                 <div>
                   <dt>Collateral</dt>
-                  <dd>{Number(version.collateralBps) / 100}%</dd>
+                  <dd>{terms ? `${formatUnits(terms.collateralBps, 2)}%` : "—"}</dd>
                 </div>
                 <div>
                   <dt>Gains shared</dt>
                   <dd>
-                    {Number(version.juniorFeeBps) / 100}% provider · {Number(version.creatorFeeBps) / 100}% creator ·{" "}
-                    {Number(version.protocolFeeBps) / 100}% protocol
+                    {terms
+                      ? `${formatUnits(terms.juniorFeeBps + terms.creatorFeeBps + BigInt(version.protocolFeeBps), 2)}% of realized gains`
+                      : "—"}
                   </dd>
                 </div>
                 <div>
-                  <dt>Creation bond</dt>
+                  <dt>Holder keeps</dt>
                   <dd>
-                    {quote?.bond && backing
-                      ? `${formatUnits(bond, backing.decimals)} ${backing.symbol}`
-                      : "Unavailable"}
+                    {terms
+                      ? `${formatUnits(10000n - terms.juniorFeeBps - terms.creatorFeeBps - BigInt(version.protocolFeeBps), 2)}% of realized gains`
+                      : "—"}
                   </dd>
                 </div>
                 <div>
-                  <dt>Earliest protected exit</dt>
-                  <dd>{version.minimumPoolTime / 60} minute</dd>
+                  <dt>Earliest backing exit</dt>
+                  <dd>{duration(version.minimumPoolTime)}</dd>
                 </div>
                 <div>
                   <dt>Backing withdrawal notice</dt>
-                  <dd>{version.unlockDuration / 60} minutes</dd>
+                  <dd>{duration(version.unlockDuration)}</dd>
                 </div>
               </dl>
             )}
@@ -1656,12 +1732,13 @@ function CreatePool() {
               </p>
             )}
             <Submit
-              label="Approve bond & create pool"
-              asset={fundingAsset}
-              disabled={!!unavailable || insufficient || bond <= 0n}
+              label={bond > 0n ? "Approve bond & create pool" : "Create pool"}
+              asset={bond > 0n ? fundingAsset : undefined}
+              disabled={!!unavailable || insufficient || !terms}
               onClick={() =>
                 w.execute("Create pool", async () => {
-                  if (!version || !token || !backing || unavailable) throw new Error("Choose an available pair.");
+                  if (!version || !token || !backing || unavailable || !terms)
+                    throw new Error("Review the pool terms and choose an available pair.");
                   assertCreationIdentity(version, registry, protectedId, backingId);
                   for (const selected of [token, backing]) {
                     const pinned = registry.assets.find((a) => a.id === selected.id);
@@ -1673,24 +1750,15 @@ function CreatePool() {
                     )
                       throw new Error("Asset identity changed. Reload the app.");
                   }
-                  const review = creationFingerprint(version, protectedId, backingId);
-                  await checkReview(review, version);
-                  await w.approve(backing.address, version.factory, bond);
-                  await checkReview(review, version);
+                  const review = creationFingerprint(version, protectedId, backingId, terms);
+                  await checkReview(review, version, terms);
+                  if (bond > 0n) await w.approve(backing.address, version.factory, bond);
+                  await checkReview(review, version, terms);
                   const receipt = await w.send({
                     address: version.factory,
                     abi: abi("SplitRiskPoolFactory"),
                     functionName: "createPool",
-                    args: [
-                      token.address,
-                      token.symbol,
-                      backing.address,
-                      backing.symbol,
-                      BigInt(version.juniorFeeBps),
-                      BigInt(version.creatorFeeBps),
-                      BigInt(version.collateralBps),
-                      bond,
-                    ],
+                    args: createPoolArgs(token, backing, terms),
                   });
                   const logs = parseEventLogs({
                     abi: parseAbi([
@@ -1703,6 +1771,7 @@ function CreatePool() {
                   if (logs.length !== 1)
                     throw new Error("Pool confirmed. Open the transaction receipt to find its address.");
                   setCreated(logs[0].args.poolAddress.toLowerCase());
+                  await mutate();
                 })
               }
             />
