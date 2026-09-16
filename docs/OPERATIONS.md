@@ -88,7 +88,9 @@ Owner decision, 9 September 2026: keep the repository private for now. Do not ch
 
 ## Asset expansion (16 September)
 
-The expansion uses a separate resumable journal and five new immutable contracts. `node scripts/deploy-monad-expansion.mjs --check` performs read-only identity checks; `--broadcast` requires the dedicated testnet signer and enforces the journal's cumulative fee cap. The initial 3-MON cap stopped before signing the first pool-creation transaction. No signed intent should be edited to change that result. Funded AUSD pool verification remains pending additional testnet gas.
+The expansion uses a separate resumable journal and five new immutable contracts. `node scripts/deploy-monad-expansion.mjs --check` performs read-only identity checks; `--broadcast` requires the dedicated testnet signer and enforces the journal's cumulative fee cap. The initial 3-MON cap stopped before signing the first pool-creation transaction. After the owner's 5-MON top-up, the reviewed cap became 6 MON and both AUSD pools were created and funded. All previous intents remain unchanged.
+
+`node scripts/smoke-monad.mjs --broadcast --expanded` uses its own 3-MON journal and covers both AUSD markets. It completed public holder asset/backing exits and provider withdrawals after the real delays. It preserves the scenario/reference journals. The new receipt NFTs match the original PoolCreationLib build artifacts, even though their pools use the expanded router. Full deployment verification reports 44 contracts and seven pools.
 
 Use `node scripts/verify-monad.mjs --expansion --legacy-artifacts=/absolute/path/to/original/contracts/out` to verify the staged contracts without declaring the pools ready. Historical Solidity CBOR metadata contains original auto-detected remapping paths: the verifier accepts a separate directory of original build artifacts, checks every source hash, and still compares full deployed runtime bytes. Newly deployed contracts use the current build. Do not remove metadata or weaken runtime-hash checks to accommodate a different checkout.
 

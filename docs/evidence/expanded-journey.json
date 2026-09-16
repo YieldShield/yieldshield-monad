@@ -1,0 +1,157 @@
+{
+  "chainId": 10143,
+  "account": "0xA437345Be29EC6802024A8e090E34b621b92E5E2",
+  "completedAt": "2026-09-16T07:11:51.717Z",
+  "observations": {
+    "wmon-ausd:asset-exit": {
+      "token": "0x23EA8b07fda821d2096dee02a3a662a5374B69Cb",
+      "before": "80392156862745098",
+      "after": "90392156862745098",
+      "received": "10000000000000000",
+      "txHash": "0x31b384a5b507436334acb14c16789730943e0ed2f0c931212465901b2944191c",
+      "blockNumber": "62965278"
+    },
+    "wmon-ausd:backing-exit": {
+      "token": "0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC",
+      "before": "4000000000",
+      "after": "4000000222",
+      "received": "222",
+      "txHash": "0x505137b8b0013aba16f56f38601df64639e2efdccb987fc2d47862fbe9583691",
+      "blockNumber": "62965494"
+    },
+    "wmon-ausd:junior-exit": {
+      "token": "0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC",
+      "before": "4000000222",
+      "after": "5000000148",
+      "received": "999999926",
+      "txHash": "0x2de8bd1225175a8df8482fe3917f8aef2e7461fcdcd610d64fd5f1bf03b26b57",
+      "blockNumber": "62965916"
+    },
+    "shmon-ausd:asset-exit": {
+      "token": "0x282BdDFF5e58793AcAb65438b257Dbd15A8745C9",
+      "before": "11113760773156018",
+      "after": "21113760773156018",
+      "received": "10000000000000000",
+      "txHash": "0x19307e57a22a61e39543e42231c408dac57cd85ca5f79f1fde75619b6fabebc6",
+      "blockNumber": "62965957"
+    },
+    "shmon-ausd:backing-exit": {
+      "token": "0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC",
+      "before": "4000000148",
+      "after": "4000003021",
+      "received": "2873",
+      "txHash": "0xf22048d21fd8b3e3579b136bf8b3600f6689d4b9f333e59c4469465875bdd1da",
+      "blockNumber": "62966172"
+    },
+    "shmon-ausd:junior-exit": {
+      "token": "0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC",
+      "before": "4000003021",
+      "after": "5000002063",
+      "received": "999999042",
+      "txHash": "0xaebfea3f31c8bbdd4fb5583f523aa138d57705fe85699a9838c55739221103dd",
+      "blockNumber": "62966594"
+    }
+  },
+  "transactions": {
+    "wmon-ausd:junior-approve": {
+      "hash": "0xcab0b459b315929e2d29271bcaeccfb769d1bf1b85e460207c583d8ea32256a5",
+      "blockNumber": "62965246",
+      "status": "confirmed"
+    },
+    "wmon-ausd:junior-deposit": {
+      "hash": "0x37784114697f6c5ea0cb99bbee05e02fb864fe835fa4bad9fca878064d9fb092",
+      "blockNumber": "62965255",
+      "status": "confirmed"
+    },
+    "wmon-ausd:senior-approve": {
+      "hash": "0x2c047663696f14bf62d735319c03d658a00e1ba9492ef9e468b4c965b24c74a8",
+      "blockNumber": "62965262",
+      "status": "confirmed"
+    },
+    "wmon-ausd:senior-deposit": {
+      "hash": "0x6c00794c56c4632811704c0f563d54252914f67a10e3095dff4984a2d367e374",
+      "blockNumber": "62965270",
+      "status": "confirmed"
+    },
+    "wmon-ausd:asset-exit": {
+      "hash": "0x31b384a5b507436334acb14c16789730943e0ed2f0c931212465901b2944191c",
+      "blockNumber": "62965278",
+      "status": "confirmed"
+    },
+    "wmon-ausd:protected-deposit": {
+      "hash": "0x43e34034ebe23827a7028d2134a92bcd4b18f3ea6c99106e5f5b2307f27256a3",
+      "blockNumber": "62965287",
+      "status": "confirmed"
+    },
+    "wmon-ausd:backing-exit": {
+      "hash": "0x505137b8b0013aba16f56f38601df64639e2efdccb987fc2d47862fbe9583691",
+      "blockNumber": "62965494",
+      "status": "confirmed"
+    },
+    "wmon-ausd:claim-junior": {
+      "hash": "0xe66294ac44cfa9856a727c4a9b6730844637d9f4436d018148ef87b0695edf83",
+      "blockNumber": "62965502",
+      "status": "confirmed"
+    },
+    "wmon-ausd:notice": {
+      "hash": "0xd685603c899526fc6ebd55d053b9ff71cad788796cea8f236ce53a103ada4ed5",
+      "blockNumber": "62965510",
+      "status": "confirmed"
+    },
+    "wmon-ausd:junior-exit": {
+      "hash": "0x2de8bd1225175a8df8482fe3917f8aef2e7461fcdcd610d64fd5f1bf03b26b57",
+      "blockNumber": "62965916",
+      "status": "confirmed"
+    },
+    "shmon-ausd:junior-approve": {
+      "hash": "0x6eee04f776e7be73b14f7f8b9cb1eddb0680691901cd2ff0f4331dd9b6170e95",
+      "blockNumber": "62965924",
+      "status": "confirmed"
+    },
+    "shmon-ausd:junior-deposit": {
+      "hash": "0x7d4eb33059672a2e5bb6dd5d7c35b798ce85e20d30bd1c3ccfeeb68823049475",
+      "blockNumber": "62965932",
+      "status": "confirmed"
+    },
+    "shmon-ausd:senior-approve": {
+      "hash": "0x7b5319533879bb306a58c308d8ddc2564e8522ef6c6075683312fe10b047b57b",
+      "blockNumber": "62965940",
+      "status": "confirmed"
+    },
+    "shmon-ausd:senior-deposit": {
+      "hash": "0x340d3ba11628eaed53b3a08f86b994bf25267e7c562c67076f04b5f11b6d22cc",
+      "blockNumber": "62965949",
+      "status": "confirmed"
+    },
+    "shmon-ausd:asset-exit": {
+      "hash": "0x19307e57a22a61e39543e42231c408dac57cd85ca5f79f1fde75619b6fabebc6",
+      "blockNumber": "62965957",
+      "status": "confirmed"
+    },
+    "shmon-ausd:protected-deposit": {
+      "hash": "0x7fa2fc013c624add0402fdb084df440af257a9df5abb8d3345adad3751c84a71",
+      "blockNumber": "62965964",
+      "status": "confirmed"
+    },
+    "shmon-ausd:backing-exit": {
+      "hash": "0xf22048d21fd8b3e3579b136bf8b3600f6689d4b9f333e59c4469465875bdd1da",
+      "blockNumber": "62966172",
+      "status": "confirmed"
+    },
+    "shmon-ausd:claim-junior": {
+      "hash": "0x80ee5dcdc96801eeb04b3ac9ad74281bb281643ce441c1e9bbefddd5de1d7237",
+      "blockNumber": "62966180",
+      "status": "confirmed"
+    },
+    "shmon-ausd:notice": {
+      "hash": "0xff61011636404c1212b38efa41848b9d46d5d8baf49121a0c563f248a784ae43",
+      "blockNumber": "62966188",
+      "status": "confirmed"
+    },
+    "shmon-ausd:junior-exit": {
+      "hash": "0xaebfea3f31c8bbdd4fb5583f523aa138d57705fe85699a9838c55739221103dd",
+      "blockNumber": "62966594",
+      "status": "confirmed"
+    }
+  }
+}
