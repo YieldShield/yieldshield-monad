@@ -1,8 +1,5 @@
 .tools
 contracts
-packages
-apps/web
-apps/desktop
 output
 artifacts
 services

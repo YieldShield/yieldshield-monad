@@ -12,7 +12,6 @@ dist/
 .DS_Store
 
 # vite
-apps/web/dist/
 .vite/
 
 .vercel/

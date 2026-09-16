@@ -4,16 +4,13 @@
   "version": "0.1.0",
   "description": "YieldShield on Monad: protected crypto positions and first-loss liquidity for Metropolis.",
   "workspaces": [
-    "apps/monad-web",
-    "packages/core",
-    "packages/adapter-evm"
+    "apps/monad-web"
   ],
   "engines": {
     "node": "24.x"
   },
   "scripts": {
     "build": "npm run build -w monad-web",
-    "build:packages": "npm run build -w @yieldshield/core && npm run build -w @yieldshield/adapter-evm",
     "test:web": "npm run test -w monad-web",
     "typecheck": "npm run typecheck -w monad-web",
     "lint": "eslint .",
@@ -21,7 +18,6 @@
     "format:check": "prettier --check .",
     "dev": "npm run dev -w monad-web",
     "start:api": "node services/monad/server.mjs",
-    "test:base": "node --test services/*.test.mjs scripts/deploy-base-sepolia.test.mjs scripts/base-receipts.test.mjs scripts/base-local-rehearsal.test.mjs scripts/sync-base-deployment.test.mjs scripts/sync-base-demo.test.mjs scripts/smoke-base-demo.test.mjs && vitest run packages/adapter-evm/test",
     "test:monad": "node --test services/monad/*.test.mjs scripts/monad-deployment.test.mjs scripts/monad-receipts.test.mjs",
     "sync:monad": "node scripts/sync-monad.mjs",
     "deploy:monad:prepare": "node scripts/deploy-monad.mjs --prepare",
