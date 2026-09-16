@@ -28,6 +28,15 @@ paths = ['''^docs/evidence/expanded-release\.json$''']
 regexTarget = "match"
 regexes = ['''apiCommit"\s*:\s*"[0-9a-f]{40}''', '''apiDeployment"\s*:\s*"[0-9a-f-]{36}''']
 
+# This public Railway deployment ID appeared in an earlier scanner fixture.
+# Retain its exact finding exception for history without excluding the test file.
+[[rules.allowlists]]
+description = "Known public deployment identifier in scanner controls"
+condition = "AND"
+paths = ['''^scripts/check-secret-scanner\.mjs$''']
+regexTarget = "secret"
+regexes = ['''^3b977f83-eb55-4afc-8b33-13c81de781f2$''']
+
 # Standard Anvil mnemonic, account 9. Never fund it on a public network.
 [[rules.allowlists]]
 description = "Public Anvil development key in the localhost Makefile"

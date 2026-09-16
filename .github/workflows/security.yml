@@ -32,9 +32,23 @@ jobs:
           printf '%s  %s\n' "$GITLEAKS_SHA256" "$RUNNER_TEMP/gitleaks.tar.gz" | sha256sum --check --strict
           tar -xzf "$RUNNER_TEMP/gitleaks.tar.gz" -C "$RUNNER_TEMP" gitleaks
       - name: Scan all fetched history
-        run: >-
-          "$RUNNER_TEMP/gitleaks" git . --config .gitleaks.toml
-          --log-opts=--all --redact=100 --ignore-gitleaks-allow --no-banner
+        run: |
+          set +e
+          "$RUNNER_TEMP/gitleaks" git . --config .gitleaks.toml \
+            --log-opts=--all --redact=100 --ignore-gitleaks-allow --no-banner \
+            --report-format=json --report-path="$RUNNER_TEMP/secret-scan.json"
+          scan_status=$?
+          set -e
+          node - "$RUNNER_TEMP/secret-scan.json" <<'NODE'
+          const fs = require('node:fs');
+          const report = process.argv[2];
+          if (fs.existsSync(report)) {
+            for (const { RuleID, File, StartLine, Commit } of JSON.parse(fs.readFileSync(report, 'utf8'))) {
+              console.log(JSON.stringify({ rule: RuleID, file: File, line: StartLine, commit: Commit }));
+            }
+          }
+          NODE
+          exit "$scan_status"
       - name: Verify secret scanner controls
         run: node scripts/check-secret-scanner.mjs "$RUNNER_TEMP/gitleaks"
   dependencies:

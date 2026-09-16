@@ -1,6 +1,6 @@
 // Verify that public-identifier exceptions do not hide signing keys elsewhere.
 import assert from 'node:assert/strict';
-import { randomBytes } from 'node:crypto';
+import { randomBytes, randomUUID } from 'node:crypto';
 import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
@@ -41,9 +41,15 @@ const fixtures = [
     YSToken: `0x${randomBytes(32).toString('hex')}`, api_key: randomBytes(24).toString('base64url'),
   }), 1],
   ['default generic API-key rule retained', 'config.js', `const api_key = "${randomBytes(24).toString('base64url')}";`, 1],
+  ['historical deployment identifier in scanner controls', 'scripts/check-secret-scanner.mjs',
+    'const apiDeployment = "3b977f83-eb55-4afc-8b33-13c81de781f2";', 0],
+  ['new API key in scanner controls', 'scripts/check-secret-scanner.mjs',
+    `const api_key = "${randomBytes(24).toString('base64url')}";`, 1],
+  ['other UUID secret in scanner controls', 'scripts/check-secret-scanner.mjs',
+    `const api_key = "${randomUUID()}";`, 1],
   ['public code hash', 'config.js', `const codeHash = "0x${randomBytes(32).toString('hex')}";`, 0],
   ['public release identifiers', 'docs/evidence/expanded-release.json', JSON.stringify({
-    apiCommit: randomBytes(20).toString('hex'), apiDeployment: '3b977f83-eb55-4afc-8b33-13c81de781f2',
+    apiCommit: randomBytes(20).toString('hex'), apiDeployment: randomUUID(),
   }), 0],
   ['historical token code hash', 'contracts/deployments/history/46630/gen-1784273997897-28161ae24b7d9b27.json', JSON.stringify({
     YSToken: `0x${randomBytes(32).toString('hex')}`,
