@@ -259,9 +259,11 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       const factoryAbi = parseAbi(["function isPoolActive(address) view returns(bool)"]);
       const poolAbi = parseAbi(["function POOL_FACTORY() view returns(address)"]);
       const origin = await client.readContract({ address: address, abi: poolAbi, functionName: "POOL_FACTORY" });
-      const factory = ["Factory", "ReferenceFactory"]
-        .map((n) => registry.contracts[n])
-        .find((c) => c?.address.toLowerCase() === origin.toLowerCase());
+      const version = registry.factories.find(
+        (v: any) => registry.contracts[v.contract]?.address.toLowerCase() === origin.toLowerCase(),
+      );
+      const factory = version && registry.contracts[version.contract];
+      const router = version && registry.contracts[version.router];
       if (!factory) throw new Error("Pool provenance verification failed.");
       const [factoryCode, implementation, active] = await Promise.all([
         client.getCode({ address: origin }),
@@ -275,12 +277,12 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         !factoryCode ||
         keccak256(factoryCode) !== factory.runtimeCodehash ||
         !implementation ||
-        "0x" + implementation.slice(-40) !== registry.contracts.BasePoolRouter.address.toLowerCase() ||
+        "0x" + implementation.slice(-40) !== router.address.toLowerCase() ||
         !active
       )
         throw new Error("Pool implementation verification failed.");
-      const routerCode = await client.getCode({ address: registry.contracts.BasePoolRouter.address });
-      if (!routerCode || keccak256(routerCode) !== registry.contracts.BasePoolRouter.runtimeCodehash)
+      const routerCode = await client.getCode({ address: router.address });
+      if (!routerCode || keccak256(routerCode) !== router.runtimeCodehash)
         throw new Error("Pool router verification failed.");
     }
     const code = await client.getCode({ address: address });

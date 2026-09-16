@@ -82,6 +82,14 @@ async function discoverPools(blockNumber) {
         continue;
       const origin = await get(poolAddress, "SplitRiskPool", "POOL_FACTORY", [], blockNumber);
       if (!same(origin, factory)) throw new Error("Pool provenance mismatch");
+      const implementation = await rpc.getStorageAt({
+        address: poolAddress,
+        slot: "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc",
+        blockNumber,
+      });
+      if (!implementation || !same("0x" + implementation.slice(-40), registry.contracts[version.router].address))
+        throw new Error("Pool router mismatch");
+      if (!version.protectedAssets.includes(shield.id) || !version.backingAssets.includes(backing.id)) continue;
       const cfg = await get(poolAddress, "SplitRiskPool", "poolConfig", [], blockNumber);
       if (cfg[8] !== 100n) continue;
       found.push({
@@ -95,6 +103,7 @@ async function discoverPools(blockNumber) {
         priceKind: shield.kind,
         discovered: true,
         factory,
+        factoryVersion: version.id,
       });
     }
   }

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { factoryVersions } from "./monad-factories.mjs";
 import { throttledRpcFetch } from "../services/monad/rpc-throttle.mjs";
 import { retryRateLimitedReads } from "../services/monad/rpc-retry.mjs";
 import assert from "node:assert/strict";
@@ -80,14 +81,19 @@ if (m.referenceOracle === "redstone") {
 }
 const pools = [];
 for (const p of m.pools) {
-  const expectedFactory = m.contracts[p.environment === "reference" ? "ReferenceFactory" : "Factory"].address;
+  const version = factoryVersions(m).find(
+    (v) => v.id === (p.factoryVersion || (p.environment === "reference" ? "reference-v1" : "scenario-v1")),
+  );
+  assert(version, "Unknown factory version");
+  const expectedFactory = m.contracts[version.contract].address;
   assert.equal((await read(p.address, "SplitRiskPool", "POOL_FACTORY")).toLowerCase(), expectedFactory.toLowerCase());
   assert.equal(await read(p.address, "SplitRiskPool", "requiresStrictProtectedBackingPrice"), true);
   assert.equal((await read(p.address, "SplitRiskPool", "SHIELDED_TOKEN")).toLowerCase(), p.shieldedToken.toLowerCase());
   assert.equal((await read(p.address, "SplitRiskPool", "BACKING_TOKEN")).toLowerCase(), p.backingToken.toLowerCase());
   for (const token of [p.shieldedToken, p.backingToken]) {
-    const expectedFeed =
-      token.toLowerCase() === m.contracts.TestUSDVault.address.toLowerCase()
+    const expectedFeed = p.factoryVersion?.startsWith("expanded")
+      ? m.assets.find((a) => a.address.toLowerCase() === token.toLowerCase()).feed
+      : token.toLowerCase() === m.contracts.TestUSDVault.address.toLowerCase()
         ? m.contracts.VaultBackingFeed.address
         : p.environment === "reference"
           ? m.contracts[m.referenceOracle === "redstone" ? "RedstoneReferenceFeed" : "ReferenceFeed"].address
@@ -104,7 +110,7 @@ for (const p of m.pools) {
     address: p.address,
     slot: "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc",
   });
-  assert.equal("0x" + implementation.slice(-40), m.contracts.BasePoolRouter.address.toLowerCase());
+  assert.equal("0x" + implementation.slice(-40), m.contracts[version.router].address.toLowerCase());
   const receipts = [];
   for (const [method, name] of [
     ["shieldReceiptNFT", "ShieldReceiptNFT"],
