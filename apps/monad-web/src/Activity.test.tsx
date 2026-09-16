@@ -48,14 +48,23 @@ describe("indexed activity presentation", () => {
   });
   it("distinguishes missing data and provider failure from a genuinely empty history", () => {
     expect(renderToStaticMarkup(<ActivityHistory />)).toContain("Loading onchain activity");
-    for (const status of ["not-configured", "unavailable"] as const) {
-      const html = renderToStaticMarkup(<ActivityHistory data={{ ...snapshot, status, events: [] }} />);
-      expect(html).toContain("temporarily unavailable");
-      expect(html).not.toContain("No activity");
-    }
+    const html = renderToStaticMarkup(<ActivityHistory data={{ ...snapshot, status: "unavailable", events: [] }} />);
+    expect(html).toContain("temporarily unavailable");
+    expect(html).not.toContain("No activity");
     expect(renderToStaticMarkup(<ActivityHistory data={{ ...snapshot, events: [] }} personal />)).toContain(
       "No activity for this wallet in the indexed pools",
     );
+  });
+  it("hides an unconfigured optional index without hiding failures or malformed data", () => {
+    const unconfigured = { ...snapshot, status: "not-configured" as const, complete: false, events: [] };
+    expect(renderToStaticMarkup(<ActivityHistory data={unconfigured} />)).toBe("");
+    expect(renderToStaticMarkup(<ActivityHistory data={unconfigured} failed />)).toContain("temporarily unavailable");
+    for (const malformed of [
+      { ...unconfigured, chainId: 143 },
+      { ...unconfigured, events: [{ ...snapshot.events[0], timestamp: NaN }] },
+    ]) {
+      expect(renderToStaticMarkup(<ActivityHistory data={malformed} />)).toContain("temporarily unavailable");
+    }
   });
   it("labels retained results as delayed after provider failure or stale refresh", () => {
     const html = renderToStaticMarkup(<ActivityHistory data={{ ...snapshot, status: "stale", complete: false }} />);

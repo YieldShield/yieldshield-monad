@@ -63,6 +63,7 @@ export function ActivityHistory({
     data.events.every(
       (event) => Number.isSafeInteger(event?.timestamp) && event.timestamp >= 0 && event.timestamp <= 8640000000000,
     );
+  if (valid && !failed && data.status === "not-configured") return null;
   const unavailable = failed || (data && (!valid || ["unavailable", "not-configured"].includes(data.status)));
   const pending = !data || data.status === "indexing";
   const stale = valid && data.status === "stale";
