@@ -1,0 +1,54 @@
+name: Repository security
+on:
+  push:
+    branches: [main, codex/publication-preparation]
+  pull_request:
+  schedule:
+    - cron: '19 7 * * 1'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: repository-security-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  secrets:
+    name: Git history secret scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install checksum-pinned Gitleaks
+        env:
+          GITLEAKS_VERSION: 8.30.1
+          GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+        run: |
+          curl --fail --silent --show-error --location --retry 3 \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            --output "$RUNNER_TEMP/gitleaks.tar.gz"
+          printf '%s  %s\n' "$GITLEAKS_SHA256" "$RUNNER_TEMP/gitleaks.tar.gz" | sha256sum --check --strict
+          tar -xzf "$RUNNER_TEMP/gitleaks.tar.gz" -C "$RUNNER_TEMP" gitleaks
+      - name: Scan all fetched history
+        run: >-
+          "$RUNNER_TEMP/gitleaks" git . --config .gitleaks.toml
+          --log-opts=--all --redact=100 --ignore-gitleaks-allow --no-banner
+      - name: Verify secret scanner controls
+        run: node scripts/check-secret-scanner.mjs "$RUNNER_TEMP/gitleaks"
+  dependencies:
+    name: Production dependency review
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: node --test scripts/check-dependency-audit.test.mjs
+      - run: node scripts/check-dependency-audit.mjs
