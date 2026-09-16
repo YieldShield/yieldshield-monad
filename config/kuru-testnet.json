@@ -1,0 +1,36 @@
+{
+  "chainId": 10143,
+  "observedBlock": "63056213",
+  "observedAt": "2026-09-16T14:45:52.000Z",
+  "source": "https://kuru-testnet-docs.mintlify.site/deployments/testnet",
+  "faucetSource": "https://gist.github.com/devblixt/80740a416ddc6afd2618c365b1f6cf98",
+  "implementationSlot": "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc",
+  "contracts": {
+    "account": {
+      "address": "0x6384e9b2Bf3b65e1535403a0A543b5FDA905eE22",
+      "runtimeCodehash": "0x37790a76d93ec6a2c6b96e06187f6c0e1973f33f4a95e3bd443f8d98c108ede6",
+      "implementation": "0x5cEe690fCAa8b6f61759697C8E2B033bb15bF8C8",
+      "implementationCodehash": "0xc50a9899149fc2c0097747d784d83febdb60963974e2a741865e6238eb35d972"
+    },
+    "router": {
+      "address": "0xba24a1042701f06e8F7edCF04389260D1Fa4c697",
+      "runtimeCodehash": "0x37790a76d93ec6a2c6b96e06187f6c0e1973f33f4a95e3bd443f8d98c108ede6",
+      "implementation": "0xb7b976046F8bedcaEA7a204Ea34075a2d8908a2d",
+      "implementationCodehash": "0x7cfbbc6425a00cb191b7983a103199b4a5ef7c5c89295f894fc63f8bec17bfac"
+    },
+    "market": {
+      "address": "0xfdbE356828c8f5A5d5ed4f69ddE0816f4058Ef61",
+      "runtimeCodehash": "0x37790a76d93ec6a2c6b96e06187f6c0e1973f33f4a95e3bd443f8d98c108ede6",
+      "implementation": "0xE20f57e673d7F254279c19270862A3d1E6F5B0d4",
+      "implementationCodehash": "0xe6168f4f684f2757ca394db693f14dcb9c20221bfed1ad0970cf114eb7887b66"
+    },
+    "usdc": {
+      "address": "0xEe0722ead54f1B4fe97bE399Be43BC0226a6f97E",
+      "runtimeCodehash": "0x19e068e677a1e2926e63a33d1e00d1092652a0af088deee126014b5fcefa4ce2"
+    },
+    "faucet": {
+      "address": "0x25B1416FcD3400bE2D8F50bbe7Cf1101b8B891E9",
+      "runtimeCodehash": "0x1ab74c82168b6e09025c177c54e6c0540c16f37ed10b58b21fddcf23558e9055"
+    }
+  }
+}
