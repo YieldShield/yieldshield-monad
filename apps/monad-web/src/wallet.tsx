@@ -28,6 +28,7 @@ import {
 import { monadTestnet } from "viem/chains";
 import useSWR, { mutate } from "swr";
 import config from "../../../config/monad.json";
+import expandedAssets from "../../../config/expanded-assets.json";
 import deployment from "../../../config/deployment.json";
 import type { TxRequest, Registry } from "./types";
 import { errorMessage, fetcher, explorer, short } from "./lib";
@@ -252,12 +253,32 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     const entry = Object.values(registry.contracts).find(
       (v: any) => v.address.toLowerCase() === address.toLowerCase(),
     ) as any;
+    const approved = [...expandedAssets.assets, expandedAssets.faucet].find(
+      (a) => a.address.toLowerCase() === address.toLowerCase(),
+    );
+    if (approved) {
+      const code = await client.getCode({ address });
+      if (!code || keccak256(code) !== approved.runtimeCodehash) throw new Error("Token verification failed.");
+      if ("implementation" in approved && approved.implementation) {
+        const pin = approved.implementation;
+        const current = await client.getStorageAt({ address, slot: pin.slot as `0x${string}` });
+        const implementationCode = await client.getCode({ address: pin.address as Address });
+        if (
+          !current ||
+          "0x" + current.slice(-40) !== pin.address.toLowerCase() ||
+          !implementationCode ||
+          keccak256(implementationCode) !== pin.runtimeCodehash
+        )
+          throw new Error("Issuer implementation changed. Integration needs review.");
+      }
+      return;
+    }
     const external = [config.externalTokens.shMON, config.pyth.address].some(
       (a) => a.toLowerCase() === address.toLowerCase(),
     );
     if (!entry && !external) {
       const factoryAbi = parseAbi(["function isPoolActive(address) view returns(bool)"]);
-      const poolAbi = parseAbi(["function POOL_FACTORY() view returns(address)"]);
+      const poolAbi = parseAbi(["function POOL_FACTORY() view returns(address)", "function SHIELDED_TOKEN() view returns(address)", "function BACKING_TOKEN() view returns(address)"]);
       const origin = await client.readContract({ address: address, abi: poolAbi, functionName: "POOL_FACTORY" });
       const version = registry.factories.find(
         (v: any) => registry.contracts[v.contract]?.address.toLowerCase() === origin.toLowerCase(),
@@ -284,6 +305,11 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       const routerCode = await client.getCode({ address: router.address });
       if (!routerCode || keccak256(routerCode) !== router.runtimeCodehash)
         throw new Error("Pool router verification failed.");
+      const tokens = await Promise.all((["SHIELDED_TOKEN", "BACKING_TOKEN"] as const).map(functionName => client.readContract({ address, abi: poolAbi, functionName }))) as Address[];
+      for (const token of tokens) {
+        if (!registry.assets.some((a: any) => a.address.toLowerCase() === token.toLowerCase())) throw new Error("Pool token is not registered.");
+        await verifyTarget(token);
+      }
     }
     const code = await client.getCode({ address: address });
     if (!code || code === "0x" || (entry && keccak256(code) !== entry.runtimeCodehash))
@@ -328,6 +354,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   }
   async function approve(token: Address, spender: Address, value: bigint) {
     await verifyTarget(spender);
+    await verifyTarget(token);
     const allowance = await client.readContract({
       address: token,
       abi: erc20,

@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
 import { useBalance, useNativeBalance, useWallet } from "./wallet";
 
 export const monadFaucet = "https://faucet.monad.xyz";
-export type FundingAsset = { symbol: string; balance: bigint | undefined };
+export type FundingAsset = { id?: string; symbol: string; balance: bigint | undefined };
 
 // Unknown or failed reads must never be treated as an empty wallet.
 export function fundingStep(connected: boolean, native: bigint | undefined, assets: (bigint | undefined)[]) {
@@ -17,7 +17,9 @@ export function fundingStep(connected: boolean, native: bigint | undefined, asse
   return null;
 }
 
-export function assetPreparation(symbol: string) {
+export function assetPreparation(symbol: string, id?: string) {
+  if (id === "canonical-wmon") return { to: "/faucet#monad-wrap", label: "Wrap MON" };
+  if (symbol === "AUSD") return { to: "/faucet#agora-ausd", label: "Claim AUSD" };
   switch (symbol) {
     case "WMON":
       return { to: "/faucet#wrap-mon", label: "Wrap MON" };
@@ -73,7 +75,7 @@ export function FundingNotice() {
 export function AssetFundingHint({ asset }: { asset: FundingAsset | undefined }) {
   const { account } = useWallet();
   if (!account || !asset || asset.balance !== 0n) return null;
-  const preparation = assetPreparation(asset.symbol);
+  const preparation = assetPreparation(asset.symbol, asset.id);
   return (
     <p className="asset-funding-hint">
       No {asset.symbol}. <Link to={preparation.to}>{preparation.label} ↗</Link>
@@ -92,7 +94,7 @@ export function FundingGate({ asset, children }: { asset?: FundingAsset; childre
     );
   }
   if (wallet.account && !wallet.busy && asset?.balance === 0n) {
-    const preparation = assetPreparation(asset.symbol);
+    const preparation = assetPreparation(asset.symbol, asset.id);
     return (
       <Link className="button purple-button full" to={preparation.to}>
         {preparation.label} ↗

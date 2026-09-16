@@ -3,14 +3,16 @@ import { creationVersion, creationFingerprint, assertCreationIdentity } from "./
 import type { CreationOption, Registry } from "./types";
 const version = {
   id: "reference-v1",
+  environment: "reference",
   contract: "ReferenceFactory",
   factory: "0x1111111111111111111111111111111111111111",
   router: "BasePoolRouter",
   protectedAssets: ["wmon", "shmon"],
   backingAssets: ["test-usd"],
   available: true,
+  reason: null,
   minimumUsd: "50000000000",
-  backing: [{ id: "test-usd", available: true, bond: "500000000" }],
+  backing: [{ id: "test-usd", available: true, bond: "500000000", reason: null }],
   collateralBps: "15000",
   juniorFeeBps: "1000",
   creatorFeeBps: "100",

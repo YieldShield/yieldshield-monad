@@ -117,6 +117,24 @@ async function snapshot() {
     const sources = await Promise.all(
       registry.assets.map(async (a) => {
         try {
+          if (a.runtimeCodehash) {
+            const tokenCode = await rpc.getCode({ address: a.address, blockNumber });
+            if (!tokenCode || keccak256(tokenCode) !== a.runtimeCodehash) throw new Error("Token code changed");
+            if (a.implementation) {
+              const pin = a.implementation;
+              const [slot, implementationCode] = await Promise.all([
+                rpc.getStorageAt({ address: a.address, slot: pin.slot, blockNumber }),
+                rpc.getCode({ address: pin.address, blockNumber }),
+              ]);
+              if (
+                !slot ||
+                !same("0x" + slot.slice(-40), pin.address) ||
+                !implementationCode ||
+                keccak256(implementationCode) !== pin.runtimeCodehash
+              )
+                throw new Error("Issuer implementation changed");
+            }
+          }
           const [price, stale] = await Promise.all([
             get(a.feed, "", "getPrice", [a.address], blockNumber),
             get(a.feed, "", "isPriceStale", [a.address], blockNumber),

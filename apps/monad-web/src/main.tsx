@@ -26,6 +26,8 @@ import "./app-layout.css";
 import "./asset-images.css";
 import { TokenIcon, AssetPair } from "./AssetImage";
 import { assetVisual } from "./asset-visuals";
+import { ExpandedFunding } from "./ExpandedFunding";
+import { AssetCatalog } from "./AssetCatalog";
 import { AssetSelect } from "./AssetSelect";
 import { creationVersion, creationFingerprint, assertCreationIdentity } from "./creation";
 import { MarketSelect } from "./MarketSelect";
@@ -42,6 +44,7 @@ const kind = (a: Asset) =>
     "redemption-nav": "Staking NAV",
     synthetic: "Scenario price",
     "synthetic-unit": "Test unit",
+    "test-unit": "Test unit",
     "test-vault-nav": "Funded test NAV",
   })[a.kind] || a.kind;
 function Mark({ small = false }: { small?: boolean }) {
@@ -402,7 +405,7 @@ function PositionForm({ side }: { side: "senior" | "junior" }) {
   const token = side === "senior" ? m?.shield : m?.backing;
   const tokenBalance = useBalance(token?.address);
   const balance = tokenBalance.error ? undefined : tokenBalance.data;
-  const fundingAsset = token ? { symbol: token.symbol, balance } : undefined;
+  const fundingAsset = token ? { id: token.id, symbol: token.symbol, balance } : undefined;
   let value = 0n,
     validation = "";
   try {
@@ -1383,6 +1386,7 @@ function Tokens() {
           </button>
         </Disclosure>
       </div>
+      <ExpandedFunding />
     </Shell>
   );
 }
@@ -1549,7 +1553,7 @@ function CreatePool() {
   const balance = useBalance(backing?.address),
     bond = BigInt(quote?.bond || "0");
   const fundingAsset = backing
-    ? { symbol: backing.symbol, balance: balance.error ? undefined : balance.data }
+    ? { id: backing.id, symbol: backing.symbol, balance: balance.error ? undefined : balance.data }
     : undefined;
   const insufficient = !!w.account && (fundingAsset?.balance == null || fundingAsset.balance < bond);
   const unavailable =
@@ -1570,7 +1574,12 @@ function CreatePool() {
   };
   async function checkReview(review: string, chosen: CreationOption) {
     const fresh = await fetcher("/api/creation");
-    if (fresh.chainId !== 10143 || Date.now() - fresh.observedAt > 30000 || fresh.observedAt > Date.now())
+    if (
+      !Number.isFinite(fresh.observedAt) ||
+      fresh.chainId !== 10143 ||
+      Date.now() - fresh.observedAt > 30000 ||
+      fresh.observedAt > Date.now()
+    )
       throw new Error("Refresh the creation review.");
     const next = (fresh.creation as CreationOption[]).find((v) => v.id === chosen.id);
     if (!next || creationFingerprint(next, protectedId, backingId) !== review) {
@@ -1710,6 +1719,7 @@ function CreatePool() {
           </TaskAside>
         </div>
       )}
+      <AssetCatalog />
     </Shell>
   );
 }

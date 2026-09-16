@@ -5,6 +5,7 @@ export const PRICE_KINDS = new Set([
   "redemption-nav",
   "test-vault-nav",
   "synthetic-unit",
+  "test-unit",
 ]);
 export function address(value) {
   if (typeof value !== "string" || !/^0x[0-9a-fA-F]{40}$/.test(value)) throw new Error("Invalid wallet address");

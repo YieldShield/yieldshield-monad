@@ -370,3 +370,41 @@
   padding: 0.5rem;
   font-size: 0.875rem;
 }
+.asset-catalog {
+  margin: 2rem 0;
+  padding: 1.25rem;
+  border: 1px solid #e1dfe5;
+  border-radius: 16px;
+}
+.asset-catalog summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.asset-catalog > p {
+  font-size: 0.875rem;
+  color: #65616d;
+  margin: 1rem 0;
+}
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 1.25rem;
+}
+.catalog-grid article {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+}
+.catalog-grid small {
+  display: block;
+  margin-top: 0.25rem;
+  color: #65616d;
+}
+.catalog-grid p {
+  font-size: 0.875rem;
+  margin: 0.5rem 0;
+}
+.catalog-grid a {
+  font-size: 0.8125rem;
+}

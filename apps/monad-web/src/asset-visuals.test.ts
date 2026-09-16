@@ -3,10 +3,10 @@ import deployment from "../../../config/deployment.json";
 import { assetVisual } from "./asset-visuals";
 
 describe("asset identity", () => {
-  it("gives every deployed asset a distinct image", () => {
+  it("gives every deployed asset an image and a distinct label", () => {
     const images = deployment.assets.map((asset) => assetVisual(asset).image);
     expect(images).not.toContain("unknown.svg");
-    expect(new Set(images).size).toBe(deployment.assets.length);
+    expect(new Set(deployment.assets.map((asset) => assetVisual(asset).name)).size).toBe(deployment.assets.length);
   });
   it("recognizes checksummed addresses independently of display symbols", () => {
     const shmon = deployment.assets.find((a) => a.id === "shmon")!;

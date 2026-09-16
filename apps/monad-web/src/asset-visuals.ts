@@ -3,7 +3,9 @@ import deployment from "../../../config/deployment.json";
 export type VisualAsset = { address?: string; symbol?: string; name?: string };
 type AssetVisual = { name: string; image: string; theme: string };
 const visuals: Record<string, AssetVisual> = {
-  wmon: { name: "Wrapped MON", image: "monad.png", theme: "monad" },
+  wmon: { name: "YieldShield WMON", image: "monad.png", theme: "monad" },
+  "canonical-wmon": { name: "Monad WMON", image: "monad.png", theme: "monad" },
+  "agora-ausd": { name: "Agora AUSD", image: "ausd.svg", theme: "test-usd" },
   shmon: { name: "Staked MON", image: "shmonad.webp", theme: "staking" },
   "test-usd": { name: "Test dollars", image: "test-usd.svg", theme: "test-usd" },
   "test-usd-vault": { name: "Test vault shares", image: "test-vault.svg", theme: "vault" },

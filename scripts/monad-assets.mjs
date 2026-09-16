@@ -41,26 +41,29 @@ export function deploymentAssets(manifest, config) {
       artifact: "MonadYieldVault",
     },
   ];
-  return assets.concat([
-    {
-      id: "wmon",
-      address: wmon,
-      symbol: "WMON",
-      name: "Wrapped testnet MON",
-      decimals: 18,
-      kind: "external-reference",
-      feed: reference,
-      artifact: "MonadWrappedNative",
-    },
-    {
-      id: "shmon",
-      address: config.externalTokens.shMON,
-      symbol: "shMON",
-      name: "Staked testnet MON",
-      decimals: 18,
-      kind: "redemption-nav",
-      feed: reference,
-      external: true,
-    },
-  ]);
+  return assets.concat(
+    [
+      {
+        id: "wmon",
+        address: wmon,
+        symbol: "WMON",
+        name: "Wrapped testnet MON",
+        decimals: 18,
+        kind: "external-reference",
+        feed: reference,
+        artifact: "MonadWrappedNative",
+      },
+      {
+        id: "shmon",
+        address: config.externalTokens.shMON,
+        symbol: "shMON",
+        name: "Staked testnet MON",
+        decimals: 18,
+        kind: "redemption-nav",
+        feed: reference,
+        external: true,
+      },
+    ],
+    manifest.additionalAssets || [],
+  );
 }
