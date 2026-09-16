@@ -8,7 +8,7 @@ Implemented and published on 15 September 2026 from the selected [Clarity design
 - Vercel deployment: `dpl_D7tWWonPCTTPyTB1defzX1d8uyAe`
 - Deployment URL: https://yieldshield-monad-px28jis4b-noc2-6281s-projects.vercel.app
 - Deployed code: `5cda025` on `main`.
-- Repository remains private. No backend, contract, or environment configuration changes were needed.
+- The repository was private at this rollout; [publication followed on 16 September](PUBLICATION.md). No backend, contract, or environment configuration changes were needed.
 
 The release keeps the restored sidebar and original YieldShield overlapping-square mark in Monad purple. Warm white surfaces, self-hosted Manrope/DM Sans fonts, consistent task forms, and shorter landing copy now extend across the application. The landing page presents verified live asset routes and an interactive explanation of the two exits, with replay, pause, and reduced-motion controls.
 
@@ -45,4 +45,4 @@ This was a frontend design release. No new blockchain transactions were signed, 
 
 The unchanged dependency tree still produces audit advisories and a large lazy-loaded Dynamic SDK bundle. Those are separate dependency/performance work, not changes introduced by Clarity.
 
-Refresh the product walkthrough video when preparing the Metropolis submission; existing recordings show the previous design. Reconfirm current eligibility and source-publication requirements at that time. Repository publication remains subject to the user's separate approval.
+Refresh the product walkthrough video when preparing the Metropolis submission; existing recordings show the previous design. Reconfirm current eligibility and source-publication requirements at that time. The owner authorized [source publication](PUBLICATION.md) on 16 September.

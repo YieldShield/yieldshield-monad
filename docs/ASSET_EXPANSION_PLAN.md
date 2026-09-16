@@ -95,7 +95,7 @@ Preserve the user's decision to remove Demo trade. Asset acquisition can use ver
 5. **Expanded contracts and pricing:** new initializer/router/factory plus reviewed token valuation adapters. Local and fork tests must pass before any broadcast.
 6. **Asset activation:** separate commits and evidence for USDC, WETH, AUSD and official-list WMON as each passes its funding, price and identity gates. Do not block the initial dropdown release on every candidate.
 7. **Website propagation:** icons, pool lists, Faucet routes and accurate availability states across the app. Keep existing asset IDs and receipt routes working.
-8. **Release verification:** fund selected test pools, verify holder/provider journeys, update evidence, deploy API before the compatible frontend, and confirm the public site. Keep the repository private.
+8. **Release verification:** fund selected test pools, verify holder/provider journeys, update evidence, deploy API before the compatible frontend, and confirm the public site. The source was kept private during this rollout; the owner authorized [publication](PUBLICATION.md) on 16 September.
 
 Acceptance requires keyboard/mobile selection, no invalid pair submission, exact 6/18-decimal handling, correct factory and approval spender, stale-price rejection, account/network-change protection, pending-transaction recovery, successful new-pool discovery, and continued withdrawals from existing pools. Merely displaying more token symbols is not acceptance.
 

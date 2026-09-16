@@ -25,4 +25,4 @@ Brand marks identify the underlying ecosystem/protocol, not endorsement. The exi
 - Browser checks: default WMON pool; shMON selection; vault-backed liquidity selection using Tab and Enter; Escape and close-button dismissal; focus restored to trigger; direct URL retains vault backing; demo trade shows only its two demo pools. No transactions were submitted.
 - At 390px, all five choices remain readable and a tap on the final demo/vault choice updates the form and backing description. Desktop pool cards and Faucet illustrations inspected visually.
 - Production deployment `dpl_6tAKaxJCMjh3E6uwPQNRboWi4HUU` is ready at https://monad.yieldshield.ai/. All six image URLs return HTTP 200 with the expected image content type. The live shMON deep link opens the picker with all five choices and no broken images.
-- Source remains private. Image files total approximately 82 kB; no new dependency, backend change or contract change.
+- Source was private at this visual update; [publication followed on 16 September](PUBLICATION.md). Image files total approximately 82 kB; no new dependency, backend change or contract change.

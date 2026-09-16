@@ -2,7 +2,7 @@
 
 ## Published website update
 
-The AUSD release is live at https://monad.yieldshield.ai. The frontend is Vercel deployment `dpl_UJURiYuNPg4WFzNFcJQWxDJGCis5` (code `84c0fa7`); the API is Railway deployment `3b977f83-eb55-4afc-8b33-13c81de781f2` (code `d4994c4`). The repository remains private. [Public release evidence](evidence/expanded-release.json) records the healthy assets, markets and creation quote.
+The AUSD release is live at https://monad.yieldshield.ai. The frontend is Vercel deployment `dpl_UJURiYuNPg4WFzNFcJQWxDJGCis5` (code `84c0fa7`); the API is Railway deployment `3b977f83-eb55-4afc-8b33-13c81de781f2` (code `d4994c4`). The repository was private at this deployment; [source publication followed later on 16 September](PUBLICATION.md). [Public release evidence](evidence/expanded-release.json) records the healthy assets, markets and creation quote.
 
 - Searchable protected-asset and backing dropdowns, with WMON, shMON and the isolated sMON-demo scenario.
 - Live, upward-rounded creation bonds; factory-specific routing; review revalidation after approval; exact PoolCreated receipt links.
