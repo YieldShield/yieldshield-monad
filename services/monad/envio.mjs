@@ -121,6 +121,23 @@ async function limitedJson(response, maxBytes) {
   return JSON.parse(Buffer.concat(chunks).toString("utf8"));
 }
 
+function validateRollbackGuard(guard, fromBlock, nextBlock) {
+  // HyperSync may omit this for historical or empty pages. When supplied, its
+  // boundaries must describe this exact page before its hashes are trusted.
+  if (guard == null) return null;
+  if (
+    !integer(guard.first_block_number) ||
+    !integer(guard.block_number) ||
+    guard.first_block_number !== fromBlock ||
+    guard.block_number !== nextBlock - 1 ||
+    !integer(guard.timestamp) ||
+    !hash.test(guard.hash) ||
+    !hash.test(guard.first_parent_hash)
+  )
+    throw new Error("Invalid Envio rollback guard");
+  return guard;
+}
+
 export function createEnvioActivity({ registry, config, token, fetchFn = fetch, now = Date.now }) {
   if (
     registry.chainId !== 10143 ||
@@ -170,14 +187,15 @@ export function createEnvioActivity({ registry, config, token, fetchFn = fetch, 
       const page = await request("/query", activityQuery(registry.pools, cursor, end));
       if (!integer(page.next_block) || page.next_block <= cursor || page.next_block > end)
         throw new Error("Invalid Envio pagination");
+      const nextGuard = validateRollbackGuard(page.rollback_guard, cursor, page.next_block);
       if (
         guard &&
-        page.rollback_guard &&
-        page.rollback_guard.first_block_number === guard.block_number + 1 &&
-        lower(page.rollback_guard.first_parent_hash) !== lower(guard.hash)
+        nextGuard &&
+        nextGuard.first_block_number === guard.block_number + 1 &&
+        lower(nextGuard.first_parent_hash) !== lower(guard.hash)
       )
         throw new Error("Envio reorganization during scan");
-      guard = page.rollback_guard || null;
+      guard = nextGuard;
       if (!page.data || !Array.isArray(page.data.blocks) || !Array.isArray(page.data.logs))
         throw new Error("Invalid Envio data");
       const blocks = new Map(page.data.blocks.map((block) => [block.number, block]));

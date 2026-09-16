@@ -66,6 +66,13 @@ const page = (logs = [event()], next = 181) => ({
   archive_height: 200,
   data: { blocks: [block()], logs },
 });
+const rollbackGuard = (first, last, parent = blockHash) => ({
+  first_block_number: first,
+  block_number: last,
+  timestamp: 1720000000,
+  hash: blockHash,
+  first_parent_hash: parent,
+});
 function harness({ pages = [page()], overrides = {}, fetchFn } = {}) {
   let clock = 1720000010000;
   const calls = [];
@@ -273,11 +280,49 @@ test("a malformed timestamp refresh retains only the previous validated history"
 });
 
 test("rollback guard mismatch rejects a cross-page fork", async () => {
-  const first = { ...page([event()], 150), rollback_guard: { block_number: 149, hash: blockHash } };
-  const second = { ...page([]), rollback_guard: { first_block_number: 150, first_parent_hash: txHash } };
+  const first = { ...page([event()], 150), rollback_guard: rollbackGuard(100, 149) };
+  const second = { ...page([]), rollback_guard: rollbackGuard(150, 180, txHash) };
   const { client } = harness({ pages: [first, second] });
   await client.refresh();
   assert.equal(client.read().status, "unavailable");
+});
+
+test("a contradictory guard cannot skip the cross-page fork check", async () => {
+  const first = { ...page([event()], 150), rollback_guard: rollbackGuard(100, 149) };
+  const second = { ...page([]), rollback_guard: rollbackGuard(151, 180, txHash) };
+  const { client } = harness({ pages: [first, second] });
+  await client.refresh();
+  assert.equal(client.read().status, "unavailable");
+  assert.equal(client.read().complete, false);
+  assert.equal(client.read().events.length, 0);
+});
+
+test("supplied rollback guards require complete hashes and exact page boundaries", async () => {
+  for (const guard of [
+    {},
+    { ...rollbackGuard(100, 180), first_block_number: 101 },
+    { ...rollbackGuard(100, 180), block_number: 179 },
+    { ...rollbackGuard(100, 180), block_number: "180" },
+    { ...rollbackGuard(100, 180), hash: "invalid" },
+    { ...rollbackGuard(100, 180), first_parent_hash: null },
+    { ...rollbackGuard(100, 180), timestamp: -1 },
+  ]) {
+    const { client } = harness({ pages: [{ ...page(), rollback_guard: guard }] });
+    await client.refresh();
+    assert.equal(client.read().status, "unavailable");
+    assert.equal(client.read().complete, false);
+  }
+});
+
+test("valid consecutive rollback guards and optional historical guards remain supported", async () => {
+  for (const guards of [[rollbackGuard(100, 149), rollbackGuard(150, 180)], [null, rollbackGuard(150, 180)]]) {
+    const { client } = harness({
+      pages: [{ ...page([event()], 150), rollback_guard: guards[0] }, { ...page([]), rollback_guard: guards[1] }],
+    });
+    await client.refresh();
+    assert.equal(client.read().status, "ready");
+    assert.equal(client.read().events.length, 1);
+  }
 });
 
 test("cached events expire even when a refresh is pending", async () => {
