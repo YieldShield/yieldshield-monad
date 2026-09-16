@@ -1,22 +1,43 @@
 import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 import { MarketSelect } from "./MarketSelect";
-import type { Market, Snapshot } from "./types";
+import type { Asset, Market, Snapshot } from "./types";
 
-const base = {
+const asset: Asset = {
+  id: "wmon",
+  symbol: "WMON",
+  name: "Wrapped MON",
+  decimals: 18,
+  kind: "external-reference",
+  address: "0x3333333333333333333333333333333333333333",
+  feed: "0x5555555555555555555555555555555555555555",
+  artifact: "ERC20",
+  price: "100000000",
+  healthy: true,
+  publishedAt: 1,
+  evaluatedAt: 1,
+  error: null,
+};
+const base: Market = {
   id: "standard",
   address: "0x1111111111111111111111111111111111111111",
   symbol: "WMON",
   backingSymbol: "TestUSDC",
-  shield: { id: "wmon", symbol: "WMON", address: "0x3333333333333333333333333333333333333333" },
-  backing: { id: "test-usd", symbol: "TestUSDC", address: "0x4444444444444444444444444444444444444444" },
+  shield: { ...asset, id: "wmon", symbol: "WMON", address: "0x3333333333333333333333333333333333333333" },
+  backing: { ...asset, id: "test-usd", symbol: "TestUSDC", address: "0x4444444444444444444444444444444444444444" },
   environment: "reference",
   ready: true,
   collateralBps: "15000",
   juniorFeeBps: "1000",
   creatorFeeBps: "100",
   protocolFeeBps: "100",
-} as Market;
+  shieldedToken: asset.address,
+  backingToken: "0x4444444444444444444444444444444444444444",
+  priceKind: "external-reference",
+  paused: false,
+  reason: null,
+  actions: {},
+};
 
 describe("pool selection with custom terms", () => {
   it("distinguishes pools with the same pair by terms and contract address", () => {
