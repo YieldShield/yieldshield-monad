@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-09-16T15:26:34.189Z",
+  "executionObservedAt": "2026-09-16T15:24:40.000Z",
+  "executionKind": "Official authenticated CRE CLI local simulation using live public HTTP and EVM capabilities",
+  "command": "cre workflow simulate pool-health --target monad-testnet --non-interactive --trigger-index 0",
+  "workingDirectory": "integrations/chainlink-cre",
+  "versions": {
+    "creCli": "1.34.0",
+    "creSdk": "1.21.1",
+    "bun": "1.4.2"
+  },
+  "testedRepositoryCommit": "526f454",
+  "productionApiCommit": "deb536f",
+  "apiUrl": "https://monad-api.yieldshield.ai/api/status",
+  "rpcUrl": "https://testnet-rpc.monad.xyz",
+  "workflowBinaryHash": "0f3c2f26c1539b43f47079d88287bf22f6580d144dc3f1fc6a108940e932c650",
+  "workflowConfigHash": "16959c965fd30b5642421b27ffc8da6d55a4fcc0cc20d79de904f615f42c1213",
+  "rawLog": "chainlink-cre-simulation-20260916.txt",
+  "rawLogSha256": "08bbf08dfe4a22bccb16bbf41b1ddeedaadccb2a4c34a8993c241180050c65ce",
+  "broadcast": false,
+  "deployedToDon": false,
+  "continuousMonitorActive": false,
+  "result": {
+    "schemaVersion": 1,
+    "integration": "chainlink-cre",
+    "network": "Monad Testnet",
+    "chainId": 10143,
+    "observedAt": 1789572280,
+    "blockNumber": "63063880",
+    "blockTimestamp": "1789572274",
+    "status": "healthy",
+    "pools": [
+      {
+        "id": "wmon-ausd",
+        "address": "0x89Dc1d055Ac9ec50E1FA0a2d7da8be858F1B1470",
+        "totalBacking": "1999999852",
+        "reserved": "0",
+        "freeBacking": "1999999852",
+        "freeBackingBps": 10000,
+        "paused": false,
+        "apiMatches": true
+      },
+      {
+        "id": "shmon-ausd",
+        "address": "0x18F7E79744b08a302E786c0D62b8c1cfB3CFc475",
+        "totalBacking": "1999998085",
+        "reserved": "0",
+        "freeBacking": "1999998085",
+        "freeBackingBps": 10000,
+        "paused": false,
+        "apiMatches": true
+      }
+    ],
+    "assets": [
+      {
+        "symbol": "WMON",
+        "address": "0x23EA8b07fda821d2096dee02a3a662a5374B69Cb",
+        "price": "2234435",
+        "publishedAt": "1789572272",
+        "healthy": true,
+        "apiMatches": true
+      },
+      {
+        "symbol": "shMON",
+        "address": "0x282BdDFF5e58793AcAb65438b257Dbd15A8745C9",
+        "price": "28908085",
+        "publishedAt": "1789572272",
+        "healthy": true,
+        "apiMatches": true
+      },
+      {
+        "symbol": "AUSD",
+        "address": "0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC",
+        "price": "100000000",
+        "publishedAt": null,
+        "healthy": true,
+        "apiMatches": true
+      }
+    ],
+    "alerts": [],
+    "scope": "Read-only monitoring of configured pools; free backing is not a protection quote or solvency guarantee."
+  },
+  "limitations": [
+    "Local official CLI simulation, not a deployed Chainlink DON workflow.",
+    "Two configured AUSD-backed pools only; no claim of coverage for every pool.",
+    "A point-in-time observation, not current-state assurance or a solvency audit.",
+    "No independent oracle provider replacement: the workflow reads YieldShield configured feeds and compares API observations.",
+    "The raw CLI log preserves the timestamp formatting emitted by the simulator; executionObservedAt is derived from runtime.now() in the actual workflow result."
+  ]
+}

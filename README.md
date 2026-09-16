@@ -11,7 +11,7 @@ A Monad testnet application for holding crypto exposure with two exit choices: w
 
 The chain rollout is complete: **44 named contracts and seven funded pools**, with scenario, reference and expanded AUSD journeys verified against canonical receipts and recipient balances. The original five pools were initially seeded with 50,000 valueless backing units each. The two new AUSD pools each received 2,000 test AUSD after a 500-AUSD creation bond. RedStone MON/USD is read directly on chain with a 120-second freshness limit; the historical Pyth adapter remains attributed but is not used by the active reference factory. Dynamic email authentication and embedded wallets are configured in a separate Monad sandbox environment.
 
-**This is not yet a submission-ready release.** See [readiness and submission packet](docs/METROPOLIS_SUBMISSION.md), [build ledger](docs/BUILD_LEDGER.md), and [deployment verification](docs/evidence/deployment-verification.json). The [asset expansion release](docs/ASSET_EXPANSION_RELEASE.md) records the deployed AUSD integration and its verification. A [2:08 narrated product overview and product guide](https://monad.yieldshield.ai/how-it-works) are available. Dynamic browser signing and external walkthroughs remain outstanding. The source is public; see the [publication record](docs/PUBLICATION.md).
+**Final submission is still pending.** Start with the [judge quickstart and technical demo outline](docs/JUDGE_QUICKSTART.md), [submission packet](docs/METROPOLIS_SUBMISSION.md), and [deployment verification](docs/evidence/deployment-verification.json). The [asset expansion release](docs/ASSET_EXPANSION_RELEASE.md) records the AUSD integration. A [2:08 narrated product overview](https://monad.yieldshield.ai/how-it-works) is available; the final live demo and founder pitch still need accepted-host recordings. The [Dynamic external-wallet browser journey](docs/DYNAMIC_BROWSER_CHECK.md) passed wrapping, protection, reload recovery and withdrawal. Email-based embedded wallets and external user validation remain unverified. The source is public; see the [publication record](docs/PUBLICATION.md).
 
 ## Product scope
 
@@ -67,11 +67,12 @@ Start with [the repository guide](docs/REPOSITORY_GUIDE.md) for active component
 - `contracts/test/monad/`: new/adapted Monad integration tests.
 - `config/`: explicit network identity plus generated ABIs and deployment registry.
 - `scripts/*monad*`: preparation, sequential deployment, verification and public journey evidence.
+- `integrations/chainlink-cre/`: isolated read-only CRE workflow with its own Bun lockfile; excluded from the app/API dependency trees.
 - [Historical source and reports](docs/archive/README.md): prior applications, reuse records and internal reviews. Unused app workspaces are no longer installed.
 
 See [architecture and asset decisions](docs/ARCHITECTURE.md), [operations](docs/OPERATIONS.md), [new-work disclosure](docs/HACKATHON_DELTA.md), [provenance](docs/PROVENANCE.md), and [third-party notices](THIRD_PARTY_NOTICES.md).
 
-The [Metropolis sponsor strategy](docs/SPONSOR_STRATEGY.md) prioritizes Dynamic onboarding and evaluates Kuru, Agora, Chainlink CRE and other relevant sponsors. Dynamic is implemented and configured; its browser signing evidence is pending. Other sponsor integrations have explicit evidence gates. No bounty eligibility or award is claimed.
+The [Metropolis sponsor strategy](docs/SPONSOR_STRATEGY.md) tracks requirements and remaining evidence. [Dynamic](docs/DYNAMIC_BROWSER_CHECK.md) has a verified external-wallet browser journey. [Kuru](docs/KURU_INTEGRATION.md) adds optional MON funding under Faucet and has a verified five-transaction scripted test. [Envio](docs/ENVIO_INTEGRATION.md) activity history awaits a free backend API token and stays hidden until configured. [Chainlink CRE](docs/CHAINLINK_CRE.md) compares API pool health with independent same-block reads; its documentation records the exact execution status. No bounty eligibility or award is claimed.
 
 ## Deployment and evidence
 

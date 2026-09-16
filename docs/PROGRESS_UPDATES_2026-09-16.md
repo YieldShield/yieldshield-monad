@@ -32,4 +32,20 @@ Attachment: [asset expansion release](https://github.com/YieldShield/yieldshield
 
 Both posts returned “Private update posted” and appeared under David Hawig in the project history. The project description was also saved with seven pools, current public source/product-guide links, truthful testnet scope and ongoing integration status.
 
-The next update should report actual sponsor execution and deployed behavior after verification, including any remaining gaps. Do not invent customer interviews, partnerships or adoption to fill it. Final submission opens 22 September; these posts do not submit the project.
+Final submission opens 22 September; these posts do not submit the project.
+
+## Posted: verified wallet and sponsor execution
+
+We’ve now completed the browser wallet walkthrough through Dynamic and MetaMask: wrap MON, open protection, reload the page and withdraw. The wallet and position both recovered correctly after reload.
+
+There’s also an optional Kuru funding step under Faucet. Our internal test bought MON with 10 Kuru test USDC and withdrew it to the same wallet. All five transactions and received amounts are recorded in the repo. These are test runs, not customer trading activity.
+
+The Chainlink CRE workflow passed its official simulation against our live API and Monad testnet. Both AUSD pools and all three configured price feeds matched the onchain readings. It isn’t running as a continuous monitor yet.
+
+The biggest open question is whether holders value the exit choices and backing providers accept the economics. We’ve prepared a plan to test it with six holders and four potential providers; those conversations haven’t happened yet. The demo and founder pitch are next too.
+
+Envio history is implemented but awaiting its free API token. We’re keeping it hidden until configured.
+
+Attachment: [public production and CRE evidence](https://github.com/YieldShield/yieldshield-monad/pull/32).
+
+The third post returned “Private update posted” and appeared under David Hawig. The Mentors page then exposed the mentor list and a working question composer. Access was checked by opening and cancelling the empty composer; no mentor question was sent. The initial one-update/three-update wording discrepancy no longer blocks access.

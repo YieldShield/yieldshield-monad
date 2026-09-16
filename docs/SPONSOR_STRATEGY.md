@@ -4,10 +4,23 @@ Initial review: 9 September 2026. Public catalog and signed-in Dynamic, Kuru, Ag
 
 ## Decisions
 
+### Verified release on 16 September
+
+The sponsor release is deployed from [PR #31](https://github.com/YieldShield/yieldshield-monad/pull/31). The [production check](evidence/sponsor-production-release-20260916.json) records 44 verified contracts, seven ready pools and six healthy asset sources.
+
+| Integration | Verified status | Remaining evidence |
+| --- | --- | --- |
+| Dynamic | External MetaMask wallet connected through Dynamic; wrapping, protection, reload recovery and withdrawal passed in the production browser. | Embedded-email path, mobile-wallet testing and final demo video. |
+| Kuru | Optional Faucet funding is deployed; five scripted canonical transactions verify claim, deposit, swap and withdrawal. | Browser funding-to-protection demonstration and external user demand. |
+| Chainlink CRE | Official authenticated CLI simulation passed against production API and live Monad testnet: two pools, three feeds, zero alerts. | Include execution evidence in the demo. No DON deployment or ongoing monitor is claimed. |
+| Envio | Reader, API, UI and regressions implemented, including partial withdrawals and stale/reorg handling. | Free API-token approval, backend activation and live receipt comparison. UI stays hidden until configured. No billing enabled. |
+
+Dynamic, Kuru, Envio and CRE are selected in the project workspace. Selection is preparation, not final submission or a claim that judges have accepted every requirement. Earlier dated observations below are retained as history.
+
 1. **Prioritize Dynamic for onboarding.** A new user should be able to create or connect a wallet and complete the protection journey. This improves the consumer product and aligns with a published bounty.
 2. **Complete the Kuru funding-to-protection demonstration.** The optional Faucet integration now buys native MON through the canonical Spot V2 testnet order book and withdraws it to the same wallet. Five scripted transactions are verified. A browser-signed journey through protection and real user-demand evidence remain outstanding; see [the implementation and evidence](KURU_INTEGRATION.md).
 3. **Defer Agora's mobile trading bounty for this release.** The signed-in requirements mandate Mera authentication, an AUSD balance and a Perpl trade together. That is a separate product path from the planned Dynamic/Kuru flow; the deployed AUSD pools and a responsive layout alone do not establish qualification.
-4. **Evaluate Chainlink CRE for a useful pool-health workflow.** Keep oracle selection separate from this bounty: replacing Pyth with a Chainlink price feed alone does not demonstrate CRE.
+4. **Use Chainlink CRE for the pool-health workflow.** The official simulation now compares HTTP observations with independent Monad reads. Keep oracle selection separate: this does not replace RedStone or deploy a continuous monitor.
 5. Use relevant RPC, simulation and indexing resources when they solve a measured need. Keep cash awards, credits and winner benefits separate.
 
 The core release now has seven funded pools, fresh RedStone MON pricing and completed scripted holder/provider transaction journeys. The two new pools use official Agora testnet AUSD; [the expansion release](ASSET_EXPANSION_RELEASE.md) records 500-AUSD creation bonds, 2,000-AUSD initial backing per pool and 20 confirmed journey transactions. Sponsor work must strengthen that release. Each implemented sponsor feature gets its own commit, tests appropriate to its behavior, deployment record and demo evidence.

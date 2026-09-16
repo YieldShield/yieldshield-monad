@@ -1,0 +1,123 @@
+{
+  "checkedAt": "2026-09-16T15:26:37.381Z",
+  "sourceCommit": "deb536fbb7ab7ce6b814a16d076b363de315a842",
+  "pullRequest": "https://github.com/YieldShield/yieldshield-monad/pull/31",
+  "vercel": {
+    "deploymentId": "dpl_4SNipBNa9PasCjd27Jmu8BLGcXRk",
+    "status": "READY",
+    "url": "https://monad.yieldshield.ai"
+  },
+  "railway": {
+    "deploymentId": "1bd3ccff-25ae-404c-b56f-1daf5e3d6514",
+    "status": "SUCCESS",
+    "url": "https://monad-api.yieldshield.ai"
+  },
+  "statusObservation": {
+    "checkedAt": "2026-09-16T15:24:17.569Z",
+    "httpStatus": 200,
+    "elapsedMs": 6963,
+    "blockNumber": "63063803",
+    "contractsVerified": true,
+    "contractCount": 44,
+    "pools": [
+      {
+        "id": "scenario-mon-usd",
+        "ready": true,
+        "paused": false
+      },
+      {
+        "id": "scenario-mon-vault",
+        "ready": true,
+        "paused": false
+      },
+      {
+        "id": "wmon-usd",
+        "ready": true,
+        "paused": false
+      },
+      {
+        "id": "shmon-usd",
+        "ready": true,
+        "paused": false
+      },
+      {
+        "id": "wmon-vault",
+        "ready": true,
+        "paused": false
+      },
+      {
+        "id": "wmon-ausd",
+        "ready": true,
+        "paused": false
+      },
+      {
+        "id": "shmon-ausd",
+        "ready": true,
+        "paused": false
+      }
+    ],
+    "assets": [
+      {
+        "symbol": "TestUSDC",
+        "healthy": true
+      },
+      {
+        "symbol": "sMON-demo",
+        "healthy": true
+      },
+      {
+        "symbol": "vTestUSDC",
+        "healthy": true
+      },
+      {
+        "symbol": "WMON",
+        "healthy": true
+      },
+      {
+        "symbol": "shMON",
+        "healthy": true
+      },
+      {
+        "symbol": "AUSD",
+        "healthy": true
+      }
+    ]
+  },
+  "envio": {
+    "status": "not-configured",
+    "tokenCreated": false,
+    "billingEnabled": false,
+    "uiHiddenUntilConfigured": true
+  },
+  "closedDynamicPosition": {
+    "owner": "0xfa9605a2c38a0b4f16f689fdd07b63f295b86d1c",
+    "positions": []
+  },
+  "endpointChecks": [
+    {
+      "path": "/health",
+      "httpStatus": 200,
+      "elapsedMs": 181
+    },
+    {
+      "path": "/api/activity",
+      "httpStatus": 200,
+      "elapsedMs": 145
+    },
+    {
+      "path": "/api/activity?owner=invalid",
+      "httpStatus": 503,
+      "elapsedMs": 113
+    },
+    {
+      "path": "/api/positions?owner=0xfa9605a2c38a0b4f16f689fdd07b63f295b86d1c",
+      "httpStatus": 200,
+      "elapsedMs": 9346
+    }
+  ],
+  "limitations": [
+    "Timing is a single production observation, not an uptime or latency guarantee.",
+    "Envio activation and live receipt verification await explicit approval for the free API token.",
+    "Internal test transactions do not establish customer adoption."
+  ]
+}
