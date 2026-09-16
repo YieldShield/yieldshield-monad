@@ -1,5 +1,7 @@
 # Multi-Agent Smart-Contract Security Review — Fresh Pass
 
+> **Historical internal review.** Imported from the pre-Metropolis YieldShield foundation. This report is not an independent third-party audit or verification of the current Monad deployment. Its original findings remain below; assess them against the stated revision and date. See the [repository guide](../docs/REPOSITORY_GUIDE.md).
+
 - **Date:** 2026-07-13
 - **Reviewed commit:** `a6f91af12510391ae8a429f700de827032dadcd0` (`main`)
 - **Scope:** production contracts, oracle adapters, factory and deployment lifecycle,

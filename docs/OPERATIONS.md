@@ -21,7 +21,7 @@ The five original pools and two AUSD pools are funded. The scenario/reference re
 
 Dynamic uses the isolated **YieldShield Monad / Sandbox** environment `71020229-55c2-4143-8352-9bf007358fff`. Its environment ID is public SDK configuration, not a secret. Embedded wallets, creation on sign-up and transaction confirmations are enabled. Delegated access, developer recovery shares and private-key exports are disabled. The app restricts wallet transactions to chain 10143. Production CORS origin: `https://monad.yieldshield.ai`; local verification origin: `http://localhost:5174`. The original YieldShield Dynamic project was not modified. No server API token is needed by this integration.
 
-Public source publication still needs a later explicit owner instruction. The final submission form opens 22 September. The public 2:34 overview is available at `/evidence`; Dynamic browser signing and final rule checks remain outstanding.
+Public source publication still needs a later explicit owner instruction. The final submission form opens 22 September. The public 2:08 overview is available at `/how-it-works`; Dynamic browser signing and final rule checks remain outstanding.
 
 ## Resume the deployment
 

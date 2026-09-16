@@ -1,5 +1,7 @@
 # YieldShield Smart-Contract Remediation Plan — July 10, 2026
 
+> **Historical internal review.** Imported from the pre-Metropolis YieldShield foundation. This report is not an independent third-party audit or verification of the current Monad deployment. Its original findings remain below; assess them against the stated revision and date. See the [repository guide](../docs/REPOSITORY_GUIDE.md).
+
 ## Objective
 
 Close every open finding in `MULTI_AGENT_REVIEW_2026_07_10.md` with an independently

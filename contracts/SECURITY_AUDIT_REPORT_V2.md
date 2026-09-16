@@ -1,5 +1,7 @@
 # YieldShield Protocol Security Audit Report V2
 
+> **Historical internal review.** Imported from the pre-Metropolis YieldShield foundation. This report is not an independent third-party audit or verification of the current Monad deployment. Its original findings remain below; assess them against the stated revision and date. See the [repository guide](../docs/REPOSITORY_GUIDE.md).
+
 **Audit Date:** January 9, 2026  
 **Auditor:** Security Review  
 **Audit Scope:** Per-Token Oracle Configuration System  

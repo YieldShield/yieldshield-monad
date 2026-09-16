@@ -1,5 +1,7 @@
 # YieldShield Smart-Contract Multi-Agent Review — July 11, 2026
 
+> **Historical internal review.** Imported from the pre-Metropolis YieldShield foundation. This report is not an independent third-party audit or verification of the current Monad deployment. Its original findings remain below; assess them against the stated revision and date. See the [repository guide](../docs/REPOSITORY_GUIDE.md).
+
 **Scope:** `contracts/` tree — `SplitRiskPool`, `SplitRiskPoolFactory`, the oracle stack (`CompositeOracle`, Chainlink/Pyth/PythEMA/ERC4626/UniswapV3-TWAP feeds, `SequencerUptimeGuard`), the **new tokenized-equity subsystem** (`RobinhoodStockOracleFeed`, `USMarketSessionGate`, `IProtectionOpeningEligibility`), receipt NFTs, `YSToken`/`YSGovernor`/`YSTimelockController`, access control, and libraries.
 
 **Method:** Four-phase multi-agent workflow — one orientation pass over the ~54 commits since the round-2 follow-up, five parallel dimension reviewers (round-2 fix-verification, the new stock-oracle/session subsystem, oracle stack, governance/accounting, cross-cutting consistency), adversarial per-finding verification (each finding independently re-read at `file:line` by a skeptic prompted to *refute*, cross-checked against **all ten** prior audit/review docs), and a delta web-research lens focused on what is genuinely new (Robinhood Chain / Arbitrum Orbit, ERC-8056 stock tokens, 2026 ERC-4626 / Pyth updates). 33 raw findings → 32 verified → the set below after deduplication.

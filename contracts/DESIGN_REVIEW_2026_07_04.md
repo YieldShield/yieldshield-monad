@@ -1,5 +1,7 @@
 # YieldShield Protocol — Multi-Agent Follow-Up Review
 
+> **Historical internal review.** Imported from the pre-Metropolis YieldShield foundation. This report is not an independent third-party audit or verification of the current Monad deployment. Its original findings remain below; assess them against the stated revision and date. See the [repository guide](../docs/REPOSITORY_GUIDE.md).
+
 **Date:** July 4, 2026
 **Scope:** `contracts/` tree — `SplitRiskPool`, `SplitRiskPoolFactory`, oracle stack, receipt NFTs, `YSToken`/`YSGovernor`, timelock, access control, libraries.
 **Method:** Four-phase multi-agent review — one orientation pass, five parallel dimension reviewers (accounting, oracle, upgrade/access, NFT/token/libraries, cross-cutting consistency), adversarial per-finding verification, and a web-research lens on 2025–2026 attack patterns. Every raw finding was independently re-read at `file:line` by a skeptical verifier prompted to *refute*; anything not confirmable in current source was dropped.

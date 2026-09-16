@@ -1,0 +1,28 @@
+YieldShield on Monad — How it works
+
+Recorded September 16, 2026. Narration: ElevenLabs Chris.
+Current app captures and illustrative examples. No wallet signing is shown.
+
+[00:00:00] Your asset. Two ways to exit.
+YieldShield on Monad gives your crypto position two ways to exit. Keep the remaining asset, or exchange the position for an eligible backing payout. Let's walk through how the two sides of a pool fit together.
+
+[00:00:12] Start with test tokens.
+Start at the faucet. You'll need testnet MON for network fees, plus the asset you want to use. The app supports wrapped MON and staked MON. Everything shown here runs on testnet, with valueless test assets.
+
+[00:00:29] Know the terms before you deposit.
+Choose Protect, pick a pool, and enter an amount. Review the backing token, available capacity, gain-sharing fees, and waiting period before confirming in your wallet. Your position then appears under Positions, where you can manage its exits.
+
+[00:00:46] When the asset falls.
+Here's a simple example. A hundred-dollar asset has a hundred and fifty dollars of backing. If the asset falls twenty percent, taking the asset leaves eighty dollars. The eligible backing exit pays a hundred instead, and the pool receives the surrendered asset.
+
+[00:01:03] When the asset rises.
+Now let the asset rise twenty percent. In this example, fees take twelve percent of the twenty-dollar gain. That leaves a hundred and seventeen dollars sixty in asset value. You can compare both exits before choosing.
+
+[00:01:17] Who supplies the backing?
+Backing providers supply the pool's first-loss capital. They earn a share of realized gains, and take the downside when backing is used. In our falling-price example, their hundred and fifty dollars becomes a hundred and thirty in illustrative residual value.
+
+[00:01:34] Know what protection covers.
+Protection has limits. Caps are measured in backing tokens, not guaranteed cash. Waiting periods and withdrawal conditions apply, and fees already realized aren't refunded after a later loss. Smart-contract, pricing and token risks remain. The calculator is an illustration, not a live quote.
+
+[00:01:55] Try it on Monad testnet.
+Ready to explore? Get test tokens, compare the pools, and try the calculator on How it works. Your asset. Separately supplied backing. Two ways to exit. YieldShield on Monad.

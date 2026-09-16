@@ -5,11 +5,27 @@ file, the project-authored files in this repository are licensed under the MIT
 License. See LICENSE.
 
 The following files include or depend on code derived from Uniswap v3-core and
-are licensed under GPL-2.0-or-later, as declared by their SPDX identifiers:
+are licensed under GPL-2.0-or-later, as declared by their SPDX identifiers.
+Paths below are relative to this contracts/ directory:
 
 - contracts/oracles/UniswapV3TWAPFeed.sol
 - contracts/oracles/libraries/FullMath.sol
 - contracts/oracles/libraries/TickMath.sol
 
+The full GNU General Public License version 2 is bundled at
+../LICENSES/GPL-2.0-or-later.txt. The source headers permit version 2 or, at the
+recipient's option, any later version. The MIT license does not replace those
+terms or cover the combined GPL work under MIT alone.
+
+The FullMath and TickMath source headers identify the upstream v1.0.0 baseline:
+https://github.com/Uniswap/v3-core/tree/d8b1c635c275d2a9450bd6a78f3fa2484fef73eb
+These are adapted sources, not byte-for-byte copies of that baseline. FullMath's
+upstream implementation credits Remco Bloemen's mulDiv routine under MIT:
+https://xn--2-umb.com/21/muldiv/
+Copyright (c) 2021 Remco Bloemen. Its permission and warranty notice is preserved
+in ../LICENSES/MIT-Remco-Bloemen.txt; this underlying attribution does not change
+the GPL-2.0-or-later license on the adapted FullMath file.
+
 Foundry dependencies under lib/ are Git submodules and retain their own
-upstream licenses and notices.
+upstream licenses and notices. The root ../THIRD_PARTY_NOTICES.md inventories
+these dependencies, fonts and bundled brand assets.

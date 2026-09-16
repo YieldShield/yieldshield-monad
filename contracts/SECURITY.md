@@ -1,5 +1,9 @@
 # Security Policy
 
+> Imported protocol notes. The [root security policy](../SECURITY.md) is the
+> current reporting policy for YieldShield on Monad. The root GitHub workflows
+> define its active checks; workflows nested under `contracts/.github/` do not run.
+
 YieldShield is a smart-contract protocol. Please treat suspected vulnerabilities
 as sensitive until they have been triaged and remediated.
 
@@ -26,9 +30,8 @@ Out of scope:
 
 Do not open a public issue with exploit details.
 
-Use GitHub private vulnerability reporting for this repository if it is enabled.
-If private reporting is unavailable, open a minimal public issue asking for a
-security contact without including technical details.
+Email **david@yieldshield.ai** privately, or use GitHub private vulnerability
+reporting if enabled. Do not open a public issue to transmit sensitive details.
 
 Please include:
 
@@ -60,9 +63,9 @@ full checklist to `slither-report.md` and uses `--fail-none`. Tool startup,
 configuration, compilation, and analyzer crashes still return a non-zero exit
 status so a broken analysis cannot appear successful.
 
-In CI, Slither's dedicated high-severity job is the blocking static-analysis
-gate. Aderyn is uploaded as a report-only artifact for manual triage unless a
-separate Aderyn severity gate is intentionally added later.
+The imported contracts workflow defines a Slither high-severity gate and an
+Aderyn report, but that nested workflow is not active in this Monad repository.
+Neither analyzer is a current Monad CI release gate.
 
 Run coverage when changing core accounting, pool, oracle, receipt NFT, or
 governance behavior:
@@ -114,7 +117,8 @@ governance dynamics apply.
 `ReentrancyGuard` storage rather than `ReentrancyGuardUpgradeable`. This is
 accepted for the current deployment model because pool and factory UUPS upgrade
 entrypoints are disabled on-chain, live logic is pinned by codehash, and storage
-layout checks gate changes in CI. If upgradeability is ever re-enabled for live
+layout checks exist in the imported workflow but are not active Monad CI gates.
+If upgradeability is ever re-enabled for live
 proxies, this base must be migrated deliberately and checked with a storage
 layout diff before deployment.
 

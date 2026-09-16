@@ -97,3 +97,8 @@ Independent reviews found and fixed the public RPC rate-limit handling, wallet-s
 The frontend is deployed from `8dcee07` as Vercel `dpl_C97tZo5eQhrzDeQiiq4TidnXUoPc`, on the existing domain. Railway successfully deployed the API at `35d9a7f` as `bab25646-09da-4345-9f03-57a284568a66`. [All 394 release tests and build checks passed](https://github.com/YieldShield/yieldshield-monad/actions/runs/34981040829). The fresh verifier also passed all 39 contracts, five pools and ten receipt NFTs; evidence was committed as `a87423b`. Eight production samples returned all five pools ready/unpaused, with no captured failures and reference ages of 6–12 seconds on arrival.
 
 No new blockchain transactions were broadcast. A user wallet sign-in was requested; a signed Dynamic browser journey and completed shMON unstake remain unverified. The historical receipt journals remain intact. Repository visibility remains private.
+
+
+## 16 September product video refresh
+
+Rebuilt the How it works video with current application captures, the site’s typography and colors, animated explanations, and ElevenLabs Chris narration. The 2:08 overview covers setup, Protect, falling and rising prices, the provider’s first-loss role, and the main limits. Added speech-aligned English captions, a matching transcript and poster. The recording uses real interface captures and labeled illustrations; no wallet signing is shown. The old media URLs redirect to the replacement.

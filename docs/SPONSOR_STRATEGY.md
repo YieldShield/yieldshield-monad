@@ -1,16 +1,16 @@
 # Metropolis sponsor strategy
 
-Initial review: 9 September 2026. Public catalog and signed-in Dynamic, Kuru, Agora and CRE bounty details rechecked: 14 September 2026. This is the sponsor selection and evidence plan for YieldShield on Monad, following the owner's request to consider sponsors throughout the build. It supplements the implementation plan; it does not claim that any bounty has been earned or any new integration is live.
+Initial review: 9 September 2026. Public catalog and signed-in Dynamic, Kuru, Agora and CRE bounty details rechecked: 14 September 2026. This is the sponsor selection and evidence plan for YieldShield on Monad, following the owner's request to consider sponsors throughout the build. It supplements the implementation plan; it does not claim that any bounty has been earned. Implementation status below was updated on 16 September from the committed release evidence; the dated portal observations remain historical records.
 
 ## Decisions
 
 1. **Prioritize Dynamic for onboarding.** A new user should be able to create or connect a wallet and complete the protection journey. This improves the consumer product and aligns with a published bounty.
 2. **Investigate executable Kuru trading next.** Acquiring an asset through Kuru and then protecting it is a coherent product journey. The current external Kuru link does not qualify as an integration.
-3. **Defer Agora's mobile trading bounty for this release.** The signed-in requirements mandate Mera authentication, an AUSD balance and a Perpl trade together. That is a separate product path from the planned Dynamic/Kuru flow; adding AUSD or a responsive layout alone would not qualify.
+3. **Defer Agora's mobile trading bounty for this release.** The signed-in requirements mandate Mera authentication, an AUSD balance and a Perpl trade together. That is a separate product path from the planned Dynamic/Kuru flow; the deployed AUSD pools and a responsive layout alone do not establish qualification.
 4. **Evaluate Chainlink CRE for a useful pool-health workflow.** Keep oracle selection separate from this bounty: replacing Pyth with a Chainlink price feed alone does not demonstrate CRE.
 5. Use relevant RPC, simulation and indexing resources when they solve a measured need. Keep cash awards, credits and winner benefits separate.
 
-The core release now has five funded pools, fresh RedStone MON pricing and completed holder/provider transaction journeys. Sponsor work must strengthen that release. Each implemented sponsor feature gets its own commit, tests appropriate to its behavior, deployment record and demo evidence.
+The core release now has seven funded pools, fresh RedStone MON pricing and completed scripted holder/provider transaction journeys. The two new pools use official Agora testnet AUSD; [the expansion release](ASSET_EXPANSION_RELEASE.md) records 500-AUSD creation bonds, 2,000-AUSD initial backing per pool and 20 confirmed journey transactions. Sponsor work must strengthen that release. Each implemented sponsor feature gets its own commit, tests appropriate to its behavior, deployment record and demo evidence.
 
 ## Why Pyth and Dynamic are separate decisions
 
@@ -18,7 +18,7 @@ Dynamic provides wallet and authentication infrastructure; it cannot replace a c
 
 Chainlink's current address directory has no enabled Monad testnet tab. That prevents claiming a verified Chainlink testnet price-feed integration. Chainlink CRE remains a separate potential sponsor workflow; RedStone is not claimed as a Metropolis bounty sponsor.
 
-Dynamic React SDK 5.8.0 is now integrated in an isolated YieldShield Monad sandbox environment, with email authentication, embedded wallets, explicit signing confirmations and Monad account/network checks. The production sign-in UI is being verified; a completed user signing journey must be recorded before a bounty-ready claim. The SDK is loaded on demand. No developer signing key or paid subscription was provisioned.
+The Dynamic React SDK is integrated in an isolated YieldShield Monad sandbox environment, with email authentication, embedded wallets, explicit signing confirmations and Monad account/network checks. The production sign-in UI is being verified; a completed user signing journey must be recorded before a bounty-ready claim. The SDK is loaded on demand. No developer signing key or paid subscription was provisioned.
 
 ## Verified public shortlist
 
@@ -61,7 +61,7 @@ The Dynamic environment identifier is public configuration; administrative API t
 
 Kuru Flow exposes the routing engine for Monad markets. Its general documentation does not prove that a particular testnet pair can execute. Establish the supported chain and pair before implementing an approval or swap. Record quote provenance, expiry, decoded call parameters and actual output. Purchasing an asset and protecting it are separate operations unless an explicitly reviewed atomic path is built; the UI must say when protection has not yet been opened. [Kuru Flow](https://docs.kuru.io/kuru-flow/flow-overview).
 
-Agora currently lists Monad testnet AUSD at `0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC` and faucet `0xd236c18D274E54FAccC3dd9DDA4b27965a73ee6C`. These are documentation candidates, not deployment verification performed by this sponsor review. Check current bytecode, token identity, access/funding, transfer restrictions and an appropriate valuation policy before adding an AUSD-backed pool. Keep TestUSDC explicitly separate. [Agora deployments](https://docs.agora.finance/developer/contract-deployments).
+Agora currently lists Monad testnet AUSD at `0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC` and faucet `0xd236c18D274E54FAccC3dd9DDA4b27965a73ee6C`. The 16 September release verified the issuer token and faucet, pinned the issuer implementation and created funded WMON/AUSD and shMON/AUSD pools using the explicit test-unit valuation policy. The [deployment verification](evidence/deployment-verification.json), [expanded journey](evidence/expanded-journey.json) and [release checks](evidence/expanded-release.json) record that evidence. Keep TestUSDC explicitly separate. This implementation does not add Mera login or Perpl trading and does not establish eligibility for Agora's mobile-trading bounty. [Agora deployments](https://docs.agora.finance/developer/contract-deployments).
 
 If either bounty requires mainnet execution, record that dependency and request a concrete mainnet scope and funding decision before enabling real-money actions. Do not silently move the current testnet product to mainnet for a prize.
 

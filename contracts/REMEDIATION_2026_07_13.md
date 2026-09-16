@@ -1,5 +1,7 @@
 # YieldShield July 13 Security Remediation Record
 
+> **Historical internal review.** Imported from the pre-Metropolis YieldShield foundation. This report is not an independent third-party audit or verification of the current Monad deployment. Its original findings remain below; assess them against the stated revision and date. See the [repository guide](../docs/REPOSITORY_GUIDE.md).
+
 ## Outcome
 
 This remediation implements the actionable findings from
