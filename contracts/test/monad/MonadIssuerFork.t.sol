@@ -39,5 +39,35 @@ contract MonadIssuerForkTest is Test {
   assertGt(IERC20(wrapped).balanceOf(actor),before);
   vm.stopPrank();
  }
+ function testReferenceShmonVaultHolderAndProviderExits() public {
+  exerciseShmonPair(0xa72E4a45a43322Fe0D77b0762f763D2658aAc84C,0x1feB5ae74eaBf81F8148C5396179d1aC9F9C77A5,"vTestUSDC");
+ }
+ function testExpandedShmonAusdHolderAndProviderExits() public {
+  exerciseShmonPair(0xFd2Bd5adF1776c6da4eF6accCc49C1621aCE1410,0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC,"AUSD");
+ }
+ function exerciseShmonPair(address factoryAddress,address backing,string memory backingSymbol) internal {
+  string memory url=vm.envOr("MONAD_FORK_RPC",string(""));if(bytes(url).length==0){vm.skip(true);return;}
+  vm.createSelectFork(url);
+  address actor=0xA437345Be29EC6802024A8e090E34b621b92E5E2;
+  address shmon=0x282BdDFF5e58793AcAb65438b257Dbd15A8745C9;
+  vm.startPrank(actor);
+  IERC20(backing).approve(factoryAddress,500e6);
+  SplitRiskPool pool=SplitRiskPool(payable(SplitRiskPoolFactory(payable(factoryAddress)).createPool(shmon,"shMON",backing,backingSymbol,1000,100,15000,500e6)));
+  IERC20(backing).approve(address(pool),2000e6);
+  uint256 junior=pool.depositBackingAsset(backing,2000e6,2000e6);
+  IERC20(shmon).approve(address(pool),0.02 ether);
+  uint256 receipt=pool.depositShieldedAsset(shmon,0.01 ether,0.01 ether);
+  uint256 before=IERC20(shmon).balanceOf(actor);pool.shieldedWithdraw(receipt,shmon,1);
+  assertGt(IERC20(shmon).balanceOf(actor),before);
+  receipt=pool.depositShieldedAsset(shmon,0.01 ether,0.01 ether);
+  vm.warp(block.timestamp+60);
+  before=IERC20(backing).balanceOf(actor);pool.shieldedWithdraw(receipt,backing,1);
+  assertGt(IERC20(backing).balanceOf(actor),before);
+  pool.startUnlockProcess(junior);vm.warp(block.timestamp+120);
+  uint256 available=pool.getAvailableForWithdrawal(junior);assertGt(available,0);
+  before=IERC20(backing).balanceOf(actor);pool.protectorWithdraw(junior,available,backing,available);
+  assertGt(IERC20(backing).balanceOf(actor),before);
+  vm.stopPrank();
+ }
  receive() external payable {}
 }
