@@ -1,14 +1,14 @@
 {
   "chainId": 10143,
-  "checkedAt": "2026-09-15T14:12:55.953Z",
+  "checkedAt": "2026-09-16T07:04:12.999Z",
   "deploymentStatus": "complete",
   "referenceOracle": {
     "provider": "redstone",
     "adapter": "0x244252325588eE70e8C763385480AB688f89d690",
     "source": "0x92B14C0531A1f8fC0F85712FaF97d7302B4128C8",
     "runtimeCodehash": "0x4d9be648c5bf39973670d9f8b481d5d0b971e6a2db2deccc6b98cde21c5dd83e",
-    "price": "2216980",
-    "publishedAt": "1789481568",
+    "price": "2224108",
+    "publishedAt": "1789542242",
     "maxAgeSeconds": 120
   },
   "contracts": [
@@ -284,6 +284,41 @@
       "runtimeCodehash": "0xb6fe1ae817868e5b7399a5a3047e41309b3f5a0fc48138fe575ecb857d5d2b1c",
       "txHash": "0x3403099fc6d93a479b22fa7a82ec89381a5a923788b4d40c00e9b34e03fd522c",
       "blockNumber": "62438135"
+    },
+    {
+      "name": "ExpandedAssetRegistry",
+      "address": "0x49535Db43F42C29691Bdc2CFA813B163d0DA01c7",
+      "runtimeCodehash": "0x6b6943a13f9a310e0c024c75b4749b5d190ecbf7eacd3fdfac602b4b2af1503d",
+      "txHash": "0x57aa624fc7471a7da8d164fb626f91136bc4f9d79e1e19a0e1fb47435ca08c0a",
+      "blockNumber": "62957548"
+    },
+    {
+      "name": "ExpandedInitializeModule",
+      "address": "0x4c165c502Db22298fD6d13F525260bDaFC022831",
+      "runtimeCodehash": "0xc01d05d4fdedca79050b880566d868c93874858373185f8ebd163934c0ed7a7d",
+      "txHash": "0x93d4e60747dfecb97ab172c247362f835b99946372fe603207ac616c62ad91a8",
+      "blockNumber": "62957570"
+    },
+    {
+      "name": "ExpandedPoolRouter",
+      "address": "0x1a8f5EC844dd9b21659A8d1C3628d2C6cBA55f27",
+      "runtimeCodehash": "0xee7999202bf481b2a6e88decb13a23893a5c43ac6e98b752db491fe52a7386c9",
+      "txHash": "0x14a24ac122bc8a6a38050e4bd0e5078c4ec6020d29a87e58f82d717cfe32121f",
+      "blockNumber": "62957592"
+    },
+    {
+      "name": "ExpandedFactory",
+      "address": "0xFd2Bd5adF1776c6da4eF6accCc49C1621aCE1410",
+      "runtimeCodehash": "0x10bf90b815b04847034cf65d64b1e8f7473642d8f9af488ad1394f08886dbd1d",
+      "txHash": "0x8ba6cd5f4782460ef5718595e6cbb13c43a5720da99709b211e5f81006c5b309",
+      "blockNumber": "62957614"
+    },
+    {
+      "name": "ExpandedCompositeOracle",
+      "address": "0x8C4FD9816C678861527D0db11D67b67903Ea14CD",
+      "runtimeCodehash": "0x1e2fafbb61c7074c0299f0619840b5fe3e9fae8b3d5d596d4fcce84d0e416b5a",
+      "txHash": "0xd0adbedf3b69a06c26fb75850db0233e3ac2a34ec97b97a495f8ceaf48f0bffd",
+      "blockNumber": "62957635"
     }
   ],
   "pools": [
@@ -403,6 +438,56 @@
         {
           "name": "ProtectorReceiptNFT",
           "address": "0x0E618edA1Dc5C2EA86F8B96652Be08A9F3a4704D",
+          "runtimeCodehash": "0x1bbb1eaf8d8548b63fffff23afb1750fddd84705a5feb5524e46074516e6508c"
+        }
+      ]
+    },
+    {
+      "id": "wmon-ausd",
+      "address": "0x89Dc1d055Ac9ec50E1FA0a2d7da8be858F1B1470",
+      "shieldedToken": "0x23EA8b07fda821d2096dee02a3a662a5374B69Cb",
+      "backingToken": "0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC",
+      "symbol": "WMON",
+      "backingSymbol": "AUSD",
+      "environment": "reference",
+      "priceKind": "external-reference",
+      "createdTx": "0x632f23d074ef3f5b1f673e20ea7cfc8293a87eefc3d5e9114e5e047d144aed8e",
+      "factoryVersion": "expanded-v2",
+      "configurationVerified": true,
+      "receipts": [
+        {
+          "name": "ShieldReceiptNFT",
+          "address": "0xe2AF5d55E497abfEA84ACc734385dd38F7002A72",
+          "runtimeCodehash": "0x0ece68f0406f3382ac8b93d9e84c99e1d81c64533b3f5ef7f33b336f09e61e3c"
+        },
+        {
+          "name": "ProtectorReceiptNFT",
+          "address": "0xBa694628DB80dD39884993A73Cd306Cb932871e1",
+          "runtimeCodehash": "0x1bbb1eaf8d8548b63fffff23afb1750fddd84705a5feb5524e46074516e6508c"
+        }
+      ]
+    },
+    {
+      "id": "shmon-ausd",
+      "address": "0x18F7E79744b08a302E786c0D62b8c1cfB3CFc475",
+      "shieldedToken": "0x282BdDFF5e58793AcAb65438b257Dbd15A8745C9",
+      "backingToken": "0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC",
+      "symbol": "shMON",
+      "backingSymbol": "AUSD",
+      "environment": "reference",
+      "priceKind": "redemption-nav",
+      "createdTx": "0x6017f5596b9e059d9090e7109d39b40476f66c34ec6351df4b447efe6b35a96d",
+      "factoryVersion": "expanded-v2",
+      "configurationVerified": true,
+      "receipts": [
+        {
+          "name": "ShieldReceiptNFT",
+          "address": "0x803D892A965e767B29cc021E81131fA42898468B",
+          "runtimeCodehash": "0x0ece68f0406f3382ac8b93d9e84c99e1d81c64533b3f5ef7f33b336f09e61e3c"
+        },
+        {
+          "name": "ProtectorReceiptNFT",
+          "address": "0x36782A03cBf73FdDA97b90B5e960CaEC31b4aD4d",
           "runtimeCodehash": "0x1bbb1eaf8d8548b63fffff23afb1750fddd84705a5feb5524e46074516e6508c"
         }
       ]

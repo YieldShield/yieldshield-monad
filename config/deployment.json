@@ -236,8 +236,55 @@
       "runtimeCodehash": "0xb6fe1ae817868e5b7399a5a3047e41309b3f5a0fc48138fe575ecb857d5d2b1c",
       "artifact": "CompositeOracle",
       "txHash": "0x3403099fc6d93a479b22fa7a82ec89381a5a923788b4d40c00e9b34e03fd522c"
+    },
+    "ExpandedAssetRegistry": {
+      "address": "0x49535Db43F42C29691Bdc2CFA813B163d0DA01c7",
+      "runtimeCodehash": "0x6b6943a13f9a310e0c024c75b4749b5d190ecbf7eacd3fdfac602b4b2af1503d",
+      "artifact": "MonadAssetRegistry",
+      "txHash": "0x57aa624fc7471a7da8d164fb626f91136bc4f9d79e1e19a0e1fb47435ca08c0a"
+    },
+    "ExpandedInitializeModule": {
+      "address": "0x4c165c502Db22298fD6d13F525260bDaFC022831",
+      "runtimeCodehash": "0xc01d05d4fdedca79050b880566d868c93874858373185f8ebd163934c0ed7a7d",
+      "artifact": "MonadExpandedInitializeModule",
+      "txHash": "0x93d4e60747dfecb97ab172c247362f835b99946372fe603207ac616c62ad91a8"
+    },
+    "ExpandedPoolRouter": {
+      "address": "0x1a8f5EC844dd9b21659A8d1C3628d2C6cBA55f27",
+      "runtimeCodehash": "0xee7999202bf481b2a6e88decb13a23893a5c43ac6e98b752db491fe52a7386c9",
+      "artifact": "BasePoolRouter",
+      "txHash": "0x14a24ac122bc8a6a38050e4bd0e5078c4ec6020d29a87e58f82d717cfe32121f"
+    },
+    "ExpandedFactory": {
+      "address": "0xFd2Bd5adF1776c6da4eF6accCc49C1621aCE1410",
+      "runtimeCodehash": "0x10bf90b815b04847034cf65d64b1e8f7473642d8f9af488ad1394f08886dbd1d",
+      "artifact": "ERC1967Proxy",
+      "txHash": "0x8ba6cd5f4782460ef5718595e6cbb13c43a5720da99709b211e5f81006c5b309"
+    },
+    "ExpandedCompositeOracle": {
+      "address": "0x8C4FD9816C678861527D0db11D67b67903Ea14CD",
+      "runtimeCodehash": "0x1e2fafbb61c7074c0299f0619840b5fe3e9fae8b3d5d596d4fcce84d0e416b5a",
+      "artifact": "CompositeOracle",
+      "txHash": "0xd0adbedf3b69a06c26fb75850db0233e3ac2a34ec97b97a495f8ceaf48f0bffd"
     }
   },
+  "expandedFactories": [
+    {
+      "id": "expanded-v2",
+      "contract": "ExpandedFactory",
+      "router": "ExpandedPoolRouter",
+      "environment": "reference",
+      "protectedAssets": [
+        "wmon",
+        "shmon"
+      ],
+      "backingAssets": [
+        "test-usd",
+        "test-usd-vault",
+        "agora-ausd"
+      ]
+    }
+  ],
   "assets": [
     {
       "id": "test-usd",
@@ -288,6 +335,23 @@
       "kind": "redemption-nav",
       "feed": "0x244252325588eE70e8C763385480AB688f89d690",
       "external": true
+    },
+    {
+      "id": "agora-ausd",
+      "address": "0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC",
+      "symbol": "AUSD",
+      "name": "Agora testnet dollar",
+      "decimals": 6,
+      "runtimeCodehash": "0xa3bda7298d1c5f8585852ee04439f9cc493e5c291c9cac74fa54a0bc67024a7b",
+      "source": "https://docs.agora.finance/developer/contract-deployments",
+      "implementation": {
+        "slot": "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc",
+        "address": "0xc1e3c7d486d6a92fbe920232e439eec2ceb112da",
+        "runtimeCodehash": "0x2e612fde7bb56c8b5c52e68eb50ded8302e686c5dd42b84f71a9f9d52bc99a90"
+      },
+      "external": true,
+      "kind": "test-unit",
+      "feed": "0x49535Db43F42C29691Bdc2CFA813B163d0DA01c7"
     }
   ],
   "pools": [
@@ -345,27 +409,77 @@
       "environment": "reference",
       "priceKind": "external-reference",
       "createdTx": "0x44fc20197db62c88f41045797ec8074c19998c6e624ac07208dd1d38c0b390fa"
+    },
+    {
+      "id": "wmon-ausd",
+      "address": "0x89Dc1d055Ac9ec50E1FA0a2d7da8be858F1B1470",
+      "shieldedToken": "0x23EA8b07fda821d2096dee02a3a662a5374B69Cb",
+      "backingToken": "0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC",
+      "symbol": "WMON",
+      "backingSymbol": "AUSD",
+      "environment": "reference",
+      "priceKind": "external-reference",
+      "createdTx": "0x632f23d074ef3f5b1f673e20ea7cfc8293a87eefc3d5e9114e5e047d144aed8e",
+      "factoryVersion": "expanded-v2"
+    },
+    {
+      "id": "shmon-ausd",
+      "address": "0x18F7E79744b08a302E786c0D62b8c1cfB3CFc475",
+      "shieldedToken": "0x282BdDFF5e58793AcAb65438b257Dbd15A8745C9",
+      "backingToken": "0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC",
+      "symbol": "shMON",
+      "backingSymbol": "AUSD",
+      "environment": "reference",
+      "priceKind": "redemption-nav",
+      "createdTx": "0x6017f5596b9e059d9090e7109d39b40476f66c34ec6351df4b447efe6b35a96d",
+      "factoryVersion": "expanded-v2"
     }
   ],
   "referenceStatus": "active",
   "referenceOracle": "redstone",
-  "updatedAt": "2026-09-14T10:16:52.556Z",
+  "updatedAt": "2026-09-16T07:04:12.999Z",
   "factories": [
     {
       "id": "scenario-v1",
       "contract": "Factory",
       "router": "BasePoolRouter",
       "environment": "scenario",
-      "protectedAssets": ["scenario-mon"],
-      "backingAssets": ["test-usd", "test-usd-vault"]
+      "protectedAssets": [
+        "scenario-mon"
+      ],
+      "backingAssets": [
+        "test-usd",
+        "test-usd-vault"
+      ]
     },
     {
       "id": "reference-v1",
       "contract": "ReferenceFactory",
       "router": "BasePoolRouter",
       "environment": "reference",
-      "protectedAssets": ["wmon", "shmon"],
-      "backingAssets": ["test-usd", "test-usd-vault"]
+      "protectedAssets": [
+        "wmon",
+        "shmon"
+      ],
+      "backingAssets": [
+        "test-usd",
+        "test-usd-vault"
+      ]
+    },
+    {
+      "id": "expanded-v2",
+      "contract": "ExpandedFactory",
+      "router": "ExpandedPoolRouter",
+      "environment": "reference",
+      "protectedAssets": [
+        "wmon",
+        "shmon"
+      ],
+      "backingAssets": [
+        "test-usd",
+        "test-usd-vault",
+        "agora-ausd"
+      ]
     }
   ]
 }
