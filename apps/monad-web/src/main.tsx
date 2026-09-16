@@ -29,7 +29,17 @@ import { assetVisual } from "./asset-visuals";
 import { ExpandedFunding } from "./ExpandedFunding";
 import { AssetCatalog } from "./AssetCatalog";
 import { AssetSelect } from "./AssetSelect";
-import { creationVersion, creationFingerprint, assertCreationIdentity } from "./creation";
+import {
+  creationVersion,
+  creationFingerprint,
+  assertCreationIdentity,
+  creationInputs,
+  validateCreationTerms,
+  createPoolArgs,
+  type CreationInputs,
+  type CreationTerms,
+} from "./creation";
+import { PoolTermsFields } from "./PoolTermsFields";
 import { MarketSelect } from "./MarketSelect";
 import { Landing } from "./Landing";
 import { HowItWorks } from "./HowItWorks";
@@ -1540,6 +1550,7 @@ function CreatePool() {
   const protectedId = params.get("asset") || "wmon",
     backingId = params.get("backing") || "test-usd";
   const [created, setCreated] = useState<string>();
+  const [draft, setDraft] = useState<Partial<CreationInputs>>({});
   const versions = data?.creation || [];
   const protectedAssets = data?.assets.filter((a) => versions.some((v) => v.protectedAssets.includes(a.id))) || [];
   const backingAssets =
@@ -1550,12 +1561,14 @@ function CreatePool() {
     backing = backingAssets.find((a) => a.id === backingId);
   const version = creationVersion(versions, protectedId, backingId),
     quote = version?.backing.find((b) => b.id === backingId);
-  const balance = useBalance(backing?.address),
-    bond = BigInt(quote?.bond || "0");
+  const input = creationInputs(version, backingId, backing?.decimals || 6, draft);
+  const { terms, errors } = validateCreationTerms(version, backingId, backing?.decimals || 6, input);
+  const balance = useBalance(backing?.address);
+  const bond = terms?.bond ?? 0n;
   const fundingAsset = backing
     ? { id: backing.id, symbol: backing.symbol, balance: balance.error ? undefined : balance.data }
     : undefined;
-  const insufficient = !!w.account && (fundingAsset?.balance == null || fundingAsset.balance < bond);
+  const insufficient = !!w.account && bond > 0n && (fundingAsset?.balance == null || fundingAsset.balance < bond);
   const unavailable =
     !token || !backing
       ? "Choose a supported asset and backing token."
@@ -1571,8 +1584,13 @@ function CreatePool() {
     next.set(key, value);
     setParams(next, { replace: true });
     setCreated(undefined);
+    setDraft((previous) => ({ junior: previous.junior, creator: previous.creator }));
   };
-  async function checkReview(review: string, chosen: CreationOption) {
+  const editTerms = (field: keyof CreationInputs, value: string) => {
+    setDraft((previous) => ({ ...previous, [field]: value }));
+    setCreated(undefined);
+  };
+  async function checkReview(review: string, chosen: CreationOption, selected: CreationTerms) {
     const fresh = await fetcher("/api/creation");
     if (
       !Number.isFinite(fresh.observedAt) ||
@@ -1582,15 +1600,17 @@ function CreatePool() {
     )
       throw new Error("Refresh the creation review.");
     const next = (fresh.creation as CreationOption[]).find((v) => v.id === chosen.id);
-    if (!next || creationFingerprint(next, protectedId, backingId) !== review) {
+    if (!next || creationFingerprint(next, protectedId, backingId, selected) !== review) {
       await mutate();
       throw new Error("Creation terms changed. Review the updated bond and try again.");
     }
     assertCreationIdentity(next, registry, protectedId, backingId);
+    const refreshed = validateCreationTerms(next, backingId, backing!.decimals, input);
+    if (!refreshed.terms) throw new Error("Creation requirements changed. Review the updated pool terms.");
   }
   return (
     <Shell>
-      <PageTitle title="Create a pool" copy="Choose an asset and its backing." />
+      <PageTitle title="Create a pool" copy="Choose your assets, collateral and share of gains." />
       {!data ? (
         <Loading error={error} />
       ) : (
@@ -1610,25 +1630,38 @@ function CreatePool() {
               onChange={(v) => select("backing", v)}
               disabled={w.busy}
             />
+            {version && backing && (
+              <PoolTermsFields
+                version={version}
+                backingId={backingId}
+                symbol={backing.symbol}
+                decimals={backing.decimals}
+                input={input}
+                errors={errors}
+                disabled={w.busy}
+                onChange={editTerms}
+              />
+            )}
             {version && (
               <dl className="review-list">
                 <div>
                   <dt>Collateral</dt>
-                  <dd>{Number(version.collateralBps) / 100}%</dd>
+                  <dd>{terms ? `${formatUnits(terms.collateralBps, 2)}%` : "—"}</dd>
                 </div>
                 <div>
                   <dt>Gains shared</dt>
                   <dd>
-                    {Number(version.juniorFeeBps) / 100}% provider · {Number(version.creatorFeeBps) / 100}% creator ·{" "}
-                    {Number(version.protocolFeeBps) / 100}% protocol
+                    {terms
+                      ? `${formatUnits(terms.juniorFeeBps + terms.creatorFeeBps + BigInt(version.protocolFeeBps), 2)}% of realized gains`
+                      : "—"}
                   </dd>
                 </div>
                 <div>
-                  <dt>Creation bond</dt>
+                  <dt>Holder keeps</dt>
                   <dd>
-                    {quote?.bond && backing
-                      ? `${formatUnits(bond, backing.decimals)} ${backing.symbol}`
-                      : "Unavailable"}
+                    {terms
+                      ? `${formatUnits(10000n - terms.juniorFeeBps - terms.creatorFeeBps - BigInt(version.protocolFeeBps), 2)}% of realized gains`
+                      : "—"}
                   </dd>
                 </div>
                 <div>
@@ -1656,12 +1689,13 @@ function CreatePool() {
               </p>
             )}
             <Submit
-              label="Approve bond & create pool"
-              asset={fundingAsset}
-              disabled={!!unavailable || insufficient || bond <= 0n}
+              label={bond > 0n ? "Approve bond & create pool" : "Create pool"}
+              asset={bond > 0n ? fundingAsset : undefined}
+              disabled={!!unavailable || insufficient || !terms}
               onClick={() =>
                 w.execute("Create pool", async () => {
-                  if (!version || !token || !backing || unavailable) throw new Error("Choose an available pair.");
+                  if (!version || !token || !backing || unavailable || !terms)
+                    throw new Error("Review the pool terms and choose an available pair.");
                   assertCreationIdentity(version, registry, protectedId, backingId);
                   for (const selected of [token, backing]) {
                     const pinned = registry.assets.find((a) => a.id === selected.id);
@@ -1673,24 +1707,15 @@ function CreatePool() {
                     )
                       throw new Error("Asset identity changed. Reload the app.");
                   }
-                  const review = creationFingerprint(version, protectedId, backingId);
-                  await checkReview(review, version);
-                  await w.approve(backing.address, version.factory, bond);
-                  await checkReview(review, version);
+                  const review = creationFingerprint(version, protectedId, backingId, terms);
+                  await checkReview(review, version, terms);
+                  if (bond > 0n) await w.approve(backing.address, version.factory, bond);
+                  await checkReview(review, version, terms);
                   const receipt = await w.send({
                     address: version.factory,
                     abi: abi("SplitRiskPoolFactory"),
                     functionName: "createPool",
-                    args: [
-                      token.address,
-                      token.symbol,
-                      backing.address,
-                      backing.symbol,
-                      BigInt(version.juniorFeeBps),
-                      BigInt(version.creatorFeeBps),
-                      BigInt(version.collateralBps),
-                      bond,
-                    ],
+                    args: createPoolArgs(token, backing, terms),
                   });
                   const logs = parseEventLogs({
                     abi: parseAbi([
@@ -1703,6 +1728,7 @@ function CreatePool() {
                   if (logs.length !== 1)
                     throw new Error("Pool confirmed. Open the transaction receipt to find its address.");
                   setCreated(logs[0].args.poolAddress.toLowerCase());
+                  await mutate();
                 })
               }
             />

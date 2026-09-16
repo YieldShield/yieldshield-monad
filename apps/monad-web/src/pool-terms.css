@@ -1,0 +1,60 @@
+.pool-terms {
+  border: 0;
+  padding: 24px 0 0;
+  margin: 24px 0;
+  min-width: 0;
+  border-top: 1px solid var(--line);
+}
+.pool-terms legend {
+  float: left;
+  width: 100%;
+  margin: 0 0 8px;
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+.pool-terms > .field-hint {
+  clear: both;
+  line-height: 1.6;
+  margin: 0;
+}
+.pool-terms-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px 18px;
+  margin: 22px 0;
+}
+.pool-terms-grid .field {
+  margin: 0;
+}
+.pool-terms-grid .amount-field input {
+  font-size: 24px;
+  padding: 14px 12px;
+}
+.pool-terms-grid .field-hint {
+  line-height: 1.6;
+}
+.pool-terms-grid .amount-field:has([aria-invalid="true"]) {
+  border-color: #a63b32;
+}
+.pool-term-error {
+  color: #a63b32;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.pool-protocol-note {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.7;
+  padding: 16px;
+  border-radius: 8px;
+  background: var(--surface-soft, #f7f5fa);
+  margin: 0;
+}
+@media (max-width: 560px) {
+  .pool-terms-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
