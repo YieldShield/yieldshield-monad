@@ -2,7 +2,7 @@
 
 The current tree now contains one npm app workspace, `apps/monad-web`, plus the isolated Monad API and retained contract tooling. Unused Solana/Base/Robinhood applications, adapters, operator scripts, root faucet and deployment configuration were removed in separate commits. [Historical source and notices](archive/README.md) remain accessible at a fixed revision; Git history and the import manifest are unchanged.
 
-The branch includes the pending contract dependency fix from [PR #17](https://github.com/YieldShield/yieldshield-monad/pull/17). It restores the deployed OpenZeppelin revisions and enforces them in CI. The cleanup itself changes no app/API source, Solidity source, deployed addresses or existing transaction evidence.
+[PR #18](https://github.com/YieldShield/yieldshield-monad/pull/18) and the included contract dependency fix from [PR #17](https://github.com/YieldShield/yieldshield-monad/pull/17) were merged on 16 September 2026. It restores the deployed OpenZeppelin revisions and enforces them in CI. The cleanup itself changes no app/API source, Solidity source, deployed addresses or existing transaction evidence.
 
 ## Measured results
 

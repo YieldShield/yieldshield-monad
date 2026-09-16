@@ -4,7 +4,7 @@
 
 | Component           | Destination                                                       |
 | ------------------- | ----------------------------------------------------------------- |
-| GitHub              | `YieldShield/yieldshield-monad`, branch `main`; currently private |
+| GitHub              | `YieldShield/yieldshield-monad`, branch `main`; public |
 | Vercel project      | `yieldshield-monad`, team `noc2-6281s-projects`                   |
 | Frontend domain     | `monad.yieldshield.ai`                                            |
 | Railway project     | `YieldShield Monad` / `37575fd4-8fdb-49dd-9bee-eaa9b5cf98c7`      |
@@ -21,7 +21,7 @@ The five original pools and two AUSD pools are funded. The scenario/reference re
 
 Dynamic uses the isolated **YieldShield Monad / Sandbox** environment `71020229-55c2-4143-8352-9bf007358fff`. Its environment ID is public SDK configuration, not a secret. Embedded wallets, creation on sign-up and transaction confirmations are enabled. Delegated access, developer recovery shares and private-key exports are disabled. The app restricts wallet transactions to chain 10143. Production CORS origin: `https://monad.yieldshield.ai`; local verification origin: `http://localhost:5174`. The original YieldShield Dynamic project was not modified. No server API token is needed by this integration.
 
-Public source publication still needs a later explicit owner instruction. The final submission form opens 22 September. The public 2:08 overview is available at `/how-it-works`; Dynamic browser signing and final rule checks remain outstanding.
+The owner authorized public source publication on 16 September 2026; see [the publication record](PUBLICATION.md). The final submission form opens 22 September. The public 2:08 overview is available at `/how-it-works`; Dynamic browser signing and final rule checks remain outstanding.
 
 ## Resume the deployment
 
@@ -82,7 +82,7 @@ An API or oracle outage should show unavailable data and a retry path. No stale 
 
 15 September review: the hosted API intermittently fails individual pool reads even while runtime and oracle checks pass. Railway logs show `RPC Request failed`; the underlying cause is still unconfirmed. Local cold/warm diagnostic checks succeeded, but the longer-running local preview API also logged intermittent failures. Treat this as an open reliability issue, preserve the fail-closed behavior and investigate RPC error details before claiming the app is consistently available. When retrieving Railway logs, use the active successful deployment ID: a newer deployment may be `SKIPPED` because a frontend-only commit did not match Railway's watched paths.
 
-Owner decision, 9 September 2026: keep the repository private for now. Do not change its visibility without a later explicit instruction. The recorded registration rules and public FAQ disagree on source publication; recheck the operative final form without changing visibility silently.
+The 9 September decision to keep the repository private was superseded by the owner’s explicit publication instruction on 16 September 2026. Final submission rules still need a fresh check; source publication does not submit the project.
 
 15 September follow-up: the captured intermittent failure was HTTP 200 with JSON-RPC `-32011: requests limited to 15/sec`. Narrow, bounded read retries are now deployed in the API and browser, with the same handling in the verifier. Writes/signatures are never retried and no stale snapshot can substitute for a failed read. Eight consecutive production checks after deployment returned all five pools ready/unpaused with fresh references. Continue to fail closed if retries are exhausted. [The recheck report](VERIFICATION_2026-09-15.md) records the fixes, deployment IDs, test results and the remaining signed Dynamic/unstaking checks.
 

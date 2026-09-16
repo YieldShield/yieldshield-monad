@@ -7,7 +7,7 @@ audit or approval for real-money use.
 ## Report a vulnerability privately
 
 Email **david@yieldshield.ai** with the subject `YieldShield security report`.
-GitHub private vulnerability reporting may also be used when it is available.
+GitHub private vulnerability reporting is enabled in this repository’s Security tab.
 Do not post exploit details, credentials or wallet keys in public issues.
 
 Include the affected revision or deployed address, expected impact, and a minimal
@@ -37,8 +37,7 @@ dependency advisories. The scanner's narrow exceptions cover public contract
 identifiers and a standard Anvil development key; they do not permit operational
 credentials. The local signer files are ignored and must never be committed.
 
-The imported `contracts/.github/` workflows are historical and are not active
-GitHub workflows in this repository. Slither, Aderyn and storage-layout checks
+The imported standalone workflow is retained only as [historical test data](contracts/scripts-js/__tests__/fixtures/README.md). It is not an active GitHub workflow. Slither, Aderyn and storage-layout checks
 are not currently release gates here. See [contract security notes](contracts/SECURITY.md)
 for the original protocol's assumptions and optional local analysis commands.
 
@@ -49,10 +48,14 @@ transactions also do not replace a signed browser-wallet walkthrough.
 ## Repository protection
 
 Dependabot alerts and security-update pull requests are enabled. Scheduled
-dependency updates are configured at `.github/dependabot.yml`. Native GitHub
-secret protection, private reporting and branch rules were unavailable through
-the API for this private repository on its current plan during preparation.
-The CI secret scanner and private email contact work independently of those
-features. After the owner publishes the repository, enable available native
-secret scanning/push protection, private reporting, and required passing checks
-on `main`; verify the settings rather than assuming publication enables them.
+dependency updates are configured at `.github/dependabot.yml`. GitHub secret
+scanning, push protection and private vulnerability reporting are enabled.
+
+`main` requires a pull request and passing release, Git-history secret-scan and
+production-dependency checks from GitHub Actions. Branches must be up to date,
+review conversations must be resolved, and force pushes and deletion are blocked.
+These requirements also apply to administrators. A second person's approval is
+not mandatory; the checks are the merge gate.
+
+See the [publication record](docs/PUBLICATION.md) for the settings verification,
+Actions log/artifact review and the limits of automated credential scanning.

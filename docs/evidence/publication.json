@@ -1,0 +1,103 @@
+{
+  "reviewedAt": "2026-09-16T12:33:23.644748+00:00",
+  "repository": "YieldShield/yieldshield-monad",
+  "visibility": "public",
+  "publishedSourceRevision": "0be4f96adff296fa4dc27aa0a39957d4775fe166",
+  "anonymousRepositoryHttp": 200,
+  "anonymousRawSourceHttp": 200,
+  "securityAndAnalysis": {
+    "secret_scanning": {
+      "status": "enabled"
+    },
+    "secret_scanning_push_protection": {
+      "status": "enabled"
+    },
+    "dependabot_security_updates": {
+      "status": "enabled"
+    },
+    "secret_scanning_non_provider_patterns": {
+      "status": "disabled"
+    },
+    "secret_scanning_validity_checks": {
+      "status": "disabled"
+    }
+  },
+  "privateVulnerabilityReporting": true,
+  "branchProtection": {
+    "required_status_checks": {
+      "url": "https://api.github.com/repos/YieldShield/yieldshield-monad/branches/main/protection/required_status_checks",
+      "strict": true,
+      "contexts": [
+        "verify",
+        "Git history secret scan",
+        "Production dependency review"
+      ],
+      "contexts_url": "https://api.github.com/repos/YieldShield/yieldshield-monad/branches/main/protection/required_status_checks/contexts",
+      "checks": [
+        {
+          "context": "verify",
+          "app_id": 15368
+        },
+        {
+          "context": "Git history secret scan",
+          "app_id": 15368
+        },
+        {
+          "context": "Production dependency review",
+          "app_id": 15368
+        }
+      ]
+    },
+    "enforce_admins": {
+      "url": "https://api.github.com/repos/YieldShield/yieldshield-monad/branches/main/protection/enforce_admins",
+      "enabled": true
+    },
+    "required_pull_request_reviews": {
+      "url": "https://api.github.com/repos/YieldShield/yieldshield-monad/branches/main/protection/required_pull_request_reviews",
+      "dismiss_stale_reviews": true,
+      "require_code_owner_reviews": false,
+      "require_last_push_approval": false,
+      "required_approving_review_count": 0
+    },
+    "allow_force_pushes": {
+      "enabled": false
+    },
+    "allow_deletions": {
+      "enabled": false
+    },
+    "required_conversation_resolution": {
+      "enabled": true
+    }
+  },
+  "credentialReview": {
+    "gitCommitsScanned": 151,
+    "gitHistoryFindings": 0,
+    "actionsLogArchives": 142,
+    "buildArtifacts": 53,
+    "issueAndPullRequestRecords": 23,
+    "issueComments": 3,
+    "reviewComments": 0,
+    "surfaceBytesScanned": 550568849,
+    "surfaceFindings": 101,
+    "classificationCounts": {
+      "Published @base-org/account browser analytics identifier": 45,
+      "GitHub Actions cache keys (verify + commit SHA)": 56
+    },
+    "unclassifiedFindings": 0,
+    "exposedProjectCredentialsFound": 0,
+    "rawLogsAndArtifactsCommitted": false
+  },
+  "billing": {
+    "settingsChanged": false,
+    "failedPrivateWorkflowRunsRetried": [
+      35094719325,
+      35094719342
+    ],
+    "publicRunnersStarted": true
+  },
+  "limitations": [
+    "Automated credential scanning and manual match classification do not establish the absence of all confidential information.",
+    "The two documented Dynamic dependency advisory exceptions remain unchanged.",
+    "Publication does not complete wallet signing evidence or submit the Metropolis project."
+  ]
+}

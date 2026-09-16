@@ -1,6 +1,6 @@
 # Metropolis submission packet — working draft
 
-**Status as recorded on 16 September 2026: seven pools deployed and scripted transaction evidence complete; browser signing and final submission remain pending.** David authorized submission preparation. The existing project draft has been updated with the new repository, and the team is confirmed. The portal was recorded as opening final submissions on 22 September 2026; recheck the current form before submitting. The public narrated overview is ready. Dynamic browser signing, final form checks and the source-visibility decision remain outstanding.
+**Status as recorded on 16 September 2026: seven pools deployed and scripted transaction evidence complete; browser signing and final submission remain pending.** David authorized submission preparation. The existing project draft has been updated with the new repository, and the team is confirmed. The portal was recorded as opening final submissions on 22 September 2026; recheck the current form before submitting. The public narrated overview is ready. Dynamic browser signing and final form checks remain outstanding. Source publication was authorized on 16 September; see [the publication record](PUBLICATION.md).
 
 ## Entry facts
 
@@ -9,7 +9,7 @@
 - Demo: https://monad.yieldshield.ai
 - Video (2:08): https://monad.yieldshield.ai/media/how-it-works-20260916-v2.mp4
 - Product guide and captioned player: https://monad.yieldshield.ai/how-it-works
-- Source: https://github.com/YieldShield/yieldshield-monad — private by owner instruction; resolve the rules discrepancy below before final submission.
+- Source: https://github.com/YieldShield/yieldshield-monad — public. Attribution, license notices and build history are preserved.
 - Network: Monad **testnet**, chain 10143.
 - Operator: Hawig Ventures UG (haftungsbeschränkt), Herzogin-Juliana-Straße 7, 55469 Simmern, Germany. Managing Director David Hawig. HRB 24975, Amtsgericht Bad Kreuznach.
 - Contact: david@yieldshield.ai
@@ -45,7 +45,7 @@ Career details and company data above were provided by David. No employment date
 | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
 | Public working app                                     | Seven funded markets; the 16 September release check records healthy sources and enabled actions                                              |
 | Monad mainnet or testnet deployment                    | 44 named contracts, seven pools and their 14 receipt NFTs verified; all three scripted journey suites complete                         |
-| Exact source under an OSI-approved license             | MIT new code and retained file-level notices; repository publication requires explicit owner approval                  |
+| Exact source under an OSI-approved license             | Public repository; MIT new code and retained file-level notices                  |
 | Substantial new build-window work and reuse disclosure | Import baseline, separate stage commits and new-work disclosure present; eligibility ultimately assessed by organizers |
 | Setup and technical documentation                      | README, architecture, operations and evidence files present                                                            |
 | Public video ≤3 minutes                                | 2:08 narrated product walkthrough with English captions and transcript at /how-it-works                                |
@@ -56,7 +56,7 @@ Career details and company data above were provided by David. No employment date
 
 ## Timing and rules source
 
-The signed-in Metropolis Rules & Guidelines v3.0 (updated 3 September 2026), recorded on 8 September, require public GitHub source, an OSI-approved license, setup/build history, attribution and AI disclosure. They accept Monad mainnet or testnet and require a public product video no longer than three minutes. The public FAQ says open source is encouraged rather than mandatory. The authenticated onboarding route now redirects to the dashboard, so the discrepancy remains unresolved. Recheck the operative final form when it opens; do not publish the repository without a later owner instruction.
+The signed-in Metropolis Rules & Guidelines v3.0 (updated 3 September 2026), recorded on 8 September, require public GitHub source, an OSI-approved license, setup/build history, attribution and AI disclosure. They accept Monad mainnet or testnet and require a public product video no longer than three minutes. The public FAQ says open source is encouraged rather than mandatory. The authenticated onboarding route now redirects to the dashboard, so the discrepancy remains unresolved. The owner subsequently authorized public release on 16 September. Recheck the operative final form when it opens.
 
 Recorded deadline: **13 October 2026, 23:59 ET**, equivalent to **14 October 2026, 05:59 CEST**. Internal target: **12 October, 18:00 Europe/Berlin**. The project workspace showed submissions opening on 22 September. The build window itself began 1 September, as the [Monad Foundation's event listing](https://luma.com/metropolis-hangzhou-sep-2026) confirms.
 
@@ -64,4 +64,4 @@ Before final submission, inspect the current [project workspace](https://hackath
 
 Sponsor priorities and the evidence required for each candidate are recorded in [SPONSOR_STRATEGY.md](SPONSOR_STRATEGY.md). Dynamic is the first implemented sponsor integration. Kuru needs actual orderbook execution and usage evidence; Agora testnet AUSD is now implemented and exercised in two pools, but its mobile-trading bounty remains deferred because it mandates Mera, AUSD and Perpl together. AUSD support alone does not satisfy that bounty. The signed-in Dynamic, Kuru, Agora and CRE requirements were reviewed on 14 September. Keep proposed integrations out of completed-work claims until configured and exercised.
 
-Owner decision, 9 September 2026: keep the repository private for now. Do not change its visibility without a later explicit instruction. The recorded registration rules and public FAQ conflict on source publication; resolve this before final submission.
+The owner’s explicit instruction to publish on 16 September 2026 supersedes the 9 September private-repository decision. The discrepancy in recorded rules still needs a final-form check; publication alone does not establish eligibility or submit the project.
