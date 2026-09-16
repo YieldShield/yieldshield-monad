@@ -32,7 +32,6 @@ export function Landing({ data, error }: { data?: Snapshot; error?: Error }) {
               How it works <span aria-hidden="true">↗</span>
             </Link>
           </div>
-          <small>Fees and waiting periods apply.</small>
         </div>
         <ExitExplainer />
       </section>
