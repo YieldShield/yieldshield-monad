@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const exceptionExpiry = "2026-10-16T00:00:00Z";
+export const auditedDirectories = [".", "services/monad", "services", "contracts"];
 
 // These exceptions require the browser-bundle check below. They do not apply
 // to the API or to Node/SSR applications. See docs/DEPENDENCY_SECURITY.md.
@@ -111,8 +112,11 @@ function audit(directory) {
 async function main() {
   const root = audit(repo);
   const accepted = checkAudit(root.report, root.lock, { allowBrowserExceptions: true });
-  const api = audit(path.join(repo, "services/monad"));
-  checkAudit(api.report, api.lock);
+  for (const directory of auditedDirectories.filter((directory) => directory !== ".")) {
+    const tooling = audit(path.join(repo, directory));
+    checkAudit(tooling.report, tooling.lock);
+    console.log(`Production dependency audit clean: ${directory}`);
+  }
   const { build } = await import("vite");
   let checkedBundle = false;
   const modules = new Set();
@@ -134,7 +138,7 @@ async function main() {
   if (!checkedBundle) throw new Error("Browser module verification did not run");
   const advisoryCount = Object.values(root.report.vulnerabilities)
     .flatMap((finding) => finding.via.filter((cause) => typeof cause !== "string")).length;
-  console.log(`Dependency check passed: ${accepted} root findings from ${advisoryCount} reviewed advisories; API clean.`);
+  console.log(`Dependency check passed: ${accepted} root findings from ${advisoryCount} reviewed advisories; both APIs and contract tools clean.`);
   console.log(`Verified ${modules.size} emitted browser modules: no stream-json or native bigint-buffer implementation.`);
   if (accepted) console.log(`Browser-only exceptions expire ${exceptionExpiry.slice(0, 10)}.`);
 }

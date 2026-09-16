@@ -1,9 +1,18 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { checkAudit, checkBrowserModules } from "./check-dependency-audit.mjs";
+import { execFileSync } from "node:child_process";
+import { auditedDirectories, checkAudit, checkBrowserModules } from "./check-dependency-audit.mjs";
 
 const now = Date.parse("2026-09-16T00:00:00Z");
 const options = { now, allowBrowserExceptions: true };
+test("audits every committed npm lockfile, including standalone tooling", () => {
+  const files = execFileSync("git", ["ls-files", "*package-lock.json"], {
+    cwd: new URL("../", import.meta.url), encoding: "utf8",
+  }).trim().split("\n").sort();
+  const covered = auditedDirectories.map((directory) =>
+    directory === "." ? "package-lock.json" : `${directory}/package-lock.json`).sort();
+  assert.deepEqual(covered, files, "Add every new lockfile to the dependency audit gate");
+});
 function fixture() {
   return {
     report: {
