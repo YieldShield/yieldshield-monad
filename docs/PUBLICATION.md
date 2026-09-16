@@ -6,7 +6,7 @@ The published code was `0be4f96adff296fa4dc27aa0a39957d4775fe166`, which exactly
 
 ## Credential review
 
-- A fresh Gitleaks scan covered all 151 locally fetched Git commits with no findings under the reviewed repository configuration.
+- The initial Gitleaks output counted 151 non-merge commits across fetched refs. The follow-up explicitly includes merge diffs (`--full-history -m`): all **161 reachable commits** of the published revision `0be4f96adff296fa4dc27aa0a39957d4775fe166` were scanned, including its 18 merge commits, with no findings. A separate scan of all refreshed refs covered 170 commits with no findings. The checkout is not shallow. CI now explicitly includes merge diffs too.
 - Reviewed all 142 retained Actions log archives, all 53 retained build artifacts, 23 issue/PR records and three issue comments available at the review snapshot. No review comments existed. All requested archives downloaded successfully.
 - The additional surface scan examined approximately 550.57 MB and produced 101 generic-key matches. All were classified: 56 were Actions cache identifiers (`verify-` followed by a commit SHA); 45 were the same public browser analytics identifier shipped in `@base-org/account` 1.1.1 through Dynamic. The artifact value was compared with the installed published package. No YieldShield operational credentials were identified.
 - Raw downloaded logs, artifacts and scanner reports were kept outside the repository. No historical runs or artifacts were deleted, and no Git history was rewritten.

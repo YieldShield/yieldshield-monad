@@ -70,7 +70,6 @@
     }
   },
   "credentialReview": {
-    "gitCommitsScanned": 151,
     "gitHistoryFindings": 0,
     "actionsLogArchives": 142,
     "buildArtifacts": 53,
@@ -85,7 +84,24 @@
     },
     "unclassifiedFindings": 0,
     "exposedProjectCredentialsFound": 0,
-    "rawLogsAndArtifactsCommitted": false
+    "rawLogsAndArtifactsCommitted": false,
+    "initialNonMergeCommitsScanned": 151,
+    "publishedSourceHistory": {
+      "revision": "0be4f96adff296fa4dc27aa0a39957d4775fe166",
+      "reachableCommits": 161,
+      "mergeCommits": 18,
+      "scannerCommitsScanned": 161,
+      "findings": 0,
+      "isShallowRepository": false,
+      "logOptions": "--full-history -m 0be4f96adff296fa4dc27aa0a39957d4775fe166"
+    },
+    "followUpAllRefs": {
+      "head": "3500923460b45ca2bac32f1b0893569e2bb0bb88",
+      "reachableCommits": 170,
+      "scannerCommitsScanned": 170,
+      "findings": 0,
+      "logOptions": "--all --full-history -m"
+    }
   },
   "billing": {
     "settingsChanged": false,
