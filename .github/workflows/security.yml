@@ -35,7 +35,7 @@ jobs:
         run: |
           set +e
           "$RUNNER_TEMP/gitleaks" git . --config .gitleaks.toml \
-            --log-opts=--all --redact=100 --ignore-gitleaks-allow --no-banner \
+            '--log-opts=--all --full-history -m' --redact=100 --ignore-gitleaks-allow --no-banner \
             --report-format=json --report-path="$RUNNER_TEMP/secret-scan.json"
           scan_status=$?
           set -e

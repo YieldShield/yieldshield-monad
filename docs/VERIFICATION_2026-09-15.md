@@ -38,4 +38,4 @@ The frontend was built from `8dcee07` and deployed to [monad.yieldshield.ai](htt
 
 No new signatures or transactions were submitted during these audits. The historical journals still establish 28 successful scenario transactions and 32 successful reference transactions, plus the preserved failed shMON exit and reviewed retry, on 14 September. They do not prove the current Dynamic browser signing flow or completed shMON unstaking.
 
-A user sign-in was requested to complete those interactive checks. The visible user tab still showed Connect wallet at the latest check. Do not state that every signed flow is verified until there is an actual successful receipt, including the external unstaking epoch wait. Testnet only; repository remains private.
+A user sign-in was requested to complete those interactive checks. The visible user tab still showed Connect wallet at the latest check. Do not state that every signed flow is verified until there is an actual successful receipt, including the external unstaking epoch wait. Testnet only. The repository was private at this check; [source publication followed on 16 September](PUBLICATION.md).

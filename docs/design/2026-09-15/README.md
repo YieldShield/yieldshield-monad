@@ -10,7 +10,7 @@ python3 -m http.server 5180 --bind 127.0.0.1
 
 ## Scope
 
-These files are standalone design prototypes. Wallet and transaction buttons only display a preview notice. No wallet SDK, RPC request, price quote or production code is involved. Images are bundled locally; review fonts load from Google Fonts with system fallbacks. The repository remains private.
+These files are standalone design prototypes. Wallet and transaction buttons only display a preview notice. No wallet SDK, RPC request, price quote or production code is involved. Images are bundled locally; review fonts load from Google Fonts with system fallbacks. The repository was private when these prototypes were created; [source publication followed on 16 September](../../PUBLICATION.md).
 
 ## Review checks
 

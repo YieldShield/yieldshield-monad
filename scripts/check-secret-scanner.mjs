@@ -18,6 +18,12 @@ const customPoolRelease = readFileSync(resolve(root, 'docs/CUSTOM_POOL_TERMS.md'
   .match(/^- Railway API: `([0-9a-f-]{36})`, successful\.$/m)?.[0];
 assert.ok(customPoolRelease, 'The public Railway release record must exist');
 
+// Generic API-key detection ignores letter-only values and requires entropy > 3.5.
+// Random base64/UUID fixtures can miss those criteria, making CI fail at random.
+// Generate synthetic values with a stable mix of letters and digits instead.
+const apiKeyFixture = Buffer.from(Array.from({ length: 32 }, (_, index) => index)).toString('base64url');
+const uuidFixture = ['12345678', '9abc', '4def', '8012', '3456789abcde'].join('-');
+
 const fixtures = [
   ['new signing key', 'config.js', `const PRIVATE_KEY = "0x${randomBytes(32).toString('hex')}";`, 1],
   ['unprefixed signing key', 'config.js', `const PRIVATE_KEY = "${randomBytes(32).toString('hex')}";`, 1],
@@ -37,26 +43,26 @@ const fixtures = [
   ['new key in deployment history', 'contracts/deployments/history/46630/gen-1784273997897-28161ae24b7d9b27.json', JSON.stringify({
     YSToken: `0x${randomBytes(32).toString('hex')}`, privateKey: `0x${randomBytes(32).toString('hex')}`,
   }), 1],
-  ['API key beside localhost fixture', 'contracts/Makefile', `LOCALHOST_ANVIL_PRIVATE_KEY ?= ${knownDevelopmentKey}\nAPI_KEY = "${randomBytes(24).toString('base64url')}"`, 1],
+  ['API key beside localhost fixture', 'contracts/Makefile', `LOCALHOST_ANVIL_PRIVATE_KEY ?= ${knownDevelopmentKey}\nAPI_KEY = "${apiKeyFixture}"`, 1],
   ['API key in release evidence', 'docs/evidence/expanded-release.json', JSON.stringify({
-    apiCommit: randomBytes(20).toString('hex'), api_key: randomBytes(24).toString('base64url'),
+    apiCommit: randomBytes(20).toString('hex'), api_key: apiKeyFixture,
   }), 1],
   ['API key in deployment history', 'contracts/deployments/history/46630/gen-1784273997897-28161ae24b7d9b27.json', JSON.stringify({
-    YSToken: `0x${randomBytes(32).toString('hex')}`, api_key: randomBytes(24).toString('base64url'),
+    YSToken: `0x${randomBytes(32).toString('hex')}`, api_key: apiKeyFixture,
   }), 1],
-  ['default generic API-key rule retained', 'config.js', `const api_key = "${randomBytes(24).toString('base64url')}";`, 1],
+  ['default generic API-key rule retained', 'config.js', `const api_key = "${apiKeyFixture}";`, 1],
   ['historical deployment identifier in scanner controls', 'scripts/check-secret-scanner.mjs',
     'const apiDeployment = "3b977f83-eb55-4afc-8b33-13c81de781f2";', 0],
   ['new API key in scanner controls', 'scripts/check-secret-scanner.mjs',
-    `const api_key = "${randomBytes(24).toString('base64url')}";`, 1],
+    `const api_key = "${apiKeyFixture}";`, 1],
   ['other UUID secret in scanner controls', 'scripts/check-secret-scanner.mjs',
-    `const api_key = "${randomUUID()}";`, 1],
+    `const api_key = "${uuidFixture}";`, 1],
   ['public custom-pool release identifier', 'docs/CUSTOM_POOL_TERMS.md', customPoolRelease, 0],
   ['other UUID in custom-pool release', 'docs/CUSTOM_POOL_TERMS.md',
-    customPoolRelease.replace(/[0-9a-f-]{36}/, randomUUID()), 1],
+    customPoolRelease.replace(/[0-9a-f-]{36}/, uuidFixture), 1],
   ['release identifier outside approved path', 'docs/other-release.md', customPoolRelease, 1],
   ['API key beside custom-pool release identifier', 'docs/CUSTOM_POOL_TERMS.md',
-    `${customPoolRelease}\nAPI_KEY = "${randomBytes(24).toString('base64url')}"`, 1],
+    `${customPoolRelease}\nAPI_KEY = "${apiKeyFixture}"`, 1],
   ['signing key beside custom-pool release identifier', 'docs/CUSTOM_POOL_TERMS.md',
     `${customPoolRelease}\nPRIVATE_KEY = "0x${randomBytes(32).toString('hex')}"`, 1],
   ['public code hash', 'config.js', `const codeHash = "0x${randomBytes(32).toString('hex')}";`, 0],

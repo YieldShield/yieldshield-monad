@@ -120,7 +120,7 @@ The signed-in [Prizes page](https://hackathon.monad.xyz/prizes) also lists an **
 
 The public landing page loaded but its detailed sponsor/resource/winner sections were absent in both browser views. The portal's six winner-benefit entries differ from the seven entries previously seen publicly: PingBusiness appears, while Spectrum Nodes and Mercuryo are not listed there. The Resources page lists three voucher offers, while the earlier public page listed five resources. This does **not** establish that an offer was withdrawn; keep earlier benefits as historical observations pending an authoritative reconciliation. Exact priority bounty terms were nevertheless verified in the signed-in portal. Dynamic's linked JS overview still reports last modification on 26 August; CRE still distinguishes local simulation from deployment access.
 
-Monitoring only: no account creation, terms acceptance, sponsor contact, purchase, deployment, source publication or application mutation. The repository remains private.
+Monitoring only: no account creation, terms acceptance, sponsor contact, purchase, deployment, source publication or application mutation. The repository was private at this review; [publication followed on 16 September](PUBLICATION.md).
 
 Before selecting or claiming a bounty, record:
 
@@ -130,6 +130,6 @@ Before selecting or claiming a bounty, record:
 - The qualifying code paths and separate commits, actual environment/deployment identity, transaction or execution receipts, and demo timestamps.
 - Outstanding dependencies and an honest status: investigated, implemented, configured, exercised or submission-ready.
 
-The signed-in portal was restored on 14 September. Dynamic, Kuru, Agora and CRE terms are verified above. The owner explicitly instructed that the repository remain private; resolve the source-rule discrepancy before final submission.
+The signed-in portal was restored on 14 September. Dynamic, Kuru, Agora and CRE terms are verified above. The private-source instruction recorded then was superseded by the owner’s explicit [publication instruction](PUBLICATION.md) on 16 September. Recheck the operative source rules before final submission.
 
 Sponsor monitoring is scheduled daily at 09:00 Europe/Berlin through the submission deadline. Alert only on meaningful changes, newly relevant opportunities or an actionable verification failure; do not repeatedly report an unchanged sign-in blocker. Also review this document before selecting a new integration and before final submission. Monitoring does not authorize sponsor outreach, account creation, subscriptions or submission.

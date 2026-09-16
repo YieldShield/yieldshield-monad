@@ -21,7 +21,7 @@ Each implementation stage is committed separately. The import is prior work, not
 
 ## Publication
 
-The repository is private during implementation. Public visibility requires explicit approval after automated review rejected public disclosure of the imported source. The recorded registration rules and public FAQ conflict on source publication; the final form needs a fresh check.
+The owner explicitly authorized publication on 16 September 2026, and the repository is now public. That instruction supersedes the earlier private-source decision and approval requirement. See the [publication record](PUBLICATION.md) for the credential review and enabled protections. Earlier entries below describe the visibility at their recorded time. The final submission form still needs a fresh rules check.
 
 ## Tool disclosure
 
@@ -46,7 +46,7 @@ The first hosted CI run passed: https://github.com/YieldShield/yieldshield-monad
 
 Both scenario and reference transaction journeys completed on 14 September, with recipient balance checks and preserved journals. The core release has 39 named contracts, five pools and ten receipt NFTs verified. One shMON exit exhausted its gas limit; its canonical failed receipt and separately reviewed successful retry remain in the reference journal. Dynamic onboarding is configured and deployed; browser signing remains to be evidenced. A 2:34 narrated product overview, captions and transcript are published with the receipt evidence page.
 
-Owner decision, 9 September 2026: keep the repository private for now. Do not change its visibility without a later explicit instruction. Keep that decision in force while resolving the rule discrepancy.
+Historical owner decision, 9 September 2026: keep the repository private for now. Superseded by the explicit publication instruction on 16 September 2026; see [the publication record](PUBLICATION.md).
 
 Responsive review: the home, market and calculator views were rendered in 390×844 local browser frames. The review found and fixed decorative artwork causing horizontal overflow on the homepage. This is a layout check, not a completed mobile wallet journey.
 
@@ -66,7 +66,7 @@ Sponsor review, 9 September 2026: recorded the official published bounties, sepa
 | 5b31cbb | Increase gas margin and record the reviewed failed-transaction recovery                  |
 | 3f5b4f8 | Integrate Dynamic authentication and embedded wallets with guarded signing               |
 
-The existing Metropolis draft now points to the new private repository, and both David and Santi are confirmed on the team. Final submissions open on 22 September. No sponsor bounty has been selected or claimed.
+At this stage, the Metropolis draft pointed to the then-private repository, and both David and Santi are confirmed on the team. Final submissions open on 22 September. No sponsor bounty has been selected or claimed.
 
 The full verification run passed after the reference release and Dynamic integration: https://github.com/YieldShield/yieldshield-monad/actions/runs/34834802478 . This includes 65 API/deployment tests, 8 UI tests, Monad Solidity tests, imported protocol regressions and the production build. The narrated screenshot overview is not a live wallet recording; its hash and chapter timings are in `docs/evidence/video-overview.json`.
 
@@ -88,7 +88,7 @@ Main-region word counts fell from 219 to 61 on Home, 174 to 73 on Protect, and 2
 
 Separate commits: `0a43e43` plan; `5b496da` navigation/home; `421235a` action screens; `00a1702` Faucet/funding; `08f503f` verification refinements; `fa5e8cb` wallet copy. The final app artifact is Vercel deployment `dpl_CcSHYV6vokDyyJF5gyT8VhSBcB6S`, [aliased to the existing domain](https://monad.yieldshield.ai/). The initial implementation's full [CI run passed](https://github.com/YieldShield/yieldshield-monad/actions/runs/34978125829); the final `fa5e8cb` [release checks also passed](https://github.com/YieldShield/yieldshield-monad/actions/runs/34978634951), including 35 frontend tests, API/deployment checks, Monad lifecycle tests, imported contract regressions and the production build. The final wallet chooser copy was verified on the live alias without browser warnings or errors.
 
-The repository remains private. No API or contract deployment changed. The existing intermittent pool-read failure was reproduced during live verification and remains unresolved; affected actions continue to be disabled. The prior contract-execution evidence and unverified Dynamic signing/full unstaking limitations remain unchanged.
+The repository was private at this release; it became public on 16 September. No API or contract deployment changed. The existing intermittent pool-read failure was reproduced during live verification and remains unresolved; affected actions continue to be disabled. The prior contract-execution evidence and unverified Dynamic signing/full unstaking limitations remain unchanged.
 
 ## 15 September full deployment recheck
 
@@ -96,7 +96,7 @@ Independent reviews found and fixed the public RPC rate-limit handling, wallet-s
 
 The frontend is deployed from `8dcee07` as Vercel `dpl_C97tZo5eQhrzDeQiiq4TidnXUoPc`, on the existing domain. Railway successfully deployed the API at `35d9a7f` as `bab25646-09da-4345-9f03-57a284568a66`. [All 394 release tests and build checks passed](https://github.com/YieldShield/yieldshield-monad/actions/runs/34981040829). The fresh verifier also passed all 39 contracts, five pools and ten receipt NFTs; evidence was committed as `a87423b`. Eight production samples returned all five pools ready/unpaused, with no captured failures and reference ages of 6–12 seconds on arrival.
 
-No new blockchain transactions were broadcast. A user wallet sign-in was requested; a signed Dynamic browser journey and completed shMON unstake remain unverified. The historical receipt journals remain intact. Repository visibility remains private.
+No new blockchain transactions were broadcast. A user wallet sign-in was requested; a signed Dynamic browser journey and completed shMON unstake remain unverified. The historical receipt journals remain intact. Repository visibility was private at this check; it became public on 16 September.
 
 
 ## 16 September product video refresh
