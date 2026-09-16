@@ -69,7 +69,16 @@
     "audio": "Original ElevenLabs AAC packets preserved exactly (MD5 6e58130837fe6009eb5d5999a8d67f66)",
     "integratedLoudnessLufs": -17.26,
     "truePeakDbtp": -1.62,
-    "frontend": "78 tests passed; production build, ESLint and formatting passed"
+    "frontend": "78 tests passed; production build, ESLint and formatting passed",
+    "browser": "Production playback advanced normally with English captions visible; 1920x1080 metadata and 127.866667s duration; desktop and 390px mobile player checked without overflow",
+    "redirects": "Old and original overview video URLs return 308 directly to revision 2; video and captions return 200 with correct MIME types"
   },
-  "revision": 2
+  "revision": 2,
+  "deployment": {
+    "id": "dpl_5HsmwoDCWWRxp9EuyMpwo5SCxVWD",
+    "url": "https://yieldshield-monad-l37pzmf8x-noc2-6281s-projects.vercel.app",
+    "alias": "https://monad.yieldshield.ai",
+    "sourceCommit": "c2e59ab",
+    "integratedCommit": "15569e8"
+  }
 }
