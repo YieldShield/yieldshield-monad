@@ -75,3 +75,7 @@ The [market readiness packet](MARKET_READINESS_2026-09-16.md) defines six holder
 Sponsor priorities and the evidence required for each candidate are recorded in [SPONSOR_STRATEGY.md](SPONSOR_STRATEGY.md). Dynamic is the first implemented sponsor integration. Kuru needs actual orderbook execution and usage evidence; Agora testnet AUSD is now implemented and exercised in two pools, but its mobile-trading bounty remains deferred because it mandates Mera, AUSD and Perpl together. AUSD support alone does not satisfy that bounty. The signed-in Dynamic, Kuru, Agora and CRE requirements were reviewed on 14 September. Keep proposed integrations out of completed-work claims until configured and exercised.
 
 The owner’s explicit instruction to publish on 16 September 2026 supersedes the 9 September private-repository decision. The discrepancy in recorded rules still needs a final-form check; publication alone does not establish eligibility or submit the project.
+
+### Follow-up after the sponsor release
+
+A third private progress update reported the verified Dynamic browser journey, scripted Kuru funding and successful official CRE simulation. All three posts are preserved in [the update record](PROGRESS_UPDATES_2026-09-16.md). Mentor-question access is now confirmed: the composer opened normally after the third post, and was cancelled without sending a question. Kuru was added as the fourth intended sponsor bounty. Final submission remains closed until 22 September; videos, external validation and the remaining sponsor evidence must still be completed.
