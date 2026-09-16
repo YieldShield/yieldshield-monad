@@ -39,8 +39,8 @@ export function HowItWorks() {
         <div className="how-section-copy">
           <p className="eyebrow">01 / Watch</p>
           <h2 id="overview-title">See the full picture.</h2>
-          <p>A 2½-minute tour of the testnet app, the two roles and your exit choices.</p>
-          <a className="text-link" href="/media/metropolis-overview.txt">
+          <p>A two-minute guide to the testnet app, with examples of both exits and the provider’s role.</p>
+          <a className="text-link" href="/media/how-it-works-20260916.txt">
             Read the transcript ↗
           </a>
         </div>
@@ -49,19 +49,21 @@ export function HowItWorks() {
             controls
             playsInline
             preload="metadata"
+            poster="/media/how-it-works-20260916.jpg"
             aria-label="YieldShield on Monad product overview"
             aria-describedby="overview-caption"
           >
-            <source src="/media/metropolis-overview.mp4" type="video/mp4" />
-            <track default kind="captions" src="/media/metropolis-overview.vtt" srcLang="en" label="English" />
-            <a href="/media/metropolis-overview.mp4">Watch the product overview</a>
+            <source src="/media/how-it-works-20260916.mp4" type="video/mp4" />
+            <track default kind="captions" src="/media/how-it-works-20260916.vtt" srcLang="en" label="English" />
+            <a href="/media/how-it-works-20260916.mp4">Watch the product overview</a>
           </video>
           <figcaption id="overview-caption">
-            <span>2:34 · English captions</span>
-            <a href="/media/metropolis-overview.mp4">Open video ↗</a>
+            <span>2:08 · 1080p · English captions</span>
+            <a href="/media/how-it-works-20260916.mp4">Open video ↗</a>
           </figcaption>
           <p className="how-video-note">
-            Recorded screenshot overview; some screens show an earlier layout. Live wallet signing is not shown.
+            Recorded September 2026 with the current testnet app. Examples are illustrative; wallet signing is not
+            shown.
           </p>
         </figure>
       </section>

@@ -1,61 +1,74 @@
 {
-  "createdAt": "2026-09-14T10:56:15.098599+00:00",
-  "url": "https://monad.yieldshield.ai/media/metropolis-overview.mp4",
-  "evidencePage": "https://monad.yieldshield.ai/evidence",
-  "plannedDurationSeconds": 153.6,
-  "sizeBytes": 3914627,
-  "sha256": "905acc4e97e3ce16f71b2522bcb5fd7fe0e6da28688f30af3b16b9b4c3e483b0",
-  "format": "H.264/AAC, 1440x1080, 20 fps",
-  "description": "Actual application screenshots, synthetic macOS Samantha narration, English WebVTT captions. No live wallet transaction is shown. Internal canonical transaction evidence is linked separately.",
+  "createdAt": "2026-09-16T07:50:36.571299+00:00",
+  "url": "https://monad.yieldshield.ai/media/how-it-works-20260916.mp4",
+  "guidePage": "https://monad.yieldshield.ai/how-it-works",
+  "durationSeconds": 127.86666666666666,
+  "sizeBytes": 5807521,
+  "sha256": "50065714279d0811c2be58f31c16d6f7881785e2dc9f3c87624346322d3564bf",
+  "format": "H.264/AAC, 1920x1080, 30 fps",
+  "narration": {
+    "provider": "ElevenLabs",
+    "voice": "Chris \u2014 Charming, Down-to-Earth",
+    "model": "Eleven Multilingual v2"
+  },
+  "description": "Current production interface captures, branded explanatory graphics and restrained animation. Illustrative calculations are labeled. No live wallet signing is shown.",
+  "captions": "31 speech-aligned English WebVTT cues; matching plain-text transcript",
   "chapters": [
     {
-      "chapter": "Two exit choices",
+      "chapter": "Your asset. Two ways to exit.",
       "startSeconds": 0,
-      "audioSeconds": 19.312,
-      "segmentSeconds": 19.8
+      "audioSeconds": 11.964083333333333,
+      "segmentSeconds": 12.666666666666666
     },
     {
-      "chapter": "Five funded testnet markets",
-      "startSeconds": 19.8,
-      "audioSeconds": 20.748,
-      "segmentSeconds": 21.2
+      "chapter": "Start with test tokens.",
+      "startSeconds": 12.666666666666666,
+      "audioSeconds": 16.326541666666667,
+      "segmentSeconds": 17.033333333333335
     },
     {
-      "chapter": "Protection and wallet onboarding",
-      "startSeconds": 41.0,
-      "audioSeconds": 21.885,
-      "segmentSeconds": 22.35
+      "chapter": "Know the terms before you deposit.",
+      "startSeconds": 29.700000000000003,
+      "audioSeconds": 15.777958333333334,
+      "segmentSeconds": 16.5
     },
     {
-      "chapter": "An isolated scenario lab",
-      "startSeconds": 63.35,
-      "audioSeconds": 18.983,
-      "segmentSeconds": 19.45
+      "chapter": "When the asset falls.",
+      "startSeconds": 46.2,
+      "audioSeconds": 16.248166666666666,
+      "segmentSeconds": 16.966666666666665
     },
     {
-      "chapter": "Test assets and native integrations",
-      "startSeconds": 82.8,
-      "audioSeconds": 21.281,
-      "segmentSeconds": 21.75
+      "chapter": "When the asset rises.",
+      "startSeconds": 63.16666666666667,
+      "audioSeconds": 13.635916666666667,
+      "segmentSeconds": 14.366666666666667
     },
     {
-      "chapter": "On-chain price and contract checks",
-      "startSeconds": 104.55,
-      "audioSeconds": 21.038,
-      "segmentSeconds": 21.5
+      "chapter": "Who supplies the backing?",
+      "startSeconds": 77.53333333333333,
+      "audioSeconds": 15.908583333333333,
+      "segmentSeconds": 16.633333333333333
     },
     {
-      "chapter": "Canonical transaction evidence",
-      "startSeconds": 126.05,
-      "audioSeconds": 27.079,
-      "segmentSeconds": 27.55
+      "chapter": "Know what protection covers.",
+      "startSeconds": 94.16666666666666,
+      "audioSeconds": 20.558375,
+      "segmentSeconds": 21.266666666666666
+    },
+    {
+      "chapter": "Try it on Monad testnet.",
+      "startSeconds": 115.43333333333332,
+      "audioSeconds": 11.728979166666667,
+      "segmentSeconds": 12.433333333333334
     }
   ],
-  "verifiedDurationSeconds": 153.621333,
   "verification": {
-    "fullDecode": "passed: 3072 frames, audio stream decoded",
-    "browser": "metadata loaded, 1440x1080, readyState 4, English captions showing",
-    "visualReview": "decoded market frame inspected; source screenshots reviewed",
-    "audioMeanDb": -15.7
+    "fullDecode": "passed: 3836 video frames and full AAC audio decoded",
+    "visualReview": "16 designed frames reviewed; decoded samples checked",
+    "speechCheck": "Per-chapter speech recognition checked against narration; currency amounts matched",
+    "integratedLoudnessLufs": -17.26,
+    "truePeakDbtp": -1.62,
+    "frontendTests": "78 passed; production build, ESLint and formatting passed"
   }
 }
