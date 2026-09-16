@@ -1,0 +1,98 @@
+{
+  "checkedAt": "2026-09-16T07:20:26.937Z",
+  "url": "https://monad.yieldshield.ai",
+  "frontendDeployment": "dpl_UJURiYuNPg4WFzNFcJQWxDJGCis5",
+  "frontendCodeCommit": "84c0fa7126e791c4ea7d7539eb9b77af78220da4",
+  "apiDeployment": "3b977f83-eb55-4afc-8b33-13c81de781f2",
+  "apiCommit": "d4994c45ceb7e9f23463dd8f0f3cb72de5305c03",
+  "apiElapsedMs": 14017,
+  "chainId": 10143,
+  "contractsVerified": true,
+  "markets": [
+    {
+      "id": "scenario-mon-usd",
+      "address": "0xe8E8c9fBe73C997E20b9c8FE5e67FE6b92E1a149",
+      "ready": true
+    },
+    {
+      "id": "scenario-mon-vault",
+      "address": "0xdB6424359232eBDAE2b7E5A10bF2C71B7C838DB7",
+      "ready": true
+    },
+    {
+      "id": "wmon-usd",
+      "address": "0xe0861e2a0a8b0E94377dC846fb00577c9028eb19",
+      "ready": true
+    },
+    {
+      "id": "shmon-usd",
+      "address": "0xBc5ACfF7aB888608D7Ba12144e17645d22FCd706",
+      "ready": true
+    },
+    {
+      "id": "wmon-vault",
+      "address": "0xEF6bf7EA3dd2a425577965e0234B30b0B2A3306b",
+      "ready": true
+    },
+    {
+      "id": "wmon-ausd",
+      "address": "0x89Dc1d055Ac9ec50E1FA0a2d7da8be858F1B1470",
+      "ready": true
+    },
+    {
+      "id": "shmon-ausd",
+      "address": "0x18F7E79744b08a302E786c0D62b8c1cfB3CFc475",
+      "ready": true
+    }
+  ],
+  "assets": [
+    {
+      "id": "test-usd",
+      "healthy": true
+    },
+    {
+      "id": "scenario-mon",
+      "healthy": true
+    },
+    {
+      "id": "test-usd-vault",
+      "healthy": true
+    },
+    {
+      "id": "wmon",
+      "healthy": true
+    },
+    {
+      "id": "shmon",
+      "healthy": true
+    },
+    {
+      "id": "agora-ausd",
+      "healthy": true
+    }
+  ],
+  "ausdCreationBond": "500000000",
+  "ausdDecimals": 6,
+  "remainingTestMon": "2.264779258",
+  "liveJourney": "expanded-journey.json",
+  "ci": {
+    "runId": 35067802489,
+    "commit": "84c0fa7126e791c4ea7d7539eb9b77af78220da4",
+    "status": "success"
+  },
+  "browserChecks": {
+    "signedIn": false,
+    "ausdBond": "500 AUSD",
+    "backingChoices": [
+      "TestUSDC",
+      "vTestUSDC",
+      "AUSD"
+    ],
+    "faucetSection": true,
+    "protection": "WMON/AUSD",
+    "liquidity": "shMON/AUSD",
+    "poolAddressLink": true,
+    "imagesLoaded": true,
+    "horizontalOverflow": false
+  }
+}
