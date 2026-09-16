@@ -11,7 +11,7 @@ npm ci
 cp .env.example .env
 ```
 
-Install Foundry `v1.5.1` or use the version in `.foundry-version`.
+Install Foundry `v1.8.1`, as pinned in `.foundry-version` and the Monad release workflow.
 
 ## Before Opening a Pull Request
 
