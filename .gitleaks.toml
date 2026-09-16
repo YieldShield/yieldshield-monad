@@ -37,6 +37,14 @@ paths = ['''^scripts/check-secret-scanner\.mjs$''']
 regexTarget = "secret"
 regexes = ['''^3b977f83-eb55-4afc-8b33-13c81de781f2$''']
 
+# Exact public Railway deployment identity recorded by the custom-pool release.
+[[rules.allowlists]]
+description = "Public custom-pool Railway deployment identifier"
+condition = "AND"
+paths = ['''^docs/CUSTOM_POOL_TERMS\.md$''']
+regexTarget = "secret"
+regexes = ['''^bdd0524b-bf07-40f5-869e-ac65516b5d89$''']
+
 # Standard Anvil mnemonic, account 9. Never fund it on a public network.
 [[rules.allowlists]]
 description = "Public Anvil development key in the localhost Makefile"

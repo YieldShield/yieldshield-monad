@@ -476,6 +476,9 @@
     },
     "dependencyGate": {
       "passed": 7
+    },
+    "secretScannerControls": {
+      "passed": 29
     }
   },
   "sourceIntegrity": {
@@ -498,7 +501,12 @@
     "contractToolFindings": 0,
     "nativeBigintBufferEmitted": false,
     "streamJsonEmitted": false,
-    "legacyFirstPartyWorkspacesEmitted": false
+    "legacyFirstPartyWorkspacesEmitted": false,
+    "gitHistoryScan": {
+      "findingCount": 0,
+      "commitsAtLocalScan": 145,
+      "scope": "All locally fetched history; redacted Gitleaks scan using the exact public Railway release identifier exception."
+    }
   },
   "browser": {
     "origin": "http://127.0.0.1:5187",
