@@ -1,0 +1,26 @@
+Initializing...
+Loading settings...
+! Using default private key for chain write simulation. To use your own key, set CRE_ETH_PRIVATE_KEY in your .env file or system environment.
+Checking RPC connectivity...
+Compiling workflow...
+✓ Workflow compiled
+✓ Simulation limits enabled
+  HTTP: req=120kb resp=250kb timeout=10s | ConfHTTP: req=125kb resp=500kb timeout=1m30s | Consensus obs=25kb | ChainWrite evm_report=50kb evm_gas=10000000 solana_report=265b solana_cu=300000 | WASM binary=100mb compressed=20mb
+  Binary hash: 0f3c2f26c1539b43f47079d88287bf22f6580d144dc3f1fc6a108940e932c650
+  Config hash: 16959c965fd30b5642421b27ffc8da6d55a4fcc0cc20d79de904f615f42c1213
+2026-09-16T17:24:40Z [SIMULATION] Simulator Initialized
+
+2026-09-16T17:24:40Z [SIMULATION] Running trigger trigger=cron-trigger@1.0.0
+2026-09-16T17:25:36Z [USER LOG] YieldShield CRE: healthy; Monad block 63063880; 2 pools; 0 alerts
+
+✓ Workflow Simulation Result:
+"{\"schemaVersion\":1,\"integration\":\"chainlink-cre\",\"network\":\"Monad Testnet\",\"chainId\":10143,\"observedAt\":1789572280,\"blockNumber\":\"63063880\",\"blockTimestamp\":\"1789572274\",\"status\":\"healthy\",\"pools\":[{\"id\":\"wmon-ausd\",\"address\":\"0x89Dc1d055Ac9ec50E1FA0a2d7da8be858F1B1470\",\"totalBacking\":\"1999999852\",\"reserved\":\"0\",\"freeBacking\":\"1999999852\",\"freeBackingBps\":10000,\"paused\":false,\"apiMatches\":true},{\"id\":\"shmon-ausd\",\"address\":\"0x18F7E79744b08a302E786c0D62b8c1cfB3CFc475\",\"totalBacking\":\"1999998085\",\"reserved\":\"0\",\"freeBacking\":\"1999998085\",\"freeBackingBps\":10000,\"paused\":false,\"apiMatches\":true}],\"assets\":[{\"symbol\":\"WMON\",\"address\":\"0x23EA8b07fda821d2096dee02a3a662a5374B69Cb\",\"price\":\"2234435\",\"publishedAt\":\"1789572272\",\"healthy\":true,\"apiMatches\":true},{\"symbol\":\"shMON\",\"address\":\"0x282BdDFF5e58793AcAb65438b257Dbd15A8745C9\",\"price\":\"28908085\",\"publishedAt\":\"1789572272\",\"healthy\":true,\"apiMatches\":true},{\"symbol\":\"AUSD\",\"address\":\"0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC\",\"price\":\"100000000\",\"publishedAt\":null,\"healthy\":true,\"apiMatches\":true}],\"alerts\":[],\"scope\":\"Read-only monitoring of configured pools; free backing is not a protection quote or solvency guarantee.\"}"
+
+2026-09-16T17:25:36Z [SIMULATION] Execution finished signal received
+2026-09-16T17:25:36Z [SIMULATION] Skipping WorkflowEngineV2
+
+╭──────────────────────────────────────────────────────╮
+│ Simulation complete! Ready to deploy your workflow?  │
+│                                                      │
+│ Run cre account access to request deployment access. │
+╰──────────────────────────────────────────────────────╯

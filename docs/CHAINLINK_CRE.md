@@ -50,11 +50,15 @@ The test suite covers matching observations; over-reservation; low or empty back
 
 ## Verification status
 
-As of 16 September 2026, the workflow passes type checking, 14 tests (including the official SDK runtime harness), and dependency audit. The official CLI compiles the WASM and starts the cron trigger. A successful live simulation has not yet been recorded: the current public status endpoint can exceed the CRE HTTP capability’s 10-second deadline on a cold cache. The application API performance fix must be deployed and the simulation repeated before claiming the bounty’s execution requirement is met.
+On 16 September 2026, the **official authenticated CRE CLI simulation completed successfully** against the deployed public YieldShield API and live Monad testnet RPC. At block **63063880**, both AUSD-backed pools and all three configured feeds matched the independent EVM reads: **healthy, zero alerts**. No transactions were broadcast and no DON workflow was deployed.
+
+The [parsed execution evidence](evidence/chainlink-cre-simulation-20260916.json) contains the report, command, versions and compiled binary/config hashes. The [original successful CLI output](evidence/chainlink-cre-simulation-20260916.txt) includes the completion result. The simulation used the production API after its batched-read performance fix; earlier cold API reads had exceeded CRE’s 10-second HTTP deadline.
+
+Type checking, 14 tests (including the official SDK runtime harness, 59 assertions) and the isolated dependency audit also passed. Successful simulation proves this execution; it does not establish continuous monitoring or guaranteed future endpoint latency.
 
 ## Sponsor submission
 
-The integration is intended for [Best Workflow with CRE](https://hackathon.monad.xyz/tracks/best-workflow-with-cre): it orchestrates an external API and a blockchain using the actual CRE SDK and capabilities. Include the workflow source, reproducible command, successful CLI simulation evidence and a short explanation of a detected failure case. Bounty selection or source code alone is not proof of qualification.
+The integration is intended for [Best Workflow with CRE](https://hackathon.monad.xyz/tracks/best-workflow-with-cre): it orchestrates an external API and a blockchain using the actual CRE SDK and capabilities. Include the workflow source, reproducible command, successful CLI simulation evidence and a short explanation of a detected failure case. The successful official simulation satisfies the execution evidence portion of the listed bounty requirements; sponsor selection, the final submission and judging remain separate. Bounty selection or source code alone is not proof of qualification.
 
 Official references (checked 16 September 2026):
 
