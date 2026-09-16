@@ -5,6 +5,7 @@ import { parseUnits } from "viem";
 import { client, useWallet } from "./wallet";
 import { fmt, errorMessage } from "./lib";
 import { FundingGate } from "./Funding";
+import { reviewableKuruQuote } from "./kuru-funding-state";
 import {
   KURU,
   kuruAccountAbi,
@@ -70,13 +71,12 @@ function KuruFundingFlow() {
   }
   const data = balances.error ? undefined : balances.data;
   const valid = value >= KURU.minInput && value <= KURU.maxInput;
-  const activeQuote =
-    quote &&
-    quote.account.toLowerCase() === wallet.account?.toLowerCase() &&
-    quote.amountIn === value &&
-    quote.userId === data?.userId
-      ? quote
-      : null;
+  const activeQuote = reviewableKuruQuote(quote, {
+    account: wallet.account,
+    userId: data?.userId,
+    amountIn: value,
+    freeUsdc: data?.usdc,
+  });
   const working = wallet.busy || quoting;
   const run = (label: string, fn: () => Promise<unknown>) =>
     wallet.execute(label, async () => {
@@ -225,7 +225,7 @@ function KuruFundingFlow() {
       ) : null}
       {error ? <p role="alert">{error}</p> : null}
       {received?.account.toLowerCase() === wallet.account.toLowerCase() ? (
-        <p role="status">Bought {fmt(received.amount, 18)} MON. Withdraw it below; it is not protected yet.</p>
+        <p role="status">Bought {fmt(received.amount, 18)} MON through Kuru. Protection opens separately.</p>
       ) : null}
       {data && (data.mon > 0n || data.usdc > 0n) ? (
         <div>
