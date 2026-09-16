@@ -40,7 +40,7 @@
     "@solana-program/token": "^0.14.0",
     "@solana-program/token-2022": "^0.7.0",
     "@solana/kit": "^6.10.0",
-    "viem": "^2.55.0",
+    "viem": "^2.56.5",
     "@dynamic-labs/ethereum": "5.8.1",
     "@dynamic-labs/sdk-react-core": "5.8.1"
   },
