@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { amount, netAsset, minOut, noticeState } from "./lib";
+import { amount, netAsset, minOut, noticeState, backingReserve, marketTerms, duration } from "./lib";
 describe("wallet previews", () => {
   it("preserves token base units and rejects excess precision", () => {
     expect(amount("0.000001", 6)).toBe(1n);
@@ -8,8 +8,12 @@ describe("wallet previews", () => {
     expect(() => amount("-1", 18)).toThrow();
   });
   it("shares only realized gains and retains prior fee effects", () => {
-    expect(netAsset(1000000000000000000n, 10000000000n, 10000000000n, 12000000000n, 18)).toBe(979999999999999999n);
-    expect(netAsset(980000000000000000n, 10000000000n, 11760000000n, 8000000000n, 18)).toBe(980000000000000000n);
+    expect(netAsset(1000000000000000000n, 10000000000n, 10000000000n, 12000000000n, 18, [1000n, 100n, 100n])).toBe(
+      979999999999999999n,
+    );
+    expect(netAsset(980000000000000000n, 10000000000n, 11760000000n, 8000000000n, 18, [1000n, 100n, 100n])).toBe(
+      980000000000000000n,
+    );
   });
   it("uses conservative positive minimum outputs", () => {
     expect(minOut(1000000n)).toBe(995000n);
@@ -23,4 +27,24 @@ it("honors the stored notice maturity and inclusive seven-day window", () => {
   expect(noticeState("200", 200000 + 7 * 86400000).active).toBe(true);
   expect(noticeState("200", 200001 + 7 * 86400000).expired).toBe(true);
   expect(noticeState("0", 200000).active).toBe(false);
+});
+
+it("previews custom fees with contract rounding and no fee on losses", () => {
+  expect(netAsset(100000000n, 10000000000n, 0n, 120000000n, 6, [2000n, 500n, 100n])).toBe(95666665n);
+  expect(netAsset(100000000n, 10000000000n, 0n, 120000000n, 6, [100n, 0n, 100n])).toBe(99666666n);
+  expect(netAsset(100000000n, 10000000000n, 0n, 80000000n, 6, [5000n, 2000n, 1000n])).toBe(100000000n);
+});
+it("reserves backing using custom collateral and the backing-token price", () => {
+  expect(backingReserve(10000000000n, 22500n, 100000000n, 6)).toBe(225000000n);
+  expect(backingReserve(10000000000n, 20000n, 125000000n, 6)).toBe(160000000n);
+  expect(backingReserve(1n, 15001n, 100000000n, 18)).toBe(20000000000n);
+});
+it("does not substitute default terms when pool reads failed", () => {
+  expect(marketTerms(undefined)).toBeNull();
+});
+it("shows actual pool waiting periods", () => {
+  expect(duration(60)).toBe("1 minute");
+  expect(duration(120)).toBe("2 minutes");
+  expect(duration(86400)).toBe("1 day");
+  expect(duration(undefined)).toBe("—");
 });

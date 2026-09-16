@@ -58,3 +58,10 @@
     gap: 20px;
   }
 }
+
+.pool-address {
+  display: inline-block;
+  margin: 0 0 18px;
+  font-size: 11px;
+  color: var(--muted);
+}

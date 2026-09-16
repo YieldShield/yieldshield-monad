@@ -65,6 +65,7 @@ export function PoolTermsFields({
               <input
                 id={`${uid}-${field.name}`}
                 name={field.name}
+                aria-label={field.label}
                 inputMode="decimal"
                 autoComplete="off"
                 value={input[field.name]}

@@ -168,7 +168,8 @@ export function HowItWorks() {
         <ExitCalculator />
         <p className="how-calculator-note">
           This example assumes 12% of realized asset gains goes to fees: 10% to providers and 2% to the creator and
-          protocol. Check the selected pool for its actual terms.
+          protocol. Creators can choose different collateral and gain shares. Check the selected pool for its actual
+          terms.
         </p>
       </section>
 

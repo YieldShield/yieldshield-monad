@@ -18,7 +18,22 @@ import registryJson from "../../../config/deployment.json";
 import abisJson from "../../../config/browser-abis.json";
 import { WalletProvider, useWallet, useBalance, useNativeBalance, client } from "./wallet";
 import { FundingNotice, FundingGate, AssetFundingHint, monadFaucet, type FundingAsset } from "./Funding";
-import { amount, minOut, netAsset, noticeState, fmt, usd, short, fetcher, explorer, errorMessage } from "./lib";
+import {
+  amount,
+  minOut,
+  netAsset,
+  noticeState,
+  fmt,
+  usd,
+  short,
+  fetcher,
+  explorer,
+  errorMessage,
+  percent,
+  marketTerms,
+  backingReserve,
+  duration,
+} from "./lib";
 import type { Asset, Market, Position, Snapshot, Registry, CreationOption } from "./types";
 import { selectMarket } from "./market-selection";
 import "./styles.css";
@@ -260,6 +275,7 @@ function Loading({ error }: { error?: Error }) {
   );
 }
 function MarketCard({ market: m }: { market: Market }) {
+  const terms = marketTerms(m);
   return (
     <article className="market-card">
       <div className={`card-top pool-art ${assetVisual(m.shield).theme}`}>
@@ -290,9 +306,22 @@ function MarketCard({ market: m }: { market: Market }) {
         </div>
         <div>
           <span>Reserve requirement</span>
-          <strong>150%</strong>
+          <strong>{percent(m.collateralBps)}</strong>
         </div>
       </div>
+      <div className="mini-metrics">
+        <div>
+          <span>Gains shared</span>
+          <strong>{percent(terms?.totalFeeBps)}</strong>
+        </div>
+        <div>
+          <span>Provider share</span>
+          <strong>{percent(m.juniorFeeBps)}</strong>
+        </div>
+      </div>
+      <a className="pool-address" href={explorer("address", m.address)} target="_blank" rel="noreferrer">
+        Pool {short(m.address)} ↗
+      </a>
       {m.reason && <p className="inline-warning">{m.reason}</p>}
       <div className="card-actions">
         <Link className="button purple-button" to={`/protect?market=${m.id}`}>
@@ -410,6 +439,7 @@ function useSelectedMarket(data: Snapshot | undefined) {
 function PositionForm({ side }: { side: "senior" | "junior" }) {
   const { data, error } = useSnapshot();
   const { m, id, setId } = useSelectedMarket(data);
+  const terms = marketTerms(m);
   const [input, setInput] = useState(side === "senior" ? "1" : "1000");
   const w = useWallet();
   const token = side === "senior" ? m?.shield : m?.backing;
@@ -425,10 +455,10 @@ function PositionForm({ side }: { side: "senior" | "junior" }) {
   }
   const entry = token?.price ? (value * BigInt(token.price)) / 10n ** BigInt(token.decimals) : null;
   const reserve =
-    entry && m?.backing.price
-      ? (((entry * 15000n + 9999n) / 10000n) * 10n ** BigInt(m.backing.decimals)) / BigInt(m.backing.price)
+    entry && terms && m?.backing.price && BigInt(m.backing.price) > 0n
+      ? backingReserve(entry, terms.collateralBps, BigInt(m.backing.price), m.backing.decimals)
       : null;
-  const available = Boolean(m?.actions[side === "senior" ? "protect" : "provide"]);
+  const available = Boolean(terms && m?.actions[side === "senior" ? "protect" : "provide"]);
   const tooMuch = balance != null && value > balance;
   const overCapacity = side === "senior" && m?.capacity != null && value > BigInt(m.capacity);
   async function submit() {
@@ -505,22 +535,22 @@ function PositionForm({ side }: { side: "senior" | "junior" }) {
                     </div>
                     <div>
                       <dt>Fee</dt>
-                      <dd>12% of realized gains</dd>
+                      <dd>{percent(terms?.totalFeeBps)} of realized gains</dd>
                     </div>
                     <div>
                       <dt>Backing exit after</dt>
-                      <dd>60 seconds</dd>
+                      <dd>{duration(m.config?.[5])}</dd>
                     </div>
                   </>
                 ) : (
                   <>
                     <div>
                       <dt>Reward share</dt>
-                      <dd>10% of realized gains, shared by providers</dd>
+                      <dd>{percent(m.juniorFeeBps)} of realized gains, shared by providers</dd>
                     </div>
                     <div>
                       <dt>Withdrawal notice</dt>
-                      <dd>120 seconds</dd>
+                      <dd>{duration(m.config?.[6])}</dd>
                     </div>
                   </>
                 )}
@@ -563,7 +593,14 @@ function PositionForm({ side }: { side: "senior" | "junior" }) {
                   <dl className="review-list">
                     <div>
                       <dt>Reserve requirement</dt>
-                      <dd>150%</dd>
+                      <dd>{percent(m.collateralBps)}</dd>
+                    </div>
+                    <div>
+                      <dt>Gains shared</dt>
+                      <dd>
+                        {percent(m.juniorFeeBps)} provider · {percent(m.creatorFeeBps)} creator ·{" "}
+                        {percent(m.protocolFeeBps)} protocol
+                      </dd>
                     </div>
                     <div>
                       <dt>Total backing</dt>
@@ -727,7 +764,9 @@ function PositionDetail() {
     );
   const senior = p.side === "senior",
     pos = p.position;
-  const unlocked = Number(pos.depositTime) * 1000 + 60000 <= now;
+  const terms = marketTerms(m);
+  const exitReadyAt = m.config?.[5] == null ? null : Number(pos.depositTime) * 1000 + Number(m.config[5]) * 1000;
+  const unlocked = exitReadyAt != null && exitReadyAt <= now;
   const {
     readyAt: noticeReady,
     active: activeNotice,
@@ -736,12 +775,14 @@ function PositionDetail() {
   let assetExit: bigint | null = null,
     backingExit: bigint | null = null;
   try {
+    if (!terms) throw new Error("Pool fee terms unavailable.");
     assetExit = netAsset(
       BigInt(pos.amount),
       BigInt(pos.valueAtDeposit || 0),
       BigInt(p.feeBaseline || 0),
       BigInt(m.shield.price || 0),
       m.shield.decimals,
+      terms.feeBps,
     );
     if (m.backing.price && pos.valueAtDeposit) {
       backingExit = (BigInt(pos.valueAtDeposit) * 10n ** BigInt(m.backing.decimals)) / BigInt(m.backing.price);
@@ -854,7 +895,9 @@ function PositionDetail() {
             </strong>
             {!unlocked && (
               <p className="inline-warning">
-                Available in {Math.max(0, Math.ceil((Number(pos.depositTime) * 1000 + 60000 - now) / 1000))} seconds.
+                {exitReadyAt == null
+                  ? "Withdrawal timing is unavailable. Refresh to try again."
+                  : `Available in ${Math.max(0, Math.ceil((exitReadyAt - now) / 1000))} seconds.`}
               </p>
             )}
             <Submit
@@ -876,7 +919,7 @@ function PositionDetail() {
             <dl className="review-list">
               <div>
                 <dt>Notice period</dt>
-                <dd>120 seconds</dd>
+                <dd>{duration(m.config?.[6])}</dd>
               </div>
               <div>
                 <dt>Withdrawal window</dt>
@@ -1665,12 +1708,12 @@ function CreatePool() {
                   </dd>
                 </div>
                 <div>
-                  <dt>Earliest protected exit</dt>
-                  <dd>{version.minimumPoolTime / 60} minute</dd>
+                  <dt>Earliest backing exit</dt>
+                  <dd>{duration(version.minimumPoolTime)}</dd>
                 </div>
                 <div>
                   <dt>Backing withdrawal notice</dt>
-                  <dd>{version.unlockDuration / 60} minutes</dd>
+                  <dd>{duration(version.unlockDuration)}</dd>
                 </div>
               </dl>
             )}

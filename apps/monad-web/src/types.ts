@@ -38,6 +38,10 @@ export type Market = {
   juniorNft?: Address;
   capacity?: string;
   config?: string[];
+  collateralBps?: string;
+  juniorFeeBps?: string;
+  creatorFeeBps?: string;
+  protocolFeeBps?: string;
   actions: Record<string, boolean>;
 };
 export type FactoryVersion = {

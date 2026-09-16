@@ -1,6 +1,7 @@
 import { useId, useRef } from "react";
 import { AssetPair } from "./AssetImage";
 import { assetVisual } from "./asset-visuals";
+import { marketTerms, percent, short } from "./lib";
 import type { Market, Snapshot } from "./types";
 
 function PairLabel({ market }: { market: Market }) {
@@ -13,6 +14,10 @@ function PairLabel({ market }: { market: Market }) {
         </strong>
         <small>
           {assetVisual(market.shield).name} · {assetVisual(market.backing).name}
+        </small>
+        <small>
+          {percent(market.collateralBps)} collateral · {percent(marketTerms(market)?.totalFeeBps)} gains shared ·{" "}
+          {short(market.address)}
         </small>
       </span>
     </>
