@@ -36,7 +36,7 @@ Fees are 10% junior + 1% creator + 1% protocol **of realized positive gains**, p
 Use Node **24.14.0** and Foundry **v1.8.1**. Clone submodules recursively:
 
 ```sh
-git clone --recurse-submodules git@github.com:YieldShield/yieldshield-monad.git
+git clone --recurse-submodules https://github.com/YieldShield/yieldshield-monad.git
 cd yieldshield-monad
 nvm use
 npm ci --ignore-scripts
@@ -56,6 +56,8 @@ forge test --root contracts --match-path 'test/base-modules/*.t.sol'
 The service/deployment tests include a temporary local HTTP listener. Contract tests execute locally and do not spend tokens. The imported Base regressions are preserved and are not counted as new Monad inventions.
 
 ## Repository map
+
+Start with [the repository guide](docs/REPOSITORY_GUIDE.md) for active components, historical imports and the evidence index.
 
 - `apps/monad-web/`: active React/Vite app, Monad theme, wallet checks and transaction flows.
 - `services/monad/`: active read-only API, bounded RPC reads, verified registries and signed-price delivery.

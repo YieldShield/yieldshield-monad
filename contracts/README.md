@@ -1,5 +1,7 @@
 # YieldShield Smart Contracts
 
+> **Historical workspace guide.** The text below describes the imported standalone smart-contract repository. For this Monad repository, use the [root README](../README.md) and [repository guide](../docs/REPOSITORY_GUIDE.md). Internal review reports included here are not independent audits; their dates and revisions limit their applicability.
+
 [![CI](https://github.com/YieldShield/smart-contracts/actions/workflows/ci.yml/badge.svg)](https://github.com/YieldShield/smart-contracts/actions/workflows/ci.yml)
 [![License](https://img.shields.io/github/license/YieldShield/smart-contracts)](LICENSE)
 

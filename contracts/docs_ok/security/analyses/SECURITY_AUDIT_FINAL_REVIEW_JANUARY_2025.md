@@ -1,5 +1,7 @@
 # Final Security Review - January 2025
 
+> **Historical internal review.** Imported from the pre-Metropolis YieldShield foundation. This report is not an independent third-party audit or verification of the current Monad deployment. Its original findings remain below; assess them against the stated revision and date. See the [repository guide](../../../../docs/REPOSITORY_GUIDE.md).
+
 **Audit Date:** January 7, 2025  
 **Auditor:** AI Security Analyst  
 **Scope:** Complete smart contract review with focus on remaining issues and new findings  

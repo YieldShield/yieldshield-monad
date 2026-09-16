@@ -1,5 +1,7 @@
 # YieldShield Smart Contract Security Follow-Up
 
+> **Historical internal review.** Imported from the pre-Metropolis YieldShield foundation. This report is not an independent third-party audit or verification of the current Monad deployment. Its original findings remain below; assess them against the stated revision and date. See the [repository guide](../../../../docs/REPOSITORY_GUIDE.md).
+
 **Date:** February 19, 2026  
 **Auditor:** Codex (AI-assisted manual review)  
 **Scope:** `/packages/foundry/contracts` first-party contracts, interfaces, libraries, and tests  

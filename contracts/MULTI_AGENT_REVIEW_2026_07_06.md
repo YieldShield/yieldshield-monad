@@ -1,5 +1,7 @@
 # Multi-Agent Security & Consistency Review — 2026-07-06
 
+> **Historical internal review.** Imported from the pre-Metropolis YieldShield foundation. This report is not an independent third-party audit or verification of the current Monad deployment. Its original findings remain below; assess them against the stated revision and date. See the [repository guide](../docs/REPOSITORY_GUIDE.md).
+
 **Method:** Three parallel review agents (core pool + libraries; oracle stack; governance/ACL/NFTs/deployment) plus one external-research agent (recent exploit patterns, dependency advisories, 2025–26 best practices). All agents read the eight prior audit/review documents first and were instructed to report only new issues or residuals of recent fixes. Every finding below was independently re-verified against `main` source before inclusion.
 
 **Baseline:** `b82f5c4` (Normalize transfer probe storage snapshot). Primary target surface: the ~19 fix commits landed after the 2026-07-04 follow-up review, as the least-reviewed code.

@@ -1,5 +1,7 @@
 # YieldShield Post-Remediation Multi-Agent Security Review — July 13, 2026
 
+> **Historical internal review.** Imported from the pre-Metropolis YieldShield foundation. This report is not an independent third-party audit or verification of the current Monad deployment. Its original findings remain below; assess them against the stated revision and date. See the [repository guide](../docs/REPOSITORY_GUIDE.md).
+
 ## Executive summary
 
 This review examined `main` at

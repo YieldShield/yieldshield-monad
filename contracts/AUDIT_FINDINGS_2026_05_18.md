@@ -1,5 +1,7 @@
 # Smart Contract Audit Findings - May 18, 2026
 
+> **Historical internal review.** Imported from the pre-Metropolis YieldShield foundation. This report is not an independent third-party audit or verification of the current Monad deployment. Its original findings remain below; assess them against the stated revision and date. See the [repository guide](../docs/REPOSITORY_GUIDE.md).
+
 ## Executive Summary
 
 Multi-agent security audit across the entire `contracts/` tree (~8,500 LOC) plus deployment scripts and CI. Four parallel reviews covered the oracle stack, core pool, NFT/governance/access-control, and cross-cutting concerns (static analysis, libraries, upgrade safety, dependencies). The audit builds upon prior reports in `SECURITY_AUDIT_REPORT.md`, `SECURITY_AUDIT_REPORT_V2.md`, `AUDIT_FINDINGS_2026_01_22.md`, `AUDIT_REPORT.md`, and the `docs_ok/security/` folder.

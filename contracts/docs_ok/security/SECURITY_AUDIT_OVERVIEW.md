@@ -1,5 +1,7 @@
 # YieldShield Smart Contract Security Audit Overview
 
+> **Historical internal review.** Imported from the pre-Metropolis YieldShield foundation. This report is not an independent third-party audit or verification of the current Monad deployment. Its original findings remain below; assess them against the stated revision and date. See the [repository guide](../../../docs/REPOSITORY_GUIDE.md).
+
 ## Executive Summary
 
 YieldShield is a decentralized balance protection protocol that enables users to insure yield-bearing assets by pairing them with underwriter collateral. The protocol uses a pool-based model where insured deposits are matched with underwriter deposits at a configurable collateral ratio. The system tracks yield earned on insured assets and distributes it among underwriters (as commission), pool creators, and the protocol, while ensuring insured users can withdraw their principal at the original USD value.

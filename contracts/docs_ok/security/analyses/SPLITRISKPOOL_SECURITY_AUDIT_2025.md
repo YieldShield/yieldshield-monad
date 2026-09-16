@@ -1,5 +1,7 @@
 # SplitRiskPool Security Audit Report
 
+> **Historical internal review.** Imported from the pre-Metropolis YieldShield foundation. This report is not an independent third-party audit or verification of the current Monad deployment. Its original findings remain below; assess them against the stated revision and date. See the [repository guide](../../../../docs/REPOSITORY_GUIDE.md).
+
 **Audit Date**: January 2025  
 **Contract Version**: Post rewards-per-share implementation  
 **Auditor**: AI Security Audit  

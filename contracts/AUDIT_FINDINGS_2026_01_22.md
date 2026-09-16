@@ -1,5 +1,7 @@
 # Smart Contract Audit Findings - January 22, 2026
 
+> **Historical internal review.** Imported from the pre-Metropolis YieldShield foundation. This report is not an independent third-party audit or verification of the current Monad deployment. Its original findings remain below; assess them against the stated revision and date. See the [repository guide](../docs/REPOSITORY_GUIDE.md).
+
 ## Executive Summary
 
 This audit was conducted using automated static analysis (Slither), extended fuzz testing, invariant testing, and coverage analysis. The audit builds upon 3 prior audits completed in January 2026.
