@@ -28,6 +28,7 @@ jobs:
       - run: npm run check:scope
       - run: npm run test:monad
       - run: npm run test:web
+      - run: npm run lint:web
       - run: npm run build
       - name: Contract deployment tool regressions
         run: |

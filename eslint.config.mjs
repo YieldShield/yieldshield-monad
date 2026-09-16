@@ -16,7 +16,10 @@ export default tseslint.config(
     languageOptions: { globals: { ...globals.browser } },
     plugins: { "react-hooks": reactHooks },
     rules: {
-      ...reactHooks.configs.recommended.rules,
+      // Preserve the pre-v7 Hooks policy. React Compiler rules are a separate
+      // migration; this app does not enable the React Compiler.
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn",
       "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
       "@typescript-eslint/no-explicit-any": "off",
       "no-empty": ["error", { allowEmptyCatch: true }],

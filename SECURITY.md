@@ -54,8 +54,9 @@ scanning, push protection and private vulnerability reporting are enabled.
 `main` requires a pull request and passing release, Git-history secret-scan and
 production-dependency checks from GitHub Actions. Branches must be up to date,
 review conversations must be resolved, and force pushes and deletion are blocked.
-These requirements also apply to administrators. A second person's approval is
-not mandatory; the checks are the merge gate.
+Administrators can bypass these requirements when necessary, as explicitly
+requested by the owner on 16 September 2026. Normal merges still require the
+checks; a second person's approval is not mandatory.
 
 See the [publication record](docs/PUBLICATION.md) for the settings verification,
 Actions log/artifact review and the limits of automated credential scanning.

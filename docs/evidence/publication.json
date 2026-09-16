@@ -50,7 +50,7 @@
     },
     "enforce_admins": {
       "url": "https://api.github.com/repos/YieldShield/yieldshield-monad/branches/main/protection/enforce_admins",
-      "enabled": true
+      "enabled": false
     },
     "required_pull_request_reviews": {
       "url": "https://api.github.com/repos/YieldShield/yieldshield-monad/branches/main/protection/required_pull_request_reviews",
@@ -124,5 +124,7 @@
     "rulesChanged": false,
     "stableSyntheticSamples": true,
     "localControlsPassed": 29
-  }
+  },
+  "settingsUpdatedAt": "2026-09-16T12:58:18.066390+00:00",
+  "settingsUpdateReason": "Owner explicitly requested that administrators can always merge PRs; administrator bypass enabled, all normal branch requirements preserved."
 }
