@@ -69,6 +69,15 @@
     "speechCheck": "Per-chapter speech recognition checked against narration; currency amounts matched",
     "integratedLoudnessLufs": -17.26,
     "truePeakDbtp": -1.62,
-    "frontendTests": "78 passed; production build, ESLint and formatting passed"
+    "frontendTests": "78 passed; production build, ESLint and formatting passed",
+    "browser": "Production playback advanced normally; 1920x1080 metadata loaded; English captions visibly rendered; desktop and 390px mobile layouts checked without overflow",
+    "legacyMediaRedirect": "HTTP 308 to the replacement; replacement HTTP 200 video/mp4 with byte ranges"
+  },
+  "deployment": {
+    "id": "dpl_5GGtfHkYHm8SSrnmf2H55Stacs3X",
+    "url": "https://yieldshield-monad-q5ybqzszx-noc2-6281s-projects.vercel.app",
+    "alias": "https://monad.yieldshield.ai",
+    "sourceCommit": "606a122",
+    "integratedCommit": "b29ad88"
   }
 }
