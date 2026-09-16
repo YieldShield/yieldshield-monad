@@ -109,6 +109,17 @@ const manifest = existsSync(path)
       pools: [],
       status: "expansion-in-progress",
     };
+const reviewed = read("docs/evidence/expansion-continuation-review.json");
+for (const [id, saved] of Object.entries(reviewed.confirmedIntents)) {
+  const current = manifest.transactions[id];
+  assert.equal(current?.intentHash, saved.intentHash, `Existing intent changed: ${id}`);
+  assert.equal(current?.hash, saved.hash, `Existing hash changed: ${id}`);
+  assert.equal(current?.request.nonce, saved.nonce, `Existing nonce changed: ${id}`);
+}
+assert(
+  !Object.keys(manifest.transactions).some((id) => id.includes("monad-wmon") || id.includes("canonical-wmon")),
+  "Reconcile any unexpected canonical WMON transaction before continuing",
+);
 const run = new SequentialDeployment({
   client,
   account,
@@ -158,11 +169,13 @@ try {
   const original = deploymentAssets(base, network);
   const assets = [
     ...original.filter((a) => ["wmon", "shmon", "test-usd", "test-usd-vault"].includes(a.id)),
-    ...expansion.assets.map((a) => ({
-      ...a,
-      external: true,
-      kind: a.id === "agora-ausd" ? "test-unit" : "external-reference",
-    })),
+    ...expansion.assets
+      .filter((a) => a.id === "agora-ausd")
+      .map((a) => ({
+        ...a,
+        external: true,
+        kind: a.id === "agora-ausd" ? "test-unit" : "external-reference",
+      })),
   ].map((a) => ({ ...a, feed: price }));
   for (const a of assets) {
     await run.write("expansion:token:" + a.id, factory, "SplitRiskPoolFactory", "addTokenInitial", [
@@ -187,11 +200,10 @@ try {
   await run.write("expansion:governance", factory, "SplitRiskPoolFactory", "transferOwnership", [c("Timelock")]);
   // One legitimate official faucet claim; never bypass cooldown or request-limit checks.
   await call("ausd-claim", expansion.faucet.address, faucetAbi, "requestFunds", [account.address]);
-  await call("wrapped-mon", wrapped.address, erc20, "deposit", [], parseEther("0.02"));
-  await call("wrap-roundtrip", wrapped.address, erc20, "withdraw", [parseEther("0.01")]);
+  // Canonical WMON remains unregistered: its fallback exhausts unbounded static probes.
   for (const [id, protectedId, backingId, seed] of [
-    ["monad-wmon-ausd", "canonical-wmon", "agora-ausd", 2000n * 10n ** 6n],
-    ["monad-wmon-usd", "canonical-wmon", "test-usd", 5000n * 10n ** 6n],
+    ["wmon-ausd", "wmon", "agora-ausd", 2000n * 10n ** 6n],
+    ["shmon-ausd", "shmon", "agora-ausd", 2000n * 10n ** 6n],
   ]) {
     const shield = assets.find((a) => a.id === protectedId),
       back = assets.find((a) => a.id === backingId);
@@ -245,7 +257,7 @@ try {
     contract: "ExpandedFactory",
     router: "ExpandedPoolRouter",
     environment: "reference",
-    protectedAssets: ["canonical-wmon", "wmon", "shmon"],
+    protectedAssets: ["wmon", "shmon"],
     backingAssets: ["test-usd", "test-usd-vault", "agora-ausd"],
   };
   manifest.status = "complete";

@@ -1,0 +1,92 @@
+{
+  "journalSha256BeforeContinuation": "9916f4659b5735bcb013202c09e99482168e33386fa47f21f6956827d098d2a7",
+  "confirmedIntents": {
+    "deploy:ExpandedAssetRegistry": {
+      "intentHash": "668b549358db9b9d783fbfcef03ac378a5ee4f3f2858f04832d0c922bf2ac541",
+      "hash": "0x57aa624fc7471a7da8d164fb626f91136bc4f9d79e1e19a0e1fb47435ca08c0a",
+      "nonce": 159
+    },
+    "deploy:ExpandedInitializeModule": {
+      "intentHash": "b230286a1143f1f8f7c33c4ab8e0ebd99bb92beafd88d4b2051bf1eb6ee2f970",
+      "hash": "0x93d4e60747dfecb97ab172c247362f835b99946372fe603207ac616c62ad91a8",
+      "nonce": 160
+    },
+    "deploy:ExpandedPoolRouter": {
+      "intentHash": "62846838678d2b2adb7fd13aeeb8df15a6894e0f59d6bf05cccdd95c925d3a83",
+      "hash": "0x14a24ac122bc8a6a38050e4bd0e5078c4ec6020d29a87e58f82d717cfe32121f",
+      "nonce": 161
+    },
+    "deploy:ExpandedFactory": {
+      "intentHash": "586415637fff3310658fb589aa4070ba05faa689b99e8e1118be849ecb5081eb",
+      "hash": "0x8ba6cd5f4782460ef5718595e6cbb13c43a5720da99709b211e5f81006c5b309",
+      "nonce": 162
+    },
+    "deploy:ExpandedCompositeOracle": {
+      "intentHash": "873c58f15537f71d83bd6bc7a2b48306e410585a0f704d3ff39de5c765070486",
+      "hash": "0xd0adbedf3b69a06c26fb75850db0233e3ac2a34ec97b97a495f8ceaf48f0bffd",
+      "nonce": 163
+    },
+    "expansion:oracle-owner": {
+      "intentHash": "02890dbd2e3579641afa6e50386612b75551832d605ebc46c2ff95125ea53a0d",
+      "hash": "0x37d12a6c6757efe788ee18936e7739d684d1cac6faaadbd8d5e5bd096740f523",
+      "nonce": 164
+    },
+    "expansion:factory-oracle": {
+      "intentHash": "a43870e7f684a7e14387860928cc053ac7a67fbc97b334b61e4985c8614e7b64",
+      "hash": "0x4f18373b20432a59a8bafa2fa82a3926e2cfaa963f2845ced0a9e63ee6f535c7",
+      "nonce": 165
+    },
+    "expansion:fee-recipient": {
+      "intentHash": "6adbebcacc173578f5a6a508c33fde68d42b2b45d3d8d267daad5eb9f15d127f",
+      "hash": "0x85b6fc6a567d6c925f99865eab67bf03d2cbc83c30a6cb8fd909bc22bc26569f",
+      "nonce": 166
+    },
+    "expansion:token:test-usd": {
+      "intentHash": "5fbafae1e238e61cfd3dcf75930259b78169b612ac14b262e284a3a5fbc6c7c2",
+      "hash": "0xe1251b59759c086c52a6586df03be8a99a8f3711e295d7c3f77ded28f5fde715",
+      "nonce": 167
+    },
+    "expansion:strict:test-usd": {
+      "intentHash": "a23007587895dc14910adfc1598796739dbc6f0e39b7997d9cce5abe7ab33851",
+      "hash": "0xe85fdfd9d734ee98d9f8d071c448332be456385fdbfbb662b2467df52485d118",
+      "nonce": 168
+    },
+    "expansion:token:test-usd-vault": {
+      "intentHash": "ccfcfe0479358e93da38c89d2560d2248fcf211d33310cb7223f9abfc78bf93c",
+      "hash": "0xcdeb42461737c190a01691dae93888739df93f18149be1b0a5db8143b7fab171",
+      "nonce": 169
+    },
+    "expansion:strict:test-usd-vault": {
+      "intentHash": "2b11afd11493394bd5ab0872dd23ca8f307c3784822c15d4b0387fc625121b34",
+      "hash": "0x84e18a3093eff71c65b2a61697b9a77e1681e76e69b5b197bced2bbc09a93ac2",
+      "nonce": 170
+    },
+    "expansion:token:wmon": {
+      "intentHash": "3ac63a39341bf7009a7387aa4654ef2c79313e1f7df782ce827e2f79f068ec4b",
+      "hash": "0xa2c6a0c5e94d139a3158bfa330cb49ffdf73185efac1f06fc8ffcb47d18d1b0a",
+      "nonce": 171
+    },
+    "expansion:token:shmon": {
+      "intentHash": "da795e7159dd2facc3ed7b7f79944b81e77741ba282c89884d7304a15a2da3a4",
+      "hash": "0x39d3a84c5284df5cdf75bddc400f91fbf9fce64b624352e2da5176724a572120",
+      "nonce": 172
+    },
+    "expansion:token:agora-ausd": {
+      "intentHash": "3f55812511c8a627297a1a235b52bc96417f4266bfcd5de6c7932f4fe71a10b8",
+      "hash": "0x8e0ccff984f3bff698905353e71206af456d9f2afae21fa594950d3939036e45",
+      "nonce": 173
+    },
+    "expansion:strict:agora-ausd": {
+      "intentHash": "86fc5e95e8c9b1cf6a338e7165f6c62248e37c244b8a500ee2470d7f530fd602",
+      "hash": "0xf212d4e1e9b64c1d5fc4f4bc022c7dd9c9eebd94c084a0146cb410241e22e0f5",
+      "nonce": 174
+    }
+  },
+  "unsubmitted": [
+    "canonical WMON registration",
+    "pool creation",
+    "pool funding",
+    "faucet claim"
+  ],
+  "reason": "Canonical WMON registration failed during estimation before signing or journal insertion. All 16 persisted intents remain unchanged; revised pool creations use new, previously unused IDs."
+}
