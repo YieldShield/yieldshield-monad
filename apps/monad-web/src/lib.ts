@@ -35,8 +35,15 @@ export function netAsset(
   return fees >= amount ? 0n : amount - fees;
 }
 export const explorer = (kind: "tx" | "address", a: string) => `https://testnet.monadexplorer.com/${kind}/${a}`;
+export function apiRequestUrl(path: string, origin = globalThis.location?.origin) {
+  // Production visitors reach Railway directly so its edge sees each client's IP.
+  // Keep SWR keys relative and retain the same-origin proxy for local/preview builds.
+  return origin === "https://monad.yieldshield.ai" && path.startsWith("/api/")
+    ? `https://monad-api.yieldshield.ai${path}`
+    : path;
+}
 export async function fetcher(url: string) {
-  const r = await fetch(url);
+  const r = await fetch(apiRequestUrl(url));
   const d = await r.json();
   if (!r.ok) throw new Error(d.error || "Unable to load verified data.");
   return d;

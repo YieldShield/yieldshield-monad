@@ -13,7 +13,7 @@
 | API domain          | `monad-api.yieldshield.ai`, port 3001                        |
 | Blockchain          | Monad testnet 10143, never mainnet 143                       |
 
-The frontend rewrites `/api/*` to the Railway API. Railway has its own Node 24 Docker build and a read-only `/health` endpoint. DNS is managed in the existing Vercel zone. The API CNAME and Railway ownership TXT are configured; HTTPS was checked successfully on 9 September 2026.
+The production frontend reads `https://monad-api.yieldshield.ai/api/*` directly using the existing CORS allowlist. Local and preview builds retain the `/api/*` proxy; the production domain also keeps that route for compatibility. Railway has its own Node 24 Docker build and a read-only `/health` endpoint. DNS is managed in the existing Vercel zone. The API CNAME and Railway ownership TXT are configured; HTTPS was checked successfully on 9 September 2026.
 
 ## Current activation state
 
@@ -104,4 +104,4 @@ The canonical WMON token is intentionally not registered after a fork reproduced
 
 The API permits 90 non-health requests per minute per trusted peer and retains at most 10,000 active peer windows. New peers are rejected while that capacity is full; they cannot reset existing limits. Health probes remain independent of this quota.
 
-On Railway, the service uses the platform's [documented `X-Real-IP` header](https://docs.railway.com/networking/public-networking/specs-and-limits), enabled only when Railway project, environment and service identifiers are present. Direct/local servers use the socket peer and ignore forwarding headers. Do not expose a raw TCP listener while relying on Railway's HTTP edge identity. Arbitrary `X-Forwarded-For` values are never trusted. Requests through the Vercel rewrite may share an egress-IP quota; preserving individual identities through another proxy requires authenticating that hop, rather than trusting another client-set header.
+On Railway, the service uses the platform's [documented `X-Real-IP` header](https://docs.railway.com/networking/public-networking/specs-and-limits), enabled only when Railway project, environment and service identifiers are present. Direct/local servers use the socket peer and ignore forwarding headers. Do not expose a raw TCP listener while relying on Railway's HTTP edge identity. Arbitrary `X-Forwarded-For` values are never trusted. The production browser fetcher reaches Railway directly so unrelated visitors do not share Vercel egress quotas. Local/preview builds and legacy clients still using the compatibility rewrite may share a proxy quota. Do not move production reads back through that proxy without preserving authenticated client identity or enforcing limits before the shared hop.
