@@ -55,7 +55,13 @@ export function ActivityHistory({
 }) {
   // Treat foreign-chain or malformed snapshots as unavailable, never as an
   // empty wallet. No action button relies on these indexed observations.
-  const valid = data?.chainId === 10143 && Array.isArray(data.events);
+  const valid =
+    data?.chainId === 10143 &&
+    Array.isArray(data.events) &&
+    data.events.every(
+      (event) =>
+        Number.isSafeInteger(event?.timestamp) && event.timestamp >= 0 && event.timestamp <= 8640000000000,
+    );
   const unavailable = failed || (data && (!valid || ["unavailable", "not-configured"].includes(data.status)));
   const pending = !data || data.status === "indexing";
   const stale = valid && data.status === "stale";

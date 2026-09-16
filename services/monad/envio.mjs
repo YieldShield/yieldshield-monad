@@ -42,7 +42,7 @@ export function activityQuery(pools, fromBlock, toBlock) {
   };
 }
 
-function decodeActivity(log, block, pool, assets) {
+function decodeActivity(log, block, pool, assets, observedAt) {
   if (log.removed) throw new Error("Removed event in activity response");
   if (
     !hash.test(log.transaction_hash) ||
@@ -50,7 +50,10 @@ function decodeActivity(log, block, pool, assets) {
     !integer(log.log_index) ||
     !block ||
     lower(block.hash) !== lower(log.block_hash) ||
-    !integer(block.timestamp)
+    !integer(block.timestamp) ||
+    block.timestamp > 8640000000000 ||
+    // Tolerate a small testnet clock skew, never an unrenderable or remote-future date.
+    block.timestamp > Math.floor(observedAt / 1000) + 60
   )
     throw new Error("Invalid activity event provenance");
   const { eventName, args } = decodeEventLog({
@@ -182,7 +185,7 @@ export function createEnvioActivity({ registry, config, token, fetchFn = fetch, 
         const pool = pools.get(lower(log.address));
         if (!pool || !integer(log.block_number) || log.block_number < cursor || log.block_number >= page.next_block)
           throw new Error("Activity event outside requested scope");
-        const event = decodeActivity(log, blocks.get(log.block_number), pool, assets);
+        const event = decodeActivity(log, blocks.get(log.block_number), pool, assets, now());
         if (events.has(event.id)) throw new Error("Duplicate activity event");
         events.set(event.id, event);
         if (events.size > config.maxEvents) throw new Error("Activity index capacity reached");

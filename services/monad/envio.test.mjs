@@ -237,6 +237,41 @@ test("foreign addresses, unrequested blocks, duplicate logs and bad provenance f
   }
 });
 
+test("invalid or remote-future event timestamps never publish a ready snapshot", async () => {
+  for (const timestamp of [Number.MAX_SAFE_INTEGER, 8640000000001, -1, 1.5, 1720000071]) {
+    const response = page();
+    response.data.blocks[0].timestamp = timestamp;
+    const { client } = harness({ pages: [response] });
+    await client.refresh();
+    assert.equal(client.read().status, "unavailable");
+    assert.equal(client.read().complete, false);
+    assert.equal(client.read().events.length, 0);
+  }
+});
+
+test("event timestamp validation permits bounded testnet clock skew", async () => {
+  const response = page();
+  response.data.blocks[0].timestamp = 1720000070;
+  const { client } = harness({ pages: [response] });
+  await client.refresh();
+  const result = client.read();
+  assert.equal(result.status, "ready");
+  assert.doesNotThrow(() => new Date(result.events[0].timestamp * 1000).toISOString());
+});
+
+test("a malformed timestamp refresh retains only the previous validated history", async () => {
+  const invalid = page();
+  invalid.data.blocks[0].timestamp = Number.MAX_SAFE_INTEGER;
+  const { client, advance } = harness({ pages: [page(), invalid] });
+  await client.refresh();
+  advance(config.refreshMs);
+  await client.refresh();
+  const result = client.read();
+  assert.equal(result.status, "stale");
+  assert.equal(result.complete, false);
+  assert.equal(result.events[0].timestamp, 1720000000);
+});
+
 test("rollback guard mismatch rejects a cross-page fork", async () => {
   const first = { ...page([event()], 150), rollback_guard: { block_number: 149, hash: blockHash } };
   const second = { ...page([]), rollback_guard: { first_block_number: 150, first_parent_hash: txHash } };

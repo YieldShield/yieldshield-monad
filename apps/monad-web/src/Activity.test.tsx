@@ -58,6 +58,20 @@ describe("indexed activity presentation", () => {
     expect(html).toContain("temporarily unavailable");
     expect(html).not.toContain("Protection opened");
   });
+  it("isolates invalid activity timestamps without crashing the surrounding page", () => {
+    for (const timestamp of [Number.MAX_SAFE_INTEGER, 8640000000001, -1, NaN, 1.5]) {
+      const html = renderToStaticMarkup(
+        <main>
+          <h1>Your positions</h1>
+          <ActivityHistory data={{ ...snapshot, events: [{ ...snapshot.events[0], timestamp }] }} />
+        </main>,
+      );
+      expect(html).toContain("Your positions");
+      expect(html).toContain("temporarily unavailable");
+      expect(html).not.toContain("Protection opened");
+      expect(html).not.toContain("No activity");
+    }
+  });
   it("identifies synthetic activity and does not invent a cancellation amount", () => {
     const html = renderToStaticMarkup(
       <ActivityHistory
