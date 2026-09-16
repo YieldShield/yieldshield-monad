@@ -28,3 +28,23 @@ test("unknown routes and foreign origins cannot become an authorized API flow", 
   const known = await fetch(origin + "/health", { headers: { Origin: "https://monad.yieldshield.ai" } });
   assert.equal(known.headers.get("access-control-allow-origin"), "https://monad.yieldshield.ai");
 });
+
+test("rotating forwarding headers cannot bypass the API request limit", async () => {
+  let limited = false;
+  for (let i = 0; i < 91; i++) {
+    const response = await fetch(origin + "/api/registry", {
+      headers: { "X-Forwarded-For": `198.51.100.${i + 1}`, "X-Real-IP": `203.0.113.${i + 1}` },
+    });
+    await response.arrayBuffer();
+    if (response.status === 429) {
+      limited = true;
+      break;
+    }
+    assert.equal(response.status, 200);
+  }
+  assert.equal(limited, true);
+  const retry = await fetch(origin + "/api/registry", { headers: { "X-Forwarded-For": "192.0.2.200" } });
+  assert.equal(retry.status, 429);
+  const health = await fetch(origin + "/health");
+  assert.equal(health.status, 200);
+});
