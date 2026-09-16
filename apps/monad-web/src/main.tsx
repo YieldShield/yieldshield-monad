@@ -42,6 +42,7 @@ import "./asset-images.css";
 import { TokenIcon, AssetPair } from "./AssetImage";
 import { assetVisual } from "./asset-visuals";
 import { ExpandedFunding } from "./ExpandedFunding";
+import { KuruFunding } from "./KuruFunding";
 import { AssetCatalog } from "./AssetCatalog";
 import { AssetSelect } from "./AssetSelect";
 import {
@@ -1443,6 +1444,7 @@ function Tokens() {
         </Disclosure>
       </div>
       <ExpandedFunding />
+      <KuruFunding />
     </Shell>
   );
 }
