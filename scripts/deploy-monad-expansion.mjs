@@ -90,7 +90,7 @@ console.log(
     deployer: account.address,
     testMon: String(balance),
     newContracts: 5,
-    maximumTestMon: "3",
+    maximumTestMon: "6",
     assets: expansion.assets.map((a) => a.id),
     broadcast,
   }),
@@ -128,7 +128,9 @@ const run = new SequentialDeployment({
   manifest,
   nonce: await client.getTransactionCount({ address: account.address }),
   maxFeePerGas: 200000000000n,
-  spendLimit: parseEther("3"),
+  // Five additional test MON confirmed on 16 September. Keep historical costs
+  // in this cumulative cap; every saved intent/hash remains unchanged.
+  spendLimit: parseEther("6"),
 });
 const c = (n) => manifest.contracts[n].address;
 const call = (id, address, abi, functionName, args = [], value = 0n) =>

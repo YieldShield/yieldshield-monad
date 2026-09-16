@@ -1,0 +1,121 @@
+{
+  "reviewedAt": "2026-09-16T07:01:25.473Z",
+  "chainId": 10143,
+  "deployer": "0xA437345Be29EC6802024A8e090E34b621b92E5E2",
+  "observedTestMon": "5.679524038",
+  "additionalTestMon": "5",
+  "previousCumulativeLimit": "3",
+  "revisedCumulativeLimit": "6",
+  "maximumGasPerTransaction": 16000000,
+  "maximumFeeGwei": 200,
+  "minimumBalanceReserve": "0.1",
+  "journalSha256": "27f5126da1e08b50192e7e7fffbfe1b7c56c5679629b57ca2ae96c775b2e4d0c",
+  "confirmedIntents": {
+    "deploy:ExpandedAssetRegistry": {
+      "hash": "0x57aa624fc7471a7da8d164fb626f91136bc4f9d79e1e19a0e1fb47435ca08c0a",
+      "intentHash": "668b549358db9b9d783fbfcef03ac378a5ee4f3f2858f04832d0c922bf2ac541",
+      "nonce": 159
+    },
+    "deploy:ExpandedInitializeModule": {
+      "hash": "0x93d4e60747dfecb97ab172c247362f835b99946372fe603207ac616c62ad91a8",
+      "intentHash": "b230286a1143f1f8f7c33c4ab8e0ebd99bb92beafd88d4b2051bf1eb6ee2f970",
+      "nonce": 160
+    },
+    "deploy:ExpandedPoolRouter": {
+      "hash": "0x14a24ac122bc8a6a38050e4bd0e5078c4ec6020d29a87e58f82d717cfe32121f",
+      "intentHash": "62846838678d2b2adb7fd13aeeb8df15a6894e0f59d6bf05cccdd95c925d3a83",
+      "nonce": 161
+    },
+    "deploy:ExpandedFactory": {
+      "hash": "0x8ba6cd5f4782460ef5718595e6cbb13c43a5720da99709b211e5f81006c5b309",
+      "intentHash": "586415637fff3310658fb589aa4070ba05faa689b99e8e1118be849ecb5081eb",
+      "nonce": 162
+    },
+    "deploy:ExpandedCompositeOracle": {
+      "hash": "0xd0adbedf3b69a06c26fb75850db0233e3ac2a34ec97b97a495f8ceaf48f0bffd",
+      "intentHash": "873c58f15537f71d83bd6bc7a2b48306e410585a0f704d3ff39de5c765070486",
+      "nonce": 163
+    },
+    "expansion:oracle-owner": {
+      "hash": "0x37d12a6c6757efe788ee18936e7739d684d1cac6faaadbd8d5e5bd096740f523",
+      "intentHash": "02890dbd2e3579641afa6e50386612b75551832d605ebc46c2ff95125ea53a0d",
+      "nonce": 164
+    },
+    "expansion:factory-oracle": {
+      "hash": "0x4f18373b20432a59a8bafa2fa82a3926e2cfaa963f2845ced0a9e63ee6f535c7",
+      "intentHash": "a43870e7f684a7e14387860928cc053ac7a67fbc97b334b61e4985c8614e7b64",
+      "nonce": 165
+    },
+    "expansion:fee-recipient": {
+      "hash": "0x85b6fc6a567d6c925f99865eab67bf03d2cbc83c30a6cb8fd909bc22bc26569f",
+      "intentHash": "6adbebcacc173578f5a6a508c33fde68d42b2b45d3d8d267daad5eb9f15d127f",
+      "nonce": 166
+    },
+    "expansion:token:test-usd": {
+      "hash": "0xe1251b59759c086c52a6586df03be8a99a8f3711e295d7c3f77ded28f5fde715",
+      "intentHash": "5fbafae1e238e61cfd3dcf75930259b78169b612ac14b262e284a3a5fbc6c7c2",
+      "nonce": 167
+    },
+    "expansion:strict:test-usd": {
+      "hash": "0xe85fdfd9d734ee98d9f8d071c448332be456385fdbfbb662b2467df52485d118",
+      "intentHash": "a23007587895dc14910adfc1598796739dbc6f0e39b7997d9cce5abe7ab33851",
+      "nonce": 168
+    },
+    "expansion:token:test-usd-vault": {
+      "hash": "0xcdeb42461737c190a01691dae93888739df93f18149be1b0a5db8143b7fab171",
+      "intentHash": "ccfcfe0479358e93da38c89d2560d2248fcf211d33310cb7223f9abfc78bf93c",
+      "nonce": 169
+    },
+    "expansion:strict:test-usd-vault": {
+      "hash": "0x84e18a3093eff71c65b2a61697b9a77e1681e76e69b5b197bced2bbc09a93ac2",
+      "intentHash": "2b11afd11493394bd5ab0872dd23ca8f307c3784822c15d4b0387fc625121b34",
+      "nonce": 170
+    },
+    "expansion:token:wmon": {
+      "hash": "0xa2c6a0c5e94d139a3158bfa330cb49ffdf73185efac1f06fc8ffcb47d18d1b0a",
+      "intentHash": "3ac63a39341bf7009a7387aa4654ef2c79313e1f7df782ce827e2f79f068ec4b",
+      "nonce": 171
+    },
+    "expansion:token:shmon": {
+      "hash": "0x39d3a84c5284df5cdf75bddc400f91fbf9fce64b624352e2da5176724a572120",
+      "intentHash": "da795e7159dd2facc3ed7b7f79944b81e77741ba282c89884d7304a15a2da3a4",
+      "nonce": 172
+    },
+    "expansion:token:agora-ausd": {
+      "hash": "0x8e0ccff984f3bff698905353e71206af456d9f2afae21fa594950d3939036e45",
+      "intentHash": "3f55812511c8a627297a1a235b52bc96417f4266bfcd5de6c7932f4fe71a10b8",
+      "nonce": 173
+    },
+    "expansion:strict:agora-ausd": {
+      "hash": "0xf212d4e1e9b64c1d5fc4f4bc022c7dd9c9eebd94c084a0146cb410241e22e0f5",
+      "intentHash": "86fc5e95e8c9b1cf6a338e7165f6c62248e37c244b8a500ee2470d7f530fd602",
+      "nonce": 174
+    },
+    "expansion:finalize": {
+      "hash": "0x653026c1337cefad80c81ec2255125bd2574e70be96c9efc523ee8424ec0a514",
+      "intentHash": "506a6076025c9ff167234228e480db44fdd8628023197d7a99c76ac6f1212cb7",
+      "nonce": 175
+    },
+    "expansion:governance": {
+      "hash": "0x2712bdaff9bd61756bb46faee30fedc177a34c57980d2987651acc0abca35b9f",
+      "intentHash": "d225096bc4bd67c200d3ca0389420eba1326a54f4fc13610975c38bfa0803929",
+      "nonce": 176
+    },
+    "expansion:ausd-claim": {
+      "hash": "0xec3cf05b2f7abe2531319184b890b164fb74d3c43672f16f76ee694d9a12aabc",
+      "intentHash": "e04d457c4392d82dc97a7278fb572ad14e40c76e228247392962a44bdacc0e2b",
+      "nonce": 177
+    },
+    "expansion:wmon-ausd:bond": {
+      "hash": "0x3e30fc3de869d44eb3d7237a293e3ae255c67314d4c11388a4271834697d09fe",
+      "intentHash": "fcd434e14fdc17dda62860c2d988ac94adb1bd9e7e44ecd7fc8d38665521f072",
+      "nonce": 178
+    }
+  },
+  "remainingWork": [
+    "Create WMON/AUSD and shMON/AUSD pools with 500 AUSD bonds",
+    "Seed each pool with 2000 AUSD",
+    "Verify code and wiring before separate holder/provider smoke transactions"
+  ],
+  "note": "User confirmed the requested testnet top-up. Cumulative costs are retained; no existing calldata, hash, nonce or recipient is replaced."
+}
