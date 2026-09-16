@@ -1,5 +1,44 @@
-import { describe, it, expect } from "vitest";
-import { amount, netAsset, minOut, noticeState, backingReserve, marketTerms, duration } from "./lib";
+import { describe, it, expect, vi, afterEach } from "vitest";
+import {
+  amount,
+  netAsset,
+  minOut,
+  noticeState,
+  backingReserve,
+  marketTerms,
+  duration,
+  apiRequestUrl,
+  fetcher,
+} from "./lib";
+afterEach(() => vi.unstubAllGlobals());
+
+it("production API reads bypass shared proxy quotas while preserving query strings", async () => {
+  vi.stubGlobal("location", { origin: "https://monad.yieldshield.ai" });
+  const request = vi.fn().mockResolvedValue(new Response(JSON.stringify({ positions: [] })));
+  vi.stubGlobal("fetch", request);
+  const key = "/api/positions?owner=0x0000000000000000000000000000000000000001";
+  expect(await fetcher(key)).toEqual({ positions: [] });
+  expect(request).toHaveBeenCalledWith(`https://monad-api.yieldshield.ai${key}`);
+});
+
+it("local and preview API reads retain their existing same-origin proxy", () => {
+  for (const origin of ["http://localhost:5174", "https://preview.vercel.app", undefined]) {
+    expect(apiRequestUrl("/api/status", origin)).toBe("/api/status");
+  }
+  expect(apiRequestUrl("/media/demo.mp4", "https://monad.yieldshield.ai")).toBe("/media/demo.mp4");
+});
+
+it("direct production API errors still fail closed", async () => {
+  vi.stubGlobal("location", { origin: "https://monad.yieldshield.ai" });
+  vi.stubGlobal(
+    "fetch",
+    vi
+      .fn()
+      .mockResolvedValue(new Response(JSON.stringify({ error: "Please wait before refreshing." }), { status: 429 })),
+  );
+  await expect(fetcher("/api/status")).rejects.toThrow("Please wait before refreshing.");
+});
+
 describe("wallet previews", () => {
   it("preserves token base units and rejects excess precision", () => {
     expect(amount("0.000001", 6)).toBe(1n);

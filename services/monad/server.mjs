@@ -1,6 +1,7 @@
 import { creationOptions } from "./creation.mjs";
 import { discoverPools, protectionCapacity } from "./pools.mjs";
 import { createCache } from "./cache.mjs";
+import { createRateLimiter, requestIp } from "./request-limits.mjs";
 import { fetchPythUpdate } from "./pyth.mjs";
 import { throttledRpcFetch } from "./rpc-throttle.mjs";
 import { retryRateLimitedReads } from "./rpc-retry.mjs";
@@ -324,7 +325,12 @@ async function pythUpdate() {
   });
 }
 const allowedOrigins = new Set(["https://monad.yieldshield.ai", "http://localhost:5173", "http://localhost:5174"]);
-const windows = new Map();
+const allowedRequest = createRateLimiter();
+// This service is exposed through Railway HTTPS networking, which owns X-Real-IP.
+// Local/direct deployments ignore all caller-supplied proxy headers.
+const trustRailwayProxy = Boolean(
+  process.env.RAILWAY_PROJECT_ID && process.env.RAILWAY_ENVIRONMENT_ID && process.env.RAILWAY_SERVICE_ID,
+);
 export const server = createServer(async (req, res) => {
   res.setHeader("Content-Type", "application/json; charset=utf-8");
   res.setHeader("X-Content-Type-Options", "nosniff");
@@ -350,19 +356,11 @@ export const server = createServer(async (req, res) => {
       res.end(stringify({ status: "ok", service: "yieldshield-monad-api", chainId: 10143 }));
       return;
     }
-    const ip = req.headers["x-forwarded-for"]?.split(",")[0] || req.socket.remoteAddress;
-    const now = Date.now();
-    let w = windows.get(ip);
-    if (!w || w.at + 60000 < now) {
-      w = { at: now, count: 0 };
-      windows.set(ip, w);
-    }
-    if (++w.count > 90) {
+    if (!allowedRequest(requestIp(req, { trustRailwayProxy }))) {
       res.writeHead(429);
       res.end(stringify({ error: "Please wait before refreshing." }));
       return;
     }
-    if (windows.size > 10000) windows.clear();
     let data;
     if (["/api/status", "/api/markets", "/api/protection-status"].includes(url.pathname)) data = await snapshot();
     else if (url.pathname === "/api/creation") {

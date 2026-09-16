@@ -2,18 +2,18 @@
 
 ## Environments
 
-| Component           | Destination                                                       |
-| ------------------- | ----------------------------------------------------------------- |
-| GitHub              | `YieldShield/yieldshield-monad`, branch `main`; public |
-| Vercel project      | `yieldshield-monad`, team `noc2-6281s-projects`                   |
-| Frontend domain     | `monad.yieldshield.ai`                                            |
-| Railway project     | `YieldShield Monad` / `37575fd4-8fdb-49dd-9bee-eaa9b5cf98c7`      |
-| Railway service     | `monad-api` / `511f2540-1d13-4690-a639-6d6975d3c810`              |
-| Railway environment | production / `53dfccd8-7a1b-49f8-8699-ac31705a14ce`               |
-| API domain          | `monad-api.yieldshield.ai`, port 3001                             |
-| Blockchain          | Monad testnet 10143, never mainnet 143                            |
+| Component           | Destination                                                  |
+| ------------------- | ------------------------------------------------------------ |
+| GitHub              | `YieldShield/yieldshield-monad`, branch `main`; public       |
+| Vercel project      | `yieldshield-monad`, team `noc2-6281s-projects`              |
+| Frontend domain     | `monad.yieldshield.ai`                                       |
+| Railway project     | `YieldShield Monad` / `37575fd4-8fdb-49dd-9bee-eaa9b5cf98c7` |
+| Railway service     | `monad-api` / `511f2540-1d13-4690-a639-6d6975d3c810`         |
+| Railway environment | production / `53dfccd8-7a1b-49f8-8699-ac31705a14ce`          |
+| API domain          | `monad-api.yieldshield.ai`, port 3001                        |
+| Blockchain          | Monad testnet 10143, never mainnet 143                       |
 
-The frontend rewrites `/api/*` to the Railway API. Railway has its own Node 24 Docker build and a read-only `/health` endpoint. DNS is managed in the existing Vercel zone. The API CNAME and Railway ownership TXT are configured; HTTPS was checked successfully on 9 September 2026.
+The production frontend reads `https://monad-api.yieldshield.ai/api/*` directly using the existing CORS allowlist. Local and preview builds retain the `/api/*` proxy; the production domain also keeps that route for compatibility. Railway has its own Node 24 Docker build and a read-only `/health` endpoint. DNS is managed in the existing Vercel zone. The API CNAME and Railway ownership TXT are configured; HTTPS was checked successfully on 9 September 2026.
 
 ## Current activation state
 
@@ -60,6 +60,10 @@ Evidence is written to `docs/evidence/*-journey.json` only on successful complet
 
 Run the tests in README, then verify/sync the chain registry and commit that stage. GitHub Actions checks the app, API, receipt tooling and contract suites. Railway is connected to the repository's `main` branch and rebuilds the API for its configured watched paths.
 
+Vercel is also connected to `YieldShield/yieldshield-monad`, with `main` as its verified production branch and the repository root as its build root. This remote Git connection was added on 16 September after the final review found that previous releases relied on manual deployments. A local `vercel link` alone does not configure automatic Git deployments. The commands below remain available for a deliberate manual release; verify the existing project identity first.
+
+Verify the effective Railway service settings as well as `railway.json`. On 16 September, the live service had no health check despite the checked-in configuration. The production service now explicitly uses `/health`, a 60-second health-check timeout, and `ON_FAILURE` restarts with at most three retries. Confirm those values in the next deployment's metadata. Always select the Monad project, service and environment above explicitly; another local checkout can be linked to an unrelated project. Railway's legacy config-as-code is deprecated, so the file alone is not evidence that its settings are applied.
+
 ```sh
 vercel pull --yes --environment=production --scope noc2-6281s-projects
 vercel build --prod --scope noc2-6281s-projects
@@ -95,3 +99,9 @@ The expansion uses a separate resumable journal and five new immutable contracts
 Use `node scripts/verify-monad.mjs --expansion --legacy-artifacts=/absolute/path/to/original/contracts/out` to verify the staged contracts without declaring the pools ready. Historical Solidity CBOR metadata contains original auto-detected remapping paths: the verifier accepts a separate directory of original build artifacts, checks every source hash, and still compares full deployed runtime bytes. Newly deployed contracts use the current build. Do not remove metadata or weaken runtime-hash checks to accommodate a different checkout.
 
 The canonical WMON token is intentionally not registered after a fork reproduced unbounded static-probe gas exhaustion. Mainnet yield shares are catalog entries only. See [yield asset research](YIELD_ASSET_RESEARCH.md) for activation boundaries.
+
+## API request limits
+
+The API permits 90 non-health requests per minute per trusted peer and retains at most 10,000 active peer windows. New peers are rejected while that capacity is full; they cannot reset existing limits. Health probes remain independent of this quota.
+
+On Railway, the service uses the platform's [documented `X-Real-IP` header](https://docs.railway.com/networking/public-networking/specs-and-limits), enabled only when Railway project, environment and service identifiers are present. Direct/local servers use the socket peer and ignore forwarding headers. Do not expose a raw TCP listener while relying on Railway's HTTP edge identity. Arbitrary `X-Forwarded-For` values are never trusted. The production browser fetcher reaches Railway directly so unrelated visitors do not share Vercel egress quotas. Local/preview builds and legacy clients still using the compatibility rewrite may share a proxy quota. Do not move production reads back through that proxy without preserving authenticated client identity or enforcing limits before the shared hop.

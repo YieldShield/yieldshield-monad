@@ -1,0 +1,168 @@
+{
+  "checkedAt": "2026-09-16T13:13:26.945Z",
+  "blockNumber": "63038044",
+  "blockTimestamp": "1789564400",
+  "factories": [
+    {
+      "version": "scenario-v1",
+      "address": "0x7c843F084fFa3325378A86d5617D012476dB5851",
+      "bootstrapModeEnabled": false,
+      "owner": "0xA6ee97633CcBC7ddc8222451D6e9a046D0ADeb18",
+      "governanceTimelock": "0xA6ee97633CcBC7ddc8222451D6e9a046D0ADeb18",
+      "implementation": "0xcd4eb925280e9c75aff2f57feb579aea0981b0cb"
+    },
+    {
+      "version": "reference-v1",
+      "address": "0xa72E4a45a43322Fe0D77b0762f763D2658aAc84C",
+      "bootstrapModeEnabled": false,
+      "owner": "0xA6ee97633CcBC7ddc8222451D6e9a046D0ADeb18",
+      "governanceTimelock": "0xA6ee97633CcBC7ddc8222451D6e9a046D0ADeb18",
+      "implementation": "0xcd4eb925280e9c75aff2f57feb579aea0981b0cb"
+    },
+    {
+      "version": "expanded-v2",
+      "address": "0xFd2Bd5adF1776c6da4eF6accCc49C1621aCE1410",
+      "bootstrapModeEnabled": false,
+      "owner": "0xA6ee97633CcBC7ddc8222451D6e9a046D0ADeb18",
+      "governanceTimelock": "0xA6ee97633CcBC7ddc8222451D6e9a046D0ADeb18",
+      "implementation": "0xcd4eb925280e9c75aff2f57feb579aea0981b0cb"
+    }
+  ],
+  "pools": [
+    {
+      "id": "scenario-mon-usd",
+      "address": "0xe8E8c9fBe73C997E20b9c8FE5e67FE6b92E1a149",
+      "paused": false,
+      "backing": "49988562093",
+      "reserved": "0",
+      "receipts": [
+        {
+          "address": "0x878236770b8F1AbBd19E3c3f40D35E5890944F78",
+          "owner": "0xe8E8c9fBe73C997E20b9c8FE5e67FE6b92E1a149"
+        },
+        {
+          "address": "0x5c0256fE58B6b2a16326b9F0894Fc3446A214087",
+          "owner": "0xe8E8c9fBe73C997E20b9c8FE5e67FE6b92E1a149"
+        }
+      ]
+    },
+    {
+      "id": "scenario-mon-vault",
+      "address": "0xdB6424359232eBDAE2b7E5A10bF2C71B7C838DB7",
+      "paused": false,
+      "backing": "49991258189",
+      "reserved": "0",
+      "receipts": [
+        {
+          "address": "0x6CE7Fa45BD59e2D6C390d1d6D6A99854c637293B",
+          "owner": "0xdB6424359232eBDAE2b7E5A10bF2C71B7C838DB7"
+        },
+        {
+          "address": "0x890A54767A7f85F14Ab98b1C3D05CDfd941a857c",
+          "owner": "0xdB6424359232eBDAE2b7E5A10bF2C71B7C838DB7"
+        }
+      ]
+    },
+    {
+      "id": "wmon-usd",
+      "address": "0xe0861e2a0a8b0E94377dC846fb00577c9028eb19",
+      "paused": false,
+      "backing": "49999999773",
+      "reserved": "0",
+      "receipts": [
+        {
+          "address": "0xe787Ab9bAEbca39eeE33eAFd96a7895578D2E561",
+          "owner": "0xe0861e2a0a8b0E94377dC846fb00577c9028eb19"
+        },
+        {
+          "address": "0x18A71051A2E69922054d48cB5ADF40b81451bA74",
+          "owner": "0xe0861e2a0a8b0E94377dC846fb00577c9028eb19"
+        }
+      ]
+    },
+    {
+      "id": "shmon-usd",
+      "address": "0xBc5ACfF7aB888608D7Ba12144e17645d22FCd706",
+      "paused": false,
+      "backing": "49999997057",
+      "reserved": "0",
+      "receipts": [
+        {
+          "address": "0x7BE376AEb167EBeD43dc03311F363e9Fe2ba1566",
+          "owner": "0xBc5ACfF7aB888608D7Ba12144e17645d22FCd706"
+        },
+        {
+          "address": "0x6892578770DBF7977B5E1C951C0EDcE0565aBf52",
+          "owner": "0xBc5ACfF7aB888608D7Ba12144e17645d22FCd706"
+        }
+      ]
+    },
+    {
+      "id": "wmon-vault",
+      "address": "0xEF6bf7EA3dd2a425577965e0234B30b0B2A3306b",
+      "paused": false,
+      "backing": "49999999773",
+      "reserved": "0",
+      "receipts": [
+        {
+          "address": "0xAFfcD1A6dD0023Ae6404FCE150cE595e4Afb747F",
+          "owner": "0xEF6bf7EA3dd2a425577965e0234B30b0B2A3306b"
+        },
+        {
+          "address": "0x0E618edA1Dc5C2EA86F8B96652Be08A9F3a4704D",
+          "owner": "0xEF6bf7EA3dd2a425577965e0234B30b0B2A3306b"
+        }
+      ]
+    },
+    {
+      "id": "wmon-ausd",
+      "address": "0x89Dc1d055Ac9ec50E1FA0a2d7da8be858F1B1470",
+      "paused": false,
+      "backing": "1999999852",
+      "reserved": "0",
+      "receipts": [
+        {
+          "address": "0xe2AF5d55E497abfEA84ACc734385dd38F7002A72",
+          "owner": "0x89Dc1d055Ac9ec50E1FA0a2d7da8be858F1B1470"
+        },
+        {
+          "address": "0xBa694628DB80dD39884993A73Cd306Cb932871e1",
+          "owner": "0x89Dc1d055Ac9ec50E1FA0a2d7da8be858F1B1470"
+        }
+      ]
+    },
+    {
+      "id": "shmon-ausd",
+      "address": "0x18F7E79744b08a302E786c0D62b8c1cfB3CFc475",
+      "paused": false,
+      "backing": "1999998085",
+      "reserved": "0",
+      "receipts": [
+        {
+          "address": "0x803D892A965e767B29cc021E81131fA42898468B",
+          "owner": "0x18F7E79744b08a302E786c0D62b8c1cfB3CFc475"
+        },
+        {
+          "address": "0x36782A03cBf73FdDA97b90B5e960CaEC31b4aD4d",
+          "owner": "0x18F7E79744b08a302E786c0D62b8c1cfB3CFc475"
+        }
+      ]
+    }
+  ],
+  "assetPins": [
+    {
+      "id": "agora-ausd",
+      "address": "0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC",
+      "codeAndImplementationVerified": true
+    }
+  ],
+  "oracle": {
+    "price": "2228104",
+    "publishedAt": "1789564400",
+    "ageSeconds": "0"
+  },
+  "wrappedNative": {
+    "supply": "110000000000000000",
+    "backing": "110000000000000000"
+  }
+}
