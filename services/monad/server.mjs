@@ -1,3 +1,5 @@
+import { creationOptions } from "./creation.mjs";
+import { factoryVersions } from "../../scripts/monad-factories.mjs";
 import { createCache } from "./cache.mjs";
 import { fetchPythUpdate } from "./pyth.mjs";
 import { throttledRpcFetch } from "./rpc-throttle.mjs";
@@ -22,6 +24,7 @@ const rpc = createPublicClient({
   ),
 });
 const generic = parseAbi([
+  "function getValue(address,uint256) view returns(uint256)",
   "function getPrice(address) view returns(uint256)",
   "function isPriceStale(address) view returns(bool,uint64)",
   "function previewDeposit(uint256) view returns(uint256)",
@@ -58,7 +61,8 @@ async function verifiedCode() {
 }
 async function discoverPools(blockNumber) {
   const found = [...registry.pools];
-  for (const factoryName of ["Factory", "ReferenceFactory"]) {
+  for (const version of factoryVersions(registry)) {
+    const factoryName = version.contract;
     const factory = c(factoryName);
     if (!factory) continue;
     const pools = await get(factory, "SplitRiskPoolFactory", "getActivePools", [], blockNumber);
@@ -225,7 +229,8 @@ async function snapshot() {
         });
     } catch {}
     return {
-      schemaVersion: 3,
+      schemaVersion: 4,
+      creation: await creationOptions(registry, get, code, blockNumber),
       chainId: 10143,
       network: "Monad Testnet",
       observedAt: Date.now(),
@@ -366,7 +371,16 @@ export const server = createServer(async (req, res) => {
     if (windows.size > 10000) windows.clear();
     let data;
     if (["/api/status", "/api/markets", "/api/protection-status"].includes(url.pathname)) data = await snapshot();
-    else if (url.pathname === "/api/positions") data = await positions(address(url.searchParams.get("owner")));
+    else if (url.pathname === "/api/creation") {
+      await checkedChain();
+      const [block, code] = await Promise.all([rpc.getBlock(), verifiedCode()]);
+      data = {
+        chainId: 10143,
+        observedAt: Date.now(),
+        blockNumber: block.number,
+        creation: await creationOptions(registry, get, code, block.number),
+      };
+    } else if (url.pathname === "/api/positions") data = await positions(address(url.searchParams.get("owner")));
     else if (url.pathname === "/api/pyth-update") data = await pythUpdate();
     else if (url.pathname === "/api/registry") data = registry;
     else {

@@ -349,5 +349,23 @@
   ],
   "referenceStatus": "active",
   "referenceOracle": "redstone",
-  "updatedAt": "2026-09-14T10:16:52.556Z"
+  "updatedAt": "2026-09-14T10:16:52.556Z",
+  "factories": [
+    {
+      "id": "scenario-v1",
+      "contract": "Factory",
+      "router": "BasePoolRouter",
+      "environment": "scenario",
+      "protectedAssets": ["scenario-mon"],
+      "backingAssets": ["test-usd", "test-usd-vault"]
+    },
+    {
+      "id": "reference-v1",
+      "contract": "ReferenceFactory",
+      "router": "BasePoolRouter",
+      "environment": "reference",
+      "protectedAssets": ["wmon", "shmon"],
+      "backingAssets": ["test-usd", "test-usd-vault"]
+    }
+  ]
 }

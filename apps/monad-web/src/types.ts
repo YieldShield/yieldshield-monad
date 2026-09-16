@@ -40,7 +40,29 @@ export type Market = {
   config?: string[];
   actions: Record<string, boolean>;
 };
+export type FactoryVersion = {
+  id: string;
+  contract: string;
+  router: string;
+  environment: "scenario" | "reference";
+  protectedAssets: string[];
+  backingAssets: string[];
+};
+export type CreationOption = FactoryVersion & {
+  factory: Address;
+  available: boolean;
+  reason: string | null;
+  minimumUsd?: string;
+  collateralBps: string;
+  juniorFeeBps: string;
+  creatorFeeBps: string;
+  protocolFeeBps: string;
+  minimumPoolTime: number;
+  unlockDuration: number;
+  backing: { id: string; available: boolean; reason: string | null; price?: string; bond?: string }[];
+};
 export type Registry = {
+  factories: FactoryVersion[];
   chainId: number;
   status: string;
   contracts: Record<
@@ -53,6 +75,7 @@ export type Registry = {
   referenceOracle?: "redstone" | "pyth";
 };
 export type Snapshot = {
+  creation?: CreationOption[];
   schemaVersion: number;
   chainId: number;
   observedAt: number;
