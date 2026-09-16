@@ -17,7 +17,7 @@ const feedAbi = parseAbi([
 ]);
 
 export function fetchSnapshot(requester: HTTPSendRequester, config: Config): ApiSnapshot {
-  const response = requester.sendRequest({ url: config.apiUrl, method: 'GET', timeout: '45s' }).result();
+  const response = requester.sendRequest({ url: config.apiUrl, method: 'GET', timeout: '10s' }).result();
   if (response.statusCode !== 200) throw new Error(`YieldShield API returned HTTP ${response.statusCode}`);
   if (response.body.length > 100_000) throw new Error('YieldShield API response exceeds workflow bound');
   return parseSnapshot(JSON.parse(new TextDecoder().decode(response.body)), config);

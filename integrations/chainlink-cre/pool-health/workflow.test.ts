@@ -29,6 +29,7 @@ test('official CRE runtime orchestrates HTTP plus exactly 13 same-block EVM read
     httpCalls++;
     expect(req.method).toBe('GET');
     expect(req.url).toBe(config.apiUrl);
+    expect(req.timeout?.seconds).toBe(10n);
     return { statusCode: 200, body: base64(new TextEncoder().encode(JSON.stringify(response))) };
   };
   const evm = EvmMock.testInstance(2183018362218727504n);
