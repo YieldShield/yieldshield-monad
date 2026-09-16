@@ -1,6 +1,6 @@
 # Dependency security review
 
-Reviewed **16 September 2026**. Scope: all four committed npm lockfiles: the root workspaces and deployed Monad browser app, the Railway API in `services/monad`, the historical Base API in `services`, and JavaScript contract tools in `contracts`. This is a dependency review, not an independent security audit.
+Reviewed **16 September 2026**. Scope: all three current npm lockfiles: the root workspace and deployed Monad browser app, the Railway API in `services/monad`, and JavaScript contract tools in `contracts`. This is a dependency review, not an independent security audit.
 
 ## Changes
 
@@ -15,7 +15,7 @@ Axios 1.20.0 includes request-option hardening ([release notes](https://github.c
 
 ## Remaining findings and runtime exposure
 
-The root `npm audit --omit=dev` decreased from **29 affected package entries (16 high, 13 moderate)** to **9 (7 high, 2 moderate)**. These are inherited package findings from **two underlying advisories**, not nine separate vulnerabilities. Both API manifests and the contract tooling manifest report **zero findings** in their separate production dependency audits.
+The root `npm audit --omit=dev` decreased from **29 affected package entries (16 high, 13 moderate)** to **9 (7 high, 2 moderate)**. These are inherited package findings from **two underlying advisories**, not nine separate vulnerabilities. The Monad API manifest and contract tooling manifest report **zero findings** in their separate production dependency audits.
 
 | Advisory | Installed package | Why it remains; verified exposure |
 | --- | --- | --- |
@@ -33,12 +33,12 @@ node --test scripts/check-dependency-audit.test.mjs
 node scripts/check-dependency-audit.mjs
 ```
 
-The gate queries npm separately for all four manifests' production dependencies, then builds the Monad frontend without writing deployment output. It verifies the emitted module graph, including the lazy-loaded Dynamic wallet. It fails on:
+The gate queries npm separately for all three manifests' production dependencies, then builds the Monad frontend without writing deployment output. It verifies the emitted module graph, including the lazy-loaded Dynamic wallet. It fails on:
 
 - Any unreviewed advisory, critical finding, changed exception version or dependency path, changed inherited dependency version/path, or expired exception.
 - Incomplete or failed npm audit responses.
 - Native `bigint-buffer`, `stream-json`, or Jayson's server/parser utility modules entering the browser output.
-- A browser build that omits the Dynamic wallet entry, or any dependency finding in either API or the contract tools. No browser exception applies to these Node applications.
+- A browser build that omits the Dynamic wallet entry, or any dependency finding in the Monad API or the contract tools. No browser exception applies to these Node applications.
 
 The check does not suppress npm's original report or downgrade its severities. Review new Dependabot alerts alongside this gate. To clear an exception, upgrade upstream dependencies, rerun the gate and browser wallet walkthrough, and remove the obsolete exception and this document's corresponding entry.
 
@@ -48,7 +48,15 @@ The check does not suppress npm's original report or downgrade its severities. R
 - 78 frontend tests and the TypeScript/Vite production build passed.
 - 72 API/deployment tests and six dependency-gate regression tests passed.
 - Browser-module verification passed over 5,544 emitted modules, with no native `bigint-buffer` or `stream-json` implementation.
-- Both API and contract-tool production dependency audits: zero findings.
+- Monad API and contract-tool production dependency audits: zero findings.
 - Contract JavaScript tooling tests passed in an isolated copy with patched dependencies, including Foundry TOML parsing and deployment-manifest tests. The repository's tracked `contracts/node_modules` link and existing Foundry artifacts were preserved.
 - All **147 contract JavaScript tests** passed. A sixth gate regression test checks that every committed npm lockfile is covered, so a new standalone manifest cannot silently bypass the audit.
 - A completed signed-in Dynamic browser transaction is a separate release check; a dependency build/test pass does not establish it.
+
+## Monad-only cleanup
+
+The unused Solana SDK, adapters, historical frontend, Solana faucet and Base API have been removed from the current tree. The deleted Base API lockfile is no longer audited; every remaining committed lockfile is still covered. Previously recorded four-manifest reviews describe the repository before cleanup.
+
+The remaining Solana dependency path is `@dynamic-labs/ethereum → @dynamic-labs/waas-evm → @dynamic-labs/waas → @dynamic-labs/solana-core`. Removing first-party Solana code does not resolve the two Dynamic advisory exceptions above. No versions, expiry dates or browser exposure conditions were relaxed. The repository-scope gate prevents direct Solana dependencies or retired entry points from returning; the bundle gate also rejects retired first-party workspace modules.
+
+The [cleanup verification record](REPOSITORY_CLEANUP.md) supersedes the earlier test counts above: 99 frontend checks, 78 API/deployment checks, 153 contract-tool checks and 5,561 verified browser modules. The contract tooling TOML dependency was subsequently updated to 5.x on main; this cleanup retains that merged lockfile unchanged.

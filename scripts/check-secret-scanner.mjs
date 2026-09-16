@@ -14,6 +14,10 @@ const knownDevelopmentKey = readFileSync(resolve(root, 'contracts/Makefile'), 'u
   .match(/^LOCALHOST_ANVIL_PRIVATE_KEY.*?(0x[0-9a-fA-F]{64})/m)?.[1];
 assert.ok(knownDevelopmentKey, 'The public Anvil fixture must exist');
 
+const customPoolRelease = readFileSync(resolve(root, 'docs/CUSTOM_POOL_TERMS.md'), 'utf8')
+  .match(/^- Railway API: `([0-9a-f-]{36})`, successful\.$/m)?.[0];
+assert.ok(customPoolRelease, 'The public Railway release record must exist');
+
 const fixtures = [
   ['new signing key', 'config.js', `const PRIVATE_KEY = "0x${randomBytes(32).toString('hex')}";`, 1],
   ['unprefixed signing key', 'config.js', `const PRIVATE_KEY = "${randomBytes(32).toString('hex')}";`, 1],
@@ -47,6 +51,14 @@ const fixtures = [
     `const api_key = "${randomBytes(24).toString('base64url')}";`, 1],
   ['other UUID secret in scanner controls', 'scripts/check-secret-scanner.mjs',
     `const api_key = "${randomUUID()}";`, 1],
+  ['public custom-pool release identifier', 'docs/CUSTOM_POOL_TERMS.md', customPoolRelease, 0],
+  ['other UUID in custom-pool release', 'docs/CUSTOM_POOL_TERMS.md',
+    customPoolRelease.replace(/[0-9a-f-]{36}/, randomUUID()), 1],
+  ['release identifier outside approved path', 'docs/other-release.md', customPoolRelease, 1],
+  ['API key beside custom-pool release identifier', 'docs/CUSTOM_POOL_TERMS.md',
+    `${customPoolRelease}\nAPI_KEY = "${randomBytes(24).toString('base64url')}"`, 1],
+  ['signing key beside custom-pool release identifier', 'docs/CUSTOM_POOL_TERMS.md',
+    `${customPoolRelease}\nPRIVATE_KEY = "0x${randomBytes(32).toString('hex')}"`, 1],
   ['public code hash', 'config.js', `const codeHash = "0x${randomBytes(32).toString('hex')}";`, 0],
   ['public release identifiers', 'docs/evidence/expanded-release.json', JSON.stringify({
     apiCommit: randomBytes(20).toString('hex'), apiDeployment: randomUUID(),

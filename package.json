@@ -4,28 +4,20 @@
   "version": "0.1.0",
   "description": "YieldShield on Monad: protected crypto positions and first-loss liquidity for Metropolis.",
   "workspaces": [
-    "packages/*",
-    "apps/*"
+    "apps/monad-web"
   ],
   "engines": {
     "node": "24.x"
   },
   "scripts": {
     "build": "npm run build -w monad-web",
-    "build:packages": "npm run build -w @yieldshield/core && npm run build -w @yieldshield/sdk && npm run build -w @yieldshield/adapter-solana && npm run build -w @yieldshield/adapter-evm",
-    "build:sdk": "npm run build -w @yieldshield/core && npm run build -w @yieldshield/sdk",
-    "codegen": "npm run codegen -w @yieldshield/sdk",
-    "test:sdk": "npm run test -w @yieldshield/sdk",
     "test:web": "npm run test -w monad-web",
     "typecheck": "npm run typecheck -w monad-web",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "dev": "npm run dev -w monad-web",
-    "dev:robinhood": "npm run dev -w web -- --mode robinhood-testnet",
-    "build:robinhood": "npm run build:packages && npm run build -w web -- --mode robinhood-testnet",
     "start:api": "node services/monad/server.mjs",
-    "test:base": "node --test services/*.test.mjs scripts/deploy-base-sepolia.test.mjs scripts/base-receipts.test.mjs scripts/base-local-rehearsal.test.mjs scripts/sync-base-deployment.test.mjs scripts/sync-base-demo.test.mjs scripts/smoke-base-demo.test.mjs && vitest run packages/adapter-evm/test",
     "test:monad": "node --test services/monad/*.test.mjs scripts/monad-deployment.test.mjs scripts/monad-receipts.test.mjs",
     "sync:monad": "node scripts/sync-monad.mjs",
     "deploy:monad:prepare": "node scripts/deploy-monad.mjs --prepare",
@@ -33,13 +25,11 @@
     "deploy:reference": "node scripts/deploy-monad-redstone-reference.mjs --broadcast",
     "verify:monad": "node scripts/verify-monad.mjs",
     "smoke:monad": "node scripts/smoke-monad.mjs --broadcast",
-    "smoke:reference": "node scripts/smoke-monad.mjs --broadcast --reference"
+    "smoke:reference": "node scripts/smoke-monad.mjs --broadcast --reference",
+    "check:scope": "node --test scripts/check-monad-scope.test.mjs && node scripts/check-monad-scope.mjs"
   },
   "dependencies": {
     "@pythnetwork/pyth-sdk-solidity": "4.3.1",
-    "@solana-program/token": "^0.16.1",
-    "@solana-program/token-2022": "^0.7.0",
-    "@solana/kit": "^6.10.0",
     "viem": "^2.56.5",
     "@dynamic-labs/ethereum": "5.8.1",
     "@dynamic-labs/sdk-react-core": "5.8.1"

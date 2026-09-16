@@ -27,7 +27,7 @@ The pinned Git submodules in [.gitmodules](.gitmodules) retain their upstream li
 | `contracts/lib/forge-std` | [Foundry standard library](https://github.com/foundry-rs/forge-std) | `LICENSE-APACHE`, `LICENSE-MIT` |
 | `contracts/lib/solidity-bytes-utils` | [Solidity Bytes Utils](https://github.com/gnsps/solidity-bytes-utils) | `LICENSE` |
 
-JavaScript dependencies are recorded in the root, `services/monad/`, `services/` and `contracts/` lockfiles. Their packages retain their own licenses and notices; the root MIT license is not a license grant for those dependencies. Install the locked dependencies and initialize submodules to obtain their accompanying notices.
+JavaScript dependencies are recorded in the root, `services/monad/` and `contracts/` lockfiles. Their packages retain their own licenses and notices; the root MIT license is not a license grant for those dependencies. Install the locked dependencies and initialize submodules to obtain their accompanying notices.
 
 ## Self-hosted fonts
 
@@ -58,4 +58,4 @@ All eight token-list SVGs were verified byte-for-byte on 16 September 2026 again
 
 ## Historical stock images
 
-The imported `apps/web/` application retains its stock images for provenance; it is not the deployed Monad app. Apple, NVIDIA and Meta artwork comes from Simple Icons. Its [CC0 collection license](apps/web/src/assets/stocks/SIMPLE_ICONS_LICENSE.md), [trademark disclaimer](apps/web/src/assets/stocks/SIMPLE_ICONS_DISCLAIMER.md) and [per-image sources](apps/web/src/assets/stocks/README.md) remain alongside those files. The Alphabet image comes from its investor-relations site and is not covered by Simple Icons' license. The collection license does not grant rights to any company's trademarks.
+The unused `apps/web/` application and its stock images were removed from the current tree. Their original notices remain with the [historical application](https://github.com/YieldShield/yieldshield-monad/tree/49dfb045811cfa8546b36b053fde34d0d3bd6f8a/apps/web). Apple, NVIDIA and Meta artwork came from Simple Icons; its [CC0 collection license](https://github.com/YieldShield/yieldshield-monad/tree/49dfb045811cfa8546b36b053fde34d0d3bd6f8a/apps/web/src/assets/stocks/SIMPLE_ICONS_LICENSE.md), [trademark disclaimer](https://github.com/YieldShield/yieldshield-monad/tree/49dfb045811cfa8546b36b053fde34d0d3bd6f8a/apps/web/src/assets/stocks/SIMPLE_ICONS_DISCLAIMER.md) and [per-image sources](https://github.com/YieldShield/yieldshield-monad/tree/49dfb045811cfa8546b36b053fde34d0d3bd6f8a/apps/web/src/assets/stocks/README.md) remain available at that revision. The Alphabet image came from its investor-relations site and is not covered by Simple Icons' license. The collection license does not grant rights to any company's trademarks.

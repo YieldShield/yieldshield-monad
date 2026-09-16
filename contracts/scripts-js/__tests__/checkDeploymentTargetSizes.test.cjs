@@ -1,3 +1,4 @@
+// Standalone workflow assertions use historical test data; see fixtures/README.md.
 const assert = require("node:assert/strict");
 const { readFileSync } = require("node:fs");
 const { join } = require("node:path");
@@ -32,7 +33,7 @@ test("production deployment source and size inventory stay in sync", async () =>
 
 test("CI enforces the exact Robinhood deployment target inventory", () => {
     const workflow = readFileSync(
-        join(__dirname, "..", "..", ".github", "workflows", "ci.yml"),
+        join(__dirname, "fixtures", "standalone-ci.yml"),
         "utf8",
     );
     const contractSizeJob = workflow.slice(

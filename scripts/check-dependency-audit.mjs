@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const exceptionExpiry = "2026-10-16T00:00:00Z";
-export const auditedDirectories = [".", "services/monad", "services", "contracts"];
+export const auditedDirectories = [".", "services/monad", "contracts"];
 
 // These exceptions require the browser-bundle check below. They do not apply
 // to the API or to Node/SSR applications. See docs/DEPENDENCY_SECURITY.md.
@@ -86,6 +86,9 @@ export function checkBrowserModules(moduleIds) {
     throw new Error("Browser verification did not include the Dynamic wallet entry");
   }
   for (const id of ids) {
+    if (/\/(?:apps\/web|packages\/(?:sdk|adapter-solana|adapter-evm|core))\//.test(id)) {
+      throw new Error(`Retired application workspace entered the browser bundle: ${id}`);
+    }
     if (id.includes("/node_modules/stream-json/") ||
         (id.includes("/node_modules/bigint-buffer/") && !id.includes("/dist/browser.js")) ||
         /\/node_modules\/jayson\/lib\/(utils|server)([/.])/.test(id)) {
@@ -138,7 +141,7 @@ async function main() {
   if (!checkedBundle) throw new Error("Browser module verification did not run");
   const advisoryCount = Object.values(root.report.vulnerabilities)
     .flatMap((finding) => finding.via.filter((cause) => typeof cause !== "string")).length;
-  console.log(`Dependency check passed: ${accepted} root findings from ${advisoryCount} reviewed advisories; both APIs and contract tools clean.`);
+  console.log(`Dependency check passed: ${accepted} root findings from ${advisoryCount} reviewed advisories; Monad API and contract tools clean.`);
   console.log(`Verified ${modules.size} emitted browser modules: no stream-json or native bigint-buffer implementation.`);
   if (accepted) console.log(`Browser-only exceptions expire ${exceptionExpiry.slice(0, 10)}.`);
 }

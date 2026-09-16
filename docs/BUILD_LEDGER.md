@@ -107,3 +107,10 @@ Rebuilt the How it works video with current application captures, the site’s t
 ## 16 September video motion correction
 
 Replaced the drifting exit-path marker with sequential exit-choice cards. Removed crossfades between text-heavy screens so headings and values never overlap. Replaced calculator crops with legible animated value bars, timed the fee and provider calculations to the existing ElevenLabs narration, and made chapter progress cumulative. Reviewed intermediate animation frames and retained the original 2:08 duration. Earlier video links redirect to the revised cut.
+
+
+## 16 September Monad-only repository cleanup
+
+Removed unused Solana/Base/Robinhood app workspaces and operator infrastructure in separate commits. Preserved the shared Solidity modules, source paths, import ledger, deployment evidence, internal review findings and license provenance. The historical standalone workflow remains labelled contract-policy test data.
+
+The root dependency tree fell from 1,134 to 754 entries; all 87 browser JavaScript chunks remain identical. Frontend, API, contract, tooling and repository-scope checks passed. [The cleanup record](REPOSITORY_CLEANUP.md) documents measurements, retained Dynamic dependencies and unsigned browser verification limits. This is repository preparation, not a production or contract deployment.

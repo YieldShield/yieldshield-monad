@@ -72,3 +72,11 @@ test("verifies the complete Dynamic bundle and rejects native or server parser c
     assert.throws(() => checkBrowserModules([entry, `/repo/node_modules/${source}`]), /no longer valid/);
   }
 });
+
+test("rejects retired first-party workspaces in the browser bundle", () => {
+  const entry = "/repo/apps/monad-web/src/DynamicWallet.tsx";
+  for (const source of ["apps/web/src/App.tsx", "packages/sdk/src/index.ts",
+    "packages/adapter-solana/dist/index.js", "packages/adapter-evm/src/index.ts", "packages/core/src/index.ts"]) {
+    assert.throws(() => checkBrowserModules([entry, `/repo/${source}`]), /Retired application workspace/);
+  }
+});

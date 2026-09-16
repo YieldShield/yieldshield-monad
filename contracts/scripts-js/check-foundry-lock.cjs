@@ -1,79 +1,60 @@
 #!/usr/bin/env node
 
 const { execFileSync } = require("node:child_process");
-const { readFileSync } = require("node:fs");
-const { resolve } = require("node:path");
+const { readFileSync, realpathSync } = require("node:fs");
+const { relative, resolve } = require("node:path");
 
-const rootDir = resolve(__dirname, "..");
-
-function git(args) {
-    return execFileSync("git", args, {
-        cwd: rootDir,
-        encoding: "utf8",
-        stdio: ["ignore", "pipe", "pipe"],
-    }).trim();
-}
-
-function getSubmodulePaths() {
-    const output = git([
-        "config",
-        "--file",
-        ".gitmodules",
-        "--get-regexp",
-        "path",
-    ]);
-    if (!output) return [];
-
-    return output
+function checkFoundryLock(contractsRoot = resolve(__dirname, "..")) {
+    contractsRoot = realpathSync(contractsRoot);
+    const git = (args, cwd = contractsRoot) =>
+        execFileSync("git", args, {
+            cwd,
+            encoding: "utf8",
+            stdio: ["ignore", "pipe", "pipe"],
+        }).trim();
+    const repositoryRoot = git(["rev-parse", "--show-toplevel"]);
+    const prefix = relative(repositoryRoot, contractsRoot).replaceAll("\\", "/");
+    const pathPrefix = prefix ? `${prefix}/` : "";
+    const paths = git(
+        ["config", "--file", resolve(repositoryRoot, ".gitmodules"), "--get-regexp", "path"],
+        repositoryRoot,
+    )
         .split("\n")
-        .filter(Boolean)
         .map((line) => line.trim().split(/\s+/)[1])
-        .filter(Boolean);
+        .filter((path) => path?.startsWith(pathPrefix))
+        .map((path) => path.slice(pathPrefix.length));
+    if (!paths.length) throw new Error("No contract submodules found in .gitmodules");
+
+    const lock = JSON.parse(readFileSync(resolve(contractsRoot, "foundry.lock"), "utf8"));
+    const errors = [];
+    for (const path of paths) {
+        const lockedRev = lock[path]?.tag?.rev;
+        if (!/^[0-9a-f]{40}$/.test(lockedRev || "")) {
+            errors.push(`foundry.lock is missing a valid revision for ${path}`);
+            continue;
+        }
+        // Use the index so locally staged dependency changes are checked too.
+        const entry = git(["ls-files", "--stage", "--", `${pathPrefix}${path}`], repositoryRoot);
+        const match = entry.match(/^160000 ([0-9a-f]{40}) 0\t[^\n]+$/);
+        if (!match) {
+            errors.push(`${path} is not an unambiguous git submodule in the index`);
+        } else if (lockedRev !== match[1]) {
+            errors.push(`${path} revision mismatch\n  foundry.lock: ${lockedRev}\n  submodule:    ${match[1]}`);
+        }
+    }
+    for (const path of Object.keys(lock)) {
+        if (!paths.includes(path)) errors.push(`foundry.lock contains ${path}, but .gitmodules does not`);
+    }
+    if (errors.length) throw new Error(errors.join("\n"));
+    return paths.length;
 }
 
-function getGitlinkRevision(submodulePath) {
-    const output = git(["ls-tree", "HEAD", submodulePath]);
-    const match = output.match(/^160000 commit ([0-9a-f]{40})\t(.+)$/);
-    if (!match) {
-        throw new Error(`${submodulePath} is not a git submodule in HEAD`);
-    }
-    return match[1];
-}
-
-const lock = JSON.parse(readFileSync(resolve(rootDir, "foundry.lock"), "utf8"));
-const submodulePaths = getSubmodulePaths();
-let hasError = false;
-
-for (const submodulePath of submodulePaths) {
-    const lockedRev = lock[submodulePath]?.tag?.rev;
-    if (!lockedRev) {
-        console.error(`foundry.lock is missing ${submodulePath}`);
-        hasError = true;
-        continue;
-    }
-
-    const gitlinkRev = getGitlinkRevision(submodulePath);
-    if (lockedRev !== gitlinkRev) {
-        console.error(`${submodulePath} revision mismatch`);
-        console.error(`  foundry.lock: ${lockedRev}`);
-        console.error(`  submodule:    ${gitlinkRev}`);
-        hasError = true;
-    }
-}
-
-for (const lockPath of Object.keys(lock)) {
-    if (!submodulePaths.includes(lockPath)) {
-        console.error(
-            `foundry.lock contains ${lockPath}, but .gitmodules does not`,
-        );
-        hasError = true;
+module.exports = { checkFoundryLock };
+if (require.main === module) {
+    try {
+        console.log(`foundry.lock matches ${checkFoundryLock()} submodule revision(s).`);
+    } catch (error) {
+        console.error(error.message);
+        process.exitCode = 1;
     }
 }
-
-if (hasError) {
-    process.exit(1);
-}
-
-console.log(
-    `foundry.lock matches ${submodulePaths.length} submodule revision(s).`,
-);

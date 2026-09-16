@@ -15,11 +15,6 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
-  - package-ecosystem: npm
-    directory: /services
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 5
   - package-ecosystem: github-actions
     directory: /
     schedule:
@@ -28,3 +23,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    # Deployed bytecode is tied to foundry.lock. Upgrade these libraries only
+    # with a reviewed lockfile, source verification, and deployment plan.
+    ignore:
+      - dependency-name: contracts/lib/openzeppelin-contracts
+      - dependency-name: contracts/lib/openzeppelin-contracts-upgradeable

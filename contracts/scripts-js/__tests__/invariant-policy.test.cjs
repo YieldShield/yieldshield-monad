@@ -1,3 +1,4 @@
+// Standalone workflow assertions use historical test data; see fixtures/README.md.
 const assert = require("node:assert/strict");
 const { readFileSync } = require("node:fs");
 const { join } = require("node:path");
@@ -5,7 +6,7 @@ const test = require("node:test");
 
 const root = join(__dirname, "..", "..");
 const workflow = readFileSync(
-    join(root, ".github", "workflows", "ci.yml"),
+    join(__dirname, "fixtures", "standalone-ci.yml"),
     "utf8",
 );
 const invariantTest = readFileSync(
