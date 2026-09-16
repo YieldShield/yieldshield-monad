@@ -15,6 +15,8 @@ The last main-branch snapshot before this cleanup is [`49dfb04`](https://github.
 | Previous-chain deployment scripts | [scripts](https://github.com/YieldShield/yieldshield-monad/tree/49dfb045811cfa8546b36b053fde34d0d3bd6f8a/scripts) |
 | Standalone contract workflows | [contracts/.github](https://github.com/YieldShield/yieldshield-monad/tree/49dfb045811cfa8546b36b053fde34d0d3bd6f8a/contracts/.github) |
 
+The standalone CI workflow also remains as [labelled contract-policy test data](../../contracts/scripts-js/__tests__/fixtures/README.md); it is not an active workflow.
+
 The three Base module generation/verification scripts remain in the current tree because Monad uses their output. The shared Solidity contracts, tests, library pins and deployment manifests are retained at their existing paths.
 
 ## Retained historical documents
