@@ -60,6 +60,8 @@ Evidence is written to `docs/evidence/*-journey.json` only on successful complet
 
 Run the tests in README, then verify/sync the chain registry and commit that stage. GitHub Actions checks the app, API, receipt tooling and contract suites. Railway is connected to the repository's `main` branch and rebuilds the API for its configured watched paths.
 
+Vercel is also connected to `YieldShield/yieldshield-monad`, with `main` as its verified production branch and the repository root as its build root. This remote Git connection was added on 16 September after the final review found that previous releases relied on manual deployments. A local `vercel link` alone does not configure automatic Git deployments. The commands below remain available for a deliberate manual release; verify the existing project identity first.
+
 Verify the effective Railway service settings as well as `railway.json`. On 16 September, the live service had no health check despite the checked-in configuration. The production service now explicitly uses `/health`, a 60-second health-check timeout, and `ON_FAILURE` restarts with at most three retries. Confirm those values in the next deployment's metadata. Always select the Monad project, service and environment above explicitly; another local checkout can be linked to an unrelated project. Railway's legacy config-as-code is deprecated, so the file alone is not evidence that its settings are applied.
 
 ```sh
