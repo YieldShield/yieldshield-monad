@@ -23,7 +23,7 @@ The chain rollout is complete: **39 named contracts and five funded pools**, wit
 | sMON-demo → TestUSDC  | Isolated synthetic price cycle                                   | Deployed and funded         |
 | sMON-demo → vTestUSDC | Same isolated scenario with share-denominated backing            | Deployed and funded         |
 
-TestUSDC is issued for this demonstration; it is **not Circle USDC**. The YieldShield WMON wrapper is a deployment-specific test wrapper, not a claim to be Monad's canonical WMON. sMON-demo is unrelated to Kintsu sMON. Scenario exchange prices are not live exchange quotes. shMON redemption NAV is not an executable sell price; unstaking has its own completion epoch.
+TestUSDC is issued for this demonstration; it is **not Circle USDC**. The YieldShield WMON wrapper is a deployment-specific test wrapper, not a claim to be Monad's canonical WMON. sMON-demo is unrelated to Kintsu sMON. Scenario prices follow synthetic formulas. shMON redemption NAV is not an executable sell price; unstaking has its own completion epoch.
 
 Fees are 10% junior + 1% creator + 1% protocol **of realized positive gains**, paid in the protected asset. There is no recurring protection premium, fixed expiry or promised junior APY. A backing exit surrenders the entire remaining position; it is capped in native backing units. Previously paid gain-sharing fees are not refunded by a later loss. Test pools use 150% collateral, a 60-second protected-exit delay and a 120-second junior notice; notice maturity does not release reserved backing.
 

@@ -6,19 +6,11 @@ export const PRICE_KINDS = new Set([
   "test-vault-nav",
   "synthetic-unit",
 ]);
-export function integer(value, label = "amount") {
-  if (typeof value !== "string" || !/^\d{1,70}$/.test(value) || BigInt(value) <= 0n)
-    throw new Error(`Invalid ${label}`);
-  return BigInt(value);
-}
 export function address(value) {
   if (typeof value !== "string" || !/^0x[0-9a-fA-F]{40}$/.test(value)) throw new Error("Invalid wallet address");
   return value;
 }
 export const stringify = (value) => JSON.stringify(value, (_, v) => (typeof v === "bigint" ? v.toString() : v));
-export function quoteDeadline(now) {
-  return Math.floor(now / 1000) + 60;
-}
 export function validateRegistry(r) {
   if (r.chainId !== CHAIN_ID || !Array.isArray(r.assets) || !Array.isArray(r.pools))
     throw new Error("Wrong deployment registry");

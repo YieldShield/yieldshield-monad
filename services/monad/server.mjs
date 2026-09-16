@@ -6,7 +6,7 @@ import { createServer } from "node:http";
 import { readFileSync } from "node:fs";
 import { createPublicClient, http, parseAbi, keccak256 } from "viem";
 import { monadTestnet } from "viem/chains";
-import { address, integer, stringify, validateRegistry } from "./domain.mjs";
+import { address, stringify, validateRegistry } from "./domain.mjs";
 const config = JSON.parse(readFileSync(new URL("../../config/monad.json", import.meta.url)));
 const registry = validateRegistry(JSON.parse(readFileSync(new URL("../../config/deployment.json", import.meta.url))));
 const abis = JSON.parse(readFileSync(new URL("../../config/abis.json", import.meta.url)));
@@ -195,7 +195,6 @@ async function snapshot() {
               provide: ready,
               withdrawAsset: Object.values(code).every(Boolean) && shield.healthy && !paused,
               withdrawBacking: ready,
-              trade: p.environment === "scenario" && shield.healthy,
             },
           };
         } catch (error) {
@@ -209,7 +208,7 @@ async function snapshot() {
             backing,
             ready: false,
             reason: "Pool state unavailable. Please refresh.",
-            actions: { protect: false, provide: false, withdrawAsset: false, withdrawBacking: false, trade: false },
+            actions: { protect: false, provide: false, withdrawAsset: false, withdrawBacking: false },
           };
         }
       }),
@@ -369,30 +368,7 @@ export const server = createServer(async (req, res) => {
     if (["/api/status", "/api/markets", "/api/protection-status"].includes(url.pathname)) data = await snapshot();
     else if (url.pathname === "/api/positions") data = await positions(address(url.searchParams.get("owner")));
     else if (url.pathname === "/api/pyth-update") data = await pythUpdate();
-    else if (url.pathname === "/api/quote") {
-      const id = url.searchParams.get("market");
-      const market = (await snapshot()).markets.find((p) => p.id === id);
-      if (!market || market.environment !== "scenario") throw new Error("Only scenario exchange quotes are enabled");
-      const amount = integer(url.searchParams.get("amount"));
-      const buy = url.searchParams.get("side") === "buy";
-      if (!["buy", "sell"].includes(url.searchParams.get("side"))) throw new Error("Invalid side");
-      const [total, fee, price] = await get(c("ScenarioExchange"), "MonadAssetExchange", "quote", [
-        market.shieldedToken,
-        buy,
-        amount,
-      ]);
-      data = {
-        chainId: 10143,
-        market: id,
-        amount,
-        total,
-        fee,
-        price,
-        buy,
-        exchange: c("ScenarioExchange"),
-        expiresAt: Date.now() + 20000,
-      };
-    } else if (url.pathname === "/api/registry") data = registry;
+    else if (url.pathname === "/api/registry") data = registry;
     else {
       res.writeHead(404);
       data = { error: "Not found" };
