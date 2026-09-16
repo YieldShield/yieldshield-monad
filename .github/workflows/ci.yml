@@ -20,10 +20,19 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+      - name: Check pinned contract dependencies
+        run: |
+          node --test contracts/scripts-js/__tests__/foundry-lock.test.cjs
+          node contracts/scripts-js/check-foundry-lock.cjs
       - run: npm ci --ignore-scripts
       - run: npm run test:monad
       - run: npm run test:web
       - run: npm run build
+      - name: Contract deployment tool regressions
+        run: |
+          if [ -L contracts/node_modules ]; then unlink contracts/node_modules; fi
+          npm ci --prefix contracts --ignore-scripts
+          npm run test:scripts --prefix contracts
       - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09
         with:
           version: v1.8.1
