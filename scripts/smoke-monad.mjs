@@ -19,20 +19,47 @@ import {
 import { fetchPythUpdate } from "../services/monad/pyth.mjs";
 assert(process.argv.includes("--broadcast"), "Use --broadcast only after deployment verification");
 assert(
-  process.argv.slice(2).every((a) => ["--broadcast", "--reference"].includes(a)),
+  process.argv.slice(2).every((a) => ["--broadcast", "--reference", "--expanded"].includes(a)),
   "Unknown option",
 );
 const env = loadEnv(),
   dep = JSON.parse(readFileSync(resolve(ROOT, "contracts/deployments/monad-testnet.json"))),
   config = JSON.parse(readFileSync(resolve(ROOT, "config/monad.json")));
 assert(["scenario-complete", "complete"].includes(dep.status), "Finish scenario deployment first");
-const reference = process.argv.includes("--reference");
+const expanded = process.argv.includes("--expanded");
+assert(!(expanded && process.argv.includes("--reference")), "Choose one journey journal");
+const reference = expanded || process.argv.includes("--reference");
+const journeyName = expanded ? "expanded" : reference ? "reference" : "scenario";
 if (reference) {
   assert.equal(dep.referenceStatus, "active");
   if (dep.referenceOracle !== "redstone") assert(env.PYTH_API_KEY, "Authenticated Pyth access is required");
 }
 const proof = JSON.parse(readFileSync(resolve(ROOT, "docs/evidence/deployment-verification.json")));
 assert(proof.scenarioReady && (!reference || proof.referenceReady), "Run deployment verification first");
+const markets = dep.pools.filter((p) =>
+  expanded
+    ? p.factoryVersion === "expanded-v2"
+    : p.environment === (reference ? "reference" : "scenario") && !p.factoryVersion?.startsWith("expanded"),
+);
+if (expanded) {
+  assert.equal(markets.length, 2, "Complete both expanded pools first");
+  assert(proof.allDeclaredContractsVerified, "Verify the completed deployment first");
+  for (const p of markets)
+    assert(
+      proof.pools.some((v) => v.address === p.address && v.configurationVerified),
+      "Unverified expanded pool",
+    );
+  for (const name of ["ExpandedFactory", "ExpandedPoolRouter", "ExpandedAssetRegistry"])
+    assert(
+      proof.contracts.some(
+        (c) =>
+          c.name === name &&
+          c.address === dep.contracts[name].address &&
+          c.runtimeCodehash === dep.contracts[name].runtimeCodehash,
+      ),
+      "Unverified expansion contract",
+    );
+}
 const account = privateKeyToAccount(env.MONAD_DEPLOYER_PRIVATE_KEY);
 assert.equal(account.address, dep.deployer);
 const client = createPublicClient({
@@ -41,7 +68,7 @@ const client = createPublicClient({
   pollingInterval: 1000,
 });
 assert.equal(await client.getChainId(), 10143);
-const path = resolve(ROOT, `contracts/deployments/monad-smoke-${reference ? "reference" : "scenario"}.json`);
+const path = resolve(ROOT, `contracts/deployments/monad-smoke-${journeyName}.json`);
 const identity = createHash("sha256")
   .update(JSON.stringify({ contracts: dep.contracts, pools: dep.pools }))
   .digest("hex");
@@ -261,7 +288,15 @@ async function marketJourney(p) {
   await gained(`${id}:junior-exit`, withdrawal, p.backingToken);
 }
 try {
-  if (reference) {
+  if (expanded) {
+    // Use the actual balances acquired during the prior wrap/stake journeys.
+    // Keep those historical journals and transaction intents untouched.
+    for (const p of markets) {
+      if (Object.keys(journal.transactions).some((id) => id.startsWith(`${p.id}:`))) continue;
+      assert((await balance(p.shieldedToken)) >= parseEther("0.02"), "Fund the protected-token journey first");
+      assert((await balance(p.backingToken)) >= 1000n * 10n ** 6n, "Fund the backing-token journey first");
+    }
+  } else if (reference) {
     const wrapped = await step("native:wrap", () => ({
       address: c("WMON"),
       name: "MonadWrappedNative",
@@ -306,12 +341,11 @@ try {
     ]);
     await gained("vault:redeem", redeemed, c("TestUSDC"), 10n * 10n ** 6n);
   }
-  for (const p of dep.pools.filter((p) => p.environment === (reference ? "reference" : "scenario")))
-    await marketJourney(p);
+  for (const p of markets) await marketJourney(p);
   journal.status = "complete";
   journal.completedAt = new Date().toISOString();
   run.save();
-  atomicJson(resolve(ROOT, `docs/evidence/${reference ? "reference" : "scenario"}-journey.json`), {
+  atomicJson(resolve(ROOT, `docs/evidence/${journeyName}-journey.json`), {
     chainId: 10143,
     account: account.address,
     completedAt: journal.completedAt,
