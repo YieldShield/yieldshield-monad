@@ -12,20 +12,22 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import useSWR from "swr";
-import { parseAbi, formatUnits, type Abi, type Address } from "viem";
+import { parseEventLogs, parseAbi, formatUnits, type Abi, type Address } from "viem";
 import config from "../../../config/monad.json";
 import registryJson from "../../../config/deployment.json";
 import abisJson from "../../../config/browser-abis.json";
 import { WalletProvider, useWallet, useBalance, useNativeBalance, client } from "./wallet";
 import { FundingNotice, FundingGate, AssetFundingHint, monadFaucet, type FundingAsset } from "./Funding";
 import { amount, minOut, netAsset, noticeState, fmt, usd, short, fetcher, explorer, errorMessage } from "./lib";
-import type { Asset, Market, Position, Snapshot, Registry } from "./types";
+import type { Asset, Market, Position, Snapshot, Registry, CreationOption } from "./types";
 import { selectMarket } from "./market-selection";
 import "./styles.css";
 import "./app-layout.css";
 import "./asset-images.css";
 import { TokenIcon, AssetPair } from "./AssetImage";
 import { assetVisual } from "./asset-visuals";
+import { AssetSelect } from "./AssetSelect";
+import { creationVersion, creationFingerprint, assertCreationIdentity } from "./creation";
 import { MarketSelect } from "./MarketSelect";
 import { Landing } from "./Landing";
 import { HowItWorks } from "./HowItWorks";
@@ -1528,104 +1530,183 @@ function Status() {
   );
 }
 function CreatePool() {
-  const { data, error } = useSnapshot();
+  const { data, error, mutate } = useSnapshot();
   const w = useWallet();
-  const [backing, setBacking] = useState("test-usd");
-  const [created, setCreated] = useState(false);
-  const token = data?.assets.find((a) => a.id === "scenario-mon");
-  const usdAsset = data?.assets.find((a) => a.id === backing);
-  const bondBalance = useBalance(usdAsset?.address);
-  const bond = usdAsset ? 1000n * 10n ** BigInt(usdAsset.decimals) : 0n;
-  const fundingAsset = usdAsset
-    ? { symbol: usdAsset.symbol, balance: bondBalance.error ? undefined : bondBalance.data }
+  const [params, setParams] = useSearchParams();
+  const protectedId = params.get("asset") || "wmon",
+    backingId = params.get("backing") || "test-usd";
+  const [created, setCreated] = useState<string>();
+  const versions = data?.creation || [];
+  const protectedAssets = data?.assets.filter((a) => versions.some((v) => v.protectedAssets.includes(a.id))) || [];
+  const backingAssets =
+    data?.assets.filter((a) =>
+      versions.some((v) => v.protectedAssets.includes(protectedId) && v.backingAssets.includes(a.id)),
+    ) || [];
+  const token = protectedAssets.find((a) => a.id === protectedId),
+    backing = backingAssets.find((a) => a.id === backingId);
+  const version = creationVersion(versions, protectedId, backingId),
+    quote = version?.backing.find((b) => b.id === backingId);
+  const balance = useBalance(backing?.address),
+    bond = BigInt(quote?.bond || "0");
+  const fundingAsset = backing
+    ? { symbol: backing.symbol, balance: balance.error ? undefined : balance.data }
     : undefined;
-  const insufficientBond = fundingAsset?.balance != null && fundingAsset.balance < bond;
+  const insufficient = !!w.account && (fundingAsset?.balance == null || fundingAsset.balance < bond);
+  const unavailable =
+    !token || !backing
+      ? "Choose a supported asset and backing token."
+      : !version?.available
+        ? version?.reason || "Creation settings unavailable."
+        : !quote?.available
+          ? quote?.reason
+          : !token.healthy
+            ? "Asset price unavailable."
+            : null;
+  const select = (key: string, value: string) => {
+    const next = new URLSearchParams(params);
+    next.set(key, value);
+    setParams(next, { replace: true });
+    setCreated(undefined);
+  };
+  async function checkReview(review: string, chosen: CreationOption) {
+    const fresh = await fetcher("/api/creation");
+    if (fresh.chainId !== 10143 || Date.now() - fresh.observedAt > 30000 || fresh.observedAt > Date.now())
+      throw new Error("Refresh the creation review.");
+    const next = (fresh.creation as CreationOption[]).find((v) => v.id === chosen.id);
+    if (!next || creationFingerprint(next, protectedId, backingId) !== review) {
+      await mutate();
+      throw new Error("Creation terms changed. Review the updated bond and try again.");
+    }
+    assertCreationIdentity(next, registry, protectedId, backingId);
+  }
   return (
     <Shell>
-      <PageTitle title="Create a pool" copy="Use the verified scenario assets and fixed demonstration settings." />
+      <PageTitle title="Create a pool" copy="Choose an asset and its backing." />
       {!data ? (
         <Loading error={error} />
       ) : (
         <div className="task-layout">
           <section className="action-panel">
-            <h2>New scenario pool</h2>
-            <label className="field">
-              Protected asset
-              <input readOnly value="sMON-demo · synthetic scenario MON" />
-            </label>
-            <label className="field">
-              Backing token
-              <select value={backing} onChange={(e) => setBacking(e.target.value)}>
-                <option value="test-usd">TestUSDC</option>
-                <option value="test-usd-vault">vTestUSDC · test vault shares</option>
-              </select>
-            </label>
-            <dl className="review-list">
-              <div>
-                <dt>Collateral requirement</dt>
-                <dd>150%</dd>
-              </div>
-              <div>
-                <dt>Gain sharing</dt>
-                <dd>10% junior + 1% creator + 1% protocol</dd>
-              </div>
-              <div>
-                <dt>Creation bond</dt>
-                <dd>1,000 {usdAsset?.symbol}</dd>
-              </div>
-            </dl>
+            <AssetSelect
+              label="Protected asset"
+              assets={protectedAssets}
+              value={protectedId}
+              onChange={(v) => select("asset", v)}
+              disabled={w.busy}
+            />
+            <AssetSelect
+              label="Backing token"
+              assets={backingAssets}
+              value={backingId}
+              onChange={(v) => select("backing", v)}
+              disabled={w.busy}
+            />
+            {version && (
+              <dl className="review-list">
+                <div>
+                  <dt>Collateral</dt>
+                  <dd>{Number(version.collateralBps) / 100}%</dd>
+                </div>
+                <div>
+                  <dt>Gains shared</dt>
+                  <dd>
+                    {Number(version.juniorFeeBps) / 100}% provider · {Number(version.creatorFeeBps) / 100}% creator ·{" "}
+                    {Number(version.protocolFeeBps) / 100}% protocol
+                  </dd>
+                </div>
+                <div>
+                  <dt>Creation bond</dt>
+                  <dd>
+                    {quote?.bond && backing
+                      ? `${formatUnits(bond, backing.decimals)} ${backing.symbol}`
+                      : "Unavailable"}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Earliest protected exit</dt>
+                  <dd>{version.minimumPoolTime / 60} minute</dd>
+                </div>
+                <div>
+                  <dt>Backing withdrawal notice</dt>
+                  <dd>{version.unlockDuration / 60} minutes</dd>
+                </div>
+              </dl>
+            )}
             <p className="field-hint">
-              Balance: {fmt(fundingAsset?.balance, usdAsset?.decimals)} {usdAsset?.symbol}
+              Balance: {fmt(fundingAsset?.balance, backing?.decimals)} {backing?.symbol}
             </p>
             <AssetFundingHint asset={fundingAsset} />
-            {insufficientBond && (
+            {unavailable && (
               <p className="inline-warning" role="status">
-                The creation bond needs 1,000 {usdAsset?.symbol}.
+                {unavailable}
+              </p>
+            )}
+            {insufficient && fundingAsset?.balance !== undefined && fundingAsset.balance > 0n && (
+              <p className="field-hint">
+                More {backing?.symbol} is needed for the bond. <Link to="/faucet">Get tokens ↗</Link>
               </p>
             )}
             <Submit
               label="Approve bond & create pool"
               asset={fundingAsset}
-              disabled={!token || !usdAsset || !contract("Factory") || insufficientBond}
+              disabled={!!unavailable || insufficient || bond <= 0n}
               onClick={() =>
-                w.execute("Create scenario pool", async () => {
-                  await w.approve(usdAsset!.address, contract("Factory"), bond);
-                  await w.send({
-                    address: contract("Factory"),
+                w.execute("Create pool", async () => {
+                  if (!version || !token || !backing || unavailable) throw new Error("Choose an available pair.");
+                  assertCreationIdentity(version, registry, protectedId, backingId);
+                  for (const selected of [token, backing]) {
+                    const pinned = registry.assets.find((a) => a.id === selected.id);
+                    if (
+                      !pinned ||
+                      pinned.address.toLowerCase() !== selected.address.toLowerCase() ||
+                      pinned.decimals !== selected.decimals ||
+                      pinned.symbol !== selected.symbol
+                    )
+                      throw new Error("Asset identity changed. Reload the app.");
+                  }
+                  const review = creationFingerprint(version, protectedId, backingId);
+                  await checkReview(review, version);
+                  await w.approve(backing.address, version.factory, bond);
+                  await checkReview(review, version);
+                  const receipt = await w.send({
+                    address: version.factory,
                     abi: abi("SplitRiskPoolFactory"),
                     functionName: "createPool",
                     args: [
-                      token!.address,
-                      token!.symbol,
-                      usdAsset!.address,
-                      usdAsset!.symbol,
-                      1000n,
-                      100n,
-                      15000n,
+                      token.address,
+                      token.symbol,
+                      backing.address,
+                      backing.symbol,
+                      BigInt(version.juniorFeeBps),
+                      BigInt(version.creatorFeeBps),
+                      BigInt(version.collateralBps),
                       bond,
                     ],
                   });
-                  setCreated(true);
+                  const logs = parseEventLogs({
+                    abi: parseAbi([
+                      "event PoolCreated(address indexed poolAddress,address indexed shieldedToken,address indexed backingToken,uint256 commissionRate,uint256 poolFee,uint256 collateralRatio,address creator)",
+                    ]),
+                    logs: receipt.logs,
+                    eventName: "PoolCreated",
+                    strict: true,
+                  }).filter((e) => e.address.toLowerCase() === version.factory.toLowerCase());
+                  if (logs.length !== 1)
+                    throw new Error("Pool confirmed. Open the transaction receipt to find its address.");
+                  setCreated(logs[0].args.poolAddress.toLowerCase());
                 })
               }
             />
             {created && (
               <p className="notice">
-                Pool created. The verified market list will refresh shortly. Provide backing before holders can open
-                protection.
+                Pool created. <Link to={`/provide?market=${created}`}>Provide backing ↗</Link>
               </p>
             )}
           </section>
-          <TaskAside title="Fund the pool." asset={token} backing={usdAsset}>
-            <p>
-              The creation bond is locked by the factory. Recovery depends on its closure rules; creating a pool is not
-              a way to withdraw the bond immediately.
-            </p>
-            <p>
-              New pools require junior liquidity before they can protect assets. Fee settings and asset identities are
-              part of the on-chain record.
-            </p>
-            <Link to="/markets">View markets ↗</Link>
+          <TaskAside title="Back it to begin." asset={token} backing={backing}>
+            <p>The bond stays locked until the factory’s closure rules allow recovery.</p>
+            <p>Provide backing before holders can open protection.</p>
+            <Link to="/markets">View pools ↗</Link>
           </TaskAside>
         </div>
       )}
