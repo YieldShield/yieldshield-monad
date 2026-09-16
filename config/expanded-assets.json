@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "chainId": 10143,
+  "checkedAt": "2026-09-16T06:15:25.631Z",
+  "assets": [
+    {
+      "id": "agora-ausd",
+      "address": "0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC",
+      "symbol": "AUSD",
+      "name": "Agora testnet dollar",
+      "decimals": 6,
+      "runtimeCodehash": "0xa3bda7298d1c5f8585852ee04439f9cc493e5c291c9cac74fa54a0bc67024a7b",
+      "source": "https://docs.agora.finance/developer/contract-deployments",
+      "implementation": {
+        "slot": "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc",
+        "address": "0xc1e3c7d486d6a92fbe920232e439eec2ceb112da",
+        "runtimeCodehash": "0x2e612fde7bb56c8b5c52e68eb50ded8302e686c5dd42b84f71a9f9d52bc99a90"
+      }
+    },
+    {
+      "id": "canonical-wmon",
+      "address": "0xFb8bf4c1CC7a94c73D209a149eA2AbEa852BC541",
+      "symbol": "WMON",
+      "name": "Monad wrapped MON",
+      "decimals": 18,
+      "runtimeCodehash": "0xa32df4f1226f1bb0d6ce9b917752ed687857899a35ebf902c9992edb73b138b6",
+      "source": "https://raw.githubusercontent.com/monad-crypto/token-list/refs/heads/main/tokenlist-testnet.json"
+    }
+  ],
+  "faucet": {
+    "address": "0xd236c18D274E54FAccC3dd9DDA4b27965a73ee6C",
+    "runtimeCodehash": "0x7ea12d4d718fd07f2a0076772648286b771d074b1edbda6582104eb9d7f574a3",
+    "implementation": {
+      "slot": "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc",
+      "address": "0xba804df5c476e8eaef87bf8085f295300cce2a49",
+      "runtimeCodehash": "0xcc69415ffc883836b3647442f7851cc90152b07eab6e2fa450beb2f8338aad49"
+    }
+  }
+}
