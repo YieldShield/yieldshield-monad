@@ -328,3 +328,45 @@
     padding: 24px;
   }
 }
+
+.asset-selector {
+  position: relative;
+}
+.asset-selector .market-select-value small {
+  display: block;
+  color: var(--muted, #697277);
+  font-size: 0.75rem;
+  font-weight: 400;
+  margin-top: 0.15rem;
+}
+.asset-dropdown {
+  position: absolute;
+  z-index: 30;
+  top: 100%;
+  left: 0;
+  right: 0;
+  padding: 0.65rem;
+  border: 1px solid #dedde5;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 16px 40px #211b3320;
+}
+.asset-dropdown input {
+  width: 100%;
+}
+.asset-options {
+  max-height: min(340px, 45dvh);
+  overflow-y: auto;
+  margin-top: 0.5rem;
+}
+.asset-options .market-choice {
+  cursor: pointer;
+  border-radius: 8px;
+}
+.asset-options .active {
+  background: #f1edff;
+}
+.asset-dropdown p {
+  padding: 0.5rem;
+  font-size: 0.875rem;
+}
