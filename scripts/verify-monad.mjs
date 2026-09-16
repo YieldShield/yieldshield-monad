@@ -162,7 +162,9 @@ for (const p of m.pools) {
       code = await client.getCode({ address });
     assert(code && code !== "0x");
     assertRuntimeMatches(
-      buildArtifact(p.factoryVersion?.startsWith("expanded") ? "Expanded" + name : name, { artifact: name }),
+      // Every factory reuses the original, runtime-verified PoolCreationLib.
+      // Its embedded NFT bytecode therefore uses the historical build too.
+      buildArtifact(name, { artifact: name }),
       code,
       address,
       links,
