@@ -9,7 +9,15 @@ import { createPublicClient, http, keccak256 } from "viem";
 import { monadTestnet } from "viem/chains";
 import { ROOT, artifact, assertRuntimeMatches, readCanonicalReceipt, atomicJson } from "./monad-deployment-lib.mjs";
 const network = JSON.parse(readFileSync(resolve(ROOT, "config/monad.json")));
-const m = JSON.parse(readFileSync(resolve(ROOT, "contracts/deployments/monad-testnet.json")));
+const expansionOnly = process.argv.includes("--expansion");
+const m = JSON.parse(
+  readFileSync(
+    resolve(
+      ROOT,
+      expansionOnly ? "contracts/deployments/monad-expansion-v2.json" : "contracts/deployments/monad-testnet.json",
+    ),
+  ),
+);
 const client = createPublicClient({
   chain: monadTestnet,
   transport: retryRateLimitedReads(
@@ -23,9 +31,27 @@ const client = createPublicClient({
 });
 assert.equal(await client.getChainId(), 10143);
 assert.equal(m.chainId, 10143);
+// Historical Solidity metadata includes the original checkout's remapping paths.
+// Use those exact saved build artifacts when rechecking older deployments.
+const legacyArtifacts = process.argv
+  .find((a) => a.startsWith("--legacy-artifacts="))
+  ?.split("=")
+  .slice(1)
+  .join("=");
+const buildArtifact = (name, record) => {
+  if (!legacyArtifacts || name.startsWith("Expanded")) return artifact(record.artifact);
+  const a = JSON.parse(readFileSync(resolve(legacyArtifacts, `${record.artifact}.sol/${record.artifact}.json`)));
+  for (const [source, metadata] of Object.entries(a.metadata.sources))
+    assert.equal(
+      keccak256(readFileSync(resolve(ROOT, "contracts", source))),
+      metadata.keccak256,
+      `Historical source changed: ${source}`,
+    );
+  return a;
+};
 const links = {};
-for (const record of Object.values(m.contracts)) {
-  const a = artifact(record.artifact);
+for (const [name, record] of Object.entries(m.contracts)) {
+  const a = buildArtifact(name, record);
   for (const [file, libs] of Object.entries(a.bytecode.linkReferences || {}))
     for (const name of Object.keys(libs)) {
       assert(m.contracts[name], `Missing library ${name}`);
@@ -37,7 +63,7 @@ for (const [name, record] of Object.entries(m.contracts)) {
   const code = await client.getCode({ address: record.address });
   assert(code && code !== "0x");
   assert.equal(keccak256(code), record.runtimeCodehash, `Changed runtime: ${name}`);
-  assertRuntimeMatches(artifact(record.artifact), code, record.address, links);
+  assertRuntimeMatches(buildArtifact(name, record), code, record.address, links);
   const receipt = await readCanonicalReceipt(client, record.txHash, name);
   assert.equal(receipt.contractAddress?.toLowerCase(), record.address.toLowerCase());
   results.push({
@@ -79,6 +105,22 @@ if (m.referenceOracle === "redstone") {
     maxAgeSeconds: 120,
   };
 }
+if (expansionOnly || m.expandedFactories?.length) {
+  const factory = m.contracts.ExpandedFactory.address;
+  assert.equal(await read(factory, "SplitRiskPoolFactory", "bootstrapModeEnabled"), false);
+  assert.equal(
+    (await read(factory, "SplitRiskPoolFactory", "owner")).toLowerCase(),
+    m.contracts.Timelock.address.toLowerCase(),
+  );
+  assert.equal(
+    (await read(factory, "SplitRiskPoolFactory", "governanceTimelock")).toLowerCase(),
+    m.contracts.Timelock.address.toLowerCase(),
+  );
+  assert.equal(
+    (await read(factory, "SplitRiskPoolFactory", "splitRiskPoolImplementation")).toLowerCase(),
+    m.contracts.ExpandedPoolRouter.address.toLowerCase(),
+  );
+}
 const pools = [];
 for (const p of m.pools) {
   const version = factoryVersions(m).find(
@@ -92,7 +134,7 @@ for (const p of m.pools) {
   assert.equal((await read(p.address, "SplitRiskPool", "BACKING_TOKEN")).toLowerCase(), p.backingToken.toLowerCase());
   for (const token of [p.shieldedToken, p.backingToken]) {
     const expectedFeed = p.factoryVersion?.startsWith("expanded")
-      ? m.assets.find((a) => a.address.toLowerCase() === token.toLowerCase()).feed
+      ? m.contracts.ExpandedAssetRegistry.address
       : token.toLowerCase() === m.contracts.TestUSDVault.address.toLowerCase()
         ? m.contracts.VaultBackingFeed.address
         : p.environment === "reference"
@@ -119,7 +161,12 @@ for (const p of m.pools) {
     const address = await read(p.address, "SplitRiskPool", method),
       code = await client.getCode({ address });
     assert(code && code !== "0x");
-    assertRuntimeMatches(artifact(name), code, address, links);
+    assertRuntimeMatches(
+      buildArtifact(p.factoryVersion?.startsWith("expanded") ? "Expanded" + name : name, { artifact: name }),
+      code,
+      address,
+      links,
+    );
     assert.equal((await read(address, name, "pool")).toLowerCase(), p.address.toLowerCase());
     receipts.push({ name, address, runtimeCodehash: keccak256(code) });
   }
@@ -137,7 +184,13 @@ const report = {
   referenceReady: m.status === "complete",
   note: "Checks declared addresses, canonical receipts, runtime code and pool wiring. Passing partial deployment checks is not full application readiness.",
 };
-atomicJson(resolve(ROOT, "docs/evidence/deployment-verification.json"), report);
+atomicJson(
+  resolve(
+    ROOT,
+    expansionOnly ? "docs/evidence/expansion-contract-verification.json" : "docs/evidence/deployment-verification.json",
+  ),
+  report,
+);
 console.log(
   JSON.stringify({
     contracts: results.length,

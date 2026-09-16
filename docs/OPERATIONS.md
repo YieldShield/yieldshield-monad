@@ -85,3 +85,11 @@ An API or oracle outage should show unavailable data and a retry path. No stale 
 Owner decision, 9 September 2026: keep the repository private for now. Do not change its visibility without a later explicit instruction. The recorded registration rules and public FAQ disagree on source publication; recheck the operative final form without changing visibility silently.
 
 15 September follow-up: the captured intermittent failure was HTTP 200 with JSON-RPC `-32011: requests limited to 15/sec`. Narrow, bounded read retries are now deployed in the API and browser, with the same handling in the verifier. Writes/signatures are never retried and no stale snapshot can substitute for a failed read. Eight consecutive production checks after deployment returned all five pools ready/unpaused with fresh references. Continue to fail closed if retries are exhausted. [The recheck report](VERIFICATION_2026-09-15.md) records the fixes, deployment IDs, test results and the remaining signed Dynamic/unstaking checks.
+
+## Asset expansion (16 September)
+
+The expansion uses a separate resumable journal and five new immutable contracts. `node scripts/deploy-monad-expansion.mjs --check` performs read-only identity checks; `--broadcast` requires the dedicated testnet signer and enforces the journal's cumulative fee cap. The initial 3-MON cap stopped before signing the first pool-creation transaction. No signed intent should be edited to change that result. Funded AUSD pool verification remains pending additional testnet gas.
+
+Use `node scripts/verify-monad.mjs --expansion --legacy-artifacts=/absolute/path/to/original/contracts/out` to verify the staged contracts without declaring the pools ready. Historical Solidity CBOR metadata contains original auto-detected remapping paths: the verifier accepts a separate directory of original build artifacts, checks every source hash, and still compares full deployed runtime bytes. Newly deployed contracts use the current build. Do not remove metadata or weaken runtime-hash checks to accommodate a different checkout.
+
+The canonical WMON token is intentionally not registered after a fork reproduced unbounded static-probe gas exhaustion. Mainnet yield shares are catalog entries only. See [yield asset research](YIELD_ASSET_RESEARCH.md) for activation boundaries.
