@@ -32,7 +32,7 @@
     "@yieldshield/core": "*"
   },
   "devDependencies": {
-    "@codama/nodes-from-anchor": "^1.5.1",
+    "@codama/nodes-from-anchor": "^1.5.5",
     "@codama/renderers-js": "^2.3.0",
     "@types/node": "^22.10.0",
     "codama": "^1.8.0",
