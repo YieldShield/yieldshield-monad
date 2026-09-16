@@ -35,6 +35,16 @@ test("rejects wildcard workspaces and unreviewed manifests", () => {
   manifests["services/new/package.json"] = {};
   assert.throws(() => checkMonadScope(manifests, lock, []), /Review new/);
 });
+test("isolates the multi-chain CRE SDK from the Monad app, API and contract tools", () => {
+  const { manifests, lock } = fixture();
+  manifests["integrations/chainlink-cre/pool-health/package.json"].dependencies["@chainlink/cre-sdk"] = "1.21.1";
+  checkMonadScope(manifests, lock, []);
+  for (const file of manifestPaths.filter(p => !p.startsWith("integrations/chainlink-cre/"))) {
+    manifests[file].dependencies["@chainlink/cre-sdk"] = "1.21.1";
+    assert.throws(() => checkMonadScope(manifests, lock, []), /isolated workflow/);
+    delete manifests[file].dependencies["@chainlink/cre-sdk"];
+  }
+});
 test("rejects stale workspaces and links left in the lockfile", () => {
   for (const mutate of [
     lock => { lock.packages[""].workspaces = ["apps/*"]; },

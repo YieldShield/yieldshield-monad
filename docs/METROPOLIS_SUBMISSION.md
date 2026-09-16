@@ -62,7 +62,7 @@ The signed-in Metropolis Rules & Guidelines v3.0 (updated 3 September 2026), rec
 
 Recorded deadline: **13 October 2026, 23:59 ET**, equivalent to **14 October 2026, 05:59 CEST**. Internal target: **12 October, 18:00 Europe/Berlin**. The project workspace showed submissions opening on 22 September. The build window itself began 1 September, as the [Monad Foundation's event listing](https://luma.com/metropolis-hangzhou-sep-2026) confirms.
 
-Before final submission, inspect the current [project workspace](https://hackathon.monad.xyz/project) and [registration rules](https://hackathon.monad.xyz/onboarding), confirm the saved new repository link, verify signed-out access to all artifacts, and retain the submission confirmation. No sponsor bounty is selected or claimed; an external Kuru link does not establish a qualifying integration.
+Before final submission, inspect the current [project workspace](https://hackathon.monad.xyz/project) and [registration rules](https://hackathon.monad.xyz/onboarding), confirm the saved new repository link, verify signed-out access to all artifacts, and retain the submission confirmation. Dynamic, Envio and CRE are selected for preparation; completion must be backed by live evidence. An external Kuru link does not establish a qualifying integration.
 
 ### Portal preparation on 16 September
 
