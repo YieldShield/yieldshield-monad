@@ -8,6 +8,7 @@ export type ActivityEvent = {
     | "protected"
     | "provided"
     | "asset-withdrawn"
+    | "asset-partially-withdrawn"
     | "protection-used"
     | "backing-withdrawn"
     | "notice-started"
@@ -37,6 +38,7 @@ const labels: Record<ActivityEvent["kind"], string> = {
   protected: "Protection opened",
   provided: "Backing supplied",
   "asset-withdrawn": "Asset withdrawn",
+  "asset-partially-withdrawn": "Asset partially withdrawn",
   "protection-used": "Backing payout",
   "backing-withdrawn": "Backing withdrawn",
   "notice-started": "Withdrawal requested",
@@ -59,8 +61,7 @@ export function ActivityHistory({
     data?.chainId === 10143 &&
     Array.isArray(data.events) &&
     data.events.every(
-      (event) =>
-        Number.isSafeInteger(event?.timestamp) && event.timestamp >= 0 && event.timestamp <= 8640000000000,
+      (event) => Number.isSafeInteger(event?.timestamp) && event.timestamp >= 0 && event.timestamp <= 8640000000000,
     );
   const unavailable = failed || (data && (!valid || ["unavailable", "not-configured"].includes(data.status)));
   const pending = !data || data.status === "indexing";

@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { encodeEventTopics, encodeAbiParameters } from "viem";
+import { encodeEventTopics, encodeAbiParameters, pad, toEventSelector, toHex } from "viem";
 import { activityAbi, activityQuery, createEnvioActivity } from "./envio.mjs";
 
 const config = {
@@ -103,7 +103,7 @@ test("query only scans registered pool events and requests provenance fields", (
   assert.equal(query.from_block, 100);
   assert.equal(query.to_block, 181);
   assert.deepEqual(query.logs[0].address, [pool]);
-  assert.equal(query.logs[0].topics[0].length, 7);
+  assert.equal(query.logs[0].topics[0].length, 8);
   assert.ok(query.field_selection.log.includes("block_hash"));
   assert.equal(query.include_all_blocks, undefined);
 });
@@ -160,6 +160,36 @@ test("backing payouts use backing decimals without duplicate activation events",
   assert.equal(result.asset.symbol, "AUSD");
   assert.equal(result.asset.decimals, 6);
   assert.equal(result.receiptId, null);
+});
+
+test("partial shield withdrawals are queried and mapped to the owner, withdrawn amount and shielded token", async () => {
+  // Match EventsLib.PartialWithdrawal independently of the indexer's ABI:
+  // user, oldTokenId and newTokenId are indexed; withdrawn and remaining amounts are data.
+  const topic0 = toEventSelector("PartialWithdrawal(address,uint256,uint256,uint256,uint256)");
+  const log = {
+    ...event(),
+    topic0,
+    topic1: pad(wallet),
+    topic2: toHex(42n, { size: 32 }),
+    topic3: toHex(43n, { size: 32 }),
+    data: encodeAbiParameters([{ type: "uint256" }, { type: "uint256" }], [1250000000000000000n, 8n * 10n ** 18n]),
+  };
+  const { client, calls } = harness({ pages: [page([log])] });
+  await client.refresh();
+  assert.ok(JSON.parse(calls[1].init.body).logs[0].topics[0].includes(topic0));
+  const snapshot = client.read({ owner: wallet });
+  assert.equal(snapshot.status, "ready");
+  assert.equal(snapshot.complete, true);
+  assert.equal(snapshot.totalEvents, 1);
+  const result = snapshot.events[0];
+  assert.equal(result.eventName, "PartialWithdrawal");
+  assert.equal(result.kind, "asset-partially-withdrawn");
+  assert.equal(result.actor, wallet);
+  assert.equal(result.amount, "1250000000000000000");
+  assert.deepEqual(result.asset, { address: shield, symbol: "WMON", decimals: 18 });
+  assert.equal(result.receiptId, "42");
+  assert.equal(result.transactionHash, txHash);
+  assert.equal(client.read({ owner: other }).totalEvents, 0);
 });
 
 test("notice cancellation has no invented token amount", async () => {
@@ -315,9 +345,15 @@ test("supplied rollback guards require complete hashes and exact page boundaries
 });
 
 test("valid consecutive rollback guards and optional historical guards remain supported", async () => {
-  for (const guards of [[rollbackGuard(100, 149), rollbackGuard(150, 180)], [null, rollbackGuard(150, 180)]]) {
+  for (const guards of [
+    [rollbackGuard(100, 149), rollbackGuard(150, 180)],
+    [null, rollbackGuard(150, 180)],
+  ]) {
     const { client } = harness({
-      pages: [{ ...page([event()], 150), rollback_guard: guards[0] }, { ...page([]), rollback_guard: guards[1] }],
+      pages: [
+        { ...page([event()], 150), rollback_guard: guards[0] },
+        { ...page([]), rollback_guard: guards[1] },
+      ],
     });
     await client.refresh();
     assert.equal(client.read().status, "ready");

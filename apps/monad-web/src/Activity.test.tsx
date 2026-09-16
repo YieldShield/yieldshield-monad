@@ -36,6 +36,16 @@ describe("indexed activity presentation", () => {
     expect(html).toContain("7 deployment pools");
     expect(html).not.toContain("Your balance");
   });
+  it("labels a partial withdrawal without implying the remaining position was closed", () => {
+    const html = renderToStaticMarkup(
+      <ActivityHistory
+        data={{ ...snapshot, events: [{ ...snapshot.events[0], kind: "asset-partially-withdrawn" }] }}
+      />,
+    );
+    expect(html).toContain("Asset partially withdrawn");
+    expect(html).toContain("1.20000 WMON");
+    expect(html).toContain('aria-label="View asset partially withdrawn transaction"');
+  });
   it("distinguishes missing data and provider failure from a genuinely empty history", () => {
     expect(renderToStaticMarkup(<ActivityHistory />)).toContain("Loading onchain activity");
     for (const status of ["not-configured", "unavailable"] as const) {
