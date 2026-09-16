@@ -1,0 +1,43 @@
+{
+  "schedule": "0 */5 * * * *",
+  "chainName": "monad-testnet",
+  "chainId": 10143,
+  "apiUrl": "https://monad-api.yieldshield.ai/api/status",
+  "maxSnapshotAgeSeconds": 120,
+  "maxOracleAgeSeconds": 120,
+  "minFreeBackingBps": 1000,
+  "pools": [
+    {
+      "id": "wmon-ausd",
+      "address": "0x89Dc1d055Ac9ec50E1FA0a2d7da8be858F1B1470",
+      "shieldedToken": "0x23EA8b07fda821d2096dee02a3a662a5374B69Cb",
+      "backingToken": "0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC"
+    },
+    {
+      "id": "shmon-ausd",
+      "address": "0x18F7E79744b08a302E786c0D62b8c1cfB3CFc475",
+      "shieldedToken": "0x282BdDFF5e58793AcAb65438b257Dbd15A8745C9",
+      "backingToken": "0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC"
+    }
+  ],
+  "assets": [
+    {
+      "address": "0x23EA8b07fda821d2096dee02a3a662a5374B69Cb",
+      "symbol": "WMON",
+      "feed": "0x244252325588eE70e8C763385480AB688f89d690",
+      "checkPublishedAt": true
+    },
+    {
+      "address": "0x282BdDFF5e58793AcAb65438b257Dbd15A8745C9",
+      "symbol": "shMON",
+      "feed": "0x244252325588eE70e8C763385480AB688f89d690",
+      "checkPublishedAt": true
+    },
+    {
+      "address": "0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC",
+      "symbol": "AUSD",
+      "feed": "0x49535Db43F42C29691Bdc2CFA813B163d0DA01c7",
+      "checkPublishedAt": false
+    }
+  ]
+}
