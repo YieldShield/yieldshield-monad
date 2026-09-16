@@ -1,0 +1,526 @@
+{
+  "reviewedAt": "2026-09-16T10:57:21.193946+00:00",
+  "baselineCommit": "5a9e080",
+  "reviewedCommit": "4ab42883f1e20f324b92691df1e9040cf9766be0",
+  "baselineDescription": "Main 49dfb045811cfa8546b36b053fde34d0d3bd6f8a plus the pending PR #17 contract dependency fixes.",
+  "dependencyEntries": {
+    "before": 1134,
+    "after": 754,
+    "counting": "Root package-lock packages entries whose paths contain node_modules/, including platform-specific optional entries; not all are installed on every OS."
+  },
+  "browserJavaScript": {
+    "beforeChunks": 87,
+    "afterChunks": 87,
+    "identicalHashedChunks": 87,
+    "bytes": 6777569,
+    "gzipBytes": 1779083,
+    "emittedModulesChecked": 5561,
+    "chunks": [
+      {
+        "file": "assets/index-DUbHCthe.js",
+        "bytes": 198130,
+        "gzipBytes": 57933
+      },
+      {
+        "file": "assets/AlertController-B0b4RVPT.js",
+        "bytes": 6917,
+        "gzipBytes": 2562
+      },
+      {
+        "file": "assets/ApiController-Cr3o6trQ.js",
+        "bytes": 121941,
+        "gzipBytes": 35072
+      },
+      {
+        "file": "assets/ConnectorUtil-D_NhBDIJ.js",
+        "bytes": 17927,
+        "gzipBytes": 7291
+      },
+      {
+        "file": "assets/ConstantsUtil-DmLsRHAl.js",
+        "bytes": 37109,
+        "gzipBytes": 11275
+      },
+      {
+        "file": "assets/DynamicWallet-P1LDlH1t.js",
+        "bytes": 4115194,
+        "gzipBytes": 964718
+      },
+      {
+        "file": "assets/PhArrowCircleDown-D97G-BOA.js",
+        "bytes": 2786,
+        "gzipBytes": 1162
+      },
+      {
+        "file": "assets/PhArrowClockwise-DVgyFuez.js",
+        "bytes": 2560,
+        "gzipBytes": 1172
+      },
+      {
+        "file": "assets/PhArrowDown-87b1BizM.js",
+        "bytes": 2070,
+        "gzipBytes": 994
+      },
+      {
+        "file": "assets/PhArrowLeft-Da0MfnbK.js",
+        "bytes": 2093,
+        "gzipBytes": 985
+      },
+      {
+        "file": "assets/PhArrowRight-AdrIL4DW.js",
+        "bytes": 2085,
+        "gzipBytes": 991
+      },
+      {
+        "file": "assets/PhArrowSquareOut-Bk2CMG3I.js",
+        "bytes": 2899,
+        "gzipBytes": 1228
+      },
+      {
+        "file": "assets/PhArrowUp-4sgyKPGx.js",
+        "bytes": 2145,
+        "gzipBytes": 986
+      },
+      {
+        "file": "assets/PhArrowUpRight-BNghD2zq.js",
+        "bytes": 2037,
+        "gzipBytes": 997
+      },
+      {
+        "file": "assets/PhArrowsClockwise-BXRn1GEl.js",
+        "bytes": 3841,
+        "gzipBytes": 1570
+      },
+      {
+        "file": "assets/PhArrowsDownUp-DM09Jo_3.js",
+        "bytes": 2902,
+        "gzipBytes": 1157
+      },
+      {
+        "file": "assets/PhArrowsLeftRight-MuKBLUoF.js",
+        "bytes": 2779,
+        "gzipBytes": 1164
+      },
+      {
+        "file": "assets/PhBank-fHbgCqqZ.js",
+        "bytes": 2913,
+        "gzipBytes": 1231
+      },
+      {
+        "file": "assets/PhBrowser-2-9m-AkM.js",
+        "bytes": 2188,
+        "gzipBytes": 952
+      },
+      {
+        "file": "assets/PhCaretDown-BDNabFuL.js",
+        "bytes": 1917,
+        "gzipBytes": 936
+      },
+      {
+        "file": "assets/PhCaretLeft-CI460R-A.js",
+        "bytes": 1857,
+        "gzipBytes": 900
+      },
+      {
+        "file": "assets/PhCaretRight-D7ZS3Ls8.js",
+        "bytes": 1933,
+        "gzipBytes": 926
+      },
+      {
+        "file": "assets/PhCaretUp-C-iIfyvO.js",
+        "bytes": 1997,
+        "gzipBytes": 917
+      },
+      {
+        "file": "assets/PhCheck-DxQXn57r.js",
+        "bytes": 2083,
+        "gzipBytes": 964
+      },
+      {
+        "file": "assets/PhCircleHalf-MJZeRBGF.js",
+        "bytes": 2692,
+        "gzipBytes": 1192
+      },
+      {
+        "file": "assets/PhClock-x3MS3Mwi.js",
+        "bytes": 2346,
+        "gzipBytes": 1012
+      },
+      {
+        "file": "assets/PhCompass-hYn3HhGN.js",
+        "bytes": 2957,
+        "gzipBytes": 1254
+      },
+      {
+        "file": "assets/PhCopy-CWNYcABI.js",
+        "bytes": 2336,
+        "gzipBytes": 995
+      },
+      {
+        "file": "assets/PhCreditCard-Fy4pzwtt.js",
+        "bytes": 2907,
+        "gzipBytes": 1136
+      },
+      {
+        "file": "assets/PhCurrencyDollar-BgiaenCi.js",
+        "bytes": 3220,
+        "gzipBytes": 1310
+      },
+      {
+        "file": "assets/PhDesktop-CxrzCSv5.js",
+        "bytes": 2759,
+        "gzipBytes": 1095
+      },
+      {
+        "file": "assets/PhDeviceMobile-CsyA5Goi.js",
+        "bytes": 2546,
+        "gzipBytes": 1047
+      },
+      {
+        "file": "assets/PhDotsThree-D-k1BiYg.js",
+        "bytes": 2225,
+        "gzipBytes": 925
+      },
+      {
+        "file": "assets/PhEnvelope-D8kzeNox.js",
+        "bytes": 2661,
+        "gzipBytes": 1158
+      },
+      {
+        "file": "assets/PhFunnelSimple-CfQs5DAW.js",
+        "bytes": 2338,
+        "gzipBytes": 985
+      },
+      {
+        "file": "assets/PhGlobe-DvmSc9_A.js",
+        "bytes": 5696,
+        "gzipBytes": 1902
+      },
+      {
+        "file": "assets/PhIdentificationCard-CfkZm-5K.js",
+        "bytes": 4194,
+        "gzipBytes": 1625
+      },
+      {
+        "file": "assets/PhImage-Cf0J2ZfJ.js",
+        "bytes": 3408,
+        "gzipBytes": 1424
+      },
+      {
+        "file": "assets/PhInfo-Bwi51-2X.js",
+        "bytes": 2749,
+        "gzipBytes": 1194
+      },
+      {
+        "file": "assets/PhLightbulb-C4FZV7Es.js",
+        "bytes": 4889,
+        "gzipBytes": 1832
+      },
+      {
+        "file": "assets/PhMagnifyingGlass-C9u8jSCJ.js",
+        "bytes": 2188,
+        "gzipBytes": 1056
+      },
+      {
+        "file": "assets/PhPaperPlaneRight-zxQVvPLX.js",
+        "bytes": 3068,
+        "gzipBytes": 1401
+      },
+      {
+        "file": "assets/PhPlus-C4UoW-2n.js",
+        "bytes": 2081,
+        "gzipBytes": 951
+      },
+      {
+        "file": "assets/PhPower-CFyWDmgD.js",
+        "bytes": 2752,
+        "gzipBytes": 1256
+      },
+      {
+        "file": "assets/PhPuzzlePiece-BjoNVfST.js",
+        "bytes": 5349,
+        "gzipBytes": 1941
+      },
+      {
+        "file": "assets/PhQrCode-CP3tFauY.js",
+        "bytes": 4898,
+        "gzipBytes": 1452
+      },
+      {
+        "file": "assets/PhQuestion-wOWJBd3G.js",
+        "bytes": 3288,
+        "gzipBytes": 1424
+      },
+      {
+        "file": "assets/PhQuestionMark-CV0k9C0Y.js",
+        "bytes": 2817,
+        "gzipBytes": 1284
+      },
+      {
+        "file": "assets/PhSealCheck-vIKzREuN.js",
+        "bytes": 12077,
+        "gzipBytes": 3995
+      },
+      {
+        "file": "assets/PhSignOut-CxELV-i0.js",
+        "bytes": 2739,
+        "gzipBytes": 1141
+      },
+      {
+        "file": "assets/PhSpinner-CGDmbzUd.js",
+        "bytes": 4425,
+        "gzipBytes": 1624
+      },
+      {
+        "file": "assets/PhTrash-C9PD0SAt.js",
+        "bytes": 3090,
+        "gzipBytes": 1169
+      },
+      {
+        "file": "assets/PhUser-0sWNXQeZ.js",
+        "bytes": 2658,
+        "gzipBytes": 1245
+      },
+      {
+        "file": "assets/PhVault-6JTskUcC.js",
+        "bytes": 2938,
+        "gzipBytes": 1178
+      },
+      {
+        "file": "assets/PhWarning-CoKs3gz6.js",
+        "bytes": 3880,
+        "gzipBytes": 1466
+      },
+      {
+        "file": "assets/PhWarningCircle-BXHw1fCt.js",
+        "bytes": 2404,
+        "gzipBytes": 1032
+      },
+      {
+        "file": "assets/PhX-DX0SFIqC.js",
+        "bytes": 2471,
+        "gzipBytes": 1043
+      },
+      {
+        "file": "assets/_esm-DgbS3waK.js",
+        "bytes": 139051,
+        "gzipBytes": 43535
+      },
+      {
+        "file": "assets/basic-deSn08Wb.js",
+        "bytes": 111822,
+        "gzipBytes": 28121
+      },
+      {
+        "file": "assets/browser-HABuNd8-.js",
+        "bytes": 213,
+        "gzipBytes": 188
+      },
+      {
+        "file": "assets/ccip-Deq_xTvO.js",
+        "bytes": 119498,
+        "gzipBytes": 33620
+      },
+      {
+        "file": "assets/connect-evm-BBzM5-0D.js",
+        "bytes": 121896,
+        "gzipBytes": 42083
+      },
+      {
+        "file": "assets/connect-multichain-BwStvSVr.js",
+        "bytes": 229242,
+        "gzipBytes": 65453
+      },
+      {
+        "file": "assets/core-BtCymXBF.js",
+        "bytes": 409328,
+        "gzipBytes": 117347
+      },
+      {
+        "file": "assets/dijkstra-BM4FO2PY.js",
+        "bytes": 1739,
+        "gzipBytes": 864
+      },
+      {
+        "file": "assets/dist-C3mF4Xr8.js",
+        "bytes": 122663,
+        "gzipBytes": 41657
+      },
+      {
+        "file": "assets/dist-DQw0YMK4.js",
+        "bytes": 121444,
+        "gzipBytes": 30445
+      },
+      {
+        "file": "assets/dist-ObyPTW0k.js",
+        "bytes": 6052,
+        "gzipBytes": 1931
+      },
+      {
+        "file": "assets/esm-CoSDrkI5.js",
+        "bytes": 6368,
+        "gzipBytes": 2514
+      },
+      {
+        "file": "assets/features-CQiAtLF_.js",
+        "bytes": 5712,
+        "gzipBytes": 2235
+      },
+      {
+        "file": "assets/index-de0119fe-CXegoXkR.js",
+        "bytes": 15888,
+        "gzipBytes": 6783
+      },
+      {
+        "file": "assets/index.es-B7rcGepb.js",
+        "bytes": 32547,
+        "gzipBytes": 10586
+      },
+      {
+        "file": "assets/index.es-Bd-4SLXT.js",
+        "bytes": 107693,
+        "gzipBytes": 34606
+      },
+      {
+        "file": "assets/jsx-runtime-C6odzysP.js",
+        "bytes": 159894,
+        "gzipBytes": 51114
+      },
+      {
+        "file": "assets/loader-Jx919xfy.js",
+        "bytes": 802,
+        "gzipBytes": 445
+      },
+      {
+        "file": "assets/mm-install-modal_2.entry-ExBnDeCz.js",
+        "bytes": 63756,
+        "gzipBytes": 19581
+      },
+      {
+        "file": "assets/modular-CHynH04H.js",
+        "bytes": 104445,
+        "gzipBytes": 30953
+      },
+      {
+        "file": "assets/preload-helper-Czpn1I53.js",
+        "bytes": 1196,
+        "gzipBytes": 675
+      },
+      {
+        "file": "assets/property-DuZ9DLP4.js",
+        "bytes": 16177,
+        "gzipBytes": 6048
+      },
+      {
+        "file": "assets/rolldown-runtime-C_s2cVnS.js",
+        "bytes": 958,
+        "gzipBytes": 529
+      },
+      {
+        "file": "assets/secp256k1-BDTEzRjW.js",
+        "bytes": 33191,
+        "gzipBytes": 13753
+      },
+      {
+        "file": "assets/thumbmark.esm-y5jmia47.js",
+        "bytes": 17455,
+        "gzipBytes": 6861
+      },
+      {
+        "file": "assets/tslib.es6-DstZUyF2.js",
+        "bytes": 7463,
+        "gzipBytes": 2760
+      },
+      {
+        "file": "assets/utils-oVEYY1QK.js",
+        "bytes": 3919,
+        "gzipBytes": 1575
+      },
+      {
+        "file": "assets/v4-DIgz8zy6.js",
+        "bytes": 1017,
+        "gzipBytes": 553
+      },
+      {
+        "file": "assets/w3m-modal-05JrCczM.js",
+        "bytes": 80278,
+        "gzipBytes": 17508
+      },
+      {
+        "file": "assets/wui-ux-by-reown-D8C_EDIc.js",
+        "bytes": 82513,
+        "gzipBytes": 21933
+      }
+    ]
+  },
+  "tests": {
+    "frontend": {
+      "passed": 99
+    },
+    "apiAndDeployment": {
+      "passed": 78
+    },
+    "monadContracts": {
+      "passed": 32,
+      "skipped": 5,
+      "skipReason": "Optional live RPC fork tests were not enabled."
+    },
+    "sharedProtocolContracts": {
+      "passed": 225
+    },
+    "contractTools": {
+      "passed": 153
+    },
+    "repositoryScope": {
+      "passed": 5
+    },
+    "dependencyGate": {
+      "passed": 7
+    }
+  },
+  "sourceIntegrity": {
+    "savedSplitRiskPoolArtifactSources": 47,
+    "matchingHashes": 47,
+    "existingSoliditySourcesChanged": false,
+    "existingDeploymentEvidenceChanged": false,
+    "importManifestChanged": false
+  },
+  "security": {
+    "auditedLockfiles": [
+      "package-lock.json",
+      "services/monad/package-lock.json",
+      "contracts/package-lock.json"
+    ],
+    "rootAffectedPackageEntries": 9,
+    "underlyingAdvisories": 2,
+    "exceptionExpires": "2026-10-16",
+    "apiFindings": 0,
+    "contractToolFindings": 0,
+    "nativeBigintBufferEmitted": false,
+    "streamJsonEmitted": false,
+    "legacyFirstPartyWorkspacesEmitted": false
+  },
+  "browser": {
+    "origin": "http://127.0.0.1:5187",
+    "backend": "Cleaned local API on port 3007, reading Monad testnet",
+    "readyMarkets": 7,
+    "consoleErrors": 0,
+    "checks": [
+      "Homepage asset cards load",
+      "Create pool offers three backing assets",
+      "Selecting AUSD quotes a 500 AUSD minimum bond",
+      "Custom 200% collateral and 15% provider share produce 17% shared / 83% retained gains",
+      "Protect amount changes update entry value and backing reservation",
+      "Provide shows the selected pool terms",
+      "Faucet shows official Monad gas funding first",
+      "Disconnected positions prompt for a wallet",
+      "Network status shows verified contracts and fresh RedStone reference"
+    ]
+  },
+  "limits": [
+    "No wallet login or signed browser transaction was completed in this review. The preview origin is not configured for Dynamic authentication.",
+    "No contract, production frontend or Railway deployment was performed.",
+    "Existing Dynamic advisory exceptions remain conditional and unchanged.",
+    "Contract tool counts include policy assertions against a labelled historical standalone workflow fixture, not additional active CI jobs."
+  ]
+}
