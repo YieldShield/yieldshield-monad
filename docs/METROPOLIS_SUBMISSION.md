@@ -19,7 +19,7 @@
 
 ## Short description
 
-YieldShield on Monad gives crypto holders two exit choices backed by separately supplied first-loss capital. The Monad application combines native MON handling, a shMON staking integration, explicit asset and price identities, wallet transaction checks, and a separate scenario lab that explains gains, losses and backing payouts.
+YieldShield on Monad gives MON and shMON holders two exit choices backed by separately supplied first-loss capital. The Monad application combines native MON handling, shMON staking, explicit asset and price identities, and wallet transaction checks. Backing providers receive a share of realized gains and accept first-loss exposure.
 
 ## Current progress wording
 
@@ -48,7 +48,9 @@ Career details and company data above were provided by David. No employment date
 | Exact source under an OSI-approved license             | Public repository; MIT new code and retained file-level notices                  |
 | Substantial new build-window work and reuse disclosure | Import baseline, separate stage commits and new-work disclosure present; eligibility ultimately assessed by organizers |
 | Setup and technical documentation                      | README, architecture, operations and evidence files present                                                            |
-| Public video ≤3 minutes                                | 2:08 narrated product walkthrough with English captions and transcript at /how-it-works                                |
+| Technical demo ≤3 minutes on YouTube, Loom or Vimeo     | Existing 2:08 self-hosted walkthrough is supporting material; record the live working wallet flow and upload to an accepted host |
+| Founder pitch ≤2 minutes                              | David and Santi will record it; [speaking guide](FOUNDER_PITCH_GUIDE.md) prepared |
+| Project graphic and judge access instructions         | Confirm JPG/JPEG/PNG/WEBP graphic ≤3 MB and clear testnet/faucet instructions in the final form |
 | Fresh external MON pricing                             | RedStone MON/USD read directly on chain; no paid API subscription needed                                               |
 | Team profile                                           | David and Santi confirmed in the portal                                                                                |
 | Honest usage/traction                                  | No external user adoption, non-demo TVL, revenue or independent audit claimed                                          |
@@ -61,6 +63,14 @@ The signed-in Metropolis Rules & Guidelines v3.0 (updated 3 September 2026), rec
 Recorded deadline: **13 October 2026, 23:59 ET**, equivalent to **14 October 2026, 05:59 CEST**. Internal target: **12 October, 18:00 Europe/Berlin**. The project workspace showed submissions opening on 22 September. The build window itself began 1 September, as the [Monad Foundation's event listing](https://luma.com/metropolis-hangzhou-sep-2026) confirms.
 
 Before final submission, inspect the current [project workspace](https://hackathon.monad.xyz/project) and [registration rules](https://hackathon.monad.xyz/onboarding), confirm the saved new repository link, verify signed-out access to all artifacts, and retain the submission confirmation. No sponsor bounty is selected or claimed; an external Kuru link does not establish a qualifying integration.
+
+### Portal preparation on 16 September
+
+The signed-in [finance track](https://hackathon.monad.xyz/tracks/onchain-finance) now explicitly lists a live technical demo of at most three minutes on YouTube, Loom or Vimeo, a separate founder pitch of at most two minutes, a public GitHub repository, a graphic of at most 3 MB, and a working Monad mainnet or testnet link with judge access instructions. A promotional clip is optional and does not affect judging. These observed requirements supersede the older video-only checklist above; recheck final fields when they open.
+
+The project description was refreshed to the public repository and seven-pool deployment. Two substantive private progress updates were posted with the owner's authorization: the working Monad milestone/reuse disclosure and the deployed AUSD expansion. Dynamic, Envio and Chainlink CRE were added as intended sponsor bounty selections; selection is not a claim of completed qualification. Kuru still needs executable integration and usage evidence. The Updates page says one update unlocks mentors while the Mentors page says three; verify actual access rather than treating either count as a final submission requirement.
+
+The [market readiness packet](MARKET_READINESS_2026-09-16.md) defines six holder and four provider research sessions. Those sessions and their proposed targets are not completed traction. David and Santi will record the founder pitch themselves. Envio must remain on its free package, with no paid subscription or overages.
 
 Sponsor priorities and the evidence required for each candidate are recorded in [SPONSOR_STRATEGY.md](SPONSOR_STRATEGY.md). Dynamic is the first implemented sponsor integration. Kuru needs actual orderbook execution and usage evidence; Agora testnet AUSD is now implemented and exercised in two pools, but its mobile-trading bounty remains deferred because it mandates Mera, AUSD and Perpl together. AUSD support alone does not satisfy that bounty. The signed-in Dynamic, Kuru, Agora and CRE requirements were reviewed on 14 September. Keep proposed integrations out of completed-work claims until configured and exercised.
 
