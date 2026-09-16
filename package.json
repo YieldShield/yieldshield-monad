@@ -25,7 +25,8 @@
     "deploy:reference": "node scripts/deploy-monad-redstone-reference.mjs --broadcast",
     "verify:monad": "node scripts/verify-monad.mjs",
     "smoke:monad": "node scripts/smoke-monad.mjs --broadcast",
-    "smoke:reference": "node scripts/smoke-monad.mjs --broadcast --reference"
+    "smoke:reference": "node scripts/smoke-monad.mjs --broadcast --reference",
+    "check:scope": "node --test scripts/check-monad-scope.test.mjs && node scripts/check-monad-scope.mjs"
   },
   "dependencies": {
     "@pythnetwork/pyth-sdk-solidity": "4.3.1",

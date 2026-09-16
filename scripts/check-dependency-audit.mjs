@@ -86,6 +86,9 @@ export function checkBrowserModules(moduleIds) {
     throw new Error("Browser verification did not include the Dynamic wallet entry");
   }
   for (const id of ids) {
+    if (/\/(?:apps\/web|packages\/(?:sdk|adapter-solana|adapter-evm|core))\//.test(id)) {
+      throw new Error(`Retired application workspace entered the browser bundle: ${id}`);
+    }
     if (id.includes("/node_modules/stream-json/") ||
         (id.includes("/node_modules/bigint-buffer/") && !id.includes("/dist/browser.js")) ||
         /\/node_modules\/jayson\/lib\/(utils|server)([/.])/.test(id)) {

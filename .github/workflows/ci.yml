@@ -25,6 +25,7 @@ jobs:
           node --test contracts/scripts-js/__tests__/foundry-lock.test.cjs
           node contracts/scripts-js/check-foundry-lock.cjs
       - run: npm ci --ignore-scripts
+      - run: npm run check:scope
       - run: npm run test:monad
       - run: npm run test:web
       - run: npm run build
