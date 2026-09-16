@@ -19,7 +19,7 @@ These checks do not prove that every possible secret or confidential detail is a
 - Private vulnerability reporting, plus the existing private email contact.
 - Dependabot alerts/security updates and scheduled dependency updates.
 - `main` requires a pull request and passing `verify`, `Git history secret scan` and `Production dependency review` checks from the GitHub Actions app. The branch must be up to date and review conversations resolved.
-- Administrators follow the same requirements. Force pushes and branch deletion are blocked. No extra approving reviewer is required for the two-person team.
+- Administrator bypass is enabled at the owner’s explicit request after the initial publication. Normal merges still require the checks. Force pushes and branch deletion remain disabled for normal users. No extra approving reviewer is required for the two-person team.
 - Workflow tokens retain read-only default permissions and cannot approve pull requests.
 
 Settings were read back from GitHub after configuration. The [machine-readable record](evidence/publication.json) captures their values. The existing Dynamic dependency exceptions remain documented in [DEPENDENCY_SECURITY.md](DEPENDENCY_SECURITY.md); publication does not resolve those upstream advisories.
