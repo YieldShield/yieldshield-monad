@@ -18,18 +18,17 @@ This repository contains the active Monad testnet application and its attributed
 
 Use the [operations runbook](OPERATIONS.md) for deployment and the [submission packet](METROPOLIS_SUBMISSION.md) for remaining demonstration and event requirements. The app targets **Monad testnet, chain 10143**. Mainnet yield assets are catalog entries only.
 
-## Imported and historical material
+## Dependencies and historical material
 
-| Location | How to read it |
-| --- | --- |
-| [`apps/web/`](../apps/web/) | Imported Base/Robinhood frontend. It is not the Monad website. Its stock assets and trading routes do not imply Monad support. |
-| Other files in [`services/`](../services/) and prior-chain scripts | Retained Base/Robinhood tooling. Their addresses, seeded balances and release evidence are not the Monad deployment. |
-| [`contracts/README.md`](../contracts/README.md) | Historical standalone contract-workspace setup. Use the root README's pinned versions and commands for this repository. |
-| `contracts/*AUDIT*.md`, `contracts/*REVIEW*.md`, `contracts/*REMEDIATION*.md`, [`contracts/docs_ok/`](../contracts/docs_ok/) | Historical internal reviews, AI-assisted analyses, design notes and remediation records. Their titles are not evidence of an independent third-party audit or of current findings being resolved. |
-| [`contracts/.github/`](../contracts/.github/) | Imported workflow and dependency-update configuration for an earlier standalone repository. Only root `.github/` configuration applies here. |
-| [`packages/`](../packages/) | Shared and imported SDK/adapter workspaces. Inclusion does not mean every adapter is enabled in the Monad app. |
+The root npm workspace contains only `apps/monad-web`. `services/monad` and `contracts` keep separate dependency lockfiles; the security gate audits all three installations. `npm run check:scope` rejects undeclared workspaces, direct Solana SDK dependencies and retired application entry points.
 
-The review reports remain available, including their findings and conclusions. Added context banners do not change the original findings, establish remediation, or substitute for an independent audit. Assess applicability against the exact deployed code and current tests.
+The old `apps/web` frontend, Solana SDK and adapter, legacy EVM adapter/core workspaces, root Solana faucet and Base/Robinhood service/deployment tools have been removed from the current tree. They are preserved at an immutable revision in the [historical source and report index](archive/README.md). Original import records and Git history remain intact.
+
+Dynamic's Ethereum connector still brings Solana packages through `@dynamic-labs/waas-evm → @dynamic-labs/waas → @dynamic-labs/solana-core`. These are upstream dependencies, not enabled Solana product features. See [the dependency review](DEPENDENCY_SECURITY.md) for the browser checks and remaining temporary exceptions. The root Dynamic pins are deliberate: they keep npm's security overrides effective.
+
+The `base-modules` Solidity directory, its generators (`generate-base-modules`, `generate-base-parity-tests`, `verify-base-modules`) and regression tests remain active. Preserve their source paths and pinned libraries: deployed bytecode and verification depend on them. The Pyth Solidity dependency is also required by retained oracle sources; it is not a Solana SDK.
+
+Historical reports remain at their existing paths with context banners. Their findings and conclusions are preserved; titles are not evidence of an independent audit or proof of remediation. Use their date, revision and scope to assess applicability.
 
 ## Provenance and evidence boundaries
 

@@ -4,7 +4,7 @@
 
 YieldShield existed before Metropolis. The independent Monad repository began with an attributed snapshot of `YieldShield/yieldshield-base`, source revision `62eba773f65f8e030e602540d0191c5764147fe9`, imported as commit `b44fba0`. `docs/BASE_IMPORT.json` records imported file hashes and submodule identities. That import commit is **prior work**, regardless of its September commit date.
 
-The existing protocol design, pool and factory accounting, NFTs, governance, immutable modules and many regression tests are reused. Other-chain applications and deployment recipes remain as historical source. Their features, deployments, test counts and seeded balances must not be presented as new Monad work or user adoption.
+The existing protocol design, pool and factory accounting, NFTs, governance, immutable modules and many regression tests are reused. Other-chain applications and deployment recipes remain available in Git history through the [historical index](archive/README.md); unused application workspaces have been removed from the current tree. Their features, deployments, test counts and seeded balances must not be presented as new Monad work or user adoption.
 
 ## New and adapted work in this repository
 

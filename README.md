@@ -46,6 +46,7 @@ npm run start:api
 In another terminal run `npm run dev`. Open http://localhost:5174. The service needs only public RPC access for normal reads. Active reference markets require no API key. Legacy Pyth tooling remains in the attributed source. Never put server credentials or wallet keys in browser environment variables.
 
 ```sh
+npm run check:scope
 npm run test:monad
 npm run test:web
 npm run build
@@ -53,11 +54,11 @@ forge test --root contracts --match-path 'test/monad/*.t.sol'
 forge test --root contracts --match-path 'test/base-modules/*.t.sol'
 ```
 
-The service/deployment tests include a temporary local HTTP listener. Contract tests execute locally and do not spend tokens. The imported Base regressions are preserved and are not counted as new Monad inventions.
+The complete release checks, including isolated contract-tool installation, are defined in [CI](.github/workflows/ci.yml). The service/deployment tests include a temporary local HTTP listener. Contract tests execute locally and do not spend tokens. The imported Base regressions are preserved and are not counted as new Monad inventions.
 
 ## Repository map
 
-Start with [the repository guide](docs/REPOSITORY_GUIDE.md) for active components, historical imports and the evidence index.
+Start with [the repository guide](docs/REPOSITORY_GUIDE.md) for active components. The npm workspace contains only `apps/monad-web`; the read-only API and contract tools have separate lockfiles.
 
 - `apps/monad-web/`: active React/Vite app, Monad theme, wallet checks and transaction flows.
 - `services/monad/`: active read-only API, bounded RPC reads, verified registries and signed-price delivery.
@@ -66,7 +67,7 @@ Start with [the repository guide](docs/REPOSITORY_GUIDE.md) for active component
 - `contracts/test/monad/`: new/adapted Monad integration tests.
 - `config/`: explicit network identity plus generated ABIs and deployment registry.
 - `scripts/*monad*`: preparation, sequential deployment, verification and public journey evidence.
-- `apps/web/`, other services and prior-chain scripts: imported historical foundation, not the active Monad deployment.
+- [Historical source and reports](docs/archive/README.md): prior applications, reuse records and internal reviews. Unused app workspaces are no longer installed.
 
 See [architecture and asset decisions](docs/ARCHITECTURE.md), [operations](docs/OPERATIONS.md), [new-work disclosure](docs/HACKATHON_DELTA.md), [provenance](docs/PROVENANCE.md), and [third-party notices](THIRD_PARTY_NOTICES.md).
 
