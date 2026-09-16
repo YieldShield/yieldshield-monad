@@ -1,8 +1,9 @@
 import assert from "node:assert/strict";
 import { readFileSync, writeFileSync } from "node:fs";
-import { createPublicClient, decodeEventLog, http } from "viem";
+import { createPublicClient, http } from "viem";
 import { monadTestnet } from "viem/chains";
-import { createEnvioActivity, activityAbi } from "../services/monad/envio.mjs";
+import { createEnvioActivity } from "../services/monad/envio.mjs";
+import { assertActivityLogMatch } from "./envio-receipt.mjs";
 
 const registry = JSON.parse(readFileSync(new URL("../config/deployment.json", import.meta.url)));
 const config = JSON.parse(readFileSync(new URL("../config/envio.json", import.meta.url)));
@@ -67,17 +68,7 @@ for (const pool of registry.pools) {
     (log) => log.logIndex === event.logIndex && log.address.toLowerCase() === pool.address.toLowerCase(),
   );
   assert.ok(log, `Indexed log missing from canonical receipt: ${pool.id}`);
-  const decoded = decodeEventLog({ abi: activityAbi, data: log.data, topics: log.topics });
-  assert.equal(decoded.eventName, event.eventName);
-  const actor =
-    decoded.args.depositor ||
-    decoded.args.withdrawer ||
-    decoded.args.user ||
-    decoded.args.protector ||
-    decoded.args.protectorAddress;
-  assert.equal(actor.toLowerCase(), event.actor.toLowerCase());
-  const amount = decoded.args.amount ?? decoded.args.assets;
-  assert.equal(amount == null ? null : String(amount), event.amount);
+  assertActivityLogMatch(event, log);
   samples.push({
     poolId: pool.id,
     kind: event.kind,

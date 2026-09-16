@@ -1,6 +1,6 @@
 # Envio pool activity
 
-YieldShield uses Envio HyperSync to turn Monad testnet pool events into a readable activity history. Visitors can see deposits, protection payouts, backing withdrawals, withdrawal notices and claimed fees in **Compare pools**. Connected wallets see their own actions in **Your positions**, including closed positions that no longer have a receipt NFT.
+YieldShield uses Envio HyperSync to turn Monad testnet pool events into a readable activity history. Once configured, visitors can see deposits, full and partial shielded-asset withdrawals, protection payouts, backing withdrawals, withdrawal notices and claimed fees in **Compare pools**. Connected wallets see their own actions in **Your positions**, including closed positions that no longer have a receipt NFT. The optional activity panel stays hidden until the server token is configured.
 
 Every row links to the actual transaction. This is an event history, not a balance or ownership index. Financial snapshots, transaction simulation and settlement still use verified contract reads.
 
@@ -9,6 +9,7 @@ Every row links to the actual transaction. This is an event history, not a balan
 - Network: Monad testnet, chain **10143**.
 - Official endpoint: `https://monad-testnet.hypersync.xyz`.
 - Pool scope: the seven deployed addresses in `config/deployment.json`; newly created/custom pools require a registry update before appearing here.
+- Event scope: eight pool event signatures, including `PartialWithdrawal`; its withdrawn amount uses the pool's shielded-token metadata and its receipt ID identifies the old receipt replaced by the remaining position.
 - Start block: **62432610**, the first registered pool's creation receipt (`0x48707ada852eb38752f951008bf113d0f226d20888fbbc5f0d5bf32b498983e1`), recorded in `contracts/deployments/monad-testnet.json`.
 - Query and event decoding: `services/monad/envio.mjs` (`activityQuery`, `activityAbi`, `createEnvioActivity`). Public configuration: `config/envio.json`.
 - Consumer: `GET /api/activity`, `apps/monad-web/src/Activity.tsx`.
@@ -69,7 +70,7 @@ With a Free token in an ignored `.env.envio.local` file:
 node --env-file=.env.envio.local scripts/verify-envio-activity.mjs
 ```
 
-This fetches real Envio data and independently checks one latest event per registered pool against Monad RPC transaction receipts. It fails unless the index is ready and the receipt's status, block hash, block number, pool address, log index, decoded event, actor and amount agree.
+This fetches real Envio data and independently checks one latest event per registered pool against Monad RPC transaction receipts. It fails unless the index is ready and the receipt's status, block hash, block number, pool address, log index, decoded event, actor, amount and receipt ID agree. Partial withdrawals are matched against `user`, `withdrawAmount` and `oldTokenId`, not the remaining amount or replacement receipt.
 
 After deploying the API and letting its first scan finish:
 

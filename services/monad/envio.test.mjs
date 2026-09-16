@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { encodeEventTopics, encodeAbiParameters, pad, toEventSelector, toHex } from "viem";
 import { activityAbi, activityQuery, createEnvioActivity } from "./envio.mjs";
+import { assertActivityLogMatch } from "../../scripts/envio-receipt.mjs";
 
 const config = {
   ...JSON.parse(readFileSync(new URL("../../config/envio.json", import.meta.url))),
@@ -190,6 +191,10 @@ test("partial shield withdrawals are queried and mapped to the owner, withdrawn 
   assert.equal(result.receiptId, "42");
   assert.equal(result.transactionHash, txHash);
   assert.equal(client.read({ owner: other }).totalEvents, 0);
+  const receiptLog = { data: log.data, topics: [log.topic0, log.topic1, log.topic2, log.topic3] };
+  assert.doesNotThrow(() => assertActivityLogMatch(result, receiptLog));
+  for (const change of [{ actor: other }, { amount: "8000000000000000000" }, { receiptId: "43" }])
+    assert.throws(() => assertActivityLogMatch({ ...result, ...change }, receiptLog), assert.AssertionError);
 });
 
 test("notice cancellation has no invented token amount", async () => {
