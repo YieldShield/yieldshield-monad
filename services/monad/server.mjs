@@ -1,5 +1,5 @@
 import { creationOptions } from "./creation.mjs";
-import { factoryVersions } from "../../scripts/monad-factories.mjs";
+import { discoverPools, protectionCapacity } from "./pools.mjs";
 import { createCache } from "./cache.mjs";
 import { fetchPythUpdate } from "./pyth.mjs";
 import { throttledRpcFetch } from "./rpc-throttle.mjs";
@@ -41,7 +41,6 @@ const pythAbi = parseAbi([
 const cached = createCache();
 const get = (target, artifact, fn, args = [], blockNumber) =>
   rpc.readContract({ address: target, abi: abis[artifact] || generic, functionName: fn, args, blockNumber });
-const c = (name) => registry.contracts[name]?.address;
 const same = (a, b) => a.toLowerCase() === b.toLowerCase();
 async function checkedChain() {
   if ((await rpc.getChainId()) !== 10143) throw new Error("RPC chain mismatch");
@@ -58,56 +57,6 @@ async function verifiedCode() {
     );
     return Object.fromEntries(results);
   });
-}
-async function discoverPools(blockNumber) {
-  const found = [...registry.pools];
-  for (const version of factoryVersions(registry)) {
-    const factoryName = version.contract;
-    const factory = c(factoryName);
-    if (!factory) continue;
-    const pools = await get(factory, "SplitRiskPoolFactory", "getActivePools", [], blockNumber);
-    if (pools.length > 200) throw new Error("Pool index requires pagination");
-    for (const poolAddress of pools) {
-      if (found.some((p) => same(p.address, poolAddress))) continue;
-      const info = await get(factory, "SplitRiskPoolFactory", "getPoolInfo", [poolAddress], blockNumber);
-      const shield = registry.assets.find((a) => same(a.address, info.shieldedToken)),
-        backing = registry.assets.find((a) => same(a.address, info.backingToken));
-      if (
-        !shield ||
-        !backing ||
-        info.commissionRate !== 1000n ||
-        info.poolFee !== 100n ||
-        info.colleteralRatio !== 15000n
-      )
-        continue;
-      const origin = await get(poolAddress, "SplitRiskPool", "POOL_FACTORY", [], blockNumber);
-      if (!same(origin, factory)) throw new Error("Pool provenance mismatch");
-      const implementation = await rpc.getStorageAt({
-        address: poolAddress,
-        slot: "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc",
-        blockNumber,
-      });
-      if (!implementation || !same("0x" + implementation.slice(-40), registry.contracts[version.router].address))
-        throw new Error("Pool router mismatch");
-      if (!version.protectedAssets.includes(shield.id) || !version.backingAssets.includes(backing.id)) continue;
-      const cfg = await get(poolAddress, "SplitRiskPool", "poolConfig", [], blockNumber);
-      if (cfg[8] !== 100n) continue;
-      found.push({
-        id: poolAddress.toLowerCase(),
-        address: poolAddress,
-        shieldedToken: shield.address,
-        backingToken: backing.address,
-        symbol: shield.symbol,
-        backingSymbol: backing.symbol,
-        environment: factoryName === "Factory" ? "scenario" : "reference",
-        priceKind: shield.kind,
-        discovered: true,
-        factory,
-        factoryVersion: version.id,
-      });
-    }
-  }
-  return found;
 }
 async function snapshot() {
   return cached("status", 8000, async () => {
@@ -162,7 +111,7 @@ async function snapshot() {
         }
       }),
     );
-    const poolRegistry = await discoverPools(blockNumber);
+    const poolRegistry = await discoverPools(registry, get, (args) => rpc.getStorageAt(args), blockNumber);
     const markets = await Promise.all(
       poolRegistry.map(async (p) => {
         const shield = sources.find((a) => same(a.address, p.shieldedToken));
@@ -178,25 +127,39 @@ async function snapshot() {
             "paused",
             "shieldReceiptNFT",
             "protectorReceiptNFT",
+            "COLLATERAL_RATIO",
+            "COMMISSION_RATE",
+            "POOL_FEE",
           ];
           const values = await Promise.all(methods.map((f) => get(p.address, "SplitRiskPool", f, [], blockNumber)));
-          const [cfg, totalBacking, totalShielded, reserved, entryValue, juniorShares, paused, seniorNft, juniorNft] =
-            values;
+          const [
+            cfg,
+            totalBacking,
+            totalShielded,
+            reserved,
+            entryValue,
+            juniorShares,
+            paused,
+            seniorNft,
+            juniorNft,
+            collateralBps,
+            juniorFeeBps,
+            creatorFeeBps,
+          ] = values;
           const ready = Object.values(code).every(Boolean) && shield.healthy && backing.healthy && !paused;
-          const nativeCapacity = totalBacking > reserved ? totalBacking - reserved : 0n;
-          const backingPrice = BigInt(backing.price || 0);
-          const shieldPrice = BigInt(shield.price || 0);
-          const usdCapacity =
-            (((totalBacking * backingPrice) / 10n ** BigInt(backing.decimals)) * 10000n) / 15000n - entryValue;
-          const unitsByUsd =
-            shieldPrice > 0n && usdCapacity > 0n ? (usdCapacity * 10n ** BigInt(shield.decimals)) / shieldPrice : 0n;
-          const unitsByCap =
-            shieldPrice > 0n
-              ? (nativeCapacity * backingPrice * 10000n * 10n ** BigInt(shield.decimals)) /
-                (15000n * 10n ** BigInt(backing.decimals) * shieldPrice)
-              : 0n;
-          let capacity = unitsByUsd < unitsByCap ? unitsByUsd : unitsByCap;
-          if (capacity > cfg[1]) capacity = cfg[1];
+          const capacity = protectionCapacity({
+            totalBacking,
+            totalShielded,
+            reserved,
+            entryValue,
+            backingPrice: BigInt(backing.price || 0),
+            shieldPrice: BigInt(shield.price || 0),
+            backingDecimals: backing.decimals,
+            shieldDecimals: shield.decimals,
+            collateralBps,
+            maxDeposit: cfg[1],
+            maxTvl: cfg[4],
+          });
           return {
             ...p,
             shield,
@@ -221,6 +184,10 @@ async function snapshot() {
             juniorNft,
             capacity,
             config: cfg,
+            collateralBps,
+            juniorFeeBps,
+            creatorFeeBps,
+            protocolFeeBps: cfg[8],
             actions: {
               protect: ready && capacity >= cfg[0],
               provide: ready,
@@ -256,7 +223,7 @@ async function snapshot() {
         });
     } catch {}
     return {
-      schemaVersion: 4,
+      schemaVersion: 5,
       creation: await creationOptions(registry, get, code, blockNumber),
       chainId: 10143,
       network: "Monad Testnet",
