@@ -4,12 +4,10 @@ import { discoverPools, protectionCapacity } from "./pools.mjs";
 import { createCache } from "./cache.mjs";
 import { createRateLimiter, requestIp } from "./request-limits.mjs";
 import { fetchPythUpdate } from "./pyth.mjs";
-import { throttledRpcFetch } from "./rpc-throttle.mjs";
-import { retryRateLimitedReads } from "./rpc-retry.mjs";
+import { createMonadReadClient } from "./read-client.mjs";
 import { createServer } from "node:http";
 import { readFileSync } from "node:fs";
-import { createPublicClient, http, parseAbi, keccak256 } from "viem";
-import { monadTestnet } from "viem/chains";
+import { parseAbi, keccak256 } from "viem";
 import { address, stringify, validateRegistry } from "./domain.mjs";
 const config = JSON.parse(readFileSync(new URL("../../config/monad.json", import.meta.url)));
 const registry = validateRegistry(JSON.parse(readFileSync(new URL("../../config/deployment.json", import.meta.url))));
@@ -19,17 +17,7 @@ const activity = createEnvioActivity({
   config: JSON.parse(readFileSync(new URL("../../config/envio.json", import.meta.url))),
   token: process.env.ENVIO_API_TOKEN,
 });
-const rpc = createPublicClient({
-  chain: monadTestnet,
-  transport: retryRateLimitedReads(
-    http(process.env.MONAD_RPC_URL || config.rpcUrl, {
-      timeout: 12000,
-      retryCount: 1,
-      batch: { batchSize: 10, wait: 10 },
-      fetchFn: throttledRpcFetch(),
-    }),
-  ),
-});
+const rpc = createMonadReadClient(process.env.MONAD_RPC_URL || config.rpcUrl);
 const generic = parseAbi([
   "function getValue(address,uint256) view returns(uint256)",
   "function getPrice(address) view returns(uint256)",

@@ -1,0 +1,11 @@
+{
+  "observedAt": "2026-09-16T14:45:17.760Z",
+  "chainId": 10143,
+  "blockNumber": "63056069",
+  "pools": 7,
+  "comparedValues": 84,
+  "resultsMatch": true,
+  "directMilliseconds": 8848,
+  "aggregatedMilliseconds": 51,
+  "note": "Single read-only sample. Fixed-block values match; this does not measure full-page load or guarantee future latency."
+}
