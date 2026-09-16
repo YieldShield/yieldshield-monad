@@ -1,4 +1,5 @@
 import { creationOptions } from "./creation.mjs";
+import { createEnvioActivity } from "./envio.mjs";
 import { discoverPools, protectionCapacity } from "./pools.mjs";
 import { createCache } from "./cache.mjs";
 import { createRateLimiter, requestIp } from "./request-limits.mjs";
@@ -13,6 +14,11 @@ import { address, stringify, validateRegistry } from "./domain.mjs";
 const config = JSON.parse(readFileSync(new URL("../../config/monad.json", import.meta.url)));
 const registry = validateRegistry(JSON.parse(readFileSync(new URL("../../config/deployment.json", import.meta.url))));
 const abis = JSON.parse(readFileSync(new URL("../../config/abis.json", import.meta.url)));
+const activity = createEnvioActivity({
+  registry,
+  config: JSON.parse(readFileSync(new URL("../../config/envio.json", import.meta.url))),
+  token: process.env.ENVIO_API_TOKEN,
+});
 const rpc = createPublicClient({
   chain: monadTestnet,
   transport: retryRateLimitedReads(
@@ -373,6 +379,12 @@ export const server = createServer(async (req, res) => {
         creation: await creationOptions(registry, get, code, block.number),
       };
     } else if (url.pathname === "/api/positions") data = await positions(address(url.searchParams.get("owner")));
+    else if (url.pathname === "/api/activity")
+      data = activity.read({
+        owner: url.searchParams.get("owner") ?? undefined,
+        poolId: url.searchParams.get("pool") ?? undefined,
+        limit: url.searchParams.has("limit") ? Number(url.searchParams.get("limit")) : 20,
+      });
     else if (url.pathname === "/api/pyth-update") data = await pythUpdate();
     else if (url.pathname === "/api/registry") data = registry;
     else {

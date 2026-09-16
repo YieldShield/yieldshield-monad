@@ -1,6 +1,8 @@
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
 process.env.NODE_ENV = "test";
+// An unconfigured sponsor must not affect liveness or initiate paid requests.
+delete process.env.ENVIO_API_TOKEN;
 const { server } = await import("./server.mjs");
 let origin;
 before(async () => {
@@ -27,6 +29,22 @@ test("unknown routes and foreign origins cannot become an authorized API flow", 
   assert.equal(r.headers.get("access-control-allow-origin"), null);
   const known = await fetch(origin + "/health", { headers: { Origin: "https://monad.yieldshield.ai" } });
   assert.equal(known.headers.get("access-control-allow-origin"), "https://monad.yieldshield.ai");
+});
+
+test("activity has explicit configuration status and bounds public filters", async () => {
+  const response = await fetch(origin + "/api/activity");
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.source, "Envio HyperSync");
+  assert.equal(body.status, "not-configured");
+  assert.equal(body.complete, false);
+  assert.equal(body.chainId, 10143);
+  assert.equal(body.poolCount, 7);
+  for (const query of ["owner=bad", "pool=foreign", "limit=51", "limit=-1", "limit=NaN"]) {
+    const invalid = await fetch(origin + "/api/activity?" + query);
+    assert.equal(invalid.status, 503);
+    assert.match((await invalid.json()).error, /^Invalid /);
+  }
 });
 
 test("rotating forwarding headers cannot bypass the API request limit", async () => {
