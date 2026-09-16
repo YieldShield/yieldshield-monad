@@ -41,17 +41,27 @@
     },
     {
       "source": "/media/metropolis-overview.mp4",
-      "destination": "/media/how-it-works-20260916.mp4",
+      "destination": "/media/how-it-works-20260916-v2.mp4",
       "permanent": true
     },
     {
       "source": "/media/metropolis-overview.vtt",
-      "destination": "/media/how-it-works-20260916.vtt",
+      "destination": "/media/how-it-works-20260916-v2.vtt",
       "permanent": true
     },
     {
       "source": "/media/metropolis-overview.txt",
       "destination": "/media/how-it-works-20260916.txt",
+      "permanent": true
+    },
+    {
+      "source": "/media/how-it-works-20260916.mp4",
+      "destination": "/media/how-it-works-20260916-v2.mp4",
+      "permanent": true
+    },
+    {
+      "source": "/media/how-it-works-20260916.vtt",
+      "destination": "/media/how-it-works-20260916-v2.vtt",
       "permanent": true
     }
   ]

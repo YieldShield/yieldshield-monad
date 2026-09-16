@@ -102,3 +102,8 @@ No new blockchain transactions were broadcast. A user wallet sign-in was request
 ## 16 September product video refresh
 
 Rebuilt the How it works video with current application captures, the site’s typography and colors, animated explanations, and ElevenLabs Chris narration. The 2:08 overview covers setup, Protect, falling and rising prices, the provider’s first-loss role, and the main limits. Added speech-aligned English captions, a matching transcript and poster. The recording uses real interface captures and labeled illustrations; no wallet signing is shown. The old media URLs redirect to the replacement.
+
+
+## 16 September video motion correction
+
+Replaced the drifting exit-path marker with sequential exit-choice cards. Removed crossfades between text-heavy screens so headings and values never overlap. Replaced calculator crops with legible animated value bars, timed the fee and provider calculations to the existing ElevenLabs narration, and made chapter progress cumulative. Reviewed intermediate animation frames and retained the original 2:08 duration. Earlier video links redirect to the revised cut.

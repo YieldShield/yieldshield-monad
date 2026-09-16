@@ -7,7 +7,7 @@
 - Project: **YieldShield on Monad**
 - Track: **Onchain Finance & Trading**
 - Demo: https://monad.yieldshield.ai
-- Video (2:08): https://monad.yieldshield.ai/media/how-it-works-20260916.mp4
+- Video (2:08): https://monad.yieldshield.ai/media/how-it-works-20260916-v2.mp4
 - Product guide and captioned player: https://monad.yieldshield.ai/how-it-works
 - Source: https://github.com/YieldShield/yieldshield-monad — private by owner instruction; resolve the rules discrepancy below before final submission.
 - Network: Monad **testnet**, chain 10143.

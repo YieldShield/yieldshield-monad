@@ -1,18 +1,18 @@
 {
-  "createdAt": "2026-09-16T07:50:36.571299+00:00",
-  "url": "https://monad.yieldshield.ai/media/how-it-works-20260916.mp4",
+  "createdAt": "2026-09-16T09:25:02.590757+00:00",
+  "url": "https://monad.yieldshield.ai/media/how-it-works-20260916-v2.mp4",
   "guidePage": "https://monad.yieldshield.ai/how-it-works",
   "durationSeconds": 127.86666666666666,
-  "sizeBytes": 5807521,
-  "sha256": "50065714279d0811c2be58f31c16d6f7881785e2dc9f3c87624346322d3564bf",
+  "sizeBytes": 5500153,
+  "sha256": "b93df53115be08a20f8d5bc9e775b79d841ed5521d9b4364d9bf28182d2ff4a8",
   "format": "H.264/AAC, 1920x1080, 30 fps",
   "narration": {
     "provider": "ElevenLabs",
     "voice": "Chris \u2014 Charming, Down-to-Earth",
     "model": "Eleven Multilingual v2"
   },
-  "description": "Current production interface captures, branded explanatory graphics and restrained animation. Illustrative calculations are labeled. No live wallet signing is shown.",
-  "captions": "31 speech-aligned English WebVTT cues; matching plain-text transcript",
+  "description": "Current app captures, sequential exit cards, fixed-value animated bars and staged arithmetic. Clean cuts prevent overlapping headings. No live wallet signing is shown.",
+  "captions": "39 phrase-aligned English cues, max two lines, no mid-word splits or overlaps",
   "chapters": [
     {
       "chapter": "Your asset. Two ways to exit.",
@@ -65,19 +65,11 @@
   ],
   "verification": {
     "fullDecode": "passed: 3836 video frames and full AAC audio decoded",
-    "visualReview": "16 designed frames reviewed; decoded samples checked",
-    "speechCheck": "Per-chapter speech recognition checked against narration; currency amounts matched",
+    "motionReview": "38 intermediate reveal/transition frames and 16 decoded export samples inspected",
+    "audio": "Original ElevenLabs AAC packets preserved exactly (MD5 6e58130837fe6009eb5d5999a8d67f66)",
     "integratedLoudnessLufs": -17.26,
     "truePeakDbtp": -1.62,
-    "frontendTests": "78 passed; production build, ESLint and formatting passed",
-    "browser": "Production playback advanced normally; 1920x1080 metadata loaded; English captions visibly rendered; desktop and 390px mobile layouts checked without overflow",
-    "legacyMediaRedirect": "HTTP 308 to the replacement; replacement HTTP 200 video/mp4 with byte ranges"
+    "frontend": "78 tests passed; production build, ESLint and formatting passed"
   },
-  "deployment": {
-    "id": "dpl_5GGtfHkYHm8SSrnmf2H55Stacs3X",
-    "url": "https://yieldshield-monad-q5ybqzszx-noc2-6281s-projects.vercel.app",
-    "alias": "https://monad.yieldshield.ai",
-    "sourceCommit": "606a122",
-    "integratedCommit": "b29ad88"
-  }
+  "revision": 2
 }
