@@ -59,6 +59,7 @@ import { MarketSelect } from "./MarketSelect";
 import { Landing } from "./Landing";
 import { HowItWorks } from "./HowItWorks";
 import { TaskAside } from "./TaskAside";
+import { Activity } from "./Activity";
 const registry = registryJson as unknown as Registry;
 const abi = (name: string) => (abisJson as unknown as Record<string, Abi>)[name];
 const contract = (name: string) => registry.contracts[name]?.address;
@@ -399,6 +400,7 @@ function Markets() {
           </p>
         </>
       )}
+      <Activity />
     </Shell>
   );
 }
@@ -725,6 +727,7 @@ function Positions() {
           })}
         </div>
       )}
+      {w.account ? <Activity key={w.account.toLowerCase()} owner={w.account} /> : null}
     </Shell>
   );
 }
