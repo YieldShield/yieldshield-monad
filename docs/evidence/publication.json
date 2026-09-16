@@ -93,11 +93,20 @@
       35094719325,
       35094719342
     ],
-    "publicRunnersStarted": true
+    "publicRunnersStarted": true,
+    "retryResults": {
+      "35094719325": "success",
+      "35094719342": "history scan and dependency review passed; randomized scanner control failed; corrected in publication follow-up"
+    }
   },
   "limitations": [
     "Automated credential scanning and manual match classification do not establish the absence of all confidential information.",
     "The two documented Dynamic dependency advisory exceptions remain unchanged.",
     "Publication does not complete wallet signing evidence or submit the Metropolis project."
-  ]
+  ],
+  "scannerControlFollowUp": {
+    "rulesChanged": false,
+    "stableSyntheticSamples": true,
+    "localControlsPassed": 29
+  }
 }

@@ -26,7 +26,7 @@ Settings were read back from GitHub after configuration. The [machine-readable r
 
 ## GitHub Actions and billing
 
-The first checks on merged `main` failed before starting any steps because GitHub reported failed payments or a spending limit on the private repository. After publication, both runs were retried and their jobs started successfully on public runners. No payment method, spending limit or paid plan was changed.
+The first checks on merged `main` failed before starting any steps because GitHub reported failed payments or a spending limit on the private repository. After publication, both runs were retried and their jobs started successfully on public runners. The release checks passed. The security run passed its history scan and dependency review but exposed a flaky synthetic-key control: random samples could fall outside the default detector’s entropy or character criteria. A separate fix uses stable generated samples without weakening any scanning rules; all 29 controls pass locally, and the final pull request runs the complete checks again. No payment method, spending limit or paid plan was changed.
 
 - [Release checks](https://github.com/YieldShield/yieldshield-monad/actions/runs/35094719325)
 - [Security checks](https://github.com/YieldShield/yieldshield-monad/actions/runs/35094719342)
