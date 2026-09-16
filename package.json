@@ -26,7 +26,8 @@
     "verify:monad": "node scripts/verify-monad.mjs",
     "smoke:monad": "node scripts/smoke-monad.mjs --broadcast",
     "smoke:reference": "node scripts/smoke-monad.mjs --broadcast --reference",
-    "check:scope": "node --test scripts/check-monad-scope.test.mjs && node scripts/check-monad-scope.mjs"
+    "check:scope": "node --test scripts/check-monad-scope.test.mjs && node scripts/check-monad-scope.mjs",
+    "lint:web": "eslint apps/monad-web/src"
   },
   "dependencies": {
     "@pythnetwork/pyth-sdk-solidity": "4.3.1",
@@ -42,7 +43,8 @@
     "prettier": "^3.9.6",
     "typescript-eslint": "^8.70.0",
     "vite": "^8.2.2",
-    "vitest": "^5.0.0"
+    "vitest": "^5.0.0",
+    "typescript": "~6.0.3"
   },
   "overrides": {
     "axios@1.16.0": "1.20.0",
