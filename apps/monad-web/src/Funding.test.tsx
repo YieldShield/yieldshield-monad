@@ -84,7 +84,7 @@ describe("faucet onboarding before a transaction", () => {
     expect(renderFunding()).toContain("<button>Transaction in progress</button>");
   });
 
-  it.each(["/protect", "/provide", "/positions", "/positions/receipt-1", "/trade", "/create-pool"])(
+  it.each(["/protect", "/provide", "/positions", "/positions/receipt-1", "/create-pool"])(
     "shows the funding notice on %s",
     (pathname) => {
       expect(renderFunding("TestUSDC", pathname)).toContain("funding-notice");

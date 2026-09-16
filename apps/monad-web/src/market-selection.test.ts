@@ -18,7 +18,7 @@ describe("market selection", () => {
   it("never substitutes another market for an invalid explicit link", () => {
     expect(selectMarket(markets, "unknown")).toBeUndefined();
   });
-  it("supports the demo-only trade list and an empty registry", () => {
+  it("supports a scenario-only registry and an empty registry", () => {
     expect(
       selectMarket(
         markets.filter((m) => m.environment === "scenario"),

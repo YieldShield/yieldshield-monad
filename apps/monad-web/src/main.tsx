@@ -23,7 +23,6 @@ import { FundingNotice, FundingGate, AssetFundingHint, monadFaucet, type Funding
 import { amount, minOut, netAsset, noticeState, fmt, usd, short, fetcher, explorer, errorMessage } from "./lib";
 import type { Asset, Market, Position, Snapshot, Registry } from "./types";
 import { selectMarket } from "./market-selection";
-import { reviewedQuoteDeadline } from "./reviewed-quote";
 import { scenarioExits } from "./scenario-model";
 import "./styles.css";
 import "./app-layout.css";
@@ -97,7 +96,6 @@ const primaryNav = [
 ];
 const moreNav = [
   ["/markets", "Compare pools", "◈"],
-  ["/trade", "Demo trade", "⇄"],
   ["/how-it-works", "How it works", "↗"],
   ["/status", "Network status", "≋"],
   ["/evidence", "Build evidence", "▧"],
@@ -956,152 +954,6 @@ function PositionDetail() {
         <a href={explorer("address", p.pool)} target="_blank" rel="noreferrer">
           Pool contract ↗
         </a>
-      </div>
-    </Shell>
-  );
-}
-function Trade() {
-  const { data, error } = useSnapshot();
-  const { m, id, setId } = useSelectedMarket(
-    data ? { ...data, markets: data.markets.filter((m) => m.environment === "scenario") } : undefined,
-  );
-  const [input, setInput] = useState("1"),
-    [side, setSide] = useState<"buy" | "sell">("buy");
-  const w = useWallet();
-  const tradeToken = side === "buy" ? registry.assets.find((a) => a.id === "test-usd") : m?.shield;
-  const tradeBalance = useBalance(tradeToken?.address);
-  const fundingAsset = tradeToken
-    ? { symbol: tradeToken.symbol, balance: tradeBalance.error ? undefined : tradeBalance.data }
-    : undefined;
-  let value = 0n;
-  try {
-    if (m) value = amount(input, m.shield.decimals);
-  } catch {}
-  const { data: quote, error: quoteError } = useSWR(
-    m && value > 0n ? `/api/quote?market=${id}&amount=${value}&side=${side}` : null,
-    fetcher,
-    { dedupingInterval: 2000, refreshInterval: 10000 },
-  );
-  return (
-    <Shell>
-      <div className="task-page">
-        <PageTitle title="Demo trade" copy="Buy or sell synthetic test tokens." />
-        {!data ? (
-          <Loading error={error} />
-        ) : !m ? (
-          <div className="empty-state">
-            <h2>Demo pool unavailable</h2>
-            <Link to="/faucet">Get test tokens ↗</Link>
-          </div>
-        ) : (
-          <div className="task-layout">
-            <div>
-              <section className="action-panel">
-                <div className="segmented">
-                  <button
-                    className={side === "buy" ? "selected" : ""}
-                    aria-pressed={side === "buy"}
-                    onClick={() => setSide("buy")}
-                  >
-                    Buy
-                  </button>
-                  <button
-                    className={side === "sell" ? "selected" : ""}
-                    aria-pressed={side === "sell"}
-                    onClick={() => setSide("sell")}
-                  >
-                    Sell
-                  </button>
-                </div>
-                <MarketSelect
-                  data={{ ...data, markets: data.markets.filter((m) => m.environment === "scenario") }}
-                  id={id}
-                  setId={setId}
-                />
-                <label className="field">
-                  {m.symbol} amount
-                  <div className="amount-field">
-                    <input
-                      aria-label={`${m.symbol} amount`}
-                      value={input}
-                      inputMode="decimal"
-                      onChange={(e) => setInput(e.target.value)}
-                    />
-                    <b className="amount-token">
-                      <TokenIcon asset={m.shield} />
-                      {m.symbol}
-                    </b>
-                  </div>
-                  <span className="field-hint">
-                    Maximum 25 tokens per trade · Balance: {fmt(fundingAsset?.balance, tradeToken?.decimals, 5)}{" "}
-                    {tradeToken?.symbol}
-                  </span>
-                </label>
-                <AssetFundingHint asset={fundingAsset} />
-                <dl className="review-list">
-                  <div>
-                    <dt>{side === "buy" ? "You pay" : "You receive"}</dt>
-                    <dd>{fmt(quote?.total, 6, 4)} TestUSDC</dd>
-                  </div>
-                  <div>
-                    <dt>Exchange fee</dt>
-                    <dd>0.30%</dd>
-                  </div>
-                  <div>
-                    <dt>Price source</dt>
-                    <dd>Synthetic formula</dd>
-                  </div>
-                  <div>
-                    <dt>Slippage limit</dt>
-                    <dd>0.50%</dd>
-                  </div>
-                </dl>
-                {quoteError && <p className="inline-warning">{quoteError.message}</p>}
-                <Submit
-                  label={side === "buy" ? "Approve & buy" : "Approve & sell"}
-                  asset={fundingAsset}
-                  disabled={!quote || !!quoteError}
-                  onClick={() =>
-                    w.execute("Prepare scenario trade", async () => {
-                      reviewedQuoteDeadline(quote.expiresAt);
-                      const usdToken = registry.assets.find((a) => a.id === "test-usd")!;
-                      const total = BigInt(quote.total),
-                        limit = side === "buy" ? (total * 1005n + 999n) / 1000n : minOut(total);
-                      await w.approve(
-                        side === "buy" ? usdToken.address : m.shieldedToken,
-                        contract("ScenarioExchange"),
-                        side === "buy" ? limit : value,
-                      );
-                      const deadline = reviewedQuoteDeadline(quote.expiresAt);
-                      await w.send({
-                        address: contract("ScenarioExchange"),
-                        abi: abi("MonadAssetExchange"),
-                        functionName: "swap",
-                        args: [m.shieldedToken, side === "buy", value, limit, deadline],
-                      });
-                    })
-                  }
-                />
-              </section>
-
-              <details className="disclosure">
-                <summary>Other trading venues</summary>
-                <div className="disclosure-body">
-                  <p>Kuru is an external Monad venue; it is not connected to this demo exchange.</p>
-                  <a href="https://www.kuru.io/" target="_blank" rel="noreferrer">
-                    Visit Kuru ↗
-                  </a>
-                </div>
-              </details>
-            </div>
-            <TaskAside title="Try a demo trade." asset={m.shield} backing={m.backing}>
-              <p>Buy or sell {m.symbol} with TestUSDC at synthetic prices.</p>
-              <p>Test tokens have no monetary value.</p>
-              <Link to={`/protect?market=${id}`}>Protect tokens ↗</Link>
-              <Link to="/faucet">Get test tokens ↗</Link>
-            </TaskAside>
-          </div>
-        )}
       </div>
     </Shell>
   );
@@ -2043,9 +1895,8 @@ function Legal() {
         </p>
         <h2>External integrations</h2>
         <p>
-          RedStone, Pyth and shMonad are external protocols. Their use does not imply endorsement or partnership.
-          Mainnet trading links leave YieldShield and use separate services. No stock trading, tokenized equities or
-          real-money payments are enabled here.
+          RedStone, Pyth and shMonad are external protocols. Their use does not imply endorsement or partnership. No
+          stock trading, tokenized equities or real-money payments are enabled here.
         </p>
         <h2>Privacy</h2>
         <p>
@@ -2125,7 +1976,6 @@ function App() {
             <Route path="/provide" element={<PositionForm key="junior" side="junior" />} />
             <Route path="/positions" element={<Positions />} />
             <Route path="/positions/:key" element={<PositionDetail />} />
-            <Route path="/trade" element={<Trade />} />
             <Route path="/faucet" element={<Tokens />} />
             <Route path="/tokens" element={<LegacyTokensRedirect />} />
             <Route path="/lab" element={<Lab />} />

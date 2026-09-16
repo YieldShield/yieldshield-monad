@@ -45,7 +45,7 @@ export function FundingNotice() {
     [usd, scenario, wrapped, staked, vault].map((balance) => (balance.error ? undefined : balance.data)),
   );
   const needsFunding =
-    ["/", "/protect", "/provide", "/positions", "/trade", "/create-pool"].includes(pathname) ||
+    ["/", "/protect", "/provide", "/positions", "/create-pool"].includes(pathname) ||
     pathname.startsWith("/positions/");
   if (!needsFunding || !step || (pathname === "/" && step === "connect")) return null;
   return (
