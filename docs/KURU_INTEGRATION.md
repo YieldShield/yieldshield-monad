@@ -1,6 +1,6 @@
 # Optional MON funding through Kuru
 
-Implemented 16 September 2026 for **Monad testnet, chain 10143**. The feature belongs inside the Faucet page. It does not add a trading page or navigation item.
+Implemented and exercised by an internal script on 16 September 2026 for **Monad testnet, chain 10143**. The feature belongs inside the Faucet page. It does not add a trading page or navigation item. A browser-signed funding-to-protection demonstration and external user validation remain outstanding.
 
 ## User journey
 
@@ -54,9 +54,25 @@ These are expired observations, not current offers. The finalized public MON/USD
 
 The first unthrottled combined probe encountered the public RPC's 15-request/second limit. The retry using the repository's `throttledRpcFetch` and `retryRateLimitedReads` succeeded. Operator scripts should use those wrappers; UI reads retain the app's bounded read-retry behavior. A failed read never falls back to an unverified price or a synthetic fill.
 
-## Live exercise and evidence gate
+## Completed scripted transaction journey
 
-The operator module is ready for a coordinated run with the existing dedicated testnet signer. **At this document's creation, that new Kuru transaction journey had not yet been broadcast.** Append the actual evidence after completion; do not describe the integration as exercised before then.
+The dedicated testnet signer completed five transactions, recorded in [the public funding evidence](evidence/kuru-funding-journey-20260916.json). A separate read-only verification matched all five receipts to canonical block hashes, checked the sender, target, nonce, status and gas fields, decoded the signed call parameters, and verified the actual `SpotSwap` event against the reviewed quote.
+
+| Step | Transaction |
+| --- | --- |
+| Claim the test-token bundle | [0x4103741c…](https://testnet.monadexplorer.com/tx/0x4103741cc51fe5bdea8b499e2d9b02f7d7718c0a2b22310d45678a747c2e548c) |
+| Approve exactly 10 Kuru test USDC | [0x738eb198…](https://testnet.monadexplorer.com/tx/0x738eb198ec08424052679dbf5a5824c94753fcf5794a0834a9d57b6efdb316c2) |
+| Deposit into the signer's own Kuru account | [0x29a29344…](https://testnet.monadexplorer.com/tx/0x29a29344ee3e66a2b1a526bafacfab3f7a64ac0e3ae83f1a0b4ea1f963b6b2d9) |
+| Buy native MON | [0xc29230b7…](https://testnet.monadexplorer.com/tx/0xc29230b7826db8f37becb670c4c3b2442e446c434d6353910dd5ec43595d5203) |
+| Withdraw the acquired MON to the same wallet | [0x20c4a78d…](https://testnet.monadexplorer.com/tx/0x20c4a78db41d963648debe645331d38070f4ef6719a55e61205348bcdc01fdaf) |
+
+The actual fill spent **10 Kuru test USDC** and credited **199.3974978 native testnet MON**, above the minimum of 198.400510311 MON. The full bought amount was withdrawn; Kuru's free MON and USDC balances finished at zero. The wallet retained 9,990 Kuru test USDC from the 10,000-token faucet allocation. These amounts have no monetary value.
+
+The five maximum fee reservations sum to **0.2537661 testnet MON**, within the one-MON limit; actual receipt fees sum to **0.2121651 MON**. The withdrawal alone cost 0.026205534 MON. Its native-wallet reconciliation is exact: 2.078819692 + 199.3974978 − 0.026205534 = 201.450111958 MON.
+
+This proves an **internally scripted on-chain funding journey**. It does not establish browser-wallet completion, customer trading activity, a partnership or bounty qualification. The record explicitly has `protectionOpened: false`; acquiring MON and opening protection still need to be demonstrated together through the product.
+
+## Repeating the operator exercise
 
 `runKuruFundingSmoke` takes an already configured read client, wallet client, account address and two required callbacks: `onIntent` and `onReceipt`. The caller must durably store each expected transaction hash and nonce before broadcasting and the corresponding receipt afterwards. Use the existing ignored deployment journal location. The module:
 
@@ -68,7 +84,7 @@ The operator module is ready for a coordinated run with the existing dedicated t
 
 After an ambiguous broadcast or failed receipt read, stop and reconcile the expected hash and current account state. Do not rerun the whole journey blindly. Only one process should use the dedicated signer at a time. Publish transaction hashes and balance evidence, never signer credentials or authentication sessions.
 
-Before claiming the consumer-trading bounty, record the actual swap/withdrawal journey, demonstrate acquisition followed by the existing protection flow, and obtain real user-demand evidence. The bounty also evaluates target users, acquisition, retention and continuation; integration code alone does not satisfy those requirements. [Market validation plan](MARKET_READINESS_2026-09-16.md).
+Before claiming the consumer-trading bounty, record a browser-signed acquisition followed by the existing protection flow and obtain real user-demand evidence. The bounty also evaluates target users, acquisition, retention and continuation; internal test transactions alone do not satisfy those requirements. [Market validation plan](MARKET_READINESS_2026-09-16.md).
 
 ## Primary references
 
