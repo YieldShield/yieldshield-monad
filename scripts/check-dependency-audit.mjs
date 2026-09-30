@@ -24,10 +24,10 @@ const exceptions = {
   },
 };
 const inheritedVersions = {
-  "@dynamic-labs/ethereum": "5.8.1",
-  "@dynamic-labs/solana-core": "5.8.1",
-  "@dynamic-labs/waas": "5.8.1",
-  "@dynamic-labs/waas-evm": "5.8.1",
+  "@dynamic-labs/ethereum": "5.9.2",
+  "@dynamic-labs/solana-core": "5.9.2",
+  "@dynamic-labs/waas": "5.9.2",
+  "@dynamic-labs/waas-evm": "5.9.2",
   "@solana/buffer-layout-utils": "0.2.0",
   "@solana/spl-token": "0.4.14",
   jayson: "4.3.0",
