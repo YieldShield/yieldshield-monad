@@ -3,6 +3,9 @@ updates:
   - package-ecosystem: npm
     directory: /
     groups:
+      dynamic-wallet:
+        patterns:
+          - "@dynamic-labs/*"
       react:
         patterns:
           - react
