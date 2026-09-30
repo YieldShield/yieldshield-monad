@@ -60,3 +60,9 @@ The unused Solana SDK, adapters, historical frontend, Solana faucet and Base API
 The remaining Solana dependency path is `@dynamic-labs/ethereum → @dynamic-labs/waas-evm → @dynamic-labs/waas → @dynamic-labs/solana-core`. Removing first-party Solana code does not resolve the two Dynamic advisory exceptions above. No versions, expiry dates or browser exposure conditions were relaxed. The repository-scope gate prevents direct Solana dependencies or retired entry points from returning; the bundle gate also rejects retired first-party workspace modules.
 
 The [cleanup verification record](REPOSITORY_CLEANUP.md) supersedes the earlier test counts above: 99 frontend checks, 78 API/deployment checks, 153 contract-tool checks and 5,561 verified browser modules. The contract tooling TOML dependency was subsequently updated to 5.x on main; this cleanup retains that merged lockfile unchanged.
+
+## Wallet update review — 30 September 2026
+
+Both Dynamic entry packages and their runtime connector peers are pinned to **5.9.2** at the root, with the app entry packages on the same version. This supersedes the isolated Ethereum 5.9 update, which mixed incompatible nominal wallet types. Explicit root `ethereum-core` and `wallet-connector-core` dependencies satisfy the connector imports when legacy peer installation is enabled. Stale nested workspace SDK entries were removed from the lockfile; a clean install and the production browser build must pass with the committed tree.
+
+The reviewed advisory paths remain the same nine affected entries and two underlying advisories described above. The inherited Dynamic allowlist now names only the reverified 5.9.2 packages. **The 16 October exception expiry, advisory identities, paths, severities and browser exclusion checks are unchanged.** These packages are not represented as patched, and their GitHub alerts must remain open. Dynamic updates are grouped to keep the SDK and connector packages aligned.
