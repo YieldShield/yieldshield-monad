@@ -32,7 +32,7 @@
   "dependencies": {
     "@pythnetwork/pyth-sdk-solidity": "4.3.1",
     "viem": "^2.56.5",
-    "@dynamic-labs/ethereum": "5.8.1",
+    "@dynamic-labs/ethereum": "5.9.1",
     "@dynamic-labs/sdk-react-core": "5.8.1"
   },
   "devDependencies": {
