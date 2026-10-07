@@ -30,10 +30,10 @@
     "lint:web": "eslint apps/monad-web/src"
   },
   "dependencies": {
-    "@dynamic-labs/ethereum": "5.9.2",
-    "@dynamic-labs/ethereum-core": "5.9.2",
-    "@dynamic-labs/sdk-react-core": "5.9.2",
-    "@dynamic-labs/wallet-connector-core": "5.9.2",
+    "@dynamic-labs/ethereum": "5.9.3",
+    "@dynamic-labs/ethereum-core": "5.9.3",
+    "@dynamic-labs/sdk-react-core": "5.9.3",
+    "@dynamic-labs/wallet-connector-core": "5.9.3",
     "@pythnetwork/pyth-sdk-solidity": "4.3.1",
     "viem": "^2.56.5"
   },
