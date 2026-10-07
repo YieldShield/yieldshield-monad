@@ -35,7 +35,7 @@
     "@dynamic-labs/sdk-react-core": "5.9.2",
     "@dynamic-labs/wallet-connector-core": "5.9.2",
     "@pythnetwork/pyth-sdk-solidity": "4.3.1",
-    "viem": "^2.56.5"
+    "viem": "^2.57.2"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
