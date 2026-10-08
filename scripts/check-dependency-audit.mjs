@@ -16,21 +16,15 @@ const exceptions = {
     url: "https://github.com/advisories/GHSA-3gc7-fjrx-p6mg",
     severity: "high",
   },
-  "stream-json": {
-    version: "1.9.1",
-    node: "node_modules/stream-json",
-    url: "https://github.com/advisories/GHSA-528h-pc64-c93x",
-    severity: "moderate",
-  },
+
 };
 const inheritedVersions = {
-  "@dynamic-labs/ethereum": "5.9.2",
-  "@dynamic-labs/solana-core": "5.9.2",
-  "@dynamic-labs/waas": "5.9.2",
-  "@dynamic-labs/waas-evm": "5.9.2",
+  "@dynamic-labs/ethereum": "5.9.3",
+  "@dynamic-labs/solana-core": "5.9.3",
+  "@dynamic-labs/waas": "5.9.3",
+  "@dynamic-labs/waas-evm": "5.9.3",
   "@solana/buffer-layout-utils": "0.2.0",
   "@solana/spl-token": "0.4.14",
-  jayson: "4.3.0",
 };
 
 export function checkAudit(report, lock, { allowBrowserExceptions = false, now = Date.now() } = {}) {
