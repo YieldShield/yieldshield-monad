@@ -1,10 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { execFileSync } from "node:child_process";
+import { createRequire } from "node:module";
 import { auditedDirectories, checkAudit, checkBrowserModules } from "./check-dependency-audit.mjs";
 
 const now = Date.parse("2026-09-16T00:00:00Z");
 const options = { now, allowBrowserExceptions: true };
+const require = createRequire(import.meta.url);
 test("audits every committed npm lockfile, including standalone tooling", () => {
   const files = execFileSync("git", ["ls-files", "*package-lock.json"], {
     cwd: new URL("../", import.meta.url), encoding: "utf8",
@@ -79,4 +81,43 @@ test("rejects retired first-party workspaces in the browser bundle", () => {
     "packages/adapter-solana/dist/index.js", "packages/adapter-evm/src/index.ts", "packages/core/src/index.ts"]) {
     assert.throws(() => checkBrowserModules([entry, `/repo/${source}`]), /Retired application workspace/);
   }
+});
+
+test("rejects the removed stream-json exception even at its previously reviewed version", () => {
+  const { report, lock } = fixture();
+  report.vulnerabilities["stream-json"] = {
+    severity: "moderate", nodes: ["node_modules/stream-json"],
+    via: [{ name: "stream-json", dependency: "stream-json", severity: "moderate",
+      url: "https://github.com/advisories/GHSA-528h-pc64-c93x" }],
+  };
+  report.metadata.vulnerabilities.total++;
+  lock.packages["node_modules/stream-json"] = { version: "1.9.1" };
+  assert.throws(() => checkAudit(report, lock, options), /Unreviewed/);
+});
+
+test("Jayson browser override preserves JSON-RPC IDs, success and error callbacks", async () => {
+  const Client = require("jayson/lib/client/browser");
+  const client = new Client((body, done) => {
+    const request = JSON.parse(body);
+    assert.equal(request.jsonrpc, "2.0");
+    assert.match(request.id, /^[0-9a-f-]{36}$/i);
+    done(null, JSON.stringify({ jsonrpc: "2.0", id: request.id,
+      ...(request.method === "fail" ? { error: { code: -32601, message: "Unknown method" } }
+        : { result: request.params[0] }) }));
+  });
+  await new Promise((resolve, reject) => client.request("echo", [42], (error, response) => {
+    if (error) return reject(error);
+    assert.equal(response.result, 42);
+    resolve();
+  }));
+  await new Promise((resolve, reject) => client.request("fail", [], (error, rpcError, result) => {
+    if (error) return reject(error);
+    assert.equal(rpcError.code, -32601);
+    assert.equal(result, undefined);
+    resolve();
+  }));
+  const custom = new Client(() => {}, { generator: () => "wallet-request" });
+  assert.equal(custom.request("echo", []).id, "wallet-request");
+  assert.equal(custom.request("echo", [], 7).id, 7);
+  assert.equal(custom.request("notify", [], null).id, undefined);
 });
