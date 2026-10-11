@@ -1,6 +1,6 @@
 # Sponsor answers — factual draft, 11 October 2026
 
-Copy only answers whose current integration and evidence have been verified. Sponsor selection does not establish eligibility or an award. The 11 October reference-price outage disables MON/shMON pool actions; September execution evidence is historical. A fresh 10-test-USDC Kuru quote is currently unfillable, so the historical fill must not be described as a currently repeatable trade. Envio has been removed at the user's instruction.
+Copy only answers whose current integration and evidence have been verified. Sponsor selection does not establish eligibility or an award. The 11 October reference-price outage disables MON/shMON pool actions; September execution evidence is historical. Kuru's September deployment has an empty book. The replacement deployment has limited liquidity and a different test USDC without a public faucet; the owner does not have that token yet. No new funded trade is claimed. Envio has been removed at the user's instruction.
 
 ## Dynamic — describe SDK authentication, wallet or signing integration
 
@@ -18,7 +18,7 @@ Historical reference-market browser evidence: https://github.com/YieldShield/yie
 
 Our first users are MON and shMON holders who want to keep crypto exposure while understanding their alternatives if prices fall. Within this group, Kuru serves people who need to acquire native MON before wrapping it or staking into shMON and separately opening a protected position. Experienced DeFi liquidity providers are the complementary segment; they supply backing and accept first-loss exposure for a share of realized gains.
 
-The product's trading feature is deliberately a focused funding journey: acquire native test MON through Kuru's Spot V2 order book, withdraw it to the connected wallet, then choose a separate protection action. Buying MON does not automatically open protection. The current integration is Monad testnet only. A fresh quote for 10 test USDC was unfillable on 11 October; the September execution below is historical, and we do not claim current liquidity or an available buy-then-protect reference-market path.
+The product's trading feature is deliberately a focused funding journey: acquire native test MON through Kuru's Spot V2 order book, withdraw it to the connected wallet, then choose a separate protection action. Buying MON does not automatically open protection. The current integration is Monad testnet only. On 11 October we identified and migrated from the retired September deployment to Kuru's current root-account deployment, while retaining old-account withdrawals. The current book has only limited test liquidity, and its new test USDC must be obtained through Kuru's integration contact. The owner has none of that token yet. A read-only estimate is not a completed trade; the September execution below is historical, and the stale RedStone reference still prevents a current buy-then-protect journey.
 
 ## Kuru — case studies, research evidence of demand and live user statistics
 
@@ -26,7 +26,9 @@ Our present evidence establishes technical execution, not customer demand. The c
 
 This is one internally scripted funding journey, not external trading activity. The record explicitly states that it did not open protection. We do not have documented external user counts, customer trading volume, retention statistics, interview outcomes or committed liquidity to claim. Our market research identifies selling spot exposure, holding shMON and a separate MON perpetual hedge as alternatives; it does not prove demand for YieldShield. The next test is an observed cohort of six holders and four potential backing providers, including a browser buy-then-protect journey and a second-session check.
 
-Evidence: https://github.com/YieldShield/yieldshield-monad/blob/ef194f7/docs/KURU_INTEGRATION.md
+Current integration and recovery instructions: https://github.com/YieldShield/yieldshield-monad/blob/codex/restore-redstone-kuru/docs/KURU_INTEGRATION.md
+
+Historical execution evidence: https://github.com/YieldShield/yieldshield-monad/blob/ef194f7/docs/KURU_INTEGRATION.md
 
 Research/validation plan: https://github.com/YieldShield/yieldshield-monad/blob/ef194f7/docs/MARKET_READINESS_2026-09-16.md
 
@@ -38,7 +40,7 @@ Before any mainnet launch, undertake further security review, validate real mark
 
 ## Kuru — onboarding and retaining traders
 
-Onboarding starts with Dynamic or an existing wallet, clear Monad testnet identification and a small, guided funding amount. The Kuru flow shows the connected account, verified market, input, minimum output and quote expiry. It uses exact approval, an owned Kuru account and a separate withdrawal back to the wallet. The next step explains that MON still needs wrapping or staking and a distinct protection deposit.
+Onboarding starts with Dynamic or an existing wallet, clear Monad testnet identification and a small, guided funding amount. The Kuru flow distinguishes current tokens from September balances and explains that the new token has no public faucet. It checks market liquidity and withdrawal readiness before funding, then shows the connected account, input, minimum output and quote expiry. It uses exact approval, the connected wallet's root account and a separate withdrawal back to that wallet. The next step explains that MON still needs wrapping or staking and a distinct protection deposit.
 
 We plan to acquire early users through founder-led Monad/staking-community introductions and concise product walkthroughs. Retention will be tested through useful position visibility, reliable receipt recovery and understandable exit management, with a measured return visit rather than incentivized transaction counts. There is no claimed retention rate or active trader cohort yet.
 
