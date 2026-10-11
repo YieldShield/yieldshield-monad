@@ -1629,7 +1629,9 @@ function Status() {
                 </strong>
                 <span>
                   {data.referenceOracle === "redstone"
-                    ? "Read directly from Monad testnet. Prices older than 120 seconds are rejected."
+                    ? data.redstoneUpdateConfigured
+                      ? "Read directly from Monad testnet. Signed updates can be published with your wallet; prices older than 120 seconds are rejected."
+                      : "Read directly from Monad testnet. Publishing signed updates requires RedStone gateway access; prices older than 120 seconds are rejected."
                     : data.pythUpdateConfigured
                       ? "Authenticated signed price updates are configured."
                       : "Awaiting account/API key setup. No synthetic price fallback."}
@@ -1655,6 +1657,12 @@ function Status() {
                     : "Setup needed"}
               </Tag>
             </div>
+            {data.referenceOracle === "redstone" && data.redstoneUpdateConfigured && (
+              <Submit
+                label="Publish the latest signed MON price"
+                onClick={() => w.execute("Update RedStone MON price", w.updatePrice)}
+              />
+            )}
             {data.referenceOracle !== "redstone" && data.pythUpdateConfigured && (
               <Submit
                 label="Publish the latest signed MON price"
