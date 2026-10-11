@@ -1,6 +1,11 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { encodeAbiParameters, encodeEventTopics, parseAbi, type TransactionReceipt } from "viem";
-import { replacementReceiptId } from "./replacement-receipt";
+import { refreshConfirmedPositions } from "./confirmed-position-refresh";
+import {
+  reconcileReplacementReceipt,
+  replacementReceiptId,
+  type PendingReplacementReceipt,
+} from "./replacement-receipt";
 
 const pool = "0x1111111111111111111111111111111111111111";
 const owner = "0x2222222222222222222222222222222222222222";
@@ -63,5 +68,41 @@ describe("replacement position navigation", () => {
     expect(replacementReceiptId(receipt([log({ topics: reused })]), expected)).toBeNull();
     const empty = encodeAbiParameters([{ type: "uint256" }, { type: "uint256" }], [expected.withdrawAmount, 0n]);
     expect(replacementReceiptId(receipt([log({ data: empty })]), expected)).toBeNull();
+  });
+
+  it("keeps the confirmed replacement pending until that exact receipt is published", () => {
+    const pending = { key: "scenario:senior:4", owner, hash: transactionHash } as const;
+    expect(reconcileReplacementReceipt(pending, undefined)).toBe(pending);
+    expect(reconcileReplacementReceipt(pending, [])).toBe(pending);
+    expect(reconcileReplacementReceipt(pending, [{ key: "scenario:senior:3" }])).toBe(pending);
+    expect(reconcileReplacementReceipt(pending, [{ key: pending.key }])).toBeNull();
+  });
+
+  it("does not resurrect replacement loading after publication followed by a full exit", async () => {
+    const newId = replacementReceiptId(receipt([log()]), expected);
+    const key = `scenario:senior:${newId}`;
+    let pending: PendingReplacementReceipt | null = { key, owner, hash: transactionHash };
+    let published: { positions: { key: string }[] } = { positions: [{ key: "scenario:senior:3" }] };
+    const publish = async (snapshot: typeof published) => {
+      published = snapshot;
+      pending = reconcileReplacementReceipt(pending, published.positions);
+    };
+    // This is the direct post-confirmation publication path: no periodic fetch
+    // or SWR onSuccess callback occurs between these two wallet actions.
+    await refreshConfirmedPositions(
+      vi.fn().mockResolvedValueOnce(published).mockResolvedValueOnce({ positions: [{ key }] }),
+      publish,
+      { wait: async () => {} },
+    );
+    expect(published.positions).toEqual([{ key }]);
+    expect(pending).toBeNull();
+
+    await refreshConfirmedPositions(
+      vi.fn().mockResolvedValueOnce(published).mockResolvedValueOnce({ positions: [] }),
+      publish,
+      { wait: async () => {} },
+    );
+    expect(published.positions).toEqual([]);
+    expect(pending).toBeNull();
   });
 });

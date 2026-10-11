@@ -38,7 +38,11 @@ import {
 import type { Asset, Market, Position, Snapshot, Registry, CreationOption } from "./types";
 import { selectMarket } from "./market-selection";
 import { depositLimitError } from "./deposit-limits";
-import { replacementReceiptId } from "./replacement-receipt";
+import {
+  reconcileReplacementReceipt,
+  replacementReceiptId,
+  type PendingReplacementReceipt,
+} from "./replacement-receipt";
 import "./styles.css";
 import "./app-layout.css";
 import "./asset-images.css";
@@ -795,7 +799,7 @@ function PositionDetail() {
   const { key } = useParams();
   const navigate = useNavigate();
   const w = useWallet();
-  const [replacement, setReplacement] = useState<{ key: string; owner: Address; hash: string } | null>(null);
+  const [replacement, setReplacement] = useState<PendingReplacementReceipt | null>(null);
   const { data: state, error: stateError } = useSnapshot();
   const {
     data,
@@ -803,11 +807,11 @@ function PositionDetail() {
     mutate: refreshPositions,
   } = useSWR<{ positions: Position[] }>(w.account ? `/api/positions?owner=${w.account}` : null, fetcher, {
     refreshInterval: 10000,
-    onSuccess: (snapshot) =>
-      setReplacement((current) =>
-        current && snapshot.positions.some((position) => position.key === current.key) ? null : current,
-      ),
   });
+  useEffect(() => {
+    // Post-transaction mutate publishes data without invoking SWR's onSuccess.
+    setReplacement((current) => reconcileReplacementReceipt(current, data?.positions));
+  }, [data]);
   const p = data?.positions.find((p) => p.key === key);
   const m = state?.markets.find((m) => m.id === p?.poolId);
   const [withdraw, setWithdraw] = useState("");

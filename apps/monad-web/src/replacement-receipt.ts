@@ -4,6 +4,17 @@ const partialWithdrawalAbi = parseAbi([
   "event PartialWithdrawal(address indexed user,uint256 indexed oldTokenId,uint256 indexed newTokenId,uint256 withdrawAmount,uint256 remainingAmount)",
 ]);
 
+export type PendingReplacementReceipt = { key: string; owner: Address; hash: string };
+
+// Clear the temporary loading state once any published snapshot contains the
+// replacement. A later full exit must not revive that old loading message.
+export function reconcileReplacementReceipt(
+  pending: PendingReplacementReceipt | null,
+  positions: ReadonlyArray<{ key: string }> | undefined,
+) {
+  return pending && positions?.some((position) => position.key === pending.key) ? null : pending;
+}
+
 // A confirmed pool event identifies the replacement; a guessed next NFT ID does not.
 export function replacementReceiptId(
   receipt: Pick<TransactionReceipt, "status" | "logs" | "transactionHash">,
