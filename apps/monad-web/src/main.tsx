@@ -10,6 +10,7 @@ import {
   useLocation,
   useParams,
   useSearchParams,
+  useNavigate,
 } from "react-router-dom";
 import useSWR from "swr";
 import { parseEventLogs, parseAbi, formatUnits, type Abi, type Address } from "viem";
@@ -37,6 +38,7 @@ import {
 import type { Asset, Market, Position, Snapshot, Registry, CreationOption } from "./types";
 import { selectMarket } from "./market-selection";
 import { depositLimitError } from "./deposit-limits";
+import { replacementReceiptId } from "./replacement-receipt";
 import "./styles.css";
 import "./app-layout.css";
 import "./asset-images.css";
@@ -771,13 +773,21 @@ function Positions() {
 }
 function PositionDetail() {
   const { key } = useParams();
+  const navigate = useNavigate();
   const w = useWallet();
+  const [replacement, setReplacement] = useState<{ key: string; owner: Address; hash: string } | null>(null);
   const { data: state, error: stateError } = useSnapshot();
-  const { data, error } = useSWR<{ positions: Position[] }>(
-    w.account ? `/api/positions?owner=${w.account}` : null,
-    fetcher,
-    { refreshInterval: 10000 },
-  );
+  const {
+    data,
+    error,
+    mutate: refreshPositions,
+  } = useSWR<{ positions: Position[] }>(w.account ? `/api/positions?owner=${w.account}` : null, fetcher, {
+    refreshInterval: 10000,
+    onSuccess: (snapshot) =>
+      setReplacement((current) =>
+        current && snapshot.positions.some((position) => position.key === current.key) ? null : current,
+      ),
+  });
   const p = data?.positions.find((p) => p.key === key);
   const m = state?.markets.find((m) => m.id === p?.poolId);
   const [withdraw, setWithdraw] = useState("");
@@ -798,7 +808,24 @@ function PositionDetail() {
     return (
       <Shell>
         <div className="empty-state">
-          <h2>Position is closed or not in this wallet.</h2>
+          {replacement && replacement.key === key && replacement.owner.toLowerCase() === w.account.toLowerCase() ? (
+            <>
+              <h2>Withdrawal confirmed. Your remaining position is loading.</h2>
+              <p role="status">
+                The replacement receipt was created on Monad. Position data will refresh automatically.
+              </p>
+              <div className="row">
+                <button className="text-link" onClick={() => void refreshPositions()}>
+                  Refresh position
+                </button>
+                <a href={explorer("tx", replacement.hash)} target="_blank" rel="noreferrer">
+                  View confirmed withdrawal ↗
+                </a>
+              </div>
+            </>
+          ) : (
+            <h2>Position is closed or not in this wallet.</h2>
+          )}
           <Link to="/positions">Back to positions ↗</Link>
         </div>
       </Shell>
@@ -834,7 +861,23 @@ function PositionDetail() {
   const act = (label: string, fn: string, args: unknown[], refreshPrice = false) =>
     w.execute(label, async () => {
       if (refreshPrice && m.environment === "reference") await w.updatePrice();
-      await w.send({ address: p.pool, abi: abi("SplitRiskPool"), functionName: fn, args });
+      const receipt = await w.send({ address: p.pool, abi: abi("SplitRiskPool"), functionName: fn, args });
+      if (fn === "partialWithdrawShielded") {
+        const newId = replacementReceiptId(receipt, {
+          pool: p.pool,
+          owner: w.account!,
+          oldTokenId: BigInt(p.id),
+          withdrawAmount: args[1] as bigint,
+        });
+        setPartial("");
+        if (newId === null) {
+          navigate("/positions", { replace: true });
+        } else {
+          const nextKey = `${p.poolId}:senior:${newId}`;
+          setReplacement({ key: nextKey, owner: w.account!, hash: receipt.transactionHash });
+          navigate(`/positions/${encodeURIComponent(nextKey)}`, { replace: true });
+        }
+      }
     });
   return (
     <Shell>
