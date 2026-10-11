@@ -5,13 +5,12 @@ import { parseUnits } from "viem";
 import { client, useWallet } from "./wallet";
 import { fmt, errorMessage } from "./lib";
 import { FundingGate } from "./Funding";
-import { reviewableKuruQuote } from "./kuru-funding-state";
+import { depositKuruFunding, fundableKuruQuote, reviewableKuruQuote } from "./kuru-funding-state";
 import {
   KURU,
   KURU_LEGACY,
-  readKuruIdentity,
   readKuruAccount,
-  quoteKuruBuy,
+  prepareKuruFunding,
   buildKuruSwapRequest,
   confirmedKuruSwap,
   buildKuruDepositRequest,
@@ -66,6 +65,7 @@ function KuruFundingFlow() {
   }
   const data = balances.error ? undefined : balances.data;
   const valid = value >= KURU.minInput && value <= KURU.maxInput;
+  const fundingQuote = fundableKuruQuote(quote, { account: wallet.account, userId: data?.userId, amountIn: value });
   const activeQuote = reviewableKuruQuote(quote, {
     account: wallet.account,
     userId: data?.userId,
@@ -84,7 +84,7 @@ function KuruFundingFlow() {
     setError("");
     setQuote(null);
     try {
-      const result = await quoteKuruBuy(client, { account: selectedAccount(), amountIn: value });
+      const result = await prepareKuruFunding(client, { account: selectedAccount(), amountIn: value });
       setQuote(result);
     } catch (failure) {
       setError(errorMessage(failure));
@@ -95,7 +95,7 @@ function KuruFundingFlow() {
   async function buy() {
     if (!activeQuote) throw new Error("Request a fresh Kuru quote.");
     const account = selectedAccount();
-    await readKuruIdentity(client);
+    await prepareKuruFunding(client, { account, amountIn: value });
     const before = await readKuruAccount(client, account);
     if (before.usdc < value) throw new Error("Deposit Kuru test USDC first.");
     const request = buildKuruSwapRequest(activeQuote, account, before.userId);
@@ -161,17 +161,15 @@ function KuruFundingFlow() {
         <FundingGate>
           <button
             className="button"
-            disabled={working || !valid || data.walletUsdc < value - data.usdc}
+            disabled={working || !valid || !fundingQuote || data.walletUsdc < value - data.usdc}
             onClick={() =>
               run("Deposit to your Kuru account", async () => {
-                await readKuruIdentity(client);
-                const current = await readKuruAccount(client, selectedAccount());
-                const missing = value - current.usdc;
-                if (missing <= 0n) return;
-                if (current.walletUsdc < missing)
-                  throw new Error("Request current Kuru test USDC from your Kuru integration contact first.");
-                await wallet.approve(KURU.usdc, KURU.account, missing);
-                await wallet.send(buildKuruDepositRequest(selectedAccount(), missing));
+                await depositKuruFunding(value, {
+                  readAccount: () => readKuruAccount(client, selectedAccount()),
+                  preflight: () => prepareKuruFunding(client, { account: selectedAccount(), amountIn: value }),
+                  approve: (amount) => wallet.approve(KURU.usdc, KURU.account, amount),
+                  deposit: (amount) => wallet.send(buildKuruDepositRequest(selectedAccount(), amount)),
+                });
                 setQuote(null);
               })
             }
@@ -180,19 +178,30 @@ function KuruFundingFlow() {
           </button>
         </FundingGate>
       ) : null}
-      <button className="button" disabled={working || !valid || !data || data.usdc < value} onClick={getQuote}>
+      <button className="button" disabled={working || !valid || !data} onClick={getQuote}>
         {quoting ? "Checking Kuru…" : "Get quote"}
       </button>
-      {activeQuote ? (
+      <p className="field-hint">
+        Check liquidity and withdrawal availability before depositing. A quote does not reserve either.
+      </p>
+      {fundingQuote ? (
         <div role="status">
           <p>
-            Estimated: {fmt(activeQuote.amountOut, 18)} MON · Minimum: {fmt(activeQuote.minAmountOut, 18)} MON
+            Estimated: {fmt(fundingQuote.amountOut, 18)} MON · Minimum: {fmt(fundingQuote.minAmountOut, 18)} MON
           </p>
-          <FundingGate>
-            <button className="button purple-button" disabled={working} onClick={() => run("Buy MON on Kuru", buy)}>
-              Buy MON
-            </button>
-          </FundingGate>
+          <p className="field-hint">
+            Estimated spend: {fmt(fundingQuote.amountInUsed, 6)} current Kuru test USDC. Tiny unspent precision
+            remainders stay at Kuru.
+          </p>
+          {activeQuote ? (
+            <FundingGate>
+              <button className="button purple-button" disabled={working} onClick={() => run("Buy MON on Kuru", buy)}>
+                Buy MON
+              </button>
+            </FundingGate>
+          ) : (
+            <p>Fund the current Kuru account, then request a fresh quote to buy.</p>
+          )}
           <p className="field-hint">
             Quote valid for one minute. Bought MON stays in your Kuru account until withdrawn.
           </p>

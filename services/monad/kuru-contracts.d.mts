@@ -20,6 +20,8 @@ export type KuruQuote = KuruIdentity & {
   account: Address;
   userId: bigint;
   amountIn: bigint;
+  amountInUsed: bigint;
+  inputRoundingLimit: bigint;
   amountOut: bigint;
   minAmountOut: bigint;
   quotedAt: number;
@@ -47,6 +49,11 @@ export function quoteKuruBuy(
   client: Reader,
   input: { account: Address; amountIn: bigint; now?: number },
 ): Promise<KuruQuote>;
+export function prepareKuruFunding(
+  client: Reader,
+  input: { account: Address; amountIn: bigint; now?: number },
+): Promise<KuruQuote>;
+export function validateKuruQuote(quote: KuruQuote, account: Address, userId: bigint, now?: number): void;
 export function buildKuruSwapRequest(
   quote: KuruQuote,
   account: Address,

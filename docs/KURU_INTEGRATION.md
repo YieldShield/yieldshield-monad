@@ -6,8 +6,8 @@ Updated on 11 October 2026 for Kuru's current **Monad testnet, chain 10143** dep
 
 1. Obtain native testnet MON for gas using the existing Monad faucet guidance.
 2. Expand **Buy testnet MON with Kuru**. Request the current test USDC from a Kuru integration contact; the current deployment has no public faucet.
-3. Approve and deposit the required Kuru test USDC into the connected wallet's own Kuru account.
-4. Review a live on-chain quote for **10–100 Kuru test USDC**, with a 0.5% minimum-output bound and one-minute expiry.
+3. Check a live on-chain quote for **10–100 Kuru test USDC** and current withdrawal availability before funding. Quotes work with an unfunded or unregistered account.
+4. Approve and deposit only the missing current Kuru test USDC into the connected wallet's root account, then request a fresh executable quote. Liquidity and withdrawal checks run again both before approval and after its confirmation, before deposit.
 5. Confirm the MON purchase, then separately withdraw the MON from Kuru to the same wallet.
 6. Use the existing Wrap MON and protection flows. Buying or withdrawing MON **does not open protection**.
 
@@ -18,6 +18,8 @@ Current Kuru test USDC is `0xA402B424f392EAA05DBc8779e4502A1F6A96fEF1`, not Yiel
 The [official deployment reference](https://kuru-testnet-docs.mintlify.site/deployments/testnet) and [setup guide](https://kuru-testnet-docs.mintlify.site/deployments/setup) were re-read on 11 October. Current custody is `0xdbaaDe7B42c95399bb1E9614D51B5B9e2cf78038`; the MON market is `0x26cd68436B6A4AEB3ec52abC20A4d121f8B4BAc9`. The stored runtime and implementation hashes were read onchain. Current MON size precision is `1000000` and base-size multiplier is `1000000000000`.
 
 The current book had one ask of **0.1 MON at 100 test USDC/MON**, and no bid. The old book was empty. A 10-test-USDC estimate returned **0.09993 MON**, consuming **9.999996 test USDC**; estimates for 20–100 could consume only 10.007 test USDC because no further asks existed. These are valueless test-market offers, not fair dollar prices. Prices and liquidity can change at any block.
+
+The final helper-driven [read-only evidence](evidence/kuru-current-deployment-20261011.json) at block **70176275** accepted the near-complete 10-token estimate, rejected the materially partial 20-token estimate, and completed current-price/capacity checks without broadcasting. Its 0.5% minimum output was **0.09943035 MON**. The current account had zero custody and wallet balances; the old wallet held 10,000 legacy tokens, with zero old custody balances.
 
 The tested wallet had no current token balance or root account. The new token is admin-mintable; no token was minted, market seeded, deposit made or swap broadcast during this investigation. A new funded end-to-end test requires at least 10 current Kuru test USDC from the official integration contact and testnet MON for gas. Legacy tokens do not meet that prerequisite.
 
@@ -41,7 +43,9 @@ The integration requires chain 10143, unchanged contract code and proxy implemen
 
 Only the current pinned AccountCore may receive the explicit USDC allowance. Deposits use `deposit(rootOwner, token, amount)` with the connected wallet as owner. Current withdrawals use `withdraw(rootAccountId, token, amount, recipient)` and explicitly pay that same wallet. Root IDs must resolve to the connected owner and identify themselves as roots. Legacy recovery uses only the old AccountCore's two-argument withdrawal. Swap construction accepts no arbitrary spender, recipient, target, call data or additional fee.
 
-Quotes reject incomplete liquidity, zero output, inputs outside the app's test limit, expired/future timestamps and widened output bounds. The contract enforces the minimum output and deadline during execution. The app verifies the canonical `SpotSwap` event against the reviewed account, direction, amount and limit, then checks the credited native-MON balance. Existing wallet controls provide simulation, gas reserves, selected-account checks, transaction confirmation and recovery of a pending transaction hash.
+Quotes reject materially incomplete liquidity, zero output, inputs outside the app's test limit, expired/future timestamps and widened output bounds. The only accepted unspent remainder is smaller than one executable base-size increment at the current best ask plus its rounded taker fee, additionally capped at one basis point of input. With the pinned precision and observed ask, that limit was 101 raw USDC atoms; the observed remainder was four atoms. The UI displays estimated spend and preserves the remainder in custody. No substantial partial fill is accepted.
+
+Quotes retain the 0.5% minimum-output bound and one-minute expiry. The contract enforces both during execution. The app verifies the canonical `SpotSwap` event against the reviewed account, direction, bounded input and output limit, then checks the credited native-MON balance. Current MON and USDC must pass explicit `requireFreshPrice` checks and capacity previews before deposit or purchase. Withdrawals do not require a fillable trading quote, and legacy recovery is independent of the new deployment. Existing wallet controls provide simulation, gas reserves, selected-account checks, transaction confirmation and recovery of a pending transaction hash.
 
 Identity checks describe the implementation observed before a transaction, not an independent security audit of Kuru or a guarantee against a later third-party upgrade. Any observed implementation change blocks new integration actions for review.
 
@@ -86,7 +90,7 @@ This proves an **internally scripted on-chain funding journey**. It does not est
 
 `runKuruFundingSmoke` takes an already configured read client, wallet client, account address and two required callbacks: `onIntent` and `onReceipt`. The caller must durably store each expected transaction hash and nonce before broadcasting and the corresponding receipt afterwards. Use the existing ignored deployment journal location. The module:
 
-- Caps the sum of maximum transaction fees at **one testnet MON** and trades exactly ten Kuru test USDC.
+- Caps the sum of maximum transaction fees at **one testnet MON** and requests a ten-token swap with only the documented bounded precision remainder.
 - Requires current Kuru test tokens already present; it never claims tokens from the retired faucet.
 - Signs locally, calculates the expected hash, invokes the durable intent callback, then sends the signed transaction.
 - Checks the actual USDC deposit debit/credit, swap event, Kuru MON credit and withdrawal back to the wallet.

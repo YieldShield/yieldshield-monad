@@ -36,6 +36,7 @@ export const kuruAccountAbi = parseAbi([
   "function withdrawalsFrozen() view returns(bool)",
   "function tokenWithdrawalsFrozen(address token) view returns(bool)",
   "function spotTokenEnabled(address token) view returns(bool)",
+  "function effectiveSpotTakerFeePps(uint40 id,uint256 marketFee) view returns(uint256)",
 ]);
 export const kuruLegacyAccountAbi = parseAbi([
   "function withdraw(address token,uint256 amount)",
@@ -54,6 +55,8 @@ export const kuruMarketAbi = parseAbi([
   "function sizePrecision() view returns(uint256)",
   "function baseSizeMultiplier() view returns(uint256)",
   "function minQuoteNotional() view returns(uint96)",
+  "function bestBidAsk() view returns(uint32 bid,uint32 ask)",
+  "function takerFeePps() view returns(uint256)",
   "function estimateSwap(bool isBuy,uint128 amountIn) view returns((uint128 amountInUsed,uint128 amountOut))",
   "function estimateSwap(uint40 userId,bool isBuy,uint128 amountIn) view returns((uint128 amountInUsed,uint128 amountOut))",
   "function swap(uint40 userId,bool isBuy,uint128 amountIn,uint128 minAmountOut,uint64 deadline) returns((uint128 amountInUsed,uint128 amountOut))",
@@ -242,14 +245,58 @@ export function validateKuruInput(amountIn) {
     throw new Error("Choose 10–100 Kuru test USDC.");
   return amountIn;
 }
+
+// A buy can leave less than one executable base-size increment unspent. Use
+// the best ask (a conservative lower bound for later asks) and its fee quantum;
+// never turn materially partial liquidity into an apparently complete quote.
+export function kuruRoundingLimit(bestAsk, takerFeePps, amountIn) {
+  const price = BigInt(bestAsk);
+  if (price <= 0n || price >= 2n ** 32n || takerFeePps < 0n || takerFeePps >= 10_000_000n)
+    throw new Error("Kuru has no usable ask price or fee.");
+  const quoteQuantum = (price + 999999n) / 1000000n;
+  const feeQuantum = (quoteQuantum * takerFeePps + 9999999n) / 10000000n;
+  const limit = quoteQuantum + feeQuantum;
+  const cap = amountIn / 10000n; // At most one basis point, even for a very coarse book.
+  return limit < cap ? limit : cap;
+}
+
+export function validateKuruFill(amountIn, amountInUsed, amountOut, roundingLimit) {
+  if (
+    typeof amountInUsed !== "bigint" ||
+    amountInUsed <= 0n ||
+    amountInUsed > amountIn ||
+    typeof roundingLimit !== "bigint" ||
+    roundingLimit <= 0n ||
+    roundingLimit > amountIn / 10000n ||
+    amountIn - amountInUsed >= roundingLimit ||
+    typeof amountOut !== "bigint" ||
+    amountOut <= 0n ||
+    amountOut >= 2n ** 128n
+  )
+    throw new Error("Kuru cannot fill this amount. Try a smaller amount or wait for more liquidity.");
+}
 export async function quoteKuruBuy(client, { account, amountIn, now = Date.now() }) {
   validateKuruInput(amountIn);
   const identity = await readKuruIdentity(client, now);
   const state = await readKuruAccount(client, account, identity.blockNumber);
   const args = state.userId ? [Number(state.userId), true, amountIn] : [true, amountIn];
-  const result = await read(client, KURU.market, kuruMarketAbi, "estimateSwap", args, identity.blockNumber);
-  if (result.amountInUsed !== amountIn || result.amountOut <= 0n || result.amountOut >= 2n ** 128n)
-    throw new Error("Kuru cannot fill this amount. Try again when liquidity is available.");
+  const [result, bbo, marketFee] = await Promise.all([
+    read(client, KURU.market, kuruMarketAbi, "estimateSwap", args, identity.blockNumber),
+    read(client, KURU.market, kuruMarketAbi, "bestBidAsk", [], identity.blockNumber),
+    read(client, KURU.market, kuruMarketAbi, "takerFeePps", [], identity.blockNumber),
+  ]);
+  const fee = state.userId
+    ? await read(
+        client,
+        KURU.account,
+        kuruAccountAbi,
+        "effectiveSpotTakerFeePps",
+        [Number(state.userId), marketFee],
+        identity.blockNumber,
+      )
+    : marketFee;
+  const inputRoundingLimit = kuruRoundingLimit(bbo[1], fee, amountIn);
+  validateKuruFill(amountIn, result.amountInUsed, result.amountOut, inputRoundingLimit);
   const minAmountOut = (result.amountOut * (10000n - KURU.slippageBps)) / 10000n;
   if (minAmountOut <= 0n) throw new Error("Kuru output is too small.");
   return {
@@ -257,13 +304,25 @@ export async function quoteKuruBuy(client, { account, amountIn, now = Date.now()
     account: state.account,
     userId: state.userId,
     amountIn,
+    amountInUsed: result.amountInUsed,
+    inputRoundingLimit,
     amountOut: result.amountOut,
     minAmountOut,
     quotedAt: now,
     expiresAt: now + KURU.quoteLifetimeMs,
   };
 }
-export function buildKuruSwapRequest(quote, account, userId, now = Date.now()) {
+
+export async function prepareKuruFunding(client, input) {
+  const quote = await quoteKuruBuy(client, input);
+  await Promise.all([
+    readKuruWithdrawalReadiness(client, KURU.usdc, quote.amountIn, quote.blockNumber),
+    readKuruWithdrawalReadiness(client, KURU.native, quote.amountOut, quote.blockNumber),
+  ]);
+  return quote;
+}
+
+export function validateKuruQuote(quote, account, userId, now = Date.now()) {
   holder(account);
   validateKuruInput(quote?.amountIn);
   const id = BigInt(userId);
@@ -271,7 +330,7 @@ export function buildKuruSwapRequest(quote, account, userId, now = Date.now()) {
     quote.chainId !== KURU.chainId ||
     !same(quote.market, KURU.market) ||
     !same(quote.account, account) ||
-    id <= 0n ||
+    id < 0n ||
     id >= 2n ** 40n ||
     quote.userId !== id
   )
@@ -284,6 +343,7 @@ export function buildKuruSwapRequest(quote, account, userId, now = Date.now()) {
     quote.expiresAt - quote.quotedAt !== KURU.quoteLifetimeMs
   )
     throw new Error("Kuru quote expired. Request a new quote.");
+  validateKuruFill(quote.amountIn, quote.amountInUsed, quote.amountOut, quote.inputRoundingLimit);
   if (
     typeof quote.amountOut !== "bigint" ||
     quote.amountOut <= 0n ||
@@ -292,6 +352,11 @@ export function buildKuruSwapRequest(quote, account, userId, now = Date.now()) {
     quote.minAmountOut !== (quote.amountOut * (10000n - KURU.slippageBps)) / 10000n
   )
     throw new Error("Invalid Kuru slippage limit.");
+}
+export function buildKuruSwapRequest(quote, account, userId, now = Date.now()) {
+  validateKuruQuote(quote, account, userId, now);
+  const id = BigInt(userId);
+  if (id <= 0n) throw new Error("Kuru account changed. Deposit and request a new quote.");
   return {
     address: KURU.market,
     abi: kuruMarketAbi,
@@ -323,7 +388,9 @@ export function confirmedKuruSwap(receipt, quote, account) {
     BigInt(event.userId) !== quote.userId ||
     !same(event.executor, account) ||
     !event.isBuy ||
-    event.amountInUsed !== quote.amountIn ||
+    event.amountInUsed > quote.amountIn ||
+    event.amountInUsed <= 0n ||
+    quote.amountIn - event.amountInUsed >= quote.inputRoundingLimit ||
     event.minAmountOut !== quote.minAmountOut ||
     event.amountOut < quote.minAmountOut
   )

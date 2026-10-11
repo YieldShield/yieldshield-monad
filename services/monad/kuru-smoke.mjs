@@ -5,7 +5,7 @@ import {
   verifyKuruTarget,
   readKuruIdentity,
   readKuruAccount,
-  quoteKuruBuy,
+  prepareKuruFunding,
   buildKuruSwapRequest,
   confirmedKuruSwap,
   buildKuruDepositRequest,
@@ -90,6 +90,7 @@ export async function runKuruFundingSmoke({ client, wallet, account, onIntent, o
     );
   }
   if (current.usdc < amountIn) {
+    await prepareKuruFunding(client, { account, amountIn });
     const missing = amountIn - current.usdc;
     const allowance = await client.readContract({
       address: KURU.usdc,
@@ -104,12 +105,13 @@ export async function runKuruFundingSmoke({ client, wallet, account, onIntent, o
         functionName: "approve",
         args: [KURU.account, missing],
       });
+    await prepareKuruFunding(client, { account, amountIn });
     await send("deposit-kuru-usdc", buildKuruDepositRequest(account, missing));
     const deposited = await readKuruAccount(client, account);
     if (deposited.usdc !== current.usdc + missing || deposited.walletUsdc !== current.walletUsdc - missing)
       throw new Error("Kuru deposit balance reconciliation failed.");
   }
-  const quote = await quoteKuruBuy(client, { account, amountIn });
+  const quote = await prepareKuruFunding(client, { account, amountIn });
   const beforeSwap = await readKuruAccount(client, account);
   const { receipt } = await send("buy-mon-on-kuru", buildKuruSwapRequest(quote, account, beforeSwap.userId));
   const fill = confirmedKuruSwap(receipt, quote, account);

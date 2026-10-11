@@ -14,6 +14,8 @@ import {
   buildKuruDepositRequest,
   buildKuruWithdrawalRequest,
   buildLegacyKuruWithdrawalRequest,
+  kuruRoundingLimit,
+  validateKuruFill,
 } from "./kuru-contracts.mjs";
 const account = "0x1111111111111111111111111111111111111111";
 const other = "0x2222222222222222222222222222222222222222";
@@ -24,6 +26,8 @@ const quote = {
   account,
   userId: 7n,
   amountIn: 10000000n,
+  amountInUsed: 10000000n,
+  inputRoundingLimit: 101n,
   amountOut: 200n * 10n ** 18n,
   minAmountOut: 199n * 10n ** 18n,
   quotedAt: now,
@@ -76,7 +80,7 @@ test("slippage cannot be silently widened or set to zero", () => {
     { amountOut: 2n ** 128n },
     { amountOut: 0n },
   ])
-    assert.throws(() => request(change), /slippage/);
+    assert.throws(() => request(change), /slippage|fill/);
 });
 function swapLog(overrides = {}) {
   const args = {
@@ -112,11 +116,35 @@ test("wrong recipient account, executor, side, fill or limit fails receipt verif
     { userId: 8 },
     { executor: other },
     { isBuy: false },
-    { amountInUsed: 9999999n },
+    { amountInUsed: 9999899n },
     { minAmountOut: 1n },
     { amountOut: quote.minAmountOut - 1n },
   ])
     assert.throws(() => confirmedKuruSwap({ status: "success", logs: [swapLog(change)] }, quote, account), /match/);
+});
+
+test("one executable lot bounds input rounding without accepting material partial fills", () => {
+  // Current MON precision: one base lot = 10^-6 MON. At 100 USDC/MON,
+  // its quote quantum is 100 atoms plus at most one atom of taker fee.
+  const limit = kuruRoundingLimit(100000000, 7000n, 10000000n);
+  assert.equal(limit, 101n);
+  assert.doesNotThrow(() => validateKuruFill(10000000n, 9999996n, 99930000000000000n, limit));
+  assert.throws(() => validateKuruFill(20000000n, 10007000n, 100000000000000000n, limit), /fill/);
+  for (const used of [0n, 9999899n, 10000001n])
+    assert.throws(() => validateKuruFill(10000000n, used, quote.amountOut, limit), /fill/);
+  assert.throws(() => kuruRoundingLimit(0, 7000n, 10000000n), /ask/);
+  assert.ok(kuruRoundingLimit(4294967295, 7000n, 10000000n) <= 1000n);
+});
+
+test("settlement permits only the reviewed bounded precision remainder", () => {
+  assert.equal(
+    confirmedKuruSwap({ status: "success", logs: [swapLog({ amountInUsed: 9999996n })] }, quote, account).amountInUsed,
+    9999996n,
+  );
+  assert.throws(
+    () => confirmedKuruSwap({ status: "success", logs: [swapLog({ amountInUsed: 10000001n })] }, quote, account),
+    /match/,
+  );
 });
 const mockAccountClient = (reverse = account, id = 7, rootId = id) => ({
   getChainId: async () => 10143,
