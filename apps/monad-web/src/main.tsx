@@ -483,19 +483,23 @@ function PositionForm({ side }: { side: "senior" | "junior" }) {
   const overCapacity = side === "senior" && m?.capacity != null && value > BigInt(m.capacity);
   async function submit() {
     if (!m || !token) return;
-    await w.execute(side === "senior" ? "Prepare protection" : "Prepare junior liquidity", async () => {
-      if (validation) throw new Error(validation);
-      if (!data || data.chainId !== 10143 || Date.now() - data.observedAt > 30000 || Date.now() < data.observedAt)
-        throw new Error("The market snapshot expired. Refresh before continuing.");
-      if (m.environment === "reference") await w.updatePrice();
-      await w.approve(token.address, m.address, value);
-      await w.send({
-        address: m.address,
-        abi: abi("SplitRiskPool"),
-        functionName: side === "senior" ? "depositShieldedAsset" : "depositBackingAsset",
-        args: [token.address, value, value],
-      });
-    });
+    await w.execute(
+      side === "senior" ? "Prepare protection" : "Prepare junior liquidity",
+      async () => {
+        if (validation) throw new Error(validation);
+        if (!data || data.chainId !== 10143 || Date.now() - data.observedAt > 30000 || Date.now() < data.observedAt)
+          throw new Error("The market snapshot expired. Refresh before continuing.");
+        if (m.environment === "reference") await w.updatePrice();
+        await w.approve(token.address, m.address, value);
+        await w.send({
+          address: m.address,
+          abi: abi("SplitRiskPool"),
+          functionName: side === "senior" ? "depositShieldedAsset" : "depositBackingAsset",
+          args: [token.address, value, value],
+        });
+      },
+      { refreshPositions: true },
+    );
   }
   return (
     <Shell>
@@ -694,6 +698,20 @@ function PositionStack() {
     </span>
   );
 }
+function PositionRefreshNotice({ failed }: { failed: boolean }) {
+  return (
+    <div className={`notice ${failed ? "warning" : ""}`} role="status">
+      {failed
+        ? "Your transaction is confirmed. Latest position data is temporarily unavailable."
+        : "Your transaction is confirmed. Updating your positions…"}
+      {failed && (
+        <button className="text-link" onClick={() => location.reload()}>
+          Refresh positions
+        </button>
+      )}
+    </div>
+  );
+}
 function Positions() {
   const w = useWallet();
   const { data: state } = useSnapshot();
@@ -712,6 +730,8 @@ function Positions() {
           <p>Connect to view protected assets and supplied backing.</p>
           <WalletButton />
         </div>
+      ) : w.positionRefreshState ? (
+        <PositionRefreshNotice failed={w.positionRefreshState === "failed"} />
       ) : !data ? (
         <Loading error={error} />
       ) : !data.positions.length ? (
@@ -798,6 +818,12 @@ function PositionDetail() {
     return () => clearInterval(t);
   }, []);
   if (!w.account) return <Positions />;
+  if (w.positionRefreshState)
+    return (
+      <Shell>
+        <PositionRefreshNotice failed={w.positionRefreshState === "failed"} />
+      </Shell>
+    );
   if (!data || !state)
     return (
       <Shell>
@@ -859,26 +885,30 @@ function PositionDetail() {
     }
   } catch {}
   const act = (label: string, fn: string, args: unknown[], refreshPrice = false) =>
-    w.execute(label, async () => {
-      if (refreshPrice && m.environment === "reference") await w.updatePrice();
-      const receipt = await w.send({ address: p.pool, abi: abi("SplitRiskPool"), functionName: fn, args });
-      if (fn === "partialWithdrawShielded") {
-        const newId = replacementReceiptId(receipt, {
-          pool: p.pool,
-          owner: w.account!,
-          oldTokenId: BigInt(p.id),
-          withdrawAmount: args[1] as bigint,
-        });
-        setPartial("");
-        if (newId === null) {
-          navigate("/positions", { replace: true });
-        } else {
-          const nextKey = `${p.poolId}:senior:${newId}`;
-          setReplacement({ key: nextKey, owner: w.account!, hash: receipt.transactionHash });
-          navigate(`/positions/${encodeURIComponent(nextKey)}`, { replace: true });
+    w.execute(
+      label,
+      async () => {
+        if (refreshPrice && m.environment === "reference") await w.updatePrice();
+        const receipt = await w.send({ address: p.pool, abi: abi("SplitRiskPool"), functionName: fn, args });
+        if (fn === "partialWithdrawShielded") {
+          const newId = replacementReceiptId(receipt, {
+            pool: p.pool,
+            owner: w.account!,
+            oldTokenId: BigInt(p.id),
+            withdrawAmount: args[1] as bigint,
+          });
+          setPartial("");
+          if (newId === null) {
+            navigate("/positions", { replace: true });
+          } else {
+            const nextKey = `${p.poolId}:senior:${newId}`;
+            setReplacement({ key: nextKey, owner: w.account!, hash: receipt.transactionHash });
+            navigate(`/positions/${encodeURIComponent(nextKey)}`, { replace: true });
+          }
         }
-      }
-    });
+      },
+      { refreshPositions: true },
+    );
   return (
     <Shell>
       <Link className="back-link" to="/positions">

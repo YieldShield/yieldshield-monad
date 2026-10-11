@@ -36,6 +36,7 @@ import { ensureDynamicSession, type DynamicSession } from "./dynamic-session";
 import { createWalletSelectionGuard } from "./wallet-selection";
 import { createPendingTransactionStore } from "./pending-transaction";
 import { retryRateLimitedReads } from "./rpc-read-retry";
+import { refreshConfirmedPositions } from "./confirmed-position-refresh";
 import { isKuruTarget, verifyKuruTarget } from "../../../services/monad/kuru-contracts.mjs";
 const DynamicWallet = lazy(() => import("./DynamicWallet"));
 export const client = createPublicClient({
@@ -69,6 +70,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false);
   const pending = useRef(false);
+  const [positionSync, setPositionSync] = useState<{ owner: Address; status: "refreshing" | "failed" } | null>(null);
   const selection = useRef(createWalletSelectionGuard());
   const activeSelection = useRef<(() => void) | null>(null);
   const connectionRequest = useRef(0);
@@ -411,13 +413,14 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       value,
     });
   }
-  async function execute(label: string, fn: () => Promise<unknown>) {
+  async function execute(label: string, fn: () => Promise<unknown>, options: { refreshPositions?: boolean } = {}) {
     if (pending.current) return;
     pending.current = true;
     setBusy(true);
     setError("");
     setHash(savedTransaction());
     setStatus(label);
+    let confirmed = false;
     try {
       if (savedTransaction())
         throw new Error(
@@ -426,19 +429,42 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       activeSelection.current = selection.current.capture(account);
       await ensure();
       await fn();
-      setStatus("Confirmed — your balances will refresh.");
-      await mutate(
+      confirmed = true;
+      if (options.refreshPositions) setPositionSync({ owner: account!, status: "refreshing" });
+      setStatus(
+        options.refreshPositions ? "Confirmed — updating your positions." : "Confirmed — your balances will refresh.",
+      );
+      const refreshBalances = mutate(
         (k) =>
           typeof k === "string" &&
+          (!options.refreshPositions || !k.startsWith("/api/positions")) &&
           (k.startsWith("/api/") ||
             k.startsWith("balance:") ||
             k.startsWith("faucet:") ||
             k.startsWith("unstake:") ||
             k === "vault-nav"),
       );
+      if (options.refreshPositions) {
+        const key = `/api/positions?owner=${account}`;
+        await Promise.all([
+          refreshBalances,
+          refreshConfirmedPositions(
+            () => fetcher(key, AbortSignal.timeout(30000)),
+            (snapshot) => mutate(key, snapshot, { revalidate: false }),
+          ),
+        ]);
+        setPositionSync(null);
+        setStatus("Confirmed — your positions are updated.");
+      } else await refreshBalances;
     } catch (e) {
-      setError(errorMessage(e));
-      setStatus("");
+      if (confirmed) {
+        if (options.refreshPositions) setPositionSync({ owner: account!, status: "failed" });
+        setError("Transaction confirmed. Updated data is temporarily unavailable; refresh to check your positions.");
+        setStatus("Confirmed on Monad.");
+      } else {
+        setError(errorMessage(e));
+        setStatus("");
+      }
     } finally {
       activeSelection.current = null;
       pending.current = false;
@@ -449,6 +475,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     account,
     chainId,
     busy,
+    positionRefreshState:
+      positionSync && positionSync.owner.toLowerCase() === account?.toLowerCase() ? positionSync.status : null,
     send,
     approve,
     execute,
@@ -550,9 +578,10 @@ export const useWallet = () =>
     account: Address | null;
     chainId: number | null;
     busy: boolean;
+    positionRefreshState: "refreshing" | "failed" | null;
     send: (r: TxRequest) => Promise<any>;
     approve: (a: Address, b: Address, n: bigint) => Promise<void>;
-    execute: (s: string, f: () => Promise<unknown>) => Promise<void>;
+    execute: (s: string, f: () => Promise<unknown>, options?: { refreshPositions?: boolean }) => Promise<void>;
     updatePrice: () => Promise<any>;
     connect: () => void;
     disconnect: () => void;
