@@ -36,6 +36,7 @@ import {
 } from "./lib";
 import type { Asset, Market, Position, Snapshot, Registry, CreationOption } from "./types";
 import { selectMarket } from "./market-selection";
+import { depositLimitError } from "./deposit-limits";
 import "./styles.css";
 import "./app-layout.css";
 import "./asset-images.css";
@@ -452,7 +453,10 @@ function PositionForm({ side }: { side: "senior" | "junior" }) {
   let value = 0n,
     validation = "";
   try {
-    if (token) value = amount(input, token.decimals);
+    if (token) {
+      value = amount(input, token.decimals);
+      validation = depositLimitError(value, side, m?.config, token);
+    }
   } catch (e) {
     validation = errorMessage(e);
   }
@@ -467,6 +471,7 @@ function PositionForm({ side }: { side: "senior" | "junior" }) {
   async function submit() {
     if (!m || !token) return;
     await w.execute(side === "senior" ? "Prepare protection" : "Prepare junior liquidity", async () => {
+      if (validation) throw new Error(validation);
       if (!data || data.chainId !== 10143 || Date.now() - data.observedAt > 30000 || Date.now() < data.observedAt)
         throw new Error("The market snapshot expired. Refresh before continuing.");
       if (m.environment === "reference") await w.updatePrice();
