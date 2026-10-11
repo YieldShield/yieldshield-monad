@@ -53,6 +53,20 @@ describe('pool health decisions', () => {
     const f = fixture(); f.snapshot.contractsVerified = false;
     expect(evaluateHealth(config, f.snapshot, f.pools, f.assets, BigInt(now), now).status).toBe('critical');
   });
+  test('unavailable onchain price is critical even when the API correctly agrees', () => {
+    const f = fixture(); f.assets[0] = { ...f.assets[0], price: null, stale: true, publishedAt: 0n };
+    f.snapshot.assets[0] = { ...f.snapshot.assets[0], healthy: false, price: "" };
+    const r = evaluateHealth(config, f.snapshot, f.pools, f.assets, BigInt(now), now);
+    expect(r.status).toBe('critical');
+    expect(r.assets[0]).toMatchObject({ price: null, healthy: false, apiMatches: true });
+    expect(r.alerts).toContainEqual({ severity: 'critical', code: 'oracle-price-unavailable', subject: 'WMON' });
+    f.snapshot.assets[0].healthy = true;
+    expect(evaluateHealth(config, f.snapshot, f.pools, f.assets, BigInt(now), now).alerts.map(a => a.code)).toContain('api-oracle-mismatch');
+  });
+  test('null price cannot be healthy even if the stale flag is inconsistent', () => {
+    const f = fixture(); f.assets[0].price = null;
+    expect(evaluateHealth(config, f.snapshot, f.pools, f.assets, BigInt(now), now).status).toBe('critical');
+  });
   test('fixed test unit feeds need not have a publication timestamp', () => {
     const f = fixture(); f.assets[2].publishedAt = 0n;
     expect(evaluateHealth(config, f.snapshot, f.pools, f.assets, BigInt(now), now).assets[2].healthy).toBe(true);

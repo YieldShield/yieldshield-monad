@@ -27,6 +27,13 @@ it("local and preview API reads retain their existing same-origin proxy", () => 
   }
   expect(apiRequestUrl("/media/demo.mp4", "https://monad.yieldshield.ai")).toBe("/media/demo.mp4");
 });
+it("bounds a post-confirmation data read with the supplied cancellation signal", async () => {
+  const signal = new AbortController().signal;
+  const request = vi.fn().mockResolvedValue(new Response(JSON.stringify({ positions: [] })));
+  vi.stubGlobal("fetch", request);
+  await fetcher("/api/positions?owner=0x0000000000000000000000000000000000000001", signal);
+  expect(request).toHaveBeenCalledWith("/api/positions?owner=0x0000000000000000000000000000000000000001", { signal });
+});
 
 it("direct production API errors still fail closed", async () => {
   vi.stubGlobal("location", { origin: "https://monad.yieldshield.ai" });

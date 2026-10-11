@@ -8,11 +8,11 @@ The committed configuration covers the WMON/AUSD and shMON/AUSD pools on **Monad
 
 1. Fetch the public YieldShield `/api/status` endpoint using CRE’s HTTP capability. Validate the chain, known pool assets, known feed addresses and response size. Reduce the response before consensus.
 2. Use CRE’s EVM capability to read the API’s claimed block header. Reject nonexistent, mismatched, future or stale blocks.
-3. At that exact block, read both pools’ backing balances, reserved backing and paused state. Independently read the WMON, shMON and AUSD feeds’ prices and stale flags.
+3. At that exact block, read both pools’ backing balances, reserved backing and paused state. Independently read the WMON, shMON and AUSD feeds’ stale flags, followed by their protected prices only when the feed reports healthy. An explicitly unhealthy feed produces a critical unavailable-price alert without calling a getter that correctly reverts in that state.
 4. Compare those values with the API. Flag mismatches, stale or future oracle observations, empty/low free backing, paused pools and reservations exceeding backing.
 5. Return a JSON report with the block, pool observations, oracle observations and alerts. Emit a concise log plus one line per alert.
 
-The workflow uses **one HTTP request and 13 EVM reads**. It does not need a paid external API, a wallet key or gas. AUSD is a testnet unit-priced asset; its feed does not claim a live dollar-market observation. WMON/shMON publication timestamps are checked independently. Free backing is calculated in the backing token’s integer units and is **not** a deposit quote, solvency audit or promise of a payout.
+The workflow uses **one HTTP request and at most 13 EVM reads**. An unhealthy feed skips its protected price getter, leaving its report price `null`; the independent stale signal always makes the report critical, even when the API correctly agrees. It does not need a paid external API, a wallet key or gas. AUSD is a testnet unit-priced asset; its feed does not claim a live dollar-market observation. WMON/shMON publication timestamps are checked independently. Free backing is calculated in the backing token’s integer units and is **not** a deposit quote, solvency audit or promise of a payout.
 
 ## Run it
 
@@ -38,7 +38,7 @@ The optional schedule (`0 */5 * * * *`) expresses a five-minute interval **if la
 - Every EVM comparison uses the same explicit block as the API snapshot. Reads at unrelated moving blocks would create false mismatches.
 - The block timestamp comes from the RPC header and must match the API claim. Snapshots older than 120 seconds fail closed.
 - Offchain observations must pass CRE identical-value consensus. If nodes see different API snapshots around a cache refresh, consensus can fail; the execution must be retried, never presented as healthy.
-- HTTP failures, malformed data, reverted oracle reads and unavailable blocks fail the execution rather than fabricate a healthy fallback.
+- HTTP failures, malformed data, unavailable blocks and capability/read errors still fail execution. Only a successfully read `isPriceStale` result explicitly declaring an unhealthy feed skips the protected price read and creates a critical alert. A price getter that reverts despite a healthy stale flag remains an execution failure. There is no synthetic price or healthy fallback.
 - Contract/feed addresses are fixed in reviewed configuration. The API cannot choose an arbitrary contract or external request destination.
 - The API’s broader bytecode-verification flag is propagated when false, but this small workflow does not independently audit every deployed bytecode hash.
 - Monitoring is advisory. It is not connected to transaction permissions or automatic pausing. A report is an observation at a named historical block, not a guarantee of current state.
@@ -46,9 +46,13 @@ The optional schedule (`0 */5 * * * *`) expresses a five-minute interval **if la
 
 ## Testing
 
-The test suite covers matching observations; over-reservation; low or empty backing; paused pools; stale, zero and future oracle observations; API verification failure; wrong-chain/asset/feed responses; malformed integers; stale/future/mismatched blocks; bounded configuration; and drift from the deployment registry. An additional test runs the official SDK test runtime to verify the HTTP → 13 same-block EVM-read → report orchestration, plus an HTTP-failure test.
+The test suite covers unavailable prices with honest and dishonest API health flags, preserved EVM capability failures, matching observations; over-reservation; low or empty backing; paused pools; stale, zero and future oracle observations; API verification failure; wrong-chain/asset/feed responses; malformed integers; stale/future/mismatched blocks; bounded configuration; and drift from the deployment registry. An additional test runs the official SDK test runtime to verify the HTTP → 13 same-block EVM-read → report orchestration, plus an HTTP-failure test.
 
 ## Verification status
+
+On 11 October 2026, a fresh authenticated official CLI simulation **completed successfully with a critical health report**, at Monad block **70157292**. Both AUSD-backed pools matched the independent EVM observations. The WMON and shMON feeds each declared themselves unhealthy, producing two `oracle-price-unavailable` alerts; the API correctly agreed, and AUSD remained healthy. The simulation made no transactions. Successful monitoring of an outage does not mean the affected markets are available.
+
+The [current parsed evidence](submission-2026-10-11/evidence/chainlink-cre-simulation-20261011.json) records the result, exit code, source/config/binary hashes and scope. The [unaltered CLI output](submission-2026-10-11/evidence/chainlink-cre-simulation-20261011.txt) records completion. The updated workflow passed type checking, 18 tests with 82 assertions, and official SDK WASM compilation. The [upstream diagnosis](submission-2026-10-11/evidence/redstone-diagnosis.json) independently records RedStone's last update on 23 September and its current stale-data rejection.
 
 On 16 September 2026, the **official authenticated CRE CLI simulation completed successfully** against the deployed public YieldShield API and live Monad testnet RPC. At block **63063880**, both AUSD-backed pools and all three configured feeds matched the independent EVM reads: **healthy, zero alerts**. No transactions were broadcast and no DON workflow was deployed.
 

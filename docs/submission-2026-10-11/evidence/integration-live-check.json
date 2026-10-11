@@ -1,0 +1,28 @@
+{
+  "checkedAt": "2026-10-11T15:55:17.327Z",
+  "kuru": {
+    "chainId": 10143,
+    "market": "0xfdbE356828c8f5A5d5ed4f69ddE0816f4058Ef61",
+    "blockNumber": "70152539",
+    "timestamp": "1791734132",
+    "estimateTenUsdc": {
+      "amountInUsed": "0",
+      "amountOut": "0"
+    },
+    "status": "identity-verified-no-buy-liquidity",
+    "limitation": "The minimum 10-USDC buy quote returned zero input consumed and zero MON output. This read-only check does not establish a currently executable trade. Existing Sept16 evidence remains historical."
+  },
+  "redstoneGateway": {
+    "url": "https://oracle-gateway-api.b.redstone.finance/v2/data-packages/latest-by-data-feeds/redstone-primary-demo?dataFeedIds=MON",
+    "status": 403,
+    "body": "{\"message\":\"Forbidden\"}"
+  },
+  "envio": {
+    "api": "https://monad-api.yieldshield.ai/api/activity",
+    "status": "not-configured",
+    "complete": false,
+    "selectedForBounty": false,
+    "decision": "Owner removed the Envio bounty; no enabling or paid-plan action performed.",
+    "checkedOn": "2026-10-11"
+  }
+}

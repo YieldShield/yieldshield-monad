@@ -1,0 +1,13 @@
+YieldShield gives holders two exit choices: keep the remaining asset, or surrender it for eligible backing. This is the working application on Monad testnet. All tokens shown have no monetary value.
+
+This walkthrough uses the clearly labeled scenario pool. Its price follows a synthetic cycle, not the live MON market. The reference pools stay disabled when their upstream price feed is stale.
+
+We connect through Dynamic with an existing MetaMask wallet. After obtaining scenario tokens from the faucet, we choose sMON-demo with TestUSDC backing and enter one token. Before signing, the form shows the backing, fees and waiting period.
+
+The deposit is confirmed on Monad. Positions displays the receipt and its two exits. Withdrawing the asset returns the remaining token after applicable gain-sharing fees. Using backing surrenders that asset, with a payout limited by the pool's recorded cap and conditions. These are alternatives, not two payments from one receipt.
+
+We also complete a partial asset withdrawal. The original receipt is replaced by a new receipt for the remaining position. The preview shows the requested amount before signing; the confirmed receipt then shows what remains.
+
+Backing providers supply capital and absorb first losses. They receive a share of realized gains. A withdrawal notice permits only available excess backing to leave; it does not unlock capital reserved for holders.
+
+Network status exposes contract and price checks. The public repository includes transaction evidence and our reuse disclosure. YieldShield's protocol foundation predates Metropolis. This application and its Monad integrations are the new milestone.

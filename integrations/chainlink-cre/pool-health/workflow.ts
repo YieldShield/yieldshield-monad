@@ -47,8 +47,11 @@ export function onCron(runtime: Runtime<Config>): string {
   }));
   const assets = config.assets.map(asset => {
     const args = [asset.address as Address] as const;
-    const price = decodeFunctionResult({ abi: feedAbi, functionName: 'getPrice', data: call(asset.feed, encodeFunctionData({ abi: feedAbi, functionName: 'getPrice', args })) });
     const [stale, publishedAt] = decodeFunctionResult({ abi: feedAbi, functionName: 'isPriceStale', data: call(asset.feed, encodeFunctionData({ abi: feedAbi, functionName: 'isPriceStale', args })) });
+    // A pinned feed explicitly declaring itself unhealthy is a monitorable result.
+    // Its protected price getter may correctly revert in that state. Do not call it
+    // or invent a replacement price. Capability failures still abort the workflow.
+    const price = stale ? null : decodeFunctionResult({ abi: feedAbi, functionName: 'getPrice', data: call(asset.feed, encodeFunctionData({ abi: feedAbi, functionName: 'getPrice', args })) });
     return { address: asset.address, price, stale, publishedAt };
   });
   const report = evaluateHealth(config, snapshot, pools, assets, header.timestamp, observedAt);

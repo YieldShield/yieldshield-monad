@@ -10,6 +10,7 @@ import {
   useLocation,
   useParams,
   useSearchParams,
+  useNavigate,
 } from "react-router-dom";
 import useSWR from "swr";
 import { parseEventLogs, parseAbi, formatUnits, type Abi, type Address } from "viem";
@@ -36,6 +37,12 @@ import {
 } from "./lib";
 import type { Asset, Market, Position, Snapshot, Registry, CreationOption } from "./types";
 import { selectMarket } from "./market-selection";
+import { depositLimitError } from "./deposit-limits";
+import {
+  reconcileReplacementReceipt,
+  replacementReceiptId,
+  type PendingReplacementReceipt,
+} from "./replacement-receipt";
 import "./styles.css";
 import "./app-layout.css";
 import "./asset-images.css";
@@ -429,19 +436,30 @@ function Submit({
     </FundingGate>
   );
 }
-function useSelectedMarket(data: Snapshot | undefined) {
+function useSelectedMarket(data: Snapshot | undefined, action: "protect" | "provide") {
   const [params, setParams] = useSearchParams();
-  const m = selectMarket(data?.markets || [], params.get("market"));
+  const requested = params.get("market");
+  const m = selectMarket(data?.markets || [], requested, action);
+  const id = m?.id || "";
+  useEffect(() => {
+    // Keep the user's selected asset stable when a later price refresh changes readiness.
+    if (requested || !id) return;
+    const next = new URLSearchParams(params);
+    next.set("market", id);
+    setParams(next, { replace: true });
+  }, [id, requested, params, setParams]);
   const setId = (id: string) => {
     const next = new URLSearchParams(params);
     next.set("market", id);
     setParams(next, { replace: true });
   };
-  return { m, id: m?.id || "", setId };
+  return { m, id, setId };
 }
 function PositionForm({ side }: { side: "senior" | "junior" }) {
   const { data, error } = useSnapshot();
-  const { m, id, setId } = useSelectedMarket(data);
+  const action = side === "senior" ? "protect" : "provide";
+  const { m, id, setId } = useSelectedMarket(data, action);
+  const alternative = selectMarket(data?.markets || [], null, action);
   const terms = marketTerms(m);
   const [input, setInput] = useState(side === "senior" ? "1" : "1000");
   const w = useWallet();
@@ -452,7 +470,10 @@ function PositionForm({ side }: { side: "senior" | "junior" }) {
   let value = 0n,
     validation = "";
   try {
-    if (token) value = amount(input, token.decimals);
+    if (token) {
+      value = amount(input, token.decimals);
+      validation = depositLimitError(value, side, m?.config, token);
+    }
   } catch (e) {
     validation = errorMessage(e);
   }
@@ -461,23 +482,28 @@ function PositionForm({ side }: { side: "senior" | "junior" }) {
     entry && terms && m?.backing.price && BigInt(m.backing.price) > 0n
       ? backingReserve(entry, terms.collateralBps, BigInt(m.backing.price), m.backing.decimals)
       : null;
-  const available = Boolean(terms && m?.actions[side === "senior" ? "protect" : "provide"]);
+  const available = Boolean(terms && m?.actions[action]);
   const tooMuch = balance != null && value > balance;
   const overCapacity = side === "senior" && m?.capacity != null && value > BigInt(m.capacity);
   async function submit() {
     if (!m || !token) return;
-    await w.execute(side === "senior" ? "Prepare protection" : "Prepare junior liquidity", async () => {
-      if (!data || data.chainId !== 10143 || Date.now() - data.observedAt > 30000 || Date.now() < data.observedAt)
-        throw new Error("The market snapshot expired. Refresh before continuing.");
-      if (m.environment === "reference") await w.updatePrice();
-      await w.approve(token.address, m.address, value);
-      await w.send({
-        address: m.address,
-        abi: abi("SplitRiskPool"),
-        functionName: side === "senior" ? "depositShieldedAsset" : "depositBackingAsset",
-        args: [token.address, value, value],
-      });
-    });
+    await w.execute(
+      side === "senior" ? "Prepare protection" : "Prepare junior liquidity",
+      async () => {
+        if (validation) throw new Error(validation);
+        if (!data || data.chainId !== 10143 || Date.now() - data.observedAt > 30000 || Date.now() < data.observedAt)
+          throw new Error("The market snapshot expired. Refresh before continuing.");
+        if (m.environment === "reference") await w.updatePrice();
+        await w.approve(token.address, m.address, value);
+        await w.send({
+          address: m.address,
+          abi: abi("SplitRiskPool"),
+          functionName: side === "senior" ? "depositShieldedAsset" : "depositBackingAsset",
+          args: [token.address, value, value],
+        });
+      },
+      { refreshPositions: true },
+    );
   }
   return (
     <Shell>
@@ -497,6 +523,13 @@ function PositionForm({ side }: { side: "senior" | "junior" }) {
               <div className="pool-context">
                 <Tag>{m.environment === "scenario" ? "Synthetic demo asset" : "Monad asset"}</Tag>
               </div>
+              {m.environment === "scenario" &&
+                data.markets.some((market) => market.environment === "reference") &&
+                !data.markets.some((market) => market.environment === "reference" && market.actions[action]) && (
+                  <p className="compact-risk" role="status">
+                    Live-price pools are currently unavailable. You can try this synthetic demo pool.
+                  </p>
+                )}
               <label className="field">
                 {side === "senior" ? "Amount to protect" : "Backing to provide"}
                 <div className="amount-field">
@@ -584,6 +617,20 @@ function PositionForm({ side }: { side: "senior" | "junior" }) {
                           : "")}
                 </p>
               )}
+              {!available && (
+                <p className="field-hint">
+                  <Link to="/status">Check network status ↗</Link>
+                  {alternative && alternative.id !== id && alternative.actions[action] && (
+                    <>
+                      {" · "}
+                      <button className="text-link" type="button" onClick={() => setId(alternative.id)}>
+                        Try {alternative.symbol} / {alternative.backingSymbol}
+                        {alternative.environment === "scenario" ? " demo" : ""}
+                      </button>
+                    </>
+                  )}
+                </p>
+              )}
               <Submit
                 label={side === "senior" ? "Approve & protect" : "Approve & provide"}
                 asset={fundingAsset}
@@ -655,6 +702,20 @@ function PositionStack() {
     </span>
   );
 }
+function PositionRefreshNotice({ failed }: { failed: boolean }) {
+  return (
+    <div className={`notice ${failed ? "warning" : ""}`} role="status">
+      {failed
+        ? "Your transaction is confirmed. Latest position data is temporarily unavailable."
+        : "Your transaction is confirmed. Updating your positions…"}
+      {failed && (
+        <button className="text-link" onClick={() => location.reload()}>
+          Refresh positions
+        </button>
+      )}
+    </div>
+  );
+}
 function Positions() {
   const w = useWallet();
   const { data: state } = useSnapshot();
@@ -673,6 +734,8 @@ function Positions() {
           <p>Connect to view protected assets and supplied backing.</p>
           <WalletButton />
         </div>
+      ) : w.positionRefreshState ? (
+        <PositionRefreshNotice failed={w.positionRefreshState === "failed"} />
       ) : !data ? (
         <Loading error={error} />
       ) : !data.positions.length ? (
@@ -734,13 +797,21 @@ function Positions() {
 }
 function PositionDetail() {
   const { key } = useParams();
+  const navigate = useNavigate();
   const w = useWallet();
+  const [replacement, setReplacement] = useState<PendingReplacementReceipt | null>(null);
   const { data: state, error: stateError } = useSnapshot();
-  const { data, error } = useSWR<{ positions: Position[] }>(
-    w.account ? `/api/positions?owner=${w.account}` : null,
-    fetcher,
-    { refreshInterval: 10000 },
-  );
+  const {
+    data,
+    error,
+    mutate: refreshPositions,
+  } = useSWR<{ positions: Position[] }>(w.account ? `/api/positions?owner=${w.account}` : null, fetcher, {
+    refreshInterval: 10000,
+  });
+  useEffect(() => {
+    // Post-transaction mutate publishes data without invoking SWR's onSuccess.
+    setReplacement((current) => reconcileReplacementReceipt(current, data?.positions));
+  }, [data]);
   const p = data?.positions.find((p) => p.key === key);
   const m = state?.markets.find((m) => m.id === p?.poolId);
   const [withdraw, setWithdraw] = useState("");
@@ -751,6 +822,12 @@ function PositionDetail() {
     return () => clearInterval(t);
   }, []);
   if (!w.account) return <Positions />;
+  if (w.positionRefreshState)
+    return (
+      <Shell>
+        <PositionRefreshNotice failed={w.positionRefreshState === "failed"} />
+      </Shell>
+    );
   if (!data || !state)
     return (
       <Shell>
@@ -761,7 +838,24 @@ function PositionDetail() {
     return (
       <Shell>
         <div className="empty-state">
-          <h2>Position is closed or not in this wallet.</h2>
+          {replacement && replacement.key === key && replacement.owner.toLowerCase() === w.account.toLowerCase() ? (
+            <>
+              <h2>Withdrawal confirmed. Your remaining position is loading.</h2>
+              <p role="status">
+                The replacement receipt was created on Monad. Position data will refresh automatically.
+              </p>
+              <div className="row">
+                <button className="text-link" onClick={() => void refreshPositions()}>
+                  Refresh position
+                </button>
+                <a href={explorer("tx", replacement.hash)} target="_blank" rel="noreferrer">
+                  View confirmed withdrawal ↗
+                </a>
+              </div>
+            </>
+          ) : (
+            <h2>Position is closed or not in this wallet.</h2>
+          )}
           <Link to="/positions">Back to positions ↗</Link>
         </div>
       </Shell>
@@ -795,10 +889,30 @@ function PositionDetail() {
     }
   } catch {}
   const act = (label: string, fn: string, args: unknown[], refreshPrice = false) =>
-    w.execute(label, async () => {
-      if (refreshPrice && m.environment === "reference") await w.updatePrice();
-      await w.send({ address: p.pool, abi: abi("SplitRiskPool"), functionName: fn, args });
-    });
+    w.execute(
+      label,
+      async () => {
+        if (refreshPrice && m.environment === "reference") await w.updatePrice();
+        const receipt = await w.send({ address: p.pool, abi: abi("SplitRiskPool"), functionName: fn, args });
+        if (fn === "partialWithdrawShielded") {
+          const newId = replacementReceiptId(receipt, {
+            pool: p.pool,
+            owner: w.account!,
+            oldTokenId: BigInt(p.id),
+            withdrawAmount: args[1] as bigint,
+          });
+          setPartial("");
+          if (newId === null) {
+            navigate("/positions", { replace: true });
+          } else {
+            const nextKey = `${p.poolId}:senior:${newId}`;
+            setReplacement({ key: nextKey, owner: w.account!, hash: receipt.transactionHash });
+            navigate(`/positions/${encodeURIComponent(nextKey)}`, { replace: true });
+          }
+        }
+      },
+      { refreshPositions: true },
+    );
   return (
     <Shell>
       <Link className="back-link" to="/positions">

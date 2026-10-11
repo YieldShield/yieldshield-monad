@@ -42,8 +42,8 @@ export function apiRequestUrl(path: string, origin = globalThis.location?.origin
     ? `https://monad-api.yieldshield.ai${path}`
     : path;
 }
-export async function fetcher(url: string) {
-  const r = await fetch(apiRequestUrl(url));
+export async function fetcher(url: string, signal?: AbortSignal) {
+  const r = signal ? await fetch(apiRequestUrl(url), { signal }) : await fetch(apiRequestUrl(url));
   const d = await r.json();
   if (!r.ok) throw new Error(d.error || "Unable to load verified data.");
   return d;

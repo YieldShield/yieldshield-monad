@@ -1,0 +1,445 @@
+{
+  "createdDate": "2026-10-11",
+  "timezone": "Europe/Berlin",
+  "status": "Draft media; no hackathon submission performed",
+  "narration": {
+    "provider": "ElevenLabs",
+    "voice": "Chris",
+    "model": "Eleven Multilingual v2",
+    "authorization": "User explicitly authorized ElevenLabs for submission videos",
+    "method": "Stock synthetic narrator, third-person team description; no voice cloning or founder impersonation"
+  },
+  "visuals": {
+    "pitch": "Original typography cards based on repository facts and existing YieldShield branding; no fabricated founder portraits",
+    "technical": "Actual app screenshots captured during parent-agent browser tests on 11 October; cropped for legibility; not a continuous screen recording",
+    "cre": "Actual browser screenshot of a faithful excerpt from the official authenticated CLI simulation completed 11 October 2026 at 18:19 Europe/Berlin; recorded output, not live terminal typing; successful execution returned critical oracle alerts",
+    "logo": {
+      "source": "apps/monad-web/public/favicon.svg",
+      "method": "Rasterized exact existing geometry and colors at1024px",
+      "output": {
+        "path": "output/readiness-20261011/yieldshield-logo-1024.png",
+        "bytes": 50960,
+        "sha256": "66b2a0a5c5cb42290ea839538c135b721f96f253d1d69eecf10781113d230ff4"
+      }
+    },
+    "fonts": [
+      "Manrope700",
+      "DM Sans400"
+    ],
+    "fontLicenses": [
+      "apps/monad-web/public/fonts/manrope-OFL.txt",
+      "apps/monad-web/public/fonts/dm-sans-OFL.txt"
+    ]
+  },
+  "render": {
+    "engine": "AVFoundation/CoreGraphics",
+    "format": "1920x1080,30fps,H.264/AAC",
+    "transitions": "Clean cuts; no crossfading between values or headings",
+    "source": "output/readiness-20261011/video/render_video.swift",
+    "validation": "Full video-frame and audio-track decode plus selected exported frame inspection"
+  },
+  "sourceScreenshots": [
+    {
+      "path": "output/readiness-20261011/backing-preview.jpg",
+      "bytes": 105044,
+      "sha256": "a6605d4911d1a7ddc3f2ef9696f565733ba18525b8de6f341e02576b999b192b"
+    },
+    {
+      "path": "output/readiness-20261011/cre-current-success.jpg",
+      "bytes": 162771,
+      "sha256": "57031704561d1da136abdf0b9d6cb8d3c22308fa595bfbce7e04c124a5b2a305"
+    },
+    {
+      "path": "output/readiness-20261011/mobile-guide.jpg",
+      "bytes": 35720,
+      "sha256": "41a8eb0e2a2793db25359d4b36ffd8999dcd2637dbba036f8b49a8fffcc6d16a"
+    },
+    {
+      "path": "output/readiness-20261011/network-status-initial.jpg",
+      "bytes": 96518,
+      "sha256": "f82487ba45d78f1ae07851801e4fb6975d46c0963d2bc9fb6ba57b35274e1f47"
+    },
+    {
+      "path": "output/readiness-20261011/partial-preview.jpg",
+      "bytes": 110004,
+      "sha256": "4bcfcc2ff3737ebb33611568bd78e9abaadc5e92f619e1323a19bc447eedb8b7"
+    },
+    {
+      "path": "output/readiness-20261011/position-both-exits.jpg",
+      "bytes": 100383,
+      "sha256": "93a068feedd2fc4aedf363494dfb582c46564baa4d0da6f2205884c202cb62ff"
+    },
+    {
+      "path": "output/readiness-20261011/protect-preview.jpg",
+      "bytes": 95491,
+      "sha256": "b376d2ce16dfc3416d78204a1bbf3ee87faa252f5e371a2fb3fab502b97931d8"
+    },
+    {
+      "path": "output/readiness-20261011/provider-position.jpg",
+      "bytes": 91630,
+      "sha256": "b977a09e5448573da949ded8761a486e1ef959a076c245cd6378ffe9ce78503a"
+    },
+    {
+      "path": "output/readiness-20261011/provider-preview.jpg",
+      "bytes": 99630,
+      "sha256": "ec8643089c6eb33bcf30d9adca8343e421e9cff67643c48a871f931a76773ef6"
+    },
+    {
+      "path": "output/readiness-20261011/replacement-receipt.jpg",
+      "bytes": 58599,
+      "sha256": "5909d1bd39ef657d536aa52ac33d1f90992a7b31bb753935f3427527cb0a7bfa"
+    },
+    {
+      "path": "output/readiness-20261011/wallet-signin.jpg",
+      "bytes": 96518,
+      "sha256": "f82487ba45d78f1ae07851801e4fb6975d46c0963d2bc9fb6ba57b35274e1f47"
+    }
+  ],
+  "captureCrops": [
+    {
+      "frame": "frames/technical-01-product.png",
+      "source": "protect-preview.jpg",
+      "sourceSize": [
+        2560,
+        1267
+      ],
+      "crop": null,
+      "visibleLabel": "YieldShield \u00b7 two exit choices"
+    },
+    {
+      "frame": "frames/technical-02-scenario.png",
+      "source": "protect-preview.jpg",
+      "sourceSize": [
+        2560,
+        1267
+      ],
+      "crop": [
+        875,
+        205,
+        1620,
+        675
+      ],
+      "visibleLabel": "A clearly labeled scenario pool"
+    },
+    {
+      "frame": "frames/technical-03-status.png",
+      "source": "network-status-initial.jpg",
+      "sourceSize": [
+        2545,
+        1260
+      ],
+      "crop": [
+        765,
+        115,
+        2000,
+        1185
+      ],
+      "visibleLabel": "Reference prices unavailable \u2192 dependent actions disabled"
+    },
+    {
+      "frame": "frames/technical-04-terms.png",
+      "source": "protect-preview.jpg",
+      "sourceSize": [
+        2560,
+        1267
+      ],
+      "crop": [
+        875,
+        590,
+        1650,
+        1055
+      ],
+      "visibleLabel": "Review amount, fees, backing and wait before signing"
+    },
+    {
+      "frame": "frames/technical-05-position.png",
+      "source": "position-both-exits.jpg",
+      "sourceSize": [
+        2560,
+        1267
+      ],
+      "crop": [
+        775,
+        115,
+        2000,
+        905
+      ],
+      "visibleLabel": "Confirmed deposit \u00b7 inspect the two alternatives"
+    },
+    {
+      "frame": "frames/technical-06-partial.png",
+      "source": "partial-preview.jpg",
+      "sourceSize": [
+        2545,
+        1260
+      ],
+      "crop": [
+        775,
+        760,
+        1375,
+        1090
+      ],
+      "visibleLabel": "Partial withdrawal \u00b7 review the requested amount"
+    },
+    {
+      "frame": "frames/technical-07-replacement.png",
+      "source": "replacement-receipt.jpg",
+      "sourceSize": [
+        2560,
+        1267
+      ],
+      "crop": [
+        770,
+        115,
+        2010,
+        405
+      ],
+      "visibleLabel": "New receipt for the remaining position"
+    },
+    {
+      "frame": "frames/technical-08-backing.png",
+      "source": "backing-preview.jpg",
+      "sourceSize": [
+        2560,
+        1267
+      ],
+      "crop": [
+        775,
+        115,
+        2000,
+        895
+      ],
+      "visibleLabel": "The backing option surrenders the remaining asset"
+    },
+    {
+      "frame": "frames/technical-14-statusfeeds.png",
+      "source": "network-status-initial.jpg",
+      "sourceSize": [
+        2545,
+        1260
+      ],
+      "crop": [
+        780,
+        750,
+        1970,
+        1140
+      ],
+      "visibleLabel": "Oracle checks fail closed"
+    },
+    {
+      "frame": "frames/technical-15-provider-position.png",
+      "source": "provider-position.jpg",
+      "sourceSize": [
+        2545,
+        1260
+      ],
+      "crop": [
+        760,
+        130,
+        1990,
+        775
+      ],
+      "visibleLabel": "Confirmed provider position \u00b7 first-loss backing"
+    },
+    {
+      "frame": "frames/technical-10-provider.png",
+      "source": "provider-preview.jpg",
+      "sourceSize": [
+        2560,
+        1267
+      ],
+      "crop": [
+        850,
+        170,
+        2020,
+        1040
+      ],
+      "visibleLabel": "Backing providers take first losses"
+    },
+    {
+      "frame": "frames/cre-03-cli.png",
+      "source": "cre-current-success.jpg",
+      "sourceSize": [
+        2151,
+        1259
+      ],
+      "crop": [
+        0,
+        0,
+        2151,
+        875
+      ],
+      "visibleLabel": "Official CLI simulation \u00b7 recorded output excerpt",
+      "kind": "Actual browser capture of faithful excerpt from recorded official CRE CLI output; not live terminal typing"
+    },
+    {
+      "frame": "frames/cre-04-alerts.png",
+      "source": "cre-current-success.jpg",
+      "sourceSize": [
+        2151,
+        1259
+      ],
+      "crop": [
+        37,
+        470,
+        1220,
+        815
+      ],
+      "visibleLabel": "Successful execution \u00b7 critical oracle alerts",
+      "kind": "Actual browser capture of faithful excerpt from recorded official CRE CLI output; not live terminal typing"
+    }
+  ],
+  "creEvidence": [
+    {
+      "path": "docs/submission-2026-10-11/evidence/chainlink-cre-simulation-20261011.txt",
+      "bytes": 3384,
+      "sha256": "e55e38383da9b258df8c6e9ddd9867f4be4adc06c41c1810bd85154a993cd16e"
+    },
+    {
+      "path": "docs/submission-2026-10-11/evidence/chainlink-cre-simulation-20261011.json",
+      "bytes": 4017,
+      "sha256": "2da43136fe49c9f6ce7a751721c2aeaaf063966e92c510b67f49396067a5ab93"
+    },
+    {
+      "path": "output/cre-demo-20261011/recorded-cli-output.html",
+      "bytes": 2728,
+      "sha256": "3f2218ac79f4cfd3eaad3950f26d56eaddc5937279eebcf26924e8031ca39cb6"
+    }
+  ],
+  "narrationAssets": [
+    {
+      "id": "pitch",
+      "path": "output/readiness-20261011/audio/pitch.mp3",
+      "bytes": 1235289,
+      "sha256": "6dd206fc55ded59237f61000f37b9ac991d834af098aef3d617aa8bd1e154c89",
+      "transcript": {
+        "path": "output/readiness-20261011/audio/pitch.txt",
+        "bytes": 1157,
+        "sha256": "9019b3e382e60f5ecb18720b19e4bb804118ae9f98f92cbccbab4a5fc4d04ef9"
+      }
+    },
+    {
+      "id": "technical",
+      "path": "output/readiness-20261011/audio/technical.mp3",
+      "bytes": 1913636,
+      "sha256": "370a17253b99e5b55ed02b9edc49faff5d0985526499a4e596dc45757c2ddfa4",
+      "transcript": {
+        "path": "output/readiness-20261011/audio/technical.txt",
+        "bytes": 1663,
+        "sha256": "5fca92aed86daad612f0b023add9cd8e97dff5edf3d860f2599fa994857a5481"
+      }
+    },
+    {
+      "id": "cre",
+      "path": "output/readiness-20261011/audio/cre.mp3",
+      "bytes": 1099452,
+      "sha256": "4217b1fa5aa4d70fbe585ef74afa1d8b7f1c7b40c0944f07bcd48f9d761c5602",
+      "transcript": {
+        "path": "output/readiness-20261011/audio/cre.txt",
+        "bytes": 928,
+        "sha256": "ee59e8d5fabe8e4a49d958e29d3aed66e3b3672c80794b8dfc00a376873bd7b2"
+      }
+    }
+  ],
+  "exports": [
+    {
+      "id": "pitch",
+      "path": "output/readiness-20261011/video/yieldshield-pitch-20261011.mp4",
+      "bytes": 4114737,
+      "sha256": "ebc45ffd362ad1bc1b3b79bc36b82515b679160d548bb1858ed2d294a5a8d1e8",
+      "publishedPath": "apps/monad-web/public/media/metropolis-pitch-20261011.mp4",
+      "verification": {
+        "durationSeconds": 76.9,
+        "file": "yieldshield-pitch-20261011.mp4",
+        "tracks": [
+          {
+            "buffers": 2307,
+            "decode": "passed",
+            "mediaType": "vide",
+            "samples": 2307
+          },
+          {
+            "buffers": 411,
+            "decode": "passed",
+            "mediaType": "soun",
+            "samples": 3364683
+          }
+        ]
+      }
+    },
+    {
+      "id": "technical",
+      "path": "output/readiness-20261011/video/yieldshield-technical-20261011.mp4",
+      "bytes": 6687342,
+      "sha256": "6008ac5cf9bf9753e28bb0993705ce2ddec52fed921634ec8f922c145301ea6d",
+      "publishedPath": "apps/monad-web/public/media/metropolis-technical-20261011.mp4",
+      "verification": {
+        "durationSeconds": 119.2,
+        "file": "yieldshield-technical-20261011.mp4",
+        "tracks": [
+          {
+            "buffers": 3576,
+            "decode": "passed",
+            "mediaType": "vide",
+            "samples": 3576
+          },
+          {
+            "buffers": 640,
+            "decode": "passed",
+            "mediaType": "soun",
+            "samples": 5234376
+          }
+        ]
+      }
+    },
+    {
+      "id": "cre",
+      "path": "output/readiness-20261011/video/yieldshield-cre-20261011.mp4",
+      "bytes": 5192175,
+      "sha256": "2bc436d6aa490f0ac80d2e5c0b4d11860dc3b99bcd1b6ae2214d1eb7eb4468f5",
+      "publishedPath": "apps/monad-web/public/media/metropolis-cre-20261011.mp4",
+      "verification": {
+        "durationSeconds": 68.4,
+        "file": "yieldshield-cre-20261011.mp4",
+        "tracks": [
+          {
+            "buffers": 2052,
+            "decode": "passed",
+            "mediaType": "vide",
+            "samples": 2052
+          },
+          {
+            "buffers": 366,
+            "decode": "passed",
+            "mediaType": "soun",
+            "samples": 2990274
+          }
+        ]
+      }
+    }
+  ],
+  "captionTiming": {
+    "method": "Local Whisper word timestamps aligned to the authoritative narration scripts; recognition errors corrected from the scripts",
+    "pitchCues": 17,
+    "technicalCues": 26,
+    "creCues": 15,
+    "maxLines": 2,
+    "pitchAudioOffsetSeconds": 0.15,
+    "technicalAudioOffsetSeconds": 0.15,
+    "creAudioOffsetSeconds": 0.15
+  },
+  "limits": {
+    "pitchSeconds": 120,
+    "technicalSeconds": 180,
+    "dynamicOptionalSeconds": 120,
+    "creSeconds": 120
+  },
+  "claimBoundaries": [
+    "Seven total test pools equals five reference and two scenario pools",
+    "Valueless testnet assets; no customer adoption/revenue/real-moneyTVL",
+    "Reference feed outage visible in11October demo",
+    "Historical Kuru execution is not current liquidity assurance",
+    "CRE simulation is not a continuously deployed DON monitor",
+    "Envio removed at user instruction"
+  ]
+}

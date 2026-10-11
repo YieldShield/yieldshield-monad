@@ -1,0 +1,173 @@
+{
+  "checkedAt": "2026-10-11T16:31:41.627Z",
+  "source": "Read-only public production API requests",
+  "endpoints": [
+    {
+      "url": "https://monad-api.yieldshield.ai/health",
+      "httpStatus": 200,
+      "elapsedMs": 193,
+      "result": {
+        "status": "ok",
+        "service": "yieldshield-monad-api",
+        "chainId": 10143
+      }
+    },
+    {
+      "url": "https://monad-api.yieldshield.ai/api/status",
+      "httpStatus": 200,
+      "elapsedMs": 127,
+      "result": {
+        "chainId": 10143,
+        "blockNumber": "70159676",
+        "blockTimestamp": "1791736288",
+        "contractsVerified": true,
+        "verifiedContracts": 44,
+        "checkedContracts": 44,
+        "assets": [
+          {
+            "symbol": "TestUSDC",
+            "healthy": true,
+            "price": "100000000",
+            "publishedAt": null,
+            "error": null
+          },
+          {
+            "symbol": "sMON-demo",
+            "healthy": true,
+            "price": "9479166667",
+            "publishedAt": null,
+            "error": null
+          },
+          {
+            "symbol": "vTestUSDC",
+            "healthy": true,
+            "price": "100000200",
+            "publishedAt": null,
+            "error": null
+          },
+          {
+            "symbol": "WMON",
+            "healthy": false,
+            "price": null,
+            "publishedAt": null,
+            "error": "A fresh, verified MON reference price is required."
+          },
+          {
+            "symbol": "shMON",
+            "healthy": false,
+            "price": null,
+            "publishedAt": null,
+            "error": "A fresh, verified MON reference price is required."
+          },
+          {
+            "symbol": "AUSD",
+            "healthy": true,
+            "price": "100000000",
+            "publishedAt": null,
+            "error": null
+          }
+        ],
+        "markets": [
+          {
+            "id": "scenario-mon-usd",
+            "ready": true,
+            "reason": null,
+            "actions": {
+              "protect": true,
+              "provide": true,
+              "withdrawAsset": true,
+              "withdrawBacking": true
+            }
+          },
+          {
+            "id": "scenario-mon-vault",
+            "ready": true,
+            "reason": null,
+            "actions": {
+              "protect": true,
+              "provide": true,
+              "withdrawAsset": true,
+              "withdrawBacking": true
+            }
+          },
+          {
+            "id": "wmon-usd",
+            "ready": false,
+            "reason": "A fresh, verified MON reference price is required.",
+            "actions": {
+              "protect": false,
+              "provide": false,
+              "withdrawAsset": false,
+              "withdrawBacking": false
+            }
+          },
+          {
+            "id": "shmon-usd",
+            "ready": false,
+            "reason": "A fresh, verified MON reference price is required.",
+            "actions": {
+              "protect": false,
+              "provide": false,
+              "withdrawAsset": false,
+              "withdrawBacking": false
+            }
+          },
+          {
+            "id": "wmon-vault",
+            "ready": false,
+            "reason": "A fresh, verified MON reference price is required.",
+            "actions": {
+              "protect": false,
+              "provide": false,
+              "withdrawAsset": false,
+              "withdrawBacking": false
+            }
+          },
+          {
+            "id": "wmon-ausd",
+            "ready": false,
+            "reason": "A fresh, verified MON reference price is required.",
+            "actions": {
+              "protect": false,
+              "provide": false,
+              "withdrawAsset": false,
+              "withdrawBacking": false
+            }
+          },
+          {
+            "id": "shmon-ausd",
+            "ready": false,
+            "reason": "A fresh, verified MON reference price is required.",
+            "actions": {
+              "protect": false,
+              "provide": false,
+              "withdrawAsset": false,
+              "withdrawBacking": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://monad-api.yieldshield.ai/api/activity",
+      "httpStatus": 200,
+      "elapsedMs": 105,
+      "result": {
+        "chainId": 10143,
+        "source": "Envio HyperSync",
+        "status": "not-configured",
+        "complete": false,
+        "observedAt": null,
+        "indexedThrough": null,
+        "sourceHeight": null,
+        "startBlock": 62432610,
+        "confirmationBlocks": 20,
+        "scope": "registered-deployment-pools",
+        "poolCount": 7,
+        "totalEvents": 0,
+        "hasMore": false,
+        "events": []
+      }
+    }
+  ]
+}

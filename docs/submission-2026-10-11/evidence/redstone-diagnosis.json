@@ -1,0 +1,96 @@
+{
+  "checkedAt": "2026-10-11T15:52:07.828Z",
+  "chainId": 10143,
+  "blockNumber": "70151862",
+  "blockTimestamp": "1791733927",
+  "source": "0x92B14C0531A1f8fC0F85712FaF97d7302B4128C8",
+  "sourceCodehash": "0x4d9be648c5bf39973670d9f8b481d5d0b971e6a2db2deccc6b98cde21c5dd83e",
+  "calls": [
+    {
+      "address": "0x92B14C0531A1f8fC0F85712FaF97d7302B4128C8",
+      "function": "latestRoundData",
+      "error": "The contract function \"latestRoundData\" reverted with the following signature:\n0x4f319ffe"
+    },
+    {
+      "address": "0x92B14C0531A1f8fC0F85712FaF97d7302B4128C8",
+      "function": "decimals",
+      "result": 8
+    },
+    {
+      "address": "0x92B14C0531A1f8fC0F85712FaF97d7302B4128C8",
+      "function": "description",
+      "result": "RedStone Price Feed for MON"
+    },
+    {
+      "address": "0x244252325588eE70e8C763385480AB688f89d690",
+      "function": "monPrice",
+      "error": "The contract function \"monPrice\" reverted with the following signature:\n0x4f319ffe"
+    },
+    {
+      "address": "0x244252325588eE70e8C763385480AB688f89d690",
+      "function": "isPriceStale",
+      "result": [
+        true,
+        "0"
+      ]
+    }
+  ],
+  "upstreamError": {
+    "abiItem": {
+      "name": "InvalidLastUpdateDetails",
+      "type": "error",
+      "inputs": [
+        {
+          "type": "bytes32",
+          "name": "dataFeedId"
+        },
+        {
+          "type": "uint256",
+          "name": "lastDataTimestamp"
+        },
+        {
+          "type": "uint256",
+          "name": "lastBlockTimestamp"
+        },
+        {
+          "type": "uint256",
+          "name": "lastValue"
+        }
+      ]
+    },
+    "args": [
+      "0x4d4f4e0000000000000000000000000000000000000000000000000000000000",
+      "1790168142000",
+      "1790168142",
+      "2567800"
+    ],
+    "errorName": "InvalidLastUpdateDetails"
+  },
+  "interpretation": {
+    "lastDataTimestampUtc": "2026-09-23T12:55:42.000Z",
+    "lastBlockTimestampUtc": "2026-09-23T12:55:42.000Z",
+    "ageSecondsAtCheck": 1565785,
+    "status": "upstream-feed-stale",
+    "sourceCodehashMatchesPin": true,
+    "affectedAssets": [
+      "WMON",
+      "shMON"
+    ],
+    "affectedRegisteredPools": 5,
+    "safety": "The deployed adapter and application reject this unusable source. No freshness bound, price, feed address or signing permission was changed."
+  },
+  "officialSources": {
+    "currentRelayerManifest": "https://github.com/redstone-finance/redstone-oracles-monorepo/blob/main/packages/relayer-remote-config/main/relayer-manifests-multi-feed/monadTestnetBoltMultiFeed.json",
+    "currentFeedDirectory": "https://app.redstone.finance/push-feeds?networks=10143",
+    "gatewayClient": "https://github.com/redstone-finance/redstone-oracles-monorepo/blob/main/packages/sdk/src/data-services-urls.ts",
+    "gatewayAuthentication": "https://github.com/redstone-finance/redstone-oracles-monorepo/blob/main/packages/sdk/src/request-data-packages.ts"
+  },
+  "recovery": {
+    "canonicalAdapter": "0xa2B0067002dF61df015C11b2cF0be4f34fC41Cf8",
+    "canonicalDataServiceId": "redstone-primary-demo",
+    "canonicalPackage": "___FAST___",
+    "minimumActions": "Provider restores valid signed MON updates to its existing canonical adapter; otherwise review a separately authenticated relay or an oracle migration. A one-off update alone lasts at most 120 seconds.",
+    "gatewayAccess": "Official demo gateway rejects unauthenticated requests (HTTP 403); no RedStone credential found in known local project environment files.",
+    "transactionsBroadcast": false
+  }
+}

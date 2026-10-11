@@ -36,6 +36,14 @@ describe("landing asset routes", () => {
     const pools = [market("unavailable", "0xaa", "wmon", "test-usd", false)];
     expect(landingMarkets(snapshot(pools))[0].actions.protect).toBe(false);
   });
+  it("puts the functioning demo first when reference prices are unavailable", () => {
+    const pools = [
+      market("wmon-usd", "0xaa", "wmon", "test-usd", false),
+      market("shmon-usd", "0xbb", "shmon", "test-usd", false),
+      market("scenario-mon-usd", "0xcc", "scenario-mon"),
+    ];
+    expect(landingMarkets(snapshot(pools)).map((m) => m.id)).toEqual(["scenario-mon-usd", "wmon-usd", "shmon-usd"]);
+  });
   it("does not present unverified or wrong-chain asset routes", () => {
     const data = snapshot([market("wmon-usd", "0xaa", "wmon")]);
     expect(landingMarkets()).toEqual([]);
