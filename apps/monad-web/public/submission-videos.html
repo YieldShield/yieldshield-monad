@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="YieldShield on Monad: product demonstration and team pitch for Metropolis. Actual testnet browser captures, with captions and transcripts.">
+  <title>YieldShield on Monad · Metropolis videos</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <style>
+    @font-face{font-family:Manrope;src:url('/fonts/manrope-latin.woff2') format('woff2');font-display:swap}
+    @font-face{font-family:'DM Sans';src:url('/fonts/dm-sans-latin.woff2') format('woff2');font-display:swap}
+    :root{color-scheme:light;--paper:#f5f6f2;--ink:#162226;--muted:#526266;--line:#dbe2dc;--accent:#426e4a}
+    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.6 'DM Sans',sans-serif}
+    a{color:inherit;text-underline-offset:4px}a:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:5px}
+    header,main,footer{width:min(1120px,calc(100% - 48px));margin:auto}header{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:32px 0;border-bottom:1px solid var(--line)}
+    .brand{display:flex;align-items:center;gap:12px;font-family:Manrope,sans-serif;font-weight:800;text-decoration:none}.brand img{width:34px;height:34px}.brand span{white-space:nowrap;font-size:14px;font-weight:600}
+    .eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:38px 0 10px}
+    h1{font-family:Manrope,sans-serif;font-size:clamp(30px,5vw,52px);line-height:1.12;letter-spacing:-.04em;margin:0 0 16px;max-width:850px}
+    .intro{color:var(--muted);max-width:770px;margin:0 0 26px}.tabs{display:flex;gap:12px;flex-wrap:wrap;margin:24px 0}
+    .tabs a{padding:9px 17px;border:1px solid var(--line);border-radius:50px;text-decoration:none;font-size:14px}.tabs a[aria-current=page]{background:var(--ink);color:white;border-color:var(--ink)}
+    video{display:block;background:#162226;width:100%;aspect-ratio:16/9;border-radius:12px;border:1px solid var(--line)}
+    .caption{display:flex;justify-content:space-between;gap:22px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding:18px 0;color:var(--muted);font-size:14px}.links{display:flex;gap:20px;flex-wrap:wrap}[hidden]{display:none!important}
+    .note{max-width:850px;font-size:15px;color:var(--muted);margin:25px 0 40px}footer{border-top:1px solid var(--line);padding:24px 0 36px;font-size:13px;color:var(--muted);display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+    @media(max-width:600px){header,main,footer{width:calc(100% - 32px)}header{padding:20px 0;gap:12px}.brand{font-size:15px;gap:8px}header>a:last-child{font-size:12px;white-space:nowrap}.eyebrow{margin-top:26px}.intro{font-size:16px}.caption{display:block}.links{margin-top:12px}}
+  </style>
+</head>
+<body>
+  <header><a class="brand" href="/"><img src="/favicon.svg" alt="">YieldShield <span>on Monad</span></a><a href="/">Open the app ↗</a></header>
+  <main>
+    <p class="eyebrow">Metropolis · 11 October 2026</p>
+    <h1 id="title">Two exits. One working product.</h1>
+    <p class="intro" id="description">A walkthrough of the actual Monad testnet application, including a confirmed deposit, position recovery and partial withdrawal.</p>
+    <nav class="tabs" aria-label="Submission videos"><a href="?video=technical" data-video="technical" aria-current="page">Product demo · 1:59</a><a href="?video=pitch" data-video="pitch">Team &amp; vision · 1:17</a><a href="?video=cre" data-video="cre">Chainlink CRE simulation</a></nav>
+    <video id="player" controls playsinline preload="metadata" aria-label="YieldShield product demonstration">
+      <source src="/media/metropolis-technical-20261011.mp4" type="video/mp4">
+      <track kind="captions" src="/media/metropolis-technical-20261011.vtt" srclang="en" label="English" default>
+      Your browser cannot play this video. Use the download link below.
+    </video>
+    <div class="caption"><span id="method">Actual browser capture sequence · Testnet tokens only</span><div class="links"><a id="download" href="/media/metropolis-technical-20261011.mp4" download>Download video</a><a id="transcript" href="/media/metropolis-technical-20261011.txt">Read transcript</a></div></div>
+    <div class="links" id="cre-evidence" hidden style="margin-top:20px"><a href="https://github.com/YieldShield/yieldshield-monad/blob/1c10495/docs/submission-2026-10-11/evidence/chainlink-cre-simulation-20261011.txt">Original CLI log ↗</a><a href="https://github.com/YieldShield/yieldshield-monad/blob/1c10495/docs/submission-2026-10-11/evidence/chainlink-cre-simulation-20261011.json">Full result JSON ↗</a></div>
+    <p class="note" id="note">The scenario pool uses a synthetic price cycle. The five MON/shMON reference pools are disabled while the upstream RedStone testnet price is stale. This dated demonstration does not claim those reference pools are currently operational. Narration was generated with ElevenLabs; the UI captures show actual application states.</p>
+  </main>
+  <footer><span>YieldShield · Hawig Ventures UG (haftungsbeschränkt)</span><div class="links"><a href="/status">Current network status</a><a href="https://github.com/YieldShield/yieldshield-monad">Source &amp; evidence ↗</a><a href="/legal">Legal &amp; privacy</a></div></footer>
+  <script>
+    const choice = new URLSearchParams(location.search).get('video');
+    if (choice === 'cre') {
+      document.title = 'YieldShield on Monad · Chainlink CRE simulation';
+      document.getElementById('cre-evidence').hidden = false;
+      document.getElementById('title').textContent = 'A successful run. Two critical alerts.';
+      document.getElementById('description').textContent = 'The official CRE CLI completed on 11 October at Monad block 70157292. It detected unavailable MON and shMON prices while confirming pool and API agreement.';
+      document.getElementById('method').textContent = 'Recorded official CLI output · Read-only simulation';
+      document.getElementById('note').textContent = 'A successful workflow execution does not mean healthy prices. This run correctly returned two critical oracle-price-unavailable alerts. It makes no blockchain writes and is a local simulation, not a continuously deployed DON monitor. The recording shows authentic output; long JSON is condensed for readability.';
+      document.querySelector('[data-video="technical"]').removeAttribute('aria-current');
+      document.querySelector('[data-video="cre"]').setAttribute('aria-current','page');
+      const base = '/media/metropolis-cre-20261011';
+      const player = document.getElementById('player');
+      player.setAttribute('aria-label','YieldShield Chainlink CRE simulation');
+      player.querySelector('source').src = base + '.mp4';
+      player.querySelector('track').src = base + '.vtt';
+      document.getElementById('download').href = base + '.mp4';
+      document.getElementById('transcript').href = base + '.txt';
+      player.load();
+    } else if (choice === 'pitch') {
+      document.title = 'YieldShield on Monad · Team & vision';
+      document.getElementById('title').textContent = 'The team. The problem. The next test.';
+      document.getElementById('description').textContent = 'Meet David Hawig and Santi, understand the two-sided protection model, and see the next validation steps.';
+      document.getElementById('method').textContent = 'Narrated team pitch · 1 minute 17 seconds';
+      document.getElementById('note').textContent = 'This pitch uses a third-person ElevenLabs narrator, not a founder voice clone. YieldShield predates Metropolis; protocol reuse and AI assistance are disclosed. Testnet execution is not customer adoption or real-money TVL.';
+      document.querySelector('[data-video="technical"]').removeAttribute('aria-current');
+      document.querySelector('[data-video="pitch"]').setAttribute('aria-current','page');
+      const base = '/media/metropolis-pitch-20261011';
+      const player = document.getElementById('player');
+      player.setAttribute('aria-label','YieldShield team and vision pitch');
+      player.querySelector('source').src = base + '.mp4';
+      player.querySelector('track').src = base + '.vtt';
+      document.getElementById('download').href = base + '.mp4';
+      document.getElementById('transcript').href = base + '.txt';
+      player.load();
+    }
+  </script>
+</body>
+</html>
