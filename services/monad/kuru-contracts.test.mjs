@@ -10,6 +10,10 @@ import {
   validateKuruInput,
   buildKuruSwapRequest,
   confirmedKuruSwap,
+  KURU_LEGACY,
+  buildKuruDepositRequest,
+  buildKuruWithdrawalRequest,
+  buildLegacyKuruWithdrawalRequest,
 } from "./kuru-contracts.mjs";
 const account = "0x1111111111111111111111111111111111111111";
 const other = "0x2222222222222222222222222222222222222222";
@@ -114,13 +118,18 @@ test("wrong recipient account, executor, side, fill or limit fails receipt verif
   ])
     assert.throws(() => confirmedKuruSwap({ status: "success", logs: [swapLog(change)] }, quote, account), /match/);
 });
-const mockAccountClient = (reverse = account, id = 7) => ({
+const mockAccountClient = (reverse = account, id = 7, rootId = id) => ({
   getChainId: async () => 10143,
   readContract: async ({ functionName, args }) => {
-    if (functionName === "userRegistry") return id;
-    if (functionName === "userAddressById") return reverse;
+    if (functionName === "rootAccountIdOf") return id;
+    if (functionName === "getAccountOwner") return reverse;
+    if (functionName === "getAccountRootId") return rootId;
     if (functionName === "balanceOf") return 33n;
-    if (functionName === "getBalance") return args[1] === KURU.native ? 22n : 11n;
+    if (functionName === "getBalance") {
+      assert.equal(args[0], id, "balances must use the root ID, never the wallet address");
+      assert.notEqual(id, 0, "unregistered users have no custody balance to query");
+      return args[1] === KURU.native ? 22n : 11n;
+    }
     throw new Error("Unexpected contract read");
   },
 });
@@ -133,6 +142,43 @@ test("free balances retain custody location and require reverse account ownershi
     walletUsdc: 33n,
   });
   await assert.rejects(readKuruAccount(mockAccountClient(other), account), /ownership/);
-  assert.equal((await readKuruAccount(mockAccountClient(zeroAddress, 0), account)).userId, 0n);
+  await assert.rejects(readKuruAccount(mockAccountClient(account, 7, 6), account), /root account/);
+  assert.deepEqual(await readKuruAccount(mockAccountClient(zeroAddress, 0), account), {
+    account,
+    userId: 0n,
+    usdc: 0n,
+    mon: 0n,
+    walletUsdc: 33n,
+  });
   await assert.rejects(readKuruAccount({ getChainId: async () => 143 }, account), /testnet/);
+});
+
+test("current deposits name the root owner and current token explicitly", () => {
+  const request = buildKuruDepositRequest(account, 10000000n);
+  assert.equal(request.address, KURU.account);
+  assert.deepEqual(request.args, [account, KURU.usdc, 10000000n]);
+  assert.notEqual(KURU.usdc, KURU_LEGACY.usdc);
+  assert.notEqual(KURU.account, KURU_LEGACY.account);
+  for (const amount of [0n, -1n, KURU.maxInput + 1n])
+    assert.throws(() => buildKuruDepositRequest(account, amount), /amount/);
+});
+
+test("current withdrawals use the verified root ID and pay the same wallet", () => {
+  const state = { account, userId: 7n, usdc: 10000000n, mon: 10n ** 18n, walletUsdc: 0n };
+  assert.deepEqual(buildKuruWithdrawalRequest(state, KURU.native, 1n).args, [7, KURU.native, 1n, account]);
+  assert.throws(() => buildKuruWithdrawalRequest(state, KURU_LEGACY.usdc, 1n), /balance/);
+  assert.throws(() => buildKuruWithdrawalRequest(state, KURU.usdc, state.usdc + 1n), /balance/);
+  assert.throws(() => buildKuruWithdrawalRequest({ ...state, userId: 0n }, KURU.usdc, 1n), /balance/);
+});
+
+test("legacy recovery keeps its old target and token without enabling new legacy deposits", () => {
+  const state = { account, usdc: 10n, mon: 20n };
+  const request = buildLegacyKuruWithdrawalRequest(state, KURU_LEGACY.usdc, 10n);
+  assert.equal(request.address, KURU_LEGACY.account);
+  assert.equal(request.functionName, "withdraw");
+  assert.deepEqual(request.args, [KURU_LEGACY.usdc, 10n]);
+  assert.throws(() => buildLegacyKuruWithdrawalRequest(state, KURU.usdc, 1n), /balance/);
+  assert.throws(() => buildLegacyKuruWithdrawalRequest(state, KURU.native, 21n), /balance/);
+  assert.equal(isKuruTarget(KURU_LEGACY.account), true);
+  assert.equal(isKuruTarget(KURU_LEGACY.usdc), false);
 });

@@ -8,14 +8,17 @@ import { FundingGate } from "./Funding";
 import { reviewableKuruQuote } from "./kuru-funding-state";
 import {
   KURU,
-  kuruAccountAbi,
-  kuruFaucetAbi,
-  verifyKuruTarget,
+  KURU_LEGACY,
   readKuruIdentity,
   readKuruAccount,
   quoteKuruBuy,
   buildKuruSwapRequest,
   confirmedKuruSwap,
+  buildKuruDepositRequest,
+  buildKuruWithdrawalRequest,
+  readKuruWithdrawalReadiness,
+  readLegacyKuruAccount,
+  buildLegacyKuruWithdrawalRequest,
   type KuruQuote,
 } from "../../../services/monad/kuru-contracts.mjs";
 
@@ -24,7 +27,12 @@ export function KuruFunding() {
   return (
     <details className="faucet-step" id="kuru-mon" onToggle={(event) => setOpen(event.currentTarget.open)}>
       <summary>Buy testnet MON with Kuru</summary>
-      {open ? <KuruFundingFlow /> : null}
+      {open ? (
+        <>
+          <KuruFundingFlow />
+          <LegacyKuruRecovery />
+        </>
+      ) : null}
     </details>
   );
 }
@@ -43,19 +51,6 @@ function KuruFundingFlow() {
   const balances = useSWR(
     wallet.account ? `balance:kuru:${wallet.account}` : null,
     () => readKuruAccount(client, selectedAccount()),
-    { refreshInterval: 15000, shouldRetryOnError: false },
-  );
-  const faucet = useSWR(
-    wallet.account ? `faucet:kuru:${wallet.account}` : null,
-    async () =>
-      BigInt(
-        (await client.readContract({
-          address: KURU.faucet,
-          abi: kuruFaucetAbi,
-          functionName: "nextClaimAt",
-          args: [wallet.account],
-        })) as bigint,
-      ),
     { refreshInterval: 15000, shouldRetryOnError: false },
   );
   useEffect(() => {
@@ -114,16 +109,10 @@ function KuruFundingFlow() {
   }
   const withdraw = (token: typeof KURU.native, amount: bigint) =>
     run("Withdraw from Kuru", async () => {
-      await verifyKuruTarget(client, KURU.account);
       const current = await readKuruAccount(client, selectedAccount());
-      const available = token === KURU.native ? current.mon : current.usdc;
-      if (amount <= 0n || available < amount) throw new Error("Kuru balance changed. Refresh and try again.");
-      await wallet.send({
-        address: KURU.account,
-        abi: kuruAccountAbi,
-        functionName: "withdraw",
-        args: [token, amount],
-      });
+      const request = buildKuruWithdrawalRequest(current, token, amount);
+      await readKuruWithdrawalReadiness(client, token, amount);
+      await wallet.send(request);
     });
   if (!wallet.account)
     return (
@@ -137,31 +126,21 @@ function KuruFundingFlow() {
   return (
     <div className="action-panel">
       <p>Optional · Kuru test USDC → MON. Protection opens separately.</p>
-      <p className="field-hint">Kuru test USDC is a separate test token, not YieldShield TestUSDC or real USDC.</p>
+      <p className="field-hint">
+        This uses Kuru's current testnet deployment and its new test USDC. September faucet tokens are not compatible.
+        Test tokens and quotes do not represent real USDC or a dollar market price.
+      </p>
       <p>
         Wallet: {fmt(data?.walletUsdc, 6)} Kuru test USDC · At Kuru: {fmt(data?.usdc, 6)} Kuru test USDC /{" "}
         {fmt(data?.mon, 18)} MON
       </p>
       {balances.error ? <p role="alert">Kuru balances unavailable. Refresh before continuing.</p> : null}
-      <FundingGate>
-        <button
-          className="button"
-          disabled={
-            working || faucet.error || faucet.data === undefined || faucet.data > BigInt(Math.floor(Date.now() / 1000))
-          }
-          onClick={() =>
-            run("Claim Kuru test tokens", async () => {
-              await verifyKuruTarget(client, KURU.faucet);
-              await wallet.send({ address: KURU.faucet, abi: kuruFaucetAbi, functionName: "claim" });
-            })
-          }
-        >
-          {faucet.data && faucet.data > BigInt(Math.floor(Date.now() / 1000))
-            ? "Kuru faucet cooling down"
-            : "Claim Kuru test tokens"}
-        </button>
-      </FundingGate>
-      <p className="field-hint">The faucet sends a test-token bundle. It does not supply MON for gas.</p>
+      <p className="field-hint">
+        There is no public faucet for the current Kuru token. Request test USDC from your Kuru integration contact.{" "}
+        <a href="https://kuru-testnet-docs.mintlify.site/deployments/setup" target="_blank" rel="noreferrer">
+          Official setup instructions ↗
+        </a>
+      </p>
       <label className="field">
         Kuru test USDC to spend
         <input
@@ -189,14 +168,10 @@ function KuruFundingFlow() {
                 const current = await readKuruAccount(client, selectedAccount());
                 const missing = value - current.usdc;
                 if (missing <= 0n) return;
-                if (current.walletUsdc < missing) throw new Error("Claim Kuru test tokens first.");
+                if (current.walletUsdc < missing)
+                  throw new Error("Request current Kuru test USDC from your Kuru integration contact first.");
                 await wallet.approve(KURU.usdc, KURU.account, missing);
-                await wallet.send({
-                  address: KURU.account,
-                  abi: kuruAccountAbi,
-                  functionName: "deposit",
-                  args: [KURU.usdc, missing],
-                });
+                await wallet.send(buildKuruDepositRequest(selectedAccount(), missing));
                 setQuote(null);
               })
             }
@@ -247,8 +222,65 @@ function KuruFundingFlow() {
         </div>
       ) : null}
       <p>
-        <a href="#wrap-mon">Wrap MON</a> · <Link to="/protect">Choose protection ↗</Link>
+        <a href="#wrap-mon">Wrap MON</a> · <Link to="/protect?market=wmon-usd">Choose MON protection ↗</Link>
       </p>
     </div>
+  );
+}
+
+function LegacyKuruRecovery() {
+  const wallet = useWallet();
+  const legacy = useSWR(
+    wallet.account ? `balance:kuru-legacy:${wallet.account}` : null,
+    () => readLegacyKuruAccount(client, wallet.account!),
+    { refreshInterval: 15000, shouldRetryOnError: false },
+  );
+  if (!wallet.account) return null;
+  const withdraw = (token: typeof KURU.native, amount: bigint) =>
+    wallet.execute("Recover legacy Kuru balance", async () => {
+      const current = await readLegacyKuruAccount(client, wallet.account!);
+      await wallet.send(buildLegacyKuruWithdrawalRequest(current, token, amount));
+      await legacy.mutate();
+    });
+  return (
+    <details className="action-panel">
+      <summary>September Kuru balances</summary>
+      <p>The old deployment is available for withdrawals only. Its balances do not fund the current market.</p>
+      {legacy.error ? (
+        <p role="alert">
+          Legacy Kuru balances unavailable.{" "}
+          <button className="text-link" onClick={() => void legacy.mutate()}>
+            Retry
+          </button>
+        </p>
+      ) : !legacy.data ? (
+        <p>Checking legacy balances…</p>
+      ) : (
+        <>
+          <p>In your wallet: {fmt(legacy.data.walletUsdc, 6)} old test USDC.</p>
+          <p>
+            At the old Kuru account: {fmt(legacy.data.usdc, 6)} old test USDC · {fmt(legacy.data.mon, 18)} MON.
+          </p>
+          {legacy.data.mon > 0n ? (
+            <FundingGate>
+              <button className="button" disabled={wallet.busy} onClick={() => withdraw(KURU.native, legacy.data!.mon)}>
+                Withdraw legacy MON
+              </button>
+            </FundingGate>
+          ) : null}
+          {legacy.data.usdc > 0n ? (
+            <FundingGate>
+              <button
+                className="button"
+                disabled={wallet.busy}
+                onClick={() => withdraw(KURU_LEGACY.usdc, legacy.data!.usdc)}
+              >
+                Withdraw legacy test USDC
+              </button>
+            </FundingGate>
+          ) : null}
+        </>
+      )}
+    </details>
   );
 }
