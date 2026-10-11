@@ -446,13 +446,11 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       );
       if (options.refreshPositions) {
         const key = `/api/positions?owner=${account}`;
-        await Promise.all([
-          refreshBalances,
-          refreshConfirmedPositions(
-            () => fetcher(key, AbortSignal.timeout(30000)),
-            (snapshot) => mutate(key, snapshot, { revalidate: false }),
-          ),
-        ]);
+        await refreshConfirmedPositions(
+          () => fetcher(key, AbortSignal.timeout(30000)),
+          (snapshot) => mutate(key, snapshot, { revalidate: false }),
+          { ancillaryRefresh: refreshBalances },
+        );
         setPositionSync(null);
         setStatus("Confirmed — your positions are updated.");
       } else await refreshBalances;

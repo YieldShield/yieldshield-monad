@@ -40,7 +40,9 @@ describe("position data after a confirmed transaction", () => {
   it("does not claim freshness when the initial read times out while the server may still be working", async () => {
     const read = vi.fn().mockRejectedValueOnce(new Error("temporary outage"));
     const publish = vi.fn(async () => undefined);
-    await expect(refreshConfirmedPositions(read, publish, async () => {})).rejects.toThrow("temporary outage");
+    await expect(refreshConfirmedPositions(read, publish, { wait: async () => {} })).rejects.toThrow(
+      "temporary outage",
+    );
     expect(read).toHaveBeenCalledTimes(1);
     expect(publish).not.toHaveBeenCalled();
   });
@@ -51,8 +53,33 @@ describe("position data after a confirmed transaction", () => {
       .mockResolvedValueOnce({ positions: [] })
       .mockRejectedValueOnce(new Error("positions unavailable"));
     const publish = vi.fn(async () => undefined);
-    await expect(refreshConfirmedPositions(read, publish, async () => {})).rejects.toThrow("positions unavailable");
+    await expect(
+      refreshConfirmedPositions(read, publish, { wait: async () => {}, ancillaryRefresh: Promise.resolve() }),
+    ).rejects.toThrow("positions unavailable");
     expect(read).toHaveBeenCalledTimes(2);
     expect(publish).not.toHaveBeenCalled();
+  });
+
+  it("publishes fresh positions even when an unrelated balance refresh fails", async () => {
+    const fresh = { positions: ["new-receipt"] };
+    const read = vi.fn().mockResolvedValueOnce({ positions: [] }).mockResolvedValueOnce(fresh);
+    const publish = vi.fn(async () => undefined);
+    await expect(
+      refreshConfirmedPositions(read, publish, {
+        wait: async () => {},
+        ancillaryRefresh: Promise.reject(new Error("token balance RPC unavailable")),
+      }),
+    ).resolves.toBeUndefined();
+    expect(publish).toHaveBeenCalledExactlyOnceWith(fresh);
+  });
+
+  it("does not leave positions pending while an unrelated refresh is still running", async () => {
+    const fresh = { positions: ["new-receipt"] };
+    const publish = vi.fn(async () => undefined);
+    await refreshConfirmedPositions(async () => fresh, publish, {
+      wait: async () => {},
+      ancillaryRefresh: new Promise(() => {}),
+    });
+    expect(publish).toHaveBeenCalledExactlyOnceWith(fresh);
   });
 });
