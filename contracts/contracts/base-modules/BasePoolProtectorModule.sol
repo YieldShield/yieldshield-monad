@@ -21,6 +21,7 @@ import { PoolOracleValidationLib } from "../libraries/PoolOracleValidationLib.so
 import { TokenWhitelistLib } from "../libraries/TokenWhitelistLib.sol";
 import { IPriceOracle } from "../interfaces/IPriceOracle.sol";
 import { ICompositeOracle } from "../interfaces/ICompositeOracle.sol";
+import { IProtectionOpeningEligibility } from "../interfaces/IProtectionOpeningEligibility.sol";
 import { ISplitRiskPoolFactory } from "../interfaces/ISplitRiskPoolFactory.sol";
 import { SlippageLib } from "../libraries/SlippageLib.sol";
 import { ProtocolAccessControlUpgradeable } from "../base/ProtocolAccessControlUpgradeable.sol";
@@ -523,21 +524,26 @@ contract BasePoolProtectorModule is Initializable, ISplitRiskPool, ProtocolAcces
     }
 
     /// @dev Enforce optional oracle-level policy before fixing a new position's valueAtDeposit.
-    ///      Legacy/non-composite oracles without the capability selector remain compatible.
-    ///      Once an oracle reports that a gate is required, every status failure is fail-closed.
+    ///      Composite routes report their snapshotted requirement; direct oracle feeds advertise
+    ///      the IProtectionOpeningEligibility capability. Legacy oracles without either marker
+    ///      remain compatible. An advertised policy must return a canonical, allowed status.
     function _requireProtectionOpeningAllowed(address token) internal view {
         (bool capabilitySuccess, bytes memory capabilityData) = poolConfig.priceOracle
             .staticcall(abi.encodeCall(ICompositeOracle.protectionOpeningEligibilityRequired, (token)));
 
         if (!capabilitySuccess && capabilityData.length == 0) {
-            return;
+            (capabilitySuccess, capabilityData) = poolConfig.priceOracle
+                .staticcall(abi.encodeCall(IProtectionOpeningEligibility.supportsProtectionOpeningEligibility, (token)));
+            if (!capabilitySuccess && capabilityData.length == 0) return;
         }
         if (!capabilitySuccess || capabilityData.length < 32) {
             revert ErrorsLib.ProtectionOpeningEligibilityUnavailable(token, poolConfig.priceOracle);
         }
-        if (!abi.decode(capabilityData, (bool))) {
-            return;
+        uint256 required = abi.decode(capabilityData, (uint256));
+        if (required > 1) {
+            revert ErrorsLib.ProtectionOpeningEligibilityUnavailable(token, poolConfig.priceOracle);
         }
+        if (required == 0) return;
 
         (bool eligibilitySuccess, bytes memory eligibilityData) =
             poolConfig.priceOracle.staticcall(abi.encodeCall(ICompositeOracle.isProtectionOpeningAllowed, (token)));
@@ -545,7 +551,11 @@ contract BasePoolProtectorModule is Initializable, ISplitRiskPool, ProtocolAcces
         if (!eligibilitySuccess || eligibilityData.length < 32) {
             revert ErrorsLib.ProtectionOpeningEligibilityUnavailable(token, poolConfig.priceOracle);
         }
-        if (!abi.decode(eligibilityData, (bool))) {
+        uint256 allowed = abi.decode(eligibilityData, (uint256));
+        if (allowed > 1) {
+            revert ErrorsLib.ProtectionOpeningEligibilityUnavailable(token, poolConfig.priceOracle);
+        }
+        if (allowed == 0) {
             revert ErrorsLib.ProtectionOpeningClosed(token);
         }
     }
