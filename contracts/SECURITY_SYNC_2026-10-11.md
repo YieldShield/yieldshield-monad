@@ -33,3 +33,5 @@ ABI command: `npm run generate:abis`. The separate `sync:monad` publication work
 - ABI regeneration matched the current published interface files; deployment manifests, addresses, and evidence remain unchanged.
 
 The pinned Foundry release was downloaded into a temporary directory and verified against its published SHA-256 checksum. The installed developer toolchain was unchanged.
+
+The Monad application has a preexisting bigint-buffer advisory, GHSA-3gc7-fjrx-p6mg, through the Dynamic/Solana dependency chain in the root application lockfile. No patched bigint-buffer release is listed, and npm proposes a major Dynamic version change. The contract synchronization preserves the wallet integration; that dependency chain requires a separate upgrade plan.
