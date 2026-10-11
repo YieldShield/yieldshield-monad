@@ -1,3 +1,5 @@
+![YieldShield on Monad — Crypto exposure. Two exit choices.](.github/assets/banner.png)
+
 # YieldShield on Monad
 
 A Monad testnet application for holding crypto exposure with two exit choices: withdraw the remaining asset after gain-sharing fees, or surrender the position for its eligible backing payout. Junior providers supply first-loss backing and receive a share of realized gains.
