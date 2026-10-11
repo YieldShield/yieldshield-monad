@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "upstreamRepository": "https://github.com/YieldShield/smart-contracts",
-  "auditedUpstreamRevision": "883e625e927e12597ff72e30d5dd2ca1ce9c54ef",
+  "auditedUpstreamRevision": "043dd7bc54b27d05a5295c49bb46e64853d58024",
   "appliedSecurityFixes": {
     "directOracleOpeningPolicy": "85957510e6d2bc31584b8f2951404dcb920203c9",
     "compositeOraclePrecision": "108a94dd6987ca92de5972b1b8c238553bd8b9d1",
@@ -18,5 +18,7 @@
     "Existing deployment manifests and published addresses"
   ],
   "deploymentStatus": "Source and ABI update only. Pool and router upgrades are disabled; deployment of this source requires redeployment and a separate migration plan.",
-  "upstreamAuditReport": "https://github.com/YieldShield/smart-contracts/blob/883e625e927e12597ff72e30d5dd2ca1ce9c54ef/docs_ok/security/analyses/SECURITY_AUDIT_2026_10_11.md"
+  "upstreamAuditReport": "https://github.com/YieldShield/smart-contracts/blob/043dd7bc54b27d05a5295c49bb46e64853d58024/docs_ok/security/analyses/SECURITY_AUDIT_2026_10_11.md",
+  "securityFixBaselineRevision": "883e625e927e12597ff72e30d5dd2ca1ce9c54ef",
+  "equivalentImplementationNote": "The fork retains its verified equivalent ABI decoding, redundant ceil guards, epoch reads, and full migration-marker cleanup. Upstream size-only refactoring is unnecessary for these immutable modules, which pass the chain size limits. No storage or ABI difference results."
 }
