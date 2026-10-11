@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import useSWR from "swr";
 import { parseUnits } from "viem";
 import { client, useWallet } from "./wallet";
-import { fmt, errorMessage } from "./lib";
+import { errorMessage } from "./lib";
+import { formatKuruAmount as fmt } from "./kuru-format";
 import { FundingGate } from "./Funding";
 import { depositKuruFunding, fundableKuruQuote, reviewableKuruQuote } from "./kuru-funding-state";
 import {
