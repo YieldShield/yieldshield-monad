@@ -67,7 +67,7 @@ export function parseSnapshot(value: unknown, config: Config): ApiSnapshot {
 }
 
 export type ChainPool = { address: string; totalBacking: bigint; reserved: bigint; paused: boolean };
-export type ChainAsset = { address: string; price: bigint; stale: boolean; publishedAt: bigint };
+export type ChainAsset = { address: string; price: bigint | null; stale: boolean; publishedAt: bigint };
 export type Alert = { severity: 'warning' | 'critical'; code: string; subject: string };
 
 export function validateBlock(snapshot: ApiSnapshot, chainBlock: bigint, timestamp: bigint, nowSeconds: number, config: Config) {
@@ -100,11 +100,11 @@ export function evaluateHealth(config: Config, snapshot: ApiSnapshot, pools: Cha
     const api = snapshot.assets.find(a => same(a.address, asset.address));
     if (!chain || !api) throw new Error(`Missing feed observation: ${asset.symbol}`);
     const age = blockTimestamp - chain.publishedAt;
-    const fresh = !chain.stale && chain.price > 0n && (!asset.checkPublishedAt || (chain.publishedAt > 0n && age >= 0n && age <= BigInt(config.maxOracleAgeSeconds)));
-    const agreement = api.healthy === fresh && api.price === chain.price.toString();
-    if (!fresh) alert('critical', 'oracle-unhealthy', asset.symbol);
+    const fresh = !chain.stale && chain.price !== null && chain.price > 0n && (!asset.checkPublishedAt || (chain.publishedAt > 0n && age >= 0n && age <= BigInt(config.maxOracleAgeSeconds)));
+    const agreement = api.healthy === fresh && api.price === (chain.price?.toString() ?? "");
+    if (!fresh) alert('critical', chain.price === null ? 'oracle-price-unavailable' : 'oracle-unhealthy', asset.symbol);
     if (!agreement) alert('critical', 'api-oracle-mismatch', asset.symbol);
-    return { symbol: asset.symbol, address: asset.address, price: chain.price.toString(), publishedAt: asset.checkPublishedAt ? chain.publishedAt.toString() : null, healthy: fresh, apiMatches: agreement };
+    return { symbol: asset.symbol, address: asset.address, price: chain.price?.toString() ?? null, publishedAt: asset.checkPublishedAt ? chain.publishedAt.toString() : null, healthy: fresh, apiMatches: agreement };
   });
   return {
     schemaVersion: 1, integration: 'chainlink-cre', network: 'Monad Testnet', chainId: 10143,
