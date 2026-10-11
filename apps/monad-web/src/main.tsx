@@ -430,19 +430,30 @@ function Submit({
     </FundingGate>
   );
 }
-function useSelectedMarket(data: Snapshot | undefined) {
+function useSelectedMarket(data: Snapshot | undefined, action: "protect" | "provide") {
   const [params, setParams] = useSearchParams();
-  const m = selectMarket(data?.markets || [], params.get("market"));
+  const requested = params.get("market");
+  const m = selectMarket(data?.markets || [], requested, action);
+  const id = m?.id || "";
+  useEffect(() => {
+    // Keep the user's selected asset stable when a later price refresh changes readiness.
+    if (requested || !id) return;
+    const next = new URLSearchParams(params);
+    next.set("market", id);
+    setParams(next, { replace: true });
+  }, [id, requested, params, setParams]);
   const setId = (id: string) => {
     const next = new URLSearchParams(params);
     next.set("market", id);
     setParams(next, { replace: true });
   };
-  return { m, id: m?.id || "", setId };
+  return { m, id, setId };
 }
 function PositionForm({ side }: { side: "senior" | "junior" }) {
   const { data, error } = useSnapshot();
-  const { m, id, setId } = useSelectedMarket(data);
+  const action = side === "senior" ? "protect" : "provide";
+  const { m, id, setId } = useSelectedMarket(data, action);
+  const alternative = selectMarket(data?.markets || [], null, action);
   const terms = marketTerms(m);
   const [input, setInput] = useState(side === "senior" ? "1" : "1000");
   const w = useWallet();
@@ -465,7 +476,7 @@ function PositionForm({ side }: { side: "senior" | "junior" }) {
     entry && terms && m?.backing.price && BigInt(m.backing.price) > 0n
       ? backingReserve(entry, terms.collateralBps, BigInt(m.backing.price), m.backing.decimals)
       : null;
-  const available = Boolean(terms && m?.actions[side === "senior" ? "protect" : "provide"]);
+  const available = Boolean(terms && m?.actions[action]);
   const tooMuch = balance != null && value > balance;
   const overCapacity = side === "senior" && m?.capacity != null && value > BigInt(m.capacity);
   async function submit() {
@@ -502,6 +513,13 @@ function PositionForm({ side }: { side: "senior" | "junior" }) {
               <div className="pool-context">
                 <Tag>{m.environment === "scenario" ? "Synthetic demo asset" : "Monad asset"}</Tag>
               </div>
+              {m.environment === "scenario" &&
+                data.markets.some((market) => market.environment === "reference") &&
+                !data.markets.some((market) => market.environment === "reference" && market.actions[action]) && (
+                  <p className="compact-risk" role="status">
+                    Live-price pools are currently unavailable. You can try this synthetic demo pool.
+                  </p>
+                )}
               <label className="field">
                 {side === "senior" ? "Amount to protect" : "Backing to provide"}
                 <div className="amount-field">
@@ -587,6 +605,20 @@ function PositionForm({ side }: { side: "senior" | "junior" }) {
                         : overCapacity
                           ? "Amount exceeds available protection."
                           : "")}
+                </p>
+              )}
+              {!available && (
+                <p className="field-hint">
+                  <Link to="/status">Check network status ↗</Link>
+                  {alternative && alternative.id !== id && alternative.actions[action] && (
+                    <>
+                      {" · "}
+                      <button className="text-link" type="button" onClick={() => setId(alternative.id)}>
+                        Try {alternative.symbol} / {alternative.backingSymbol}
+                        {alternative.environment === "scenario" ? " demo" : ""}
+                      </button>
+                    </>
+                  )}
                 </p>
               )}
               <Submit

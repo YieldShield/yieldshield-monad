@@ -18,5 +18,8 @@ export function landingMarkets(snapshot?: Pick<Snapshot, "chainId" | "contractsV
   });
   const rank = (m: Market) =>
     m.shield.id === "wmon" ? 0 : m.shield.id === "shmon" ? 1 : m.environment === "reference" ? 2 : 3;
-  return unique.sort((a, b) => rank(a) - rank(b) || a.id.localeCompare(b.id));
+  return unique.sort(
+    (a, b) =>
+      Number(!!b.actions.protect) - Number(!!a.actions.protect) || rank(a) - rank(b) || a.id.localeCompare(b.id),
+  );
 }
