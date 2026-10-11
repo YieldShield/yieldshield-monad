@@ -1,5 +1,5 @@
 {
-  "verifiedAt": "2026-09-08T15:28:02.311Z",
+  "verifiedAt": "2026-10-11T07:47:40.758Z",
   "runtimeLimit": 24576,
   "initcodeLimit": 49152,
   "contracts": [
@@ -10,18 +10,18 @@
     },
     {
       "contract": "BasePoolAdminModule",
-      "runtimeBytes": 21045,
-      "initcodeBytes": 21312
+      "runtimeBytes": 21063,
+      "initcodeBytes": 21330
     },
     {
       "contract": "BasePoolDepositsModule",
-      "runtimeBytes": 12516,
-      "initcodeBytes": 12783
+      "runtimeBytes": 12608,
+      "initcodeBytes": 12875
     },
     {
       "contract": "BasePoolFeesModule",
-      "runtimeBytes": 15401,
-      "initcodeBytes": 15668
+      "runtimeBytes": 15453,
+      "initcodeBytes": 15720
     },
     {
       "contract": "BasePoolInitializeModule",
@@ -35,8 +35,8 @@
     },
     {
       "contract": "BasePoolProtectorModule",
-      "runtimeBytes": 14830,
-      "initcodeBytes": 15097
+      "runtimeBytes": 14867,
+      "initcodeBytes": 15134
     },
     {
       "contract": "BasePoolShieldExitModule",
@@ -45,8 +45,8 @@
     },
     {
       "contract": "BasePoolViewsModule",
-      "runtimeBytes": 11014,
-      "initcodeBytes": 11281
+      "runtimeBytes": 11049,
+      "initcodeBytes": 11316
     },
     {
       "contract": "BaseFactoryRouter",
@@ -55,8 +55,8 @@
     },
     {
       "contract": "BaseFactoryAdminModule",
-      "runtimeBytes": 18918,
-      "initcodeBytes": 19185
+      "runtimeBytes": 18961,
+      "initcodeBytes": 19228
     },
     {
       "contract": "BaseFactoryCreateModule",

@@ -1,5 +1,12 @@
 # YieldShield Smart Contracts
 
+This vendored copy includes the October 2026 security audit fixes in both the
+reference contracts and the deployable immutable modules. Exact upstream revisions
+and preserved chain customizations are recorded in [upstream-source.json](upstream-source.json).
+The [security synchronization note](SECURITY_SYNC_2026-10-11.md) maps fixes to runtime modules and validation.
+Pool and router upgrades are disabled: these changes require redeployment and a
+separate migration plan. Existing deployment manifests describe their original bytecode.
+
 > **Historical workspace guide.** The text below describes the imported standalone smart-contract repository. For this Monad repository, use the [root README](../README.md) and [repository guide](../docs/REPOSITORY_GUIDE.md). Internal review reports included here are not independent audits; their dates and revisions limit their applicability.
 
 [![CI](https://github.com/YieldShield/smart-contracts/actions/workflows/ci.yml/badge.svg)](https://github.com/YieldShield/smart-contracts/actions/workflows/ci.yml)

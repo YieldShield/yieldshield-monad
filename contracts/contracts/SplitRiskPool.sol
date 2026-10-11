@@ -20,6 +20,7 @@ import { PoolOracleValidationLib } from "./libraries/PoolOracleValidationLib.sol
 import { TokenWhitelistLib } from "./libraries/TokenWhitelistLib.sol";
 import { IPriceOracle } from "./interfaces/IPriceOracle.sol";
 import { ICompositeOracle } from "./interfaces/ICompositeOracle.sol";
+import { IProtectionOpeningEligibility } from "./interfaces/IProtectionOpeningEligibility.sol";
 import { ISplitRiskPoolFactory } from "./interfaces/ISplitRiskPoolFactory.sol";
 import { SlippageLib } from "./libraries/SlippageLib.sol";
 import { ProtocolAccessControlUpgradeable } from "./base/ProtocolAccessControlUpgradeable.sol";
@@ -562,21 +563,26 @@ contract SplitRiskPool is Initializable, ISplitRiskPool, ProtocolAccessControlUp
     }
 
     /// @dev Enforce optional oracle-level policy before fixing a new position's valueAtDeposit.
-    ///      Legacy/non-composite oracles without the capability selector remain compatible.
-    ///      Once an oracle reports that a gate is required, every status failure is fail-closed.
+    ///      Composite routes report their snapshotted requirement; direct oracle feeds advertise
+    ///      the IProtectionOpeningEligibility capability. Legacy oracles without either marker
+    ///      remain compatible. An advertised policy must return a canonical, allowed status.
     function _requireProtectionOpeningAllowed(address token) internal view {
         (bool capabilitySuccess, bytes memory capabilityData) = poolConfig.priceOracle
             .staticcall(abi.encodeCall(ICompositeOracle.protectionOpeningEligibilityRequired, (token)));
 
         if (!capabilitySuccess && capabilityData.length == 0) {
-            return;
+            (capabilitySuccess, capabilityData) = poolConfig.priceOracle
+                .staticcall(abi.encodeCall(IProtectionOpeningEligibility.supportsProtectionOpeningEligibility, (token)));
+            if (!capabilitySuccess && capabilityData.length == 0) return;
         }
         if (!capabilitySuccess || capabilityData.length < 32) {
             revert ErrorsLib.ProtectionOpeningEligibilityUnavailable(token, poolConfig.priceOracle);
         }
-        if (!abi.decode(capabilityData, (bool))) {
-            return;
+        uint256 required = abi.decode(capabilityData, (uint256));
+        if (required > 1) {
+            revert ErrorsLib.ProtectionOpeningEligibilityUnavailable(token, poolConfig.priceOracle);
         }
+        if (required == 0) return;
 
         (bool eligibilitySuccess, bytes memory eligibilityData) =
             poolConfig.priceOracle.staticcall(abi.encodeCall(ICompositeOracle.isProtectionOpeningAllowed, (token)));
@@ -584,7 +590,11 @@ contract SplitRiskPool is Initializable, ISplitRiskPool, ProtocolAccessControlUp
         if (!eligibilitySuccess || eligibilityData.length < 32) {
             revert ErrorsLib.ProtectionOpeningEligibilityUnavailable(token, poolConfig.priceOracle);
         }
-        if (!abi.decode(eligibilityData, (bool))) {
+        uint256 allowed = abi.decode(eligibilityData, (uint256));
+        if (allowed > 1) {
+            revert ErrorsLib.ProtectionOpeningEligibilityUnavailable(token, poolConfig.priceOracle);
+        }
+        if (allowed == 0) {
             revert ErrorsLib.ProtectionOpeningClosed(token);
         }
     }
@@ -697,9 +707,8 @@ contract SplitRiskPool is Initializable, ISplitRiskPool, ProtocolAccessControlUp
             revert ErrorsLib.InvalidAssetAddress();
         }
 
-        (bool success, bytes memory data) = factory.staticcall(
-            abi.encodeCall(ISplitRiskPoolFactory.tokenRequiresStrictProtectedPrice, (BACKING_TOKEN))
-        );
+        (bool success, bytes memory data) =
+            factory.staticcall(abi.encodeCall(ISplitRiskPoolFactory.tokenRequiresStrictProtectedPrice, (BACKING_TOKEN)));
         if (!success || data.length < 32) {
             revert ErrorsLib.InvalidAssetAddress();
         }
@@ -1571,7 +1580,12 @@ contract SplitRiskPool is Initializable, ISplitRiskPool, ProtocolAccessControlUp
         uint256 totalEarned = Math.mulDiv(effectiveRewardPerShare, positionShares_, ConstantsLib.REWARD_PRECISION);
         uint256 debt = rewardDebt[tokenId];
         uint256 alreadyClaimed = commissionsClaimed[tokenId];
-        return totalEarned > (debt + alreadyClaimed) ? totalEarned - debt - alreadyClaimed : 0;
+        claimable = totalEarned > (debt + alreadyClaimed) ? totalEarned - debt - alreadyClaimed : 0;
+        // Isolate each epoch even if an upgraded pool already contains an overallocated index.
+        uint256 reserve = positionEpoch < protectorShareEpoch
+            ? protectorEpochRemainingReserve[positionEpoch]
+            : currentEpochCommissionReserve;
+        return Math.min(claimable, reserve);
     }
 
     /// @dev Ends the current share epoch when shield activation wipes all backing assets.
@@ -2898,7 +2912,11 @@ contract SplitRiskPool is Initializable, ISplitRiskPool, ProtocolAccessControlUp
     {
         _requireFactoryGovernanceTransferAlignment(newGovernanceTimelock);
         ProtocolAccessControlUpgradeable.setGovernanceTimelock(newGovernanceTimelock);
-        _factoryStagedGovernanceTimelock = address(0);
+        // Repeating an already staged target must preserve the factory's guard:
+        // its completion counter assumes this transfer cannot be cancelled directly.
+        if (_factoryStagedGovernanceTimelock != newGovernanceTimelock) {
+            _factoryStagedGovernanceTimelock = address(0);
+        }
     }
 
     function _requireFactoryGovernanceTransferAlignment(address newGovernanceTimelock) internal view {
@@ -3281,9 +3299,8 @@ contract SplitRiskPool is Initializable, ISplitRiskPool, ProtocolAccessControlUp
         }
 
         bytes32 defaultAdminRole = bytes32(0);
-        (bool countCallSucceeded, bytes memory countData) = candidateAccessControl.staticcall(
-            abi.encodeWithSignature("getRoleMemberCount(bytes32)", defaultAdminRole)
-        );
+        (bool countCallSucceeded, bytes memory countData) =
+            candidateAccessControl.staticcall(abi.encodeWithSignature("getRoleMemberCount(bytes32)", defaultAdminRole));
         if (!countCallSucceeded || countData.length < 32 || abi.decode(countData, (uint256)) != 1) {
             return false;
         }
