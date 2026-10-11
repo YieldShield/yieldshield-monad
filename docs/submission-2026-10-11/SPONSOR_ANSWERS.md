@@ -8,9 +8,11 @@ YieldShield uses the Dynamic React SDK for email authentication, embedded-wallet
 
 Before signing, YieldShield reacquires the selected wallet, checks the account and chain 10143, verifies the target and spender, obtains exact token approvals where needed, and simulates the action. A pending transaction hash survives reload so an interrupted flow can reconcile its receipt instead of blindly sending again.
 
-The historical 16 September browser evidence follows Continue with Dynamic → external MetaMask: wrap 0.01 test MON, approve and protect WMON, display the receipt, reload and restore the wallet/position, then withdraw the asset and close the receipt. Canonical receipts confirm the three final transactions and the receipt NFT burn. A fresh 11 October Dynamic-to-MetaMask browser test deposited 1 sMON-demo, recovered the wallet and receipt after reload, withdrew 0.5 sMON-demo with receipt replacement, then received 55.269586 TestUSDC through the backing exit. A 10 TestUSDC provider deposit also succeeded. These are user-confirmed Monad testnet transactions. Email-based embedded-wallet signing is configured but is not claimed as exercised by this evidence.
+The historical 16 September browser evidence follows Continue with Dynamic → external MetaMask: wrap 0.01 test MON, approve and protect WMON, display the receipt, reload and restore the wallet/position, then withdraw the asset and close the receipt. Canonical receipts confirm the three final transactions and the receipt NFT burn. A fresh 11 October Dynamic-to-MetaMask browser test deposited 1 sMON-demo, recovered the wallet and receipt after reload, withdrew 0.5 sMON-demo with receipt replacement, then received 55.269586 TestUSDC through the backing exit. The provider journey deposited 10 TestUSDC, started the two-minute withdrawal notice, and withdrew the full available 9.999999 TestUSDC after maturity, burning junior receipt 2. Canonical state confirms zero remaining position balance and shares; the one-base-unit difference from the deposit is share-conversion rounding. These are user-confirmed Monad testnet transactions. Email-based embedded-wallet signing is configured but is not claimed as exercised by this evidence.
 
-Evidence: https://github.com/YieldShield/yieldshield-monad/blob/ef194f7/docs/DYNAMIC_BROWSER_CHECK.md
+Current six-transaction evidence: https://github.com/YieldShield/yieldshield-monad/blob/codex/hackathon-readiness-2026-10-11/docs/submission-2026-10-11/evidence/browser-transactions-20261011.json
+
+Historical reference-market browser evidence: https://github.com/YieldShield/yieldshield-monad/blob/ef194f7/docs/DYNAMIC_BROWSER_CHECK.md
 
 ## Kuru — target user segments
 
