@@ -1,0 +1,33 @@
+{
+  "sourceTransaction": "0xc7ce967bca33af0ff9ac0ddf13692e1cd4b9d020e4bfc6dd547842a98b65e1da",
+  "sourceBlock": "65020220",
+  "sourceDate": "2026-09-23",
+  "scope": "Public signed packages extracted from an authentic canonical MON update with the official RedStone protocol decoder. The MON-keyed gateway envelope is reconstructed for tests; no successful October authenticated gateway response is claimed.",
+  "gatewayResponse": {
+    "MON": [
+      {
+        "dataPoints": [
+          {
+            "dataFeedId": "MON",
+            "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAnLng="
+          }
+        ],
+        "timestampMilliseconds": 1790168142000,
+        "dataPackageId": "MON",
+        "signature": "nsRPrTzYz6KmlvVaGh9EXrvbVlhrK5hEDAB/c0sr80IZxy3+cay2/bjR387kc+ECSuV6mkHN6DM75qIyfJgYqxs="
+      },
+      {
+        "dataPoints": [
+          {
+            "dataFeedId": "MON",
+            "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAnLng="
+          }
+        ],
+        "timestampMilliseconds": 1790168142000,
+        "dataPackageId": "MON",
+        "signature": "AchnvMYw9qEtL162Cf+6fG06F72LOmw03qnjh1mdi/NZSdzPlwwBoYKgWh73x6rPDXsY8SM9Aqzq6XA+fxoiPhs="
+      }
+    ]
+  },
+  "originalCalldata": "0xb7a16251000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000014d4f4e00000000000000000000000000000000000000000000000000000000004d4f4e00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000272e7801a0ce5610b0000000200000019ec44fad3cd8cfa2a696f55a1a1f445ebbdb56586b2b98440c007f734b2bf34219c72dfe71acb6fdb8d1dfcee473e1024ae57a9a41cde8333be6a2327c9818ab1b4d4f4e00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000272e7801a0ce5610b00000002000000101c867bcc630f6a12d2f5eb609ffba7c6d3a17bd8b3a6c34dea9e387599d8bf35949dccf970c01a182a05a1ef7c7aacf0d7b18f1233d02aceae9703e7f1a223e1b00023137393031363831343230343023312e302e3023646174612d7061636b616765732d77726170706572000029000002ed57011e0000"
+}

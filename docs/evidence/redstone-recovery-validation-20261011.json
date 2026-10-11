@@ -1,0 +1,45 @@
+{
+  "checkedAt": "2026-10-11T17:57:39.277Z",
+  "chainId": 10143,
+  "scope": "Historical eth_call verification of the new parser/serializer against the authentic last successful MON update. Gateway envelope reconstructed from public calldata. No current gateway access or restored market health is claimed.",
+  "sourceTransaction": "0xc7ce967bca33af0ff9ac0ddf13692e1cd4b9d020e4bfc6dd547842a98b65e1da",
+  "sourceBlock": "65020220",
+  "simulationBlock": "65020219",
+  "simulationBlockHash": "0x380a56a9f05581dbe9f8f7d6acaeeb3abdd5e5ec6ea821095e6a1727a09188d8",
+  "canonicalPinsVerified": true,
+  "signatureThreshold": 2,
+  "publishedAt": 1790168142,
+  "price": "2567800",
+  "signers": ["0x3F12DE3492D044FeB08a88b402455026B0f1ae04", "0x5451dB9e574C3a9f9C0DA324E498093AC185169A"],
+  "calls": [
+    {
+      "to": "0xa2B0067002dF61df015C11b2cF0be4f34fC41Cf8",
+      "blockNumber": "65020219",
+      "sender": "0x0000000000000000000000000000000000000001",
+      "calldataBytes": 398,
+      "success": true
+    }
+  ],
+  "transactionsBroadcast": false,
+  "deployedTimestampBounds": {
+    "verifiedAtBlock": "70176212",
+    "blockTimestamp": "1791741281",
+    "method": "validateTimestamp(uint256) read-only calls",
+    "maximumPastAgeSeconds": 180,
+    "maximumFutureOffsetSeconds": 60,
+    "acceptedOffsetsSeconds": [30, 60, 179, 180, -59, -60],
+    "rejectedOffsetsSeconds": [181, -61]
+  },
+  "preparationPolicy": {
+    "maximumPackageAgeMs": 30000,
+    "maximumFutureOffsetMs": 5000,
+    "transactionReviewWindowMs": 30000,
+    "applicationPriceMaxAgeSeconds": 120,
+    "runtimeDependenciesAdded": false
+  },
+  "limitations": [
+    "The owner has no gateway access yet. Current authenticated fetch and a fresh October on-chain update remain unverified.",
+    "The successful simulation above executes at a September historical block solely to validate serialization, signature authority and deployed contract compatibility.",
+    "No gateway key, signing key, user wallet address or broadcast transaction is included."
+  ]
+}

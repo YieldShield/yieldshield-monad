@@ -3,19 +3,22 @@ import { Link } from "react-router-dom";
 import useSWR from "swr";
 import { parseUnits } from "viem";
 import { client, useWallet } from "./wallet";
-import { fmt, errorMessage } from "./lib";
+import { errorMessage } from "./lib";
+import { formatKuruAmount as fmt } from "./kuru-format";
 import { FundingGate } from "./Funding";
-import { reviewableKuruQuote } from "./kuru-funding-state";
+import { depositKuruFunding, fundableKuruQuote, reviewableKuruQuote } from "./kuru-funding-state";
 import {
   KURU,
-  kuruAccountAbi,
-  kuruFaucetAbi,
-  verifyKuruTarget,
-  readKuruIdentity,
+  KURU_LEGACY,
   readKuruAccount,
-  quoteKuruBuy,
+  prepareKuruFunding,
   buildKuruSwapRequest,
   confirmedKuruSwap,
+  buildKuruDepositRequest,
+  buildKuruWithdrawalRequest,
+  readKuruWithdrawalReadiness,
+  readLegacyKuruAccount,
+  buildLegacyKuruWithdrawalRequest,
   type KuruQuote,
 } from "../../../services/monad/kuru-contracts.mjs";
 
@@ -24,7 +27,12 @@ export function KuruFunding() {
   return (
     <details className="faucet-step" id="kuru-mon" onToggle={(event) => setOpen(event.currentTarget.open)}>
       <summary>Buy testnet MON with Kuru</summary>
-      {open ? <KuruFundingFlow /> : null}
+      {open ? (
+        <>
+          <KuruFundingFlow />
+          <LegacyKuruRecovery />
+        </>
+      ) : null}
     </details>
   );
 }
@@ -45,19 +53,6 @@ function KuruFundingFlow() {
     () => readKuruAccount(client, selectedAccount()),
     { refreshInterval: 15000, shouldRetryOnError: false },
   );
-  const faucet = useSWR(
-    wallet.account ? `faucet:kuru:${wallet.account}` : null,
-    async () =>
-      BigInt(
-        (await client.readContract({
-          address: KURU.faucet,
-          abi: kuruFaucetAbi,
-          functionName: "nextClaimAt",
-          args: [wallet.account],
-        })) as bigint,
-      ),
-    { refreshInterval: 15000, shouldRetryOnError: false },
-  );
   useEffect(() => {
     if (!quote) return;
     const timer = setTimeout(() => setQuote(null), Math.max(0, quote.expiresAt - Date.now()));
@@ -71,6 +66,7 @@ function KuruFundingFlow() {
   }
   const data = balances.error ? undefined : balances.data;
   const valid = value >= KURU.minInput && value <= KURU.maxInput;
+  const fundingQuote = fundableKuruQuote(quote, { account: wallet.account, userId: data?.userId, amountIn: value });
   const activeQuote = reviewableKuruQuote(quote, {
     account: wallet.account,
     userId: data?.userId,
@@ -89,7 +85,7 @@ function KuruFundingFlow() {
     setError("");
     setQuote(null);
     try {
-      const result = await quoteKuruBuy(client, { account: selectedAccount(), amountIn: value });
+      const result = await prepareKuruFunding(client, { account: selectedAccount(), amountIn: value });
       setQuote(result);
     } catch (failure) {
       setError(errorMessage(failure));
@@ -100,7 +96,7 @@ function KuruFundingFlow() {
   async function buy() {
     if (!activeQuote) throw new Error("Request a fresh Kuru quote.");
     const account = selectedAccount();
-    await readKuruIdentity(client);
+    await prepareKuruFunding(client, { account, amountIn: value });
     const before = await readKuruAccount(client, account);
     if (before.usdc < value) throw new Error("Deposit Kuru test USDC first.");
     const request = buildKuruSwapRequest(activeQuote, account, before.userId);
@@ -114,16 +110,10 @@ function KuruFundingFlow() {
   }
   const withdraw = (token: typeof KURU.native, amount: bigint) =>
     run("Withdraw from Kuru", async () => {
-      await verifyKuruTarget(client, KURU.account);
       const current = await readKuruAccount(client, selectedAccount());
-      const available = token === KURU.native ? current.mon : current.usdc;
-      if (amount <= 0n || available < amount) throw new Error("Kuru balance changed. Refresh and try again.");
-      await wallet.send({
-        address: KURU.account,
-        abi: kuruAccountAbi,
-        functionName: "withdraw",
-        args: [token, amount],
-      });
+      const request = buildKuruWithdrawalRequest(current, token, amount);
+      await readKuruWithdrawalReadiness(client, token, amount);
+      await wallet.send(request);
     });
   if (!wallet.account)
     return (
@@ -137,31 +127,21 @@ function KuruFundingFlow() {
   return (
     <div className="action-panel">
       <p>Optional · Kuru test USDC → MON. Protection opens separately.</p>
-      <p className="field-hint">Kuru test USDC is a separate test token, not YieldShield TestUSDC or real USDC.</p>
+      <p className="field-hint">
+        This uses Kuru's current testnet deployment and its new test USDC. September faucet tokens are not compatible.
+        Test tokens and quotes do not represent real USDC or a dollar market price.
+      </p>
       <p>
         Wallet: {fmt(data?.walletUsdc, 6)} Kuru test USDC · At Kuru: {fmt(data?.usdc, 6)} Kuru test USDC /{" "}
         {fmt(data?.mon, 18)} MON
       </p>
       {balances.error ? <p role="alert">Kuru balances unavailable. Refresh before continuing.</p> : null}
-      <FundingGate>
-        <button
-          className="button"
-          disabled={
-            working || faucet.error || faucet.data === undefined || faucet.data > BigInt(Math.floor(Date.now() / 1000))
-          }
-          onClick={() =>
-            run("Claim Kuru test tokens", async () => {
-              await verifyKuruTarget(client, KURU.faucet);
-              await wallet.send({ address: KURU.faucet, abi: kuruFaucetAbi, functionName: "claim" });
-            })
-          }
-        >
-          {faucet.data && faucet.data > BigInt(Math.floor(Date.now() / 1000))
-            ? "Kuru faucet cooling down"
-            : "Claim Kuru test tokens"}
-        </button>
-      </FundingGate>
-      <p className="field-hint">The faucet sends a test-token bundle. It does not supply MON for gas.</p>
+      <p className="field-hint">
+        There is no public faucet for the current Kuru token. Request test USDC from your Kuru integration contact.{" "}
+        <a href="https://kuru-testnet-docs.mintlify.site/deployments/setup" target="_blank" rel="noreferrer">
+          Official setup instructions ↗
+        </a>
+      </p>
       <label className="field">
         Kuru test USDC to spend
         <input
@@ -182,20 +162,14 @@ function KuruFundingFlow() {
         <FundingGate>
           <button
             className="button"
-            disabled={working || !valid || data.walletUsdc < value - data.usdc}
+            disabled={working || !valid || !fundingQuote || data.walletUsdc < value - data.usdc}
             onClick={() =>
               run("Deposit to your Kuru account", async () => {
-                await readKuruIdentity(client);
-                const current = await readKuruAccount(client, selectedAccount());
-                const missing = value - current.usdc;
-                if (missing <= 0n) return;
-                if (current.walletUsdc < missing) throw new Error("Claim Kuru test tokens first.");
-                await wallet.approve(KURU.usdc, KURU.account, missing);
-                await wallet.send({
-                  address: KURU.account,
-                  abi: kuruAccountAbi,
-                  functionName: "deposit",
-                  args: [KURU.usdc, missing],
+                await depositKuruFunding(value, {
+                  readAccount: () => readKuruAccount(client, selectedAccount()),
+                  preflight: () => prepareKuruFunding(client, { account: selectedAccount(), amountIn: value }),
+                  approve: (amount) => wallet.approve(KURU.usdc, KURU.account, amount),
+                  deposit: (amount) => wallet.send(buildKuruDepositRequest(selectedAccount(), amount)),
                 });
                 setQuote(null);
               })
@@ -205,19 +179,30 @@ function KuruFundingFlow() {
           </button>
         </FundingGate>
       ) : null}
-      <button className="button" disabled={working || !valid || !data || data.usdc < value} onClick={getQuote}>
+      <button className="button" disabled={working || !valid || !data} onClick={getQuote}>
         {quoting ? "Checking Kuru…" : "Get quote"}
       </button>
-      {activeQuote ? (
+      <p className="field-hint">
+        Check liquidity and withdrawal availability before depositing. A quote does not reserve either.
+      </p>
+      {fundingQuote ? (
         <div role="status">
           <p>
-            Estimated: {fmt(activeQuote.amountOut, 18)} MON · Minimum: {fmt(activeQuote.minAmountOut, 18)} MON
+            Estimated: {fmt(fundingQuote.amountOut, 18)} MON · Minimum: {fmt(fundingQuote.minAmountOut, 18)} MON
           </p>
-          <FundingGate>
-            <button className="button purple-button" disabled={working} onClick={() => run("Buy MON on Kuru", buy)}>
-              Buy MON
-            </button>
-          </FundingGate>
+          <p className="field-hint">
+            Estimated spend: {fmt(fundingQuote.amountInUsed, 6)} current Kuru test USDC. Tiny unspent precision
+            remainders stay at Kuru.
+          </p>
+          {activeQuote ? (
+            <FundingGate>
+              <button className="button purple-button" disabled={working} onClick={() => run("Buy MON on Kuru", buy)}>
+                Buy MON
+              </button>
+            </FundingGate>
+          ) : (
+            <p>Fund the current Kuru account, then request a fresh quote to buy.</p>
+          )}
           <p className="field-hint">
             Quote valid for one minute. Bought MON stays in your Kuru account until withdrawn.
           </p>
@@ -247,8 +232,65 @@ function KuruFundingFlow() {
         </div>
       ) : null}
       <p>
-        <a href="#wrap-mon">Wrap MON</a> · <Link to="/protect">Choose protection ↗</Link>
+        <a href="#wrap-mon">Wrap MON</a> · <Link to="/protect?market=wmon-usd">Choose MON protection ↗</Link>
       </p>
     </div>
+  );
+}
+
+function LegacyKuruRecovery() {
+  const wallet = useWallet();
+  const legacy = useSWR(
+    wallet.account ? `balance:kuru-legacy:${wallet.account}` : null,
+    () => readLegacyKuruAccount(client, wallet.account!),
+    { refreshInterval: 15000, shouldRetryOnError: false },
+  );
+  if (!wallet.account) return null;
+  const withdraw = (token: typeof KURU.native, amount: bigint) =>
+    wallet.execute("Recover legacy Kuru balance", async () => {
+      const current = await readLegacyKuruAccount(client, wallet.account!);
+      await wallet.send(buildLegacyKuruWithdrawalRequest(current, token, amount));
+      await legacy.mutate();
+    });
+  return (
+    <details className="action-panel">
+      <summary>September Kuru balances</summary>
+      <p>The old deployment is available for withdrawals only. Its balances do not fund the current market.</p>
+      {legacy.error ? (
+        <p role="alert">
+          Legacy Kuru balances unavailable.{" "}
+          <button className="text-link" onClick={() => void legacy.mutate()}>
+            Retry
+          </button>
+        </p>
+      ) : !legacy.data ? (
+        <p>Checking legacy balances…</p>
+      ) : (
+        <>
+          <p>In your wallet: {fmt(legacy.data.walletUsdc, 6)} old test USDC.</p>
+          <p>
+            At the old Kuru account: {fmt(legacy.data.usdc, 6)} old test USDC · {fmt(legacy.data.mon, 18)} MON.
+          </p>
+          {legacy.data.mon > 0n ? (
+            <FundingGate>
+              <button className="button" disabled={wallet.busy} onClick={() => withdraw(KURU.native, legacy.data!.mon)}>
+                Withdraw legacy MON
+              </button>
+            </FundingGate>
+          ) : null}
+          {legacy.data.usdc > 0n ? (
+            <FundingGate>
+              <button
+                className="button"
+                disabled={wallet.busy}
+                onClick={() => withdraw(KURU_LEGACY.usdc, legacy.data!.usdc)}
+              >
+                Withdraw legacy test USDC
+              </button>
+            </FundingGate>
+          ) : null}
+        </>
+      )}
+    </details>
   );
 }

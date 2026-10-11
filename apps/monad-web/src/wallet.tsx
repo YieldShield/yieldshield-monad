@@ -24,6 +24,7 @@ import {
   type WalletClient,
   type EIP1193Provider,
   type Hash,
+  type Hex,
 } from "viem";
 import { monadTestnet } from "viem/chains";
 import useSWR, { mutate } from "swr";
@@ -37,6 +38,13 @@ import { createWalletSelectionGuard } from "./wallet-selection";
 import { createPendingTransactionStore } from "./pending-transaction";
 import { retryRateLimitedReads } from "./rpc-read-retry";
 import { refreshConfirmedPositions } from "./confirmed-position-refresh";
+import {
+  redstoneUpdateCalldata,
+  refreshRedstonePrice,
+  validateRedstoneUpdate,
+  verifyRedstoneUpdateTargets,
+  type RedstoneRecoveryConfig,
+} from "./redstone-update";
 import { isKuruTarget, verifyKuruTarget } from "../../../services/monad/kuru-contracts.mjs";
 const DynamicWallet = lazy(() => import("./DynamicWallet"));
 export const client = createPublicClient({
@@ -325,7 +333,17 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     setStatus("Checking transaction");
     await client.simulateContract({ ...req, account: account! });
     const data = encodeFunctionData(req);
-    const gasEstimate = await client.estimateGas({ account: account!, to: req.address, data, value: req.value || 0n });
+    return signAndConfirm(req.address, data, req.value || 0n);
+  }
+  // Only the ABI-checked sender and the constrained RedStone update can reach
+  // this private path. Both retain these signing, gas and receipt controls.
+  async function signAndConfirm(
+    address: Address,
+    data: Hex,
+    value: bigint,
+    checks?: { beforeWallet: () => Promise<void>; beforeRequest: () => void },
+  ) {
+    const gasEstimate = await client.estimateGas({ account: account!, to: address, data, value });
     const gas = (gasEstimate * 150n + 99n) / 100n + 100000n;
     if (gas > 16000000n) throw new Error("Transaction exceeds the Monad gas limit for this app.");
     const fees = await client.estimateFeesPerGas();
@@ -334,15 +352,17 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       client.getCode({ address: account! }),
     ]);
     const reserve = accountCode?.startsWith("0xef0100") ? 10n ** 19n : 5n * 10n ** 16n;
-    if (balance < (req.value || 0n) + gas * fees.maxFeePerGas + reserve)
+    if (balance < value + gas * fees.maxFeePerGas + reserve)
       throw new Error(
         accountCode?.startsWith("0xef0100")
           ? "This delegated wallet needs an additional 10 MON reserve on Monad testnet."
           : "Not enough testnet MON for this action and gas. Use the Monad faucet.",
       );
     setStatus("Confirm in your wallet");
+    if (checks) await checks.beforeWallet();
     const wallet = await ensure();
-    const tx = await wallet.sendTransaction({ to: req.address, data, value: req.value || 0n, gas, ...fees });
+    if (checks) checks.beforeRequest();
+    const tx = await wallet.sendTransaction({ to: address, data, value, gas, ...fees });
     saveTransaction(tx);
     setHash(tx);
     setStatus("Confirming on Monad");
@@ -376,14 +396,41 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       const address = registry.contracts.RedstoneReferenceFeed?.address;
       const token = registry.contracts.WMON?.address;
       if (!address || !token) throw new Error("Reference adapter unavailable.");
-      const price = await client.readContract({
-        address,
-        abi: parseAbi(["function getPriceWithStrictCircuitBreaker(address) view returns(uint256)"]),
-        functionName: "getPriceWithStrictCircuitBreaker",
-        args: [token],
+      const redstoneConfig = config.redstone as RedstoneRecoveryConfig;
+      // A changed protocol adapter is an identity failure, not a stale-price recovery case.
+      await verifyTarget(address);
+      return refreshRedstonePrice({
+        config: redstoneConfig,
+        readStrictPrice: async () => {
+          await verifyTarget(address);
+          return client.readContract({
+            address,
+            abi: parseAbi(["function getPriceWithStrictCircuitBreaker(address) view returns(uint256)"]),
+            functionName: "getPriceWithStrictCircuitBreaker",
+            args: [token],
+          });
+        },
+        fetchUpdate: async () => {
+          setStatus("Fetching a signed MON update");
+          return fetcher("/api/redstone-update", AbortSignal.timeout(20000));
+        },
+        publish: async (update) => {
+          await ensure();
+          const data = redstoneUpdateCalldata(update);
+          setStatus("Checking the signed MON update");
+          const verifyBeforeSigning = async () => {
+            validateRedstoneUpdate(update, redstoneConfig);
+            await verifyRedstoneUpdateTargets(client, redstoneConfig);
+            const result = await client.call({ account: account!, to: redstoneConfig.adapter, data, value: 0n });
+            if (result.data && result.data !== "0x") throw new Error("The signed MON update could not be verified.");
+          };
+          await verifyBeforeSigning();
+          return signAndConfirm(redstoneConfig.adapter, data, 0n, {
+            beforeWallet: verifyBeforeSigning,
+            beforeRequest: () => { validateRedstoneUpdate(update, redstoneConfig); },
+          });
+        },
       });
-      if (price <= 0n) throw new Error("A fresh MON reference is required.");
-      return;
     }
     setStatus("Fetching signed MON price");
     const update = await fetcher("/api/pyth-update");

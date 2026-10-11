@@ -106,6 +106,7 @@ export type Snapshot = {
   referenceOracle: "redstone" | "pyth";
   pyth: any;
   pythUpdateConfigured: boolean;
+  redstoneUpdateConfigured?: boolean;
   registry: Registry;
 };
 export type Position = {

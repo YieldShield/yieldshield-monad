@@ -1,0 +1,52 @@
+{
+  "observedAt": "2026-10-11T17:54:58.047Z",
+  "identity": {
+    "chainId": 10143,
+    "market": "0x26cd68436B6A4AEB3ec52abC20A4d121f8B4BAc9",
+    "blockNumber": "70176266",
+    "timestamp": "1791741298"
+  },
+  "currentAccount": {
+    "userId": "0",
+    "usdc": "0",
+    "mon": "0",
+    "walletUsdc": "0"
+  },
+  "legacyAccount": {
+    "usdc": "0",
+    "mon": "0",
+    "walletUsdc": "10000000000"
+  },
+  "quote10": {
+    "chainId": 10143,
+    "market": "0x26cd68436B6A4AEB3ec52abC20A4d121f8B4BAc9",
+    "blockNumber": "70176275",
+    "timestamp": "1791741300",
+    "userId": "0",
+    "amountIn": "10000000",
+    "amountInUsed": "9999996",
+    "inputRoundingLimit": "101",
+    "amountOut": "99930000000000000",
+    "minAmountOut": "99430350000000000",
+    "quotedAt": 1791741300858,
+    "expiresAt": 1791741360858
+  },
+  "quote20": {
+    "error": "Kuru cannot fill this amount. Try a smaller amount or wait for more liquidity."
+  },
+  "withdrawMon": {
+    "requiredUsd36": "2698609650000000000000000000000000",
+    "availableUsd36": "10000002500000000000000000000000000000000"
+  },
+  "withdrawUsdc": {
+    "requiredUsd36": "9998756800000000000000000000000000000",
+    "availableUsd36": "10000002500000000000000000000000000000000"
+  },
+  "kind": "read-only-current-deployment-validation",
+  "transactionsBroadcast": false,
+  "limitations": [
+    "No current Kuru USDC was held; no deposit, swap or withdrawal was executed.",
+    "The quote and shared withdrawal capacity are dated observations, not reserved liquidity.",
+    "Legacy wallet tokens cannot fund the current market."
+  ]
+}

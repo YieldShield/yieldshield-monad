@@ -1,15 +1,16 @@
 import { encodeFunctionData, keccak256 } from "viem";
 import {
   KURU,
-  kuruAccountAbi,
   kuruTokenAbi,
-  kuruFaucetAbi,
   verifyKuruTarget,
   readKuruIdentity,
   readKuruAccount,
-  quoteKuruBuy,
+  prepareKuruFunding,
   buildKuruSwapRequest,
   confirmedKuruSwap,
+  buildKuruDepositRequest,
+  buildKuruWithdrawalRequest,
+  readKuruWithdrawalReadiness,
 } from "./kuru-contracts.mjs";
 
 /** Operator-invoked testnet exercise. This module never reads a key or broadcasts on import.
@@ -81,14 +82,15 @@ export async function runKuruFundingSmoke({ client, wallet, account, onIntent, o
   }
   const identity = await readKuruIdentity(client);
   const initial = await readKuruAccount(client, account);
-  let current = initial;
+  const current = initial;
   const amountIn = KURU.minInput;
   if (current.usdc < amountIn && current.walletUsdc < amountIn - current.usdc) {
-    await send("claim-kuru-test-bundle", { address: KURU.faucet, abi: kuruFaucetAbi, functionName: "claim" });
-    current = await readKuruAccount(client, account);
-    if (current.walletUsdc < amountIn - current.usdc) throw new Error("Faucet did not supply the required Kuru USDC.");
+    throw new Error(
+      "Request current Kuru test USDC from the integration contact; this deployment has no public faucet.",
+    );
   }
   if (current.usdc < amountIn) {
+    await prepareKuruFunding(client, { account, amountIn });
     const missing = amountIn - current.usdc;
     const allowance = await client.readContract({
       address: KURU.usdc,
@@ -103,17 +105,13 @@ export async function runKuruFundingSmoke({ client, wallet, account, onIntent, o
         functionName: "approve",
         args: [KURU.account, missing],
       });
-    await send("deposit-kuru-usdc", {
-      address: KURU.account,
-      abi: kuruAccountAbi,
-      functionName: "deposit",
-      args: [KURU.usdc, missing],
-    });
+    await prepareKuruFunding(client, { account, amountIn });
+    await send("deposit-kuru-usdc", buildKuruDepositRequest(account, missing));
     const deposited = await readKuruAccount(client, account);
     if (deposited.usdc !== current.usdc + missing || deposited.walletUsdc !== current.walletUsdc - missing)
       throw new Error("Kuru deposit balance reconciliation failed.");
   }
-  const quote = await quoteKuruBuy(client, { account, amountIn });
+  const quote = await prepareKuruFunding(client, { account, amountIn });
   const beforeSwap = await readKuruAccount(client, account);
   const { receipt } = await send("buy-mon-on-kuru", buildKuruSwapRequest(quote, account, beforeSwap.userId));
   const fill = confirmedKuruSwap(receipt, quote, account);
@@ -121,12 +119,11 @@ export async function runKuruFundingSmoke({ client, wallet, account, onIntent, o
   if (afterSwap.usdc !== beforeSwap.usdc - fill.amountInUsed || afterSwap.mon !== beforeSwap.mon + fill.amountOut)
     throw new Error("Kuru fill balance reconciliation failed.");
   const walletMonBefore = await client.getBalance({ address: account });
-  const withdrawal = await send("withdraw-bought-mon", {
-    address: KURU.account,
-    abi: kuruAccountAbi,
-    functionName: "withdraw",
-    args: [KURU.native, fill.amountOut],
-  });
+  await readKuruWithdrawalReadiness(client, KURU.native, fill.amountOut);
+  const withdrawal = await send(
+    "withdraw-bought-mon",
+    buildKuruWithdrawalRequest(afterSwap, KURU.native, fill.amountOut),
+  );
   const [final, walletMonAfter] = await Promise.all([
     readKuruAccount(client, account),
     client.getBalance({ address: account }),

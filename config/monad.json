@@ -28,6 +28,29 @@
     "address": "0x92B14C0531A1f8fC0F85712FaF97d7302B4128C8",
     "runtimeCodehash": "0x4d9be648c5bf39973670d9f8b481d5d0b971e6a2db2deccc6b98cde21c5dd83e",
     "maxAgeSeconds": 120,
-    "sourceUrl": "https://app.redstone.finance/push-feeds/MON/monadTestnetBoltMultiFeed"
+    "sourceUrl": "https://app.redstone.finance/push-feeds/MON/monadTestnetBoltMultiFeed",
+    "sourceImplementation": {
+      "address": "0xe8fe6efe264ce430fae2076bae4e66363544e3a5",
+      "slot": "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc",
+      "runtimeCodehash": "0x9bc0dfca729194742b16dad649b74233357a10e6e0d728cac91528f9691e9ff7"
+    },
+    "adapter": "0xa2B0067002dF61df015C11b2cF0be4f34fC41Cf8",
+    "adapterRuntimeCodehash": "0x4d9be648c5bf39973670d9f8b481d5d0b971e6a2db2deccc6b98cde21c5dd83e",
+    "adapterImplementation": {
+      "address": "0x4c66bcda57a812237729637f53ff91cf3aa4677d",
+      "slot": "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc",
+      "runtimeCodehash": "0x4b9907387414ac917f02e61f80a4b11539c68a0a7b04c7568e421c6c09b70fef"
+    },
+    "dataServiceId": "redstone-primary-demo",
+    "gatewayUrl": "https://oracle-gateway-api.b.redstone.finance",
+    "feedId": "0x4d4f4e0000000000000000000000000000000000000000000000000000000000",
+    "uniqueSignersCount": 2,
+    "authorizedSigners": [
+      "0xdE13FdEE7a9B483129a81794d02FCB4021069f0C",
+      "0xad05Ce43E0bCD11345f08a28995951DEc30D5226",
+      "0x21F05763188246E9F1FdAe3Bb67465a1E81b9f21",
+      "0x3F12DE3492D044FeB08a88b402455026B0f1ae04",
+      "0x5451dB9e574C3a9f9C0DA324E498093AC185169A"
+    ]
   }
 }
