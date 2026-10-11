@@ -116,7 +116,7 @@ test("wrong recipient account, executor, side, fill or limit fails receipt verif
     { userId: 8 },
     { executor: other },
     { isBuy: false },
-    { amountInUsed: 9999899n },
+    { amountInUsed: 9999000n },
     { minAmountOut: 1n },
     { amountOut: quote.minAmountOut - 1n },
   ])
@@ -136,7 +136,7 @@ test("one executable lot bounds input rounding without accepting material partia
   assert.ok(kuruRoundingLimit(4294967295, 7000n, 10000000n) <= 1000n);
 });
 
-test("settlement permits only the reviewed bounded precision remainder", () => {
+test("settlement respects the signed input/output bounds and hard remainder cap", () => {
   assert.equal(
     confirmedKuruSwap({ status: "success", logs: [swapLog({ amountInUsed: 9999996n })] }, quote, account).amountInUsed,
     9999996n,
@@ -145,6 +145,32 @@ test("settlement permits only the reviewed bounded precision remainder", () => {
     () => confirmedKuruSwap({ status: "success", logs: [swapLog({ amountInUsed: 10000001n })] }, quote, account),
     /match/,
   );
+});
+
+test("a higher execution price within slippage may leave more dust than the quote-time lot cost", () => {
+  // Quote at 100 USDC/MON, execute at 100.3 (+0.3%) with the 7 bp taker fee.
+  // Both fills are valid size increments. Execution leaves 101 atoms rather
+  // than the quoted 94, meeting the output minimum but exceeding the old check.
+  const reviewed = {
+    ...quote,
+    amountIn: 10001290n,
+    amountInUsed: 10001196n,
+    amountOut: 99942000000000000n,
+    minAmountOut: 99442290000000000n,
+  };
+  const executed = { amountInUsed: 10001189n, amountOut: 99643000000000000n };
+  assert.doesNotThrow(() => buildKuruSwapRequest(reviewed, account, 7n, now));
+  assert.equal(reviewed.amountIn - executed.amountInUsed, reviewed.inputRoundingLimit);
+  const receipt = { status: "success", logs: [swapLog({ ...executed, minAmountOut: reviewed.minAmountOut })] };
+  assert.deepEqual(confirmedKuruSwap(receipt, reviewed, account), executed);
+});
+
+test("meeting minimum output does not permit material partial input consumption", () => {
+  for (const remaining of [1000n, 10000n, 1000000n]) {
+    const receipt = { status: "success", logs: [swapLog({ amountInUsed: quote.amountIn - remaining })] };
+    assert.throws(() => confirmedKuruSwap(receipt, quote, account), /match/);
+    assert.throws(() => confirmedKuruSwap(receipt, { ...quote, inputRoundingLimit: 10000000n }, account), /match/);
+  }
 });
 const mockAccountClient = (reverse = account, id = 7, rootId = id) => ({
   getChainId: async () => 10143,

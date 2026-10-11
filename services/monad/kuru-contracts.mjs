@@ -384,13 +384,18 @@ export function confirmedKuruSwap(receipt, quote, account) {
   }
   if (matches.length !== 1) throw new Error("Kuru swap receipt could not be verified.");
   const event = matches[0];
+  // The quote's best-ask lot cost is only a pre-funding liquidity guard.
+  // Execution may move within the signed output bound, changing that lot cost.
+  // Reconcile actual input/output against the signed limits and retain the hard
+  // one-basis-point remainder cap independently of the old quote-time price.
+  const maxUnspentInput = quote.amountIn / 10000n;
   if (
     BigInt(event.userId) !== quote.userId ||
     !same(event.executor, account) ||
     !event.isBuy ||
     event.amountInUsed > quote.amountIn ||
     event.amountInUsed <= 0n ||
-    quote.amountIn - event.amountInUsed >= quote.inputRoundingLimit ||
+    quote.amountIn - event.amountInUsed >= maxUnspentInput ||
     event.minAmountOut !== quote.minAmountOut ||
     event.amountOut < quote.minAmountOut
   )
