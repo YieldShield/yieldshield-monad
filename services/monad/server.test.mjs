@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 process.env.NODE_ENV = "test";
 // An unconfigured sponsor must not affect liveness or initiate paid requests.
 delete process.env.ENVIO_API_TOKEN;
+delete process.env.REDSTONE_API_KEY;
 const { server } = await import("./server.mjs");
 let origin;
 before(async () => {
@@ -29,6 +30,15 @@ test("unknown routes and foreign origins cannot become an authorized API flow", 
   assert.equal(r.headers.get("access-control-allow-origin"), null);
   const known = await fetch(origin + "/health", { headers: { Origin: "https://monad.yieldshield.ai" } });
   assert.equal(known.headers.get("access-control-allow-origin"), "https://monad.yieldshield.ai");
+});
+
+test("RedStone preparation fails explicitly when gateway access is missing and never becomes a write endpoint", async () => {
+  const response = await fetch(origin + "/api/redstone-update");
+  assert.equal(response.status, 503);
+  assert.deepEqual(await response.json(), { error: "RedStone gateway access is not configured." });
+  const write = await fetch(origin + "/api/redstone-update", { method: "POST" });
+  assert.equal(write.status, 405);
+  assert.equal((await write.json()).error, "Read-only API");
 });
 
 test("activity has explicit configuration status and bounds public filters", async () => {

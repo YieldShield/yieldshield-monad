@@ -4,6 +4,7 @@ import { discoverPools, protectionCapacity } from "./pools.mjs";
 import { createCache } from "./cache.mjs";
 import { createRateLimiter, requestIp } from "./request-limits.mjs";
 import { fetchPythUpdate } from "./pyth.mjs";
+import { prepareRedstoneUpdate, RedstoneUpdateError } from "./redstone.mjs";
 import { createMonadReadClient } from "./read-client.mjs";
 import { createServer } from "node:http";
 import { readFileSync } from "node:fs";
@@ -34,6 +35,7 @@ const pythAbi = parseAbi([
   "function getPriceUnsafe(bytes32) view returns((int64 price,uint64 conf,int32 expo,uint256 publishTime))",
 ]);
 const cached = createCache();
+const cachedRedstoneUpdate = createCache(Date.now, { maxEntries: 1 });
 const get = (target, artifact, fn, args = [], blockNumber) =>
   rpc.readContract({ address: target, abi: abis[artifact] || generic, functionName: fn, args, blockNumber });
 const same = (a, b) => a.toLowerCase() === b.toLowerCase();
@@ -233,6 +235,7 @@ async function snapshot() {
       referenceOracle: registry.referenceOracle || "pyth",
       pyth,
       pythUpdateConfigured: Boolean(process.env.PYTH_API_KEY),
+      redstoneUpdateConfigured: Boolean(process.env.REDSTONE_API_KEY),
       registry,
       notice:
         "Testnet assets have no monetary value. Scenario prices are formulas; reference prices are observations. shMON NAV is not an executable quote.",
@@ -305,6 +308,30 @@ async function positions(owner) {
     return { chainId: 10143, observedAt: Date.now(), owner, positions: result };
   });
 }
+async function redstoneUpdate() {
+  // Cache failures too: one rejected credential must not hammer the upstream
+  // gateway, whose documented per-key limit is one request per second.
+  const result = await cachedRedstoneUpdate("redstone-update", 2000, async () => {
+    try {
+      return {
+        update: await prepareRedstoneUpdate({
+          client: rpc,
+          config: config.redstone,
+          apiKey: process.env.REDSTONE_API_KEY,
+        }),
+      };
+    } catch (error) {
+      return {
+        error:
+          error instanceof RedstoneUpdateError
+            ? error
+            : new RedstoneUpdateError("Canonical RedStone verification is temporarily unavailable."),
+      };
+    }
+  });
+  if (result.error) throw result.error;
+  return result.update;
+}
 async function pythUpdate() {
   return cached("pyth-update", 2000, async () => {
     const update = await fetchPythUpdate(process.env.PYTH_API_KEY, config.pyth.monUsdFeedId);
@@ -374,6 +401,7 @@ export const server = createServer(async (req, res) => {
         limit: url.searchParams.has("limit") ? Number(url.searchParams.get("limit")) : 20,
       });
     else if (url.pathname === "/api/pyth-update") data = await pythUpdate();
+    else if (url.pathname === "/api/redstone-update") data = await redstoneUpdate();
     else if (url.pathname === "/api/registry") data = registry;
     else {
       res.writeHead(404);
@@ -385,7 +413,7 @@ export const server = createServer(async (req, res) => {
     res.end(
       stringify({
         error:
-          e.message?.startsWith("Invalid") || e.message?.startsWith("Pyth account")
+          e instanceof RedstoneUpdateError || e.message?.startsWith("Invalid") || e.message?.startsWith("Pyth account")
             ? e.message
             : "Verified on-chain data is temporarily unavailable. Please refresh.",
       }),
