@@ -2349,9 +2349,8 @@ contract BasePoolPartialExitModule is Initializable, ISplitRiskPool, ProtocolAcc
         }
 
         bytes32 defaultAdminRole = bytes32(0);
-        (bool countCallSucceeded, bytes memory countData) = candidateAccessControl.staticcall(
-            abi.encodeWithSignature("getRoleMemberCount(bytes32)", defaultAdminRole)
-        );
+        (bool countCallSucceeded, bytes memory countData) =
+            candidateAccessControl.staticcall(abi.encodeWithSignature("getRoleMemberCount(bytes32)", defaultAdminRole));
         if (!countCallSucceeded || countData.length < 32 || abi.decode(countData, (uint256)) != 1) {
             return false;
         }
