@@ -1,6 +1,6 @@
 # Metropolis submission — prepared 11 October 2026
 
-Draft only. Do not press Submit. Refresh the dated execution evidence against the final release before saving claims about current health. The portal deadline observed on 11 October is **14 October 2026, 05:59 Europe/Berlin (GMT+2)**. Envio is removed from the intended bounty selections at the user's instruction.
+Draft only. The portal has no separate Submit step: saving every required field automatically switches it to “Ready for judging.” To honor the user’s instruction, the saved pitch-video field is deliberately blank; its completed URL is listed below and can be left filled but unsaved in the editor. Do not save that final field until the user authorizes readiness. Refresh the dated execution evidence against the final release before saving claims about current health. The portal deadline observed on 11 October is **14 October 2026, 05:59 Europe/Berlin (GMT+2)**. Envio is removed from the intended bounty selections at the user's instruction.
 
 **Current operational limitation, 11 October:** the external MON price feed is stale, so the five WMON/shMON reference pools are disabled by the application's freshness checks. The two isolated scenario pools remain the demonstration path while the upstream-feed issue is investigated. Do not describe reference-pool actions as currently working until fresh end-to-end verification supports that claim. A browser-signed deposit of 1 sMON-demo succeeded today: `0xfaa67eac0366b3c21a2fb9c93b238cf55aacfb482c165089af6e165e08532256`.
 
@@ -34,9 +34,9 @@ Initial acquisition will focus on founder-led introductions within the Monad and
 
 ## Judge access instructions
 
-Open https://monad.yieldshield.ai/ — browsing requires no account. Use a test wallet on **Monad testnet, chain 10143**, and obtain native test MON for gas from https://faucet.monad.xyz/. While the MON reference feed is stale, use **Continue with Dynamic → existing MetaMask wallet → Faucet → claim scenario test tokens → Protect → sMON-demo/TestUSDC → Positions**. The scenario token follows an explicitly synthetic price cycle; it is not live MON or Kintsu sMON. A 1 sMON-demo browser deposit was confirmed on 11 October. Review the available exit and its displayed conditions before signing. The historically verified reference journey is wrapping 0.01 MON, protecting WMON/TestUSDC and withdrawing the asset; its September success does not override a currently disabled market.
+Open https://monad.yieldshield.ai/ — browsing requires no account. Use a test wallet on **Monad testnet, chain 10143**, and obtain native test MON for gas from https://faucet.monad.xyz/. While the MON reference feed is stale, use **Continue with Dynamic → existing MetaMask wallet → Faucet → claim scenario test tokens → Protect → sMON-demo/TestUSDC → Positions**. The scenario token follows an explicitly synthetic price cycle; it is not live MON or Kintsu sMON. On 11 October, the browser test confirmed a 1 sMON-demo deposit, wallet/receipt recovery after reload, a 0.5 sMON-demo partial withdrawal with a replacement receipt, and a 55.269586 TestUSDC backing payout that closed the remaining receipt. A 10 TestUSDC provider deposit also succeeded. Review the available exit and its displayed conditions before signing. The historically verified reference journey is wrapping 0.01 MON, protecting WMON/TestUSDC and withdrawing the asset; its September success does not override a currently disabled market.
 
-Review the pool's displayed terms before approving or signing. The holder supplies the selected asset; backing is already supplied by providers. The asset exit and the backing exit are alternatives that close the same receipt. To try the backing exit, use a separate position and wait for its displayed timer. Current reference test pools use a 60-second backing-exit delay. For the provider journey, claim TestUSDC on Faucet, deposit a small amount under Provide, and inspect the notice and available excess backing on Positions. A matured notice does not release capital reserved for holders.
+Review the pool's displayed terms before approving or signing. The holder supplies the selected asset; backing is already supplied by providers. The asset exit and the backing exit are alternatives that close the same receipt. To try the backing exit, use a separate position and wait for its displayed timer. The tested scenario pool uses a 60-second backing-exit delay and a two-minute provider withdrawal notice. For the provider journey, claim TestUSDC on Faucet, deposit a small amount under Provide, and inspect the notice and available excess backing on Positions. A matured notice does not release capital reserved for holders. The 11 October fixes and dated evidence are in https://github.com/YieldShield/yieldshield-monad/pull/58.
 
 TestUSDC is not Circle USDC; testnet AUSD and all demonstration balances have no monetary value. If a price or contract check disables an action, inspect Network status and the displayed reason. Documentation and transaction evidence: https://github.com/YieldShield/yieldshield-monad/blob/main/docs/JUDGE_QUICKSTART.md
 
@@ -55,7 +55,10 @@ No prior funding or awards, as supplied by David. Prior participation or overlap
 - Product guide: https://monad.yieldshield.ai/how-it-works
 - X: https://x.com/yieldshield_ai
 - Existing 2:08 supporting explainer: https://monad.yieldshield.ai/media/how-it-works-20260916-v2.mp4
-- Technical demo, founder pitch and CRE demo: use final verified, signed-out video links after production. Do not insert the explainer as a claimed live wallet recording.
+- Technical demo (1:59): https://monad.yieldshield.ai/submission-videos.html?video=technical
+- Team pitch (1:17): https://monad.yieldshield.ai/submission-videos.html?video=pitch
+- CRE simulation (1:08): https://monad.yieldshield.ai/submission-videos.html?video=cre
+- Separately committed fixes and final materials: https://github.com/YieldShield/yieldshield-monad/pull/58
 
 ## Evidence source and current limitations
 

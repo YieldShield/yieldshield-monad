@@ -8,9 +8,9 @@ YieldShield uses the Dynamic React SDK for email authentication, embedded-wallet
 
 Before signing, YieldShield reacquires the selected wallet, checks the account and chain 10143, verifies the target and spender, obtains exact token approvals where needed, and simulates the action. A pending transaction hash survives reload so an interrupted flow can reconcile its receipt instead of blindly sending again.
 
-The completed browser evidence follows Continue with Dynamic → external MetaMask: wrap 0.01 test MON, approve and protect WMON, display the receipt, reload and restore the wallet/position, then withdraw the asset and close the receipt. Canonical receipts confirm the three final transactions and the receipt NFT burn. Email-based embedded-wallet signing is configured but is not claimed as exercised by this evidence.
+The historical 16 September browser evidence follows Continue with Dynamic → external MetaMask: wrap 0.01 test MON, approve and protect WMON, display the receipt, reload and restore the wallet/position, then withdraw the asset and close the receipt. Canonical receipts confirm the three final transactions and the receipt NFT burn. A fresh 11 October Dynamic-to-MetaMask browser test deposited 1 sMON-demo, recovered the wallet and receipt after reload, withdrew 0.5 sMON-demo with receipt replacement, then received 55.269586 TestUSDC through the backing exit. A 10 TestUSDC provider deposit also succeeded. These are user-confirmed Monad testnet transactions. Email-based embedded-wallet signing is configured but is not claimed as exercised by this evidence.
 
-Evidence: https://github.com/YieldShield/yieldshield-monad/blob/main/docs/DYNAMIC_BROWSER_CHECK.md
+Evidence: https://github.com/YieldShield/yieldshield-monad/blob/ef194f7/docs/DYNAMIC_BROWSER_CHECK.md
 
 ## Kuru — target user segments
 
@@ -24,9 +24,9 @@ Our present evidence establishes technical execution, not customer demand. The c
 
 This is one internally scripted funding journey, not external trading activity. The record explicitly states that it did not open protection. We do not have documented external user counts, customer trading volume, retention statistics, interview outcomes or committed liquidity to claim. Our market research identifies selling spot exposure, holding shMON and a separate MON perpetual hedge as alternatives; it does not prove demand for YieldShield. The next test is an observed cohort of six holders and four potential backing providers, including a browser buy-then-protect journey and a second-session check.
 
-Evidence: https://github.com/YieldShield/yieldshield-monad/blob/main/docs/KURU_INTEGRATION.md
+Evidence: https://github.com/YieldShield/yieldshield-monad/blob/ef194f7/docs/KURU_INTEGRATION.md
 
-Research/validation plan: https://github.com/YieldShield/yieldshield-monad/blob/main/docs/MARKET_READINESS_2026-09-16.md
+Research/validation plan: https://github.com/YieldShield/yieldshield-monad/blob/ef194f7/docs/MARKET_READINESS_2026-09-16.md
 
 ## Kuru — roadmap beyond the hackathon
 
@@ -50,13 +50,13 @@ The **fresh official authenticated CRE CLI simulation completed successfully on 
 
 The result is a machine-readable JSON report and execution logs. The repository preserves the exact command, CLI/SDK versions, source/config/binary hashes and complete successful output. Type checking, official SDK WASM compilation and 18 tests with 82 assertions passed. The workflow also detects API mismatches, stale or future observations, low backing, paused pools and over-reservation. It has no withdrawal authority and performs no blockchain writes. This is a point-in-time local simulation, not a DON deployment or continuous monitor, and it does not replace the protocol's settlement oracle.
 
-Source and reproduction: https://github.com/YieldShield/yieldshield-monad/blob/main/docs/CHAINLINK_CRE.md
+Source and reproduction: https://github.com/YieldShield/yieldshield-monad/blob/ef194f7/docs/CHAINLINK_CRE.md
 
-Workflow source: https://github.com/YieldShield/yieldshield-monad/blob/main/integrations/chainlink-cre/pool-health/workflow.ts
+Workflow source: https://github.com/YieldShield/yieldshield-monad/blob/ef194f7/integrations/chainlink-cre/pool-health/workflow.ts
 
-Current original CLI log: https://github.com/YieldShield/yieldshield-monad/blob/main/docs/submission-2026-10-11/evidence/chainlink-cre-simulation-20261011.txt
+Current original CLI log: https://github.com/YieldShield/yieldshield-monad/blob/ef194f7/docs/submission-2026-10-11/evidence/chainlink-cre-simulation-20261011.txt
 
-Current result and hashes: https://github.com/YieldShield/yieldshield-monad/blob/main/docs/submission-2026-10-11/evidence/chainlink-cre-simulation-20261011.json
+Current result and hashes: https://github.com/YieldShield/yieldshield-monad/blob/ef194f7/docs/submission-2026-10-11/evidence/chainlink-cre-simulation-20261011.json
 
 The separately dated September simulation remains available as historical evidence of a healthy execution; the October critical result is the current submission evidence.
 
