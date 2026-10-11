@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "upstreamRepository": "https://github.com/YieldShield/smart-contracts",
+  "auditedUpstreamRevision": "883e625e927e12597ff72e30d5dd2ca1ce9c54ef",
+  "appliedSecurityFixes": {
+    "directOracleOpeningPolicy": "85957510e6d2bc31584b8f2951404dcb920203c9",
+    "compositeOraclePrecision": "108a94dd6987ca92de5972b1b8c238553bd8b9d1",
+    "governanceMigrationTracking": "acd82e8b5418e476902e713afd895bd0bf1c543c",
+    "protectorRewardConservation": "6fd18256f514182b7111b38995a32d3d74b4e626",
+    "safeEnvironmentInitializer": "95e01987a248c60020529990da6f96198f9aad20",
+    "forkStalePriceExpectations": "c2e02729208e59a17fa0cd6c633cd4bdae3ce3b7",
+    "conservativeRewardExpectations": "9e068d10ddf5603ecbcfa454856305e4482fbaba"
+  },
+  "integration": "Vendored implementations and generated immutable pool/factory modules; equivalent existing fixes retained.",
+  "preservedLocalChanges": [
+    "Chain-specific contracts and BaseStockTokenLib integration",
+    "Existing dependency gitlink revisions",
+    "Existing deployment manifests and published addresses"
+  ],
+  "deploymentStatus": "Source and ABI update only. Pool and router upgrades are disabled; deployment of this source requires redeployment and a separate migration plan.",
+  "upstreamAuditReport": "https://github.com/YieldShield/smart-contracts/blob/883e625e927e12597ff72e30d5dd2ca1ce9c54ef/docs_ok/security/analyses/SECURITY_AUDIT_2026_10_11.md"
+}

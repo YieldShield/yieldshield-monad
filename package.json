@@ -18,7 +18,7 @@
     "format:check": "prettier --check .",
     "dev": "npm run dev -w monad-web",
     "start:api": "node services/monad/server.mjs",
-    "test:monad": "node --test services/monad/*.test.mjs scripts/monad-deployment.test.mjs scripts/monad-receipts.test.mjs",
+    "test:monad": "node --test services/monad/*.test.mjs scripts/monad-deployment.test.mjs scripts/monad-receipts.test.mjs scripts/generate-monad-abis.test.mjs",
     "sync:monad": "node scripts/sync-monad.mjs",
     "deploy:monad:prepare": "node scripts/deploy-monad.mjs --prepare",
     "deploy:monad": "node scripts/deploy-monad.mjs --broadcast",
@@ -27,7 +27,8 @@
     "smoke:monad": "node scripts/smoke-monad.mjs --broadcast",
     "smoke:reference": "node scripts/smoke-monad.mjs --broadcast --reference",
     "check:scope": "node --test scripts/check-monad-scope.test.mjs && node scripts/check-monad-scope.mjs",
-    "lint:web": "eslint apps/monad-web/src"
+    "lint:web": "eslint apps/monad-web/src",
+    "generate:abis": "node scripts/generate-monad-abis.mjs"
   },
   "dependencies": {
     "@dynamic-labs/ethereum": "5.9.3",
