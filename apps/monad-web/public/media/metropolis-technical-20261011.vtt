@@ -1,0 +1,125 @@
+WEBVTT
+
+1
+00:00:00.150 --> 00:00:05.480
+YieldShield gives holders two exit choices:
+keep the remaining asset, or surrender it
+
+2
+00:00:05.490 --> 00:00:10.490
+for eligible backing. This is the working
+application on Monad testnet.
+
+3
+00:00:11.350 --> 00:00:13.650
+All tokens shown have no monetary value.
+
+4
+00:00:14.630 --> 00:00:17.670
+This walkthrough uses the clearly labeled
+scenario pool.
+
+5
+00:00:18.650 --> 00:00:22.690
+Its price follows a synthetic cycle, not the
+live MON market.
+
+6
+00:00:23.350 --> 00:00:27.670
+The reference pools stay disabled when their
+upstream price feed is stale.
+
+7
+00:00:28.650 --> 00:00:31.890
+We connect through Dynamic with an existing
+MetaMask wallet.
+
+8
+00:00:32.850 --> 00:00:37.860
+After obtaining scenario tokens from the
+faucet, we choose sMON-demo with
+
+9
+00:00:37.870 --> 00:00:40.950
+TestUSDC backing and enter one token.
+
+10
+00:00:41.810 --> 00:00:46.250
+Before signing, the form shows the backing,
+fees and waiting period.
+
+11
+00:00:47.290 --> 00:00:49.270
+The deposit is confirmed on Monad.
+
+12
+00:00:50.150 --> 00:00:53.070
+Positions displays the receipt and its two
+exits.
+
+13
+00:00:53.930 --> 00:00:57.990
+Withdrawing the asset returns the remaining
+token after applicable gain-sharing fees.
+
+14
+00:00:58.970 --> 00:01:04.220
+Using backing surrenders that asset, with a
+payout limited by the pool's recorded cap
+
+15
+00:01:04.230 --> 00:01:09.150
+and conditions. These are alternatives, not
+two payments from one receipt.
+
+16
+00:01:10.150 --> 00:01:12.270
+We also complete a partial asset withdrawal.
+
+17
+00:01:13.250 --> 00:01:17.170
+The original receipt is replaced by a new
+receipt for the remaining position.
+
+18
+00:01:18.190 --> 00:01:23.820
+The preview shows the requested amount before
+signing; the confirmed receipt then
+
+19
+00:01:23.830 --> 00:01:28.810
+shows what remains. Backing providers supply
+capital and absorb first losses.
+
+20
+00:01:29.530 --> 00:01:31.470
+They receive a share of realized gains.
+
+21
+00:01:32.590 --> 00:01:38.180
+A withdrawal notice permits only available
+excess backing to leave; it does not unlock
+
+22
+00:01:38.190 --> 00:01:39.870
+capital reserved for holders.
+
+23
+00:01:40.770 --> 00:01:43.610
+Network status exposes contract and price
+checks.
+
+24
+00:01:44.590 --> 00:01:49.220
+The public repository includes transaction
+evidence and our reuse disclosure.
+
+25
+00:01:49.230 --> 00:01:53.410
+YieldShield's protocol foundation predates
+Metropolis.
+
+26
+00:01:54.510 --> 00:01:57.970
+This application and its Monad integrations
+are the new milestone.

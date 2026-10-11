@@ -1,0 +1,11 @@
+Meet YieldShield, built by David Hawig and Santi. David previously served as Director of Ecosystem at Web3 Foundation and founded a startup.
+
+The team is starting with MON and shMON holders who want to keep crypto exposure while understanding their choices when prices fall.
+
+YieldShield offers two exits. Keep the remaining asset, or surrender it for an eligible backing payout. Other participants supply the backing, share realized gains, and take first-loss risk. Caps, fees and waiting periods apply.
+
+The Monad testnet application has wallet onboarding and seven funded test pools. Recorded transactions demonstrate holder and provider actions. The test assets have no monetary value; no customer adoption or revenue is claimed.
+
+YieldShield predates Metropolis. The protocol foundation is reused and disclosed. The Monad application, integrations and deployment are the new milestone, with AI assistance documented publicly.
+
+Next, the team plans to observe six holders and four potential backing providers. Can holders explain the exits? Do providers accept the economics? Do people return? Evidence from both sides should guide a real-funds launch.
