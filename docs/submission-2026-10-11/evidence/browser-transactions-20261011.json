@@ -1,0 +1,231 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-11T16:27:38.954Z",
+  "sourceDate": "2026-10-11",
+  "network": "Monad Testnet",
+  "chainId": 10143,
+  "rpcUrl": "https://testnet-rpc.monad.xyz",
+  "source": "Canonical public RPC receipts, transaction data, block headers and ABI-decoded pool/token/receipt logs",
+  "pool": {
+    "id": "scenario-mon-usd",
+    "address": "0xe8E8c9fBe73C997E20b9c8FE5e67FE6b92E1a149",
+    "environment": "scenario",
+    "protectedAsset": "sMON-demo",
+    "backingAsset": "TestUSDC",
+    "seniorNft": "0x878236770b8F1AbBd19E3c3f40D35E5890944F78",
+    "juniorNft": "0x5c0256fE58B6b2a16326b9F0894Fc3446A214087"
+  },
+  "sameSenderAcrossTransactions": true,
+  "transactions": [
+    {
+      "action": "holder-deposit",
+      "transactionHash": "0xfaa67eac0366b3c21a2fb9c93b238cf55aacfb482c165089af6e165e08532256",
+      "explorerUrl": "https://testnet.monadexplorer.com/tx/0xfaa67eac0366b3c21a2fb9c93b238cf55aacfb482c165089af6e165e08532256",
+      "status": "success",
+      "blockNumber": "70151987",
+      "blockHash": "0x4f6cfea998863e3149f6d022530e40252fe670af5e0af0e132c73d380ddb3819",
+      "blockTimestamp": "1791733965",
+      "executedAt": "2026-10-11T15:52:45.000Z",
+      "target": "0xe8e8c9fbe73c997e20b9c8fe5e67fe6b92e1a149",
+      "functionName": "depositShieldedAsset",
+      "gasUsed": "1146318",
+      "effectiveGasPrice": "102000000000",
+      "eventActorMatchesTransactionSender": true,
+      "events": [
+        {
+          "name": "ShieldedAssetDeposited",
+          "logIndex": 100,
+          "args": {
+            "depositor": "transaction-sender",
+            "asset": "0xf6d92E132ACBB85ff3c059f8ca71169d7d82EE9C",
+            "amount": "1000000000000000000",
+            "receiptTokenId": "3"
+          }
+        }
+      ],
+      "tokenTransfers": [
+        {
+          "logIndex": 97,
+          "asset": "sMON-demo",
+          "assetAddress": "0xf6d92E132ACBB85ff3c059f8ca71169d7d82EE9C",
+          "decimals": 18,
+          "direction": "from-transaction-sender",
+          "amount": "1000000000000000000",
+          "formattedAmount": "1",
+          "counterpartyIsPool": true
+        }
+      ],
+      "receiptNftTransfers": [
+        {
+          "logIndex": 98,
+          "receiptType": "senior",
+          "receiptAddress": "0x878236770b8f1abbd19e3c3f40d35e5890944f78",
+          "kind": "mint",
+          "tokenId": "3",
+          "holderMatchesTransactionSender": true
+        }
+      ]
+    },
+    {
+      "action": "holder-partial-asset-exit",
+      "transactionHash": "0xcc4d76dffdd5bc507ea8f8f3202a2d8abd885f2997c04701745040c1f34dcfbb",
+      "explorerUrl": "https://testnet.monadexplorer.com/tx/0xcc4d76dffdd5bc507ea8f8f3202a2d8abd885f2997c04701745040c1f34dcfbb",
+      "status": "success",
+      "blockNumber": "70152399",
+      "blockHash": "0x93ea09c8e970ead0cf353392c7313ea0d25847510e1362345dc0694861dd5966",
+      "blockTimestamp": "1791734089",
+      "executedAt": "2026-10-11T15:54:49.000Z",
+      "target": "0xe8e8c9fbe73c997e20b9c8fe5e67fe6b92e1a149",
+      "functionName": "partialWithdrawShielded",
+      "gasUsed": "939268",
+      "effectiveGasPrice": "102000000000",
+      "eventActorMatchesTransactionSender": true,
+      "events": [
+        {
+          "name": "PartialWithdrawal",
+          "logIndex": 7,
+          "args": {
+            "user": "transaction-sender",
+            "oldTokenId": "3",
+            "newTokenId": "4",
+            "withdrawAmount": "500000000000000000",
+            "remainingAmount": "497352941176392732"
+          }
+        }
+      ],
+      "tokenTransfers": [
+        {
+          "logIndex": 6,
+          "asset": "sMON-demo",
+          "assetAddress": "0xf6d92E132ACBB85ff3c059f8ca71169d7d82EE9C",
+          "decimals": 18,
+          "direction": "to-transaction-sender",
+          "amount": "500000000000000000",
+          "formattedAmount": "0.5",
+          "counterpartyIsPool": true
+        }
+      ],
+      "receiptNftTransfers": [
+        {
+          "logIndex": 2,
+          "receiptType": "senior",
+          "receiptAddress": "0x878236770b8f1abbd19e3c3f40d35e5890944f78",
+          "kind": "burn",
+          "tokenId": "3",
+          "holderMatchesTransactionSender": true
+        },
+        {
+          "logIndex": 4,
+          "receiptType": "senior",
+          "receiptAddress": "0x878236770b8f1abbd19e3c3f40d35e5890944f78",
+          "kind": "mint",
+          "tokenId": "4",
+          "holderMatchesTransactionSender": true
+        }
+      ]
+    },
+    {
+      "action": "holder-backing-exit",
+      "transactionHash": "0x4099fa78ef4439d49fd0ba9db7ed8e5b784813fade622aa465ed883448aa0864",
+      "explorerUrl": "https://testnet.monadexplorer.com/tx/0x4099fa78ef4439d49fd0ba9db7ed8e5b784813fade622aa465ed883448aa0864",
+      "status": "success",
+      "blockNumber": "70156547",
+      "blockHash": "0x9481bbc8df416d214f1b234fa497e1094b9ee64e927b73c5d8069c6c0cf2c9ae",
+      "blockTimestamp": "1791735343",
+      "executedAt": "2026-10-11T16:15:43.000Z",
+      "target": "0xe8e8c9fbe73c997e20b9c8fe5e67fe6b92e1a149",
+      "functionName": "shieldedWithdraw",
+      "gasUsed": "736390",
+      "effectiveGasPrice": "102000000000",
+      "eventActorMatchesTransactionSender": true,
+      "events": [
+        {
+          "name": "ShieldedWithdrawal",
+          "logIndex": 40,
+          "args": {
+            "withdrawer": "transaction-sender",
+            "amount": "55269586",
+            "preferredAsset": "0xdf25A5f619a2bF7b9baC4A349D6C8381597e0604"
+          }
+        }
+      ],
+      "tokenTransfers": [
+        {
+          "logIndex": 39,
+          "asset": "TestUSDC",
+          "assetAddress": "0xdf25A5f619a2bF7b9baC4A349D6C8381597e0604",
+          "decimals": 6,
+          "direction": "to-transaction-sender",
+          "amount": "55269586",
+          "formattedAmount": "55.269586",
+          "counterpartyIsPool": true
+        }
+      ],
+      "receiptNftTransfers": [
+        {
+          "logIndex": 34,
+          "receiptType": "senior",
+          "receiptAddress": "0x878236770b8f1abbd19e3c3f40d35e5890944f78",
+          "kind": "burn",
+          "tokenId": "4",
+          "holderMatchesTransactionSender": true
+        }
+      ]
+    },
+    {
+      "action": "provider-deposit",
+      "transactionHash": "0x1bf8ac5e704d05bbd5562d5193bcf3d62665734d3b9058ca79ba8b659261d4df",
+      "explorerUrl": "https://testnet.monadexplorer.com/tx/0x1bf8ac5e704d05bbd5562d5193bcf3d62665734d3b9058ca79ba8b659261d4df",
+      "status": "success",
+      "blockNumber": "70157313",
+      "blockHash": "0xef7cae7465dd1712034a6e15d0d6455c6fbd75962e425f5e9beef2b50addc813",
+      "blockTimestamp": "1791735574",
+      "executedAt": "2026-10-11T16:19:34.000Z",
+      "target": "0xe8e8c9fbe73c997e20b9c8fe5e67fe6b92e1a149",
+      "functionName": "depositBackingAsset",
+      "gasUsed": "951351",
+      "effectiveGasPrice": "102000000000",
+      "eventActorMatchesTransactionSender": true,
+      "events": [
+        {
+          "name": "ProtectorAssetDeposited",
+          "logIndex": 7,
+          "args": {
+            "depositor": "transaction-sender",
+            "asset": "0xdf25A5f619a2bF7b9baC4A349D6C8381597e0604",
+            "amount": "10000000",
+            "receiptTokenId": "2"
+          }
+        }
+      ],
+      "tokenTransfers": [
+        {
+          "logIndex": 4,
+          "asset": "TestUSDC",
+          "assetAddress": "0xdf25A5f619a2bF7b9baC4A349D6C8381597e0604",
+          "decimals": 6,
+          "direction": "from-transaction-sender",
+          "amount": "10000000",
+          "formattedAmount": "10",
+          "counterpartyIsPool": true
+        }
+      ],
+      "receiptNftTransfers": [
+        {
+          "logIndex": 5,
+          "receiptType": "junior",
+          "receiptAddress": "0x5c0256fe58b6b2a16326b9f0894fc3446a214087",
+          "kind": "mint",
+          "tokenId": "2",
+          "holderMatchesTransactionSender": true
+        }
+      ]
+    }
+  ],
+  "verification": "Every transaction succeeded; its receipt and transaction block hash match the canonical block. Expected actors, amounts and receipt lifecycle transitions are asserted. Only public contract addresses and transaction hashes are retained; the connected wallet address is represented as transaction-sender.",
+  "limitations": [
+    "Valueless testnet scenario assets; these transactions do not exercise the currently unavailable WMON/shMON reference markets.",
+    "User confirmation and browser actions were observed separately by the parent agent; this file independently verifies their resulting onchain records.",
+    "No transactions were broadcast by this verification script."
+  ]
+}
