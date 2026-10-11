@@ -1430,7 +1430,12 @@ contract BasePoolShieldExitModule is Initializable, ISplitRiskPool, ProtocolAcce
         uint256 totalEarned = Math.mulDiv(effectiveRewardPerShare, positionShares_, ConstantsLib.REWARD_PRECISION);
         uint256 debt = rewardDebt[tokenId];
         uint256 alreadyClaimed = commissionsClaimed[tokenId];
-        return totalEarned > (debt + alreadyClaimed) ? totalEarned - debt - alreadyClaimed : 0;
+        claimable = totalEarned > (debt + alreadyClaimed) ? totalEarned - debt - alreadyClaimed : 0;
+        // Isolate each epoch even if an upgraded pool already contains an overallocated index.
+        uint256 reserve = positionEpoch < protectorShareEpoch
+            ? protectorEpochRemainingReserve[positionEpoch]
+            : currentEpochCommissionReserve;
+        return Math.min(claimable, reserve);
     }
 
     /// @dev Ends the current share epoch when shield activation wipes all backing assets.

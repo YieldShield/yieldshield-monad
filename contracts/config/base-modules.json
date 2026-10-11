@@ -1,6 +1,6 @@
 {
   "SplitRiskPool": {
-    "sourceSha256": "b2ec7c6b117678aaa27dd92bbd383bd38cebda405ee5efef39c45e576a21f18c",
+    "sourceSha256": "88c9f016160685d29548270dabb3ebff095de3f47905534037b4730e063f8576",
     "router": "BasePoolRouter",
     "modules": {
       "Admin": {
