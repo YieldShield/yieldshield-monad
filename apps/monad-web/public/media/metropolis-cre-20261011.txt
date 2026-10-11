@@ -1,0 +1,9 @@
+YieldShield uses Chainlink CRE to compare its public API with actual Monad testnet state.
+
+A cron trigger orchestrates one HTTP snapshot and same-block EVM reads. The blockchain reads use the exact block named by the API, avoiding comparisons between different moments.
+
+The workflow checks backing, reservations and paused status for two AUSD pools, plus the price and freshness state of three configured feeds. It reports mismatches, stale observations and other alerts.
+
+Here is the official CRE CLI simulation and its recorded result. Today’s run completed successfully and identified two critical alerts: the MON and staked MON prices are unavailable. The pool and API observations agree.
+
+This is read-only orchestration with live HTTP and EVM capabilities. It does not move funds or change settlement rules. The demonstrated level is a local simulation, not a continuously deployed DON monitor or a solvency guarantee.

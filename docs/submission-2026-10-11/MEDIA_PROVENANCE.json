@@ -12,7 +12,7 @@
   "visuals": {
     "pitch": "Original typography cards based on repository facts and existing YieldShield branding; no fabricated founder portraits",
     "technical": "Actual app screenshots captured during parent-agent browser tests on 11 October; cropped for legibility; not a continuous screen recording",
-    "cre": "Use only authentic successful official CLI output once available; capture exact run date/status",
+    "cre": "Actual browser screenshot of a faithful excerpt from the official authenticated CLI simulation completed 11 October 2026 at 18:19 Europe/Berlin; recorded output, not live terminal typing; successful execution returned critical oracle alerts",
     "logo": {
       "source": "apps/monad-web/public/favicon.svg",
       "method": "Rasterized exact existing geometry and colors at1024px",
@@ -48,6 +48,11 @@
       "path": "output/readiness-20261011/cre-current-success.jpg",
       "bytes": 162771,
       "sha256": "57031704561d1da136abdf0b9d6cb8d3c22308fa595bfbce7e04c124a5b2a305"
+    },
+    {
+      "path": "output/readiness-20261011/mobile-guide.jpg",
+      "bytes": 35720,
+      "sha256": "41a8eb0e2a2793db25359d4b36ffd8999dcd2637dbba036f8b49a8fffcc6d16a"
     },
     {
       "path": "output/readiness-20261011/network-status-initial.jpg",
@@ -250,6 +255,55 @@
         1040
       ],
       "visibleLabel": "Backing providers take first losses"
+    },
+    {
+      "frame": "frames/cre-03-cli.png",
+      "source": "cre-current-success.jpg",
+      "sourceSize": [
+        2151,
+        1259
+      ],
+      "crop": [
+        0,
+        0,
+        2151,
+        875
+      ],
+      "visibleLabel": "Official CLI simulation \u00b7 recorded output excerpt",
+      "kind": "Actual browser capture of faithful excerpt from recorded official CRE CLI output; not live terminal typing"
+    },
+    {
+      "frame": "frames/cre-04-alerts.png",
+      "source": "cre-current-success.jpg",
+      "sourceSize": [
+        2151,
+        1259
+      ],
+      "crop": [
+        37,
+        470,
+        1220,
+        815
+      ],
+      "visibleLabel": "Successful execution \u00b7 critical oracle alerts",
+      "kind": "Actual browser capture of faithful excerpt from recorded official CRE CLI output; not live terminal typing"
+    }
+  ],
+  "creEvidence": [
+    {
+      "path": "docs/submission-2026-10-11/evidence/chainlink-cre-simulation-20261011.txt",
+      "bytes": 3384,
+      "sha256": "e55e38383da9b258df8c6e9ddd9867f4be4adc06c41c1810bd85154a993cd16e"
+    },
+    {
+      "path": "docs/submission-2026-10-11/evidence/chainlink-cre-simulation-20261011.json",
+      "bytes": 4017,
+      "sha256": "2da43136fe49c9f6ce7a751721c2aeaaf063966e92c510b67f49396067a5ab93"
+    },
+    {
+      "path": "output/cre-demo-20261011/recorded-cli-output.html",
+      "bytes": 2728,
+      "sha256": "3f2218ac79f4cfd3eaad3950f26d56eaddc5937279eebcf26924e8031ca39cb6"
     }
   ],
   "narrationAssets": [
@@ -337,15 +391,42 @@
           }
         ]
       }
+    },
+    {
+      "id": "cre",
+      "path": "output/readiness-20261011/video/yieldshield-cre-20261011.mp4",
+      "bytes": 5192175,
+      "sha256": "2bc436d6aa490f0ac80d2e5c0b4d11860dc3b99bcd1b6ae2214d1eb7eb4468f5",
+      "publishedPath": "apps/monad-web/public/media/metropolis-cre-20261011.mp4",
+      "verification": {
+        "durationSeconds": 68.4,
+        "file": "yieldshield-cre-20261011.mp4",
+        "tracks": [
+          {
+            "buffers": 2052,
+            "decode": "passed",
+            "mediaType": "vide",
+            "samples": 2052
+          },
+          {
+            "buffers": 366,
+            "decode": "passed",
+            "mediaType": "soun",
+            "samples": 2990274
+          }
+        ]
+      }
     }
   ],
   "captionTiming": {
     "method": "Local Whisper word timestamps aligned to the authoritative narration scripts; recognition errors corrected from the scripts",
     "pitchCues": 17,
     "technicalCues": 26,
+    "creCues": 15,
     "maxLines": 2,
     "pitchAudioOffsetSeconds": 0.15,
-    "technicalAudioOffsetSeconds": 0.15
+    "technicalAudioOffsetSeconds": 0.15,
+    "creAudioOffsetSeconds": 0.15
   },
   "limits": {
     "pitchSeconds": 120,
