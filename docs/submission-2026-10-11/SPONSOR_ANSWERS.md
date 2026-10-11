@@ -42,17 +42,23 @@ We plan to acquire early users through founder-led Monad/staking-community intro
 
 ## Chainlink CRE — meaningful orchestration
 
-YieldShield's CRE workflow checks whether its public application's backing and oracle observations match Monad testnet state. A cron capability starts an HTTP capability request to the public `/api/status` endpoint. The workflow validates the network and configured assets/feeds, obtains identical-value consensus on the compact API snapshot, then uses CRE's EVM capability for up to 13 reads at the exact block named by that snapshot. Unavailable feeds skip their reverting price getter and are explicitly reported as critical; they are never assigned a replacement price.
+YieldShield's CRE workflow checks whether its public application's backing and oracle observations match Monad testnet state. A cron capability starts an HTTP capability request to the public `/api/status` endpoint. The workflow validates the network and fixed assets/feeds, obtains identical-value consensus on a compact API snapshot, and uses CRE's EVM capability at the exact block named by that snapshot.
 
-It verifies that block's header, reads backing/reservations/paused status for the WMON/AUSD and shMON/AUSD pools, and reads price/freshness state for WMON, shMON and AUSD. The result flags API/on-chain mismatches, stale/future observations, low or empty backing, paused pools and over-reservation. The output is a JSON health report and execution logs. It has no withdrawal authority, performs no blockchain writes, and does not replace the protocol's settlement oracle.
+It verifies the block header, reads backing, reservations and paused status for the WMON/AUSD and shMON/AUSD pools, and independently checks WMON, shMON and AUSD feed health. It performs up to 13 EVM reads. When a pinned feed explicitly reports unhealthy through `isPriceStale`, the workflow skips its reverting protected price getter and emits a critical `oracle-price-unavailable` alert with a null price. It never invents a replacement price. Network, capability and unexpected contract-read failures still stop execution.
 
-The official authenticated CRE CLI simulation succeeded on 16 September at Monad testnet block 63063880, with both configured pools and all three feeds matching, status healthy and zero alerts. The repository includes the exact command, SDK/CLI versions, binary/config hashes and original successful CLI output. This is a point-in-time local simulation using live HTTP/EVM capabilities, not a DON deployment or continuous production monitor.
+The **fresh official authenticated CRE CLI simulation completed successfully on 11 October 2026 at block 70157292**, using live public HTTP and Monad EVM capabilities. It performed 11 EVM reads and returned a critical report with two alerts: the upstream WMON and shMON prices were unavailable. Both pools' backing, reservations and paused state matched the independent on-chain reads; the API correctly agreed with the unhealthy reference feeds, and AUSD remained healthy. This demonstrates useful monitoring of a real outage, not a claim that the affected markets are available.
+
+The result is a machine-readable JSON report and execution logs. The repository preserves the exact command, CLI/SDK versions, source/config/binary hashes and complete successful output. Type checking, official SDK WASM compilation and 18 tests with 82 assertions passed. The workflow also detects API mismatches, stale or future observations, low backing, paused pools and over-reservation. It has no withdrawal authority and performs no blockchain writes. This is a point-in-time local simulation, not a DON deployment or continuous monitor, and it does not replace the protocol's settlement oracle.
 
 Source and reproduction: https://github.com/YieldShield/yieldshield-monad/blob/main/docs/CHAINLINK_CRE.md
 
-Original result: https://github.com/YieldShield/yieldshield-monad/blob/main/docs/evidence/chainlink-cre-simulation-20260916.txt
+Workflow source: https://github.com/YieldShield/yieldshield-monad/blob/main/integrations/chainlink-cre/pool-health/workflow.ts
 
-Required video: record the actual official CLI simulation and its successful result in under two minutes; show the current run's block/status, not an unlabeled replay of September output.
+Current original CLI log: https://github.com/YieldShield/yieldshield-monad/blob/main/docs/submission-2026-10-11/evidence/chainlink-cre-simulation-20261011.txt
+
+Current result and hashes: https://github.com/YieldShield/yieldshield-monad/blob/main/docs/submission-2026-10-11/evidence/chainlink-cre-simulation-20261011.json
+
+The separately dated September simulation remains available as historical evidence of a healthy execution; the October critical result is the current submission evidence.
 
 ## Envio — selection decision
 

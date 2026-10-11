@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-11T16:20:43.103Z",
+  "executionObservedAt": "2026-10-11T16:19:35.000Z",
+  "executionKind": "Official authenticated CRE CLI local simulation using live public HTTP and EVM capabilities",
+  "command": "cre workflow simulate pool-health --target monad-testnet --non-interactive --trigger-index 0",
+  "workingDirectory": "integrations/chainlink-cre",
+  "versions": {
+    "creCli": "1.34.0",
+    "creSdk": "1.21.1",
+    "bun": "1.4.2"
+  },
+  "testedRepositoryCommit": "94a0207a6951ef5b0c978e00c8e9b8b2bd74f0b2",
+  "workflowImprovementCommit": "17a9ac9",
+  "apiUrl": "https://monad-api.yieldshield.ai/api/status",
+  "rpcUrl": "https://testnet-rpc.monad.xyz",
+  "exitCode": 0,
+  "workflowBinaryHash": "4e6f905620fef54e8552b936d49033cd5f90f53c1f842fb763563e822ab4ff9c",
+  "workflowConfigHash": "16959c965fd30b5642421b27ffc8da6d55a4fcc0cc20d79de904f615f42c1213",
+  "rawLog": "chainlink-cre-simulation-20261011.txt",
+  "rawLogSha256": "e55e38383da9b258df8c6e9ddd9867f4be4adc06c41c1810bd85154a993cd16e",
+  "sourceHashes": {
+    "main.ts": "645c6c873b9e01af1bca279b238dfa5b8003481312e0932b40af50dd069bd2d4",
+    "workflow.ts": "47d08e59875c0d3806ff04e061146677bbc5110e51f3f6d697fec98431a5886f",
+    "health.ts": "90b5428fa5c89b261472490136773659364151e063cc7ac87e13a2b81afa2d7a",
+    "config.json": "16959c965fd30b5642421b27ffc8da6d55a4fcc0cc20d79de904f615f42c1213"
+  },
+  "broadcast": false,
+  "deployedToDon": false,
+  "continuousMonitorActive": false,
+  "result": {
+    "schemaVersion": 1,
+    "integration": "chainlink-cre",
+    "network": "Monad Testnet",
+    "chainId": 10143,
+    "observedAt": 1791735575,
+    "blockNumber": "70157292",
+    "blockTimestamp": "1791735568",
+    "status": "critical",
+    "pools": [
+      {
+        "id": "wmon-ausd",
+        "address": "0x89Dc1d055Ac9ec50E1FA0a2d7da8be858F1B1470",
+        "totalBacking": "1999999852",
+        "reserved": "0",
+        "freeBacking": "1999999852",
+        "freeBackingBps": 10000,
+        "paused": false,
+        "apiMatches": true
+      },
+      {
+        "id": "shmon-ausd",
+        "address": "0x18F7E79744b08a302E786c0D62b8c1cfB3CFc475",
+        "totalBacking": "1999998085",
+        "reserved": "0",
+        "freeBacking": "1999998085",
+        "freeBackingBps": 10000,
+        "paused": false,
+        "apiMatches": true
+      }
+    ],
+    "assets": [
+      {
+        "symbol": "WMON",
+        "address": "0x23EA8b07fda821d2096dee02a3a662a5374B69Cb",
+        "price": null,
+        "publishedAt": "0",
+        "healthy": false,
+        "apiMatches": true
+      },
+      {
+        "symbol": "shMON",
+        "address": "0x282BdDFF5e58793AcAb65438b257Dbd15A8745C9",
+        "price": null,
+        "publishedAt": "0",
+        "healthy": false,
+        "apiMatches": true
+      },
+      {
+        "symbol": "AUSD",
+        "address": "0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC",
+        "price": "100000000",
+        "publishedAt": null,
+        "healthy": true,
+        "apiMatches": true
+      }
+    ],
+    "alerts": [
+      {
+        "severity": "critical",
+        "code": "oracle-price-unavailable",
+        "subject": "WMON"
+      },
+      {
+        "severity": "critical",
+        "code": "oracle-price-unavailable",
+        "subject": "shMON"
+      }
+    ],
+    "scope": "Read-only monitoring of configured pools; free backing is not a protection quote or solvency guarantee."
+  },
+  "validation": {
+    "typecheck": "passed",
+    "sdkWasmBuild": "passed",
+    "testsPassed": 18,
+    "assertions": 82
+  },
+  "limitations": [
+    "A successful simulation reporting a real critical oracle outage; this is not a healthy-market claim.",
+    "Local CLI simulation, not a deployed Chainlink DON workflow.",
+    "Two configured AUSD-backed pools only; this is a point-in-time read-only observation.",
+    "The raw CLI timestamp labels are retained verbatim; executionObservedAt is derived from runtime.now() in the workflow result.",
+    "No transactions were broadcast or wallet keys supplied."
+  ]
+}

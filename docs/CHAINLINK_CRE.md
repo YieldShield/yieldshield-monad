@@ -50,6 +50,10 @@ The test suite covers unavailable prices with honest and dishonest API health fl
 
 ## Verification status
 
+On 11 October 2026, a fresh authenticated official CLI simulation **completed successfully with a critical health report**, at Monad block **70157292**. Both AUSD-backed pools matched the independent EVM observations. The WMON and shMON feeds each declared themselves unhealthy, producing two `oracle-price-unavailable` alerts; the API correctly agreed, and AUSD remained healthy. The simulation made no transactions. Successful monitoring of an outage does not mean the affected markets are available.
+
+The [current parsed evidence](submission-2026-10-11/evidence/chainlink-cre-simulation-20261011.json) records the result, exit code, source/config/binary hashes and scope. The [unaltered CLI output](submission-2026-10-11/evidence/chainlink-cre-simulation-20261011.txt) records completion. The updated workflow passed type checking, 18 tests with 82 assertions, and official SDK WASM compilation. The [upstream diagnosis](submission-2026-10-11/evidence/redstone-diagnosis.json) independently records RedStone's last update on 23 September and its current stale-data rejection.
+
 On 16 September 2026, the **official authenticated CRE CLI simulation completed successfully** against the deployed public YieldShield API and live Monad testnet RPC. At block **63063880**, both AUSD-backed pools and all three configured feeds matched the independent EVM reads: **healthy, zero alerts**. No transactions were broadcast and no DON workflow was deployed.
 
 The [parsed execution evidence](evidence/chainlink-cre-simulation-20260916.json) contains the report, command, versions and compiled binary/config hashes. The [original successful CLI output](evidence/chainlink-cre-simulation-20260916.txt) includes the completion result. The simulation used the production API after its batched-read performance fix; earlier cold API reads had exceeded CRE’s 10-second HTTP deadline.
