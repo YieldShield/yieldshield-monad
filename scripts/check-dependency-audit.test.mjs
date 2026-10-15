@@ -66,6 +66,26 @@ test("allows reviewed inheritance but still rejects a new advisory on an inherit
   report.vulnerabilities[name].via.push({ name, dependency: name, severity: "high", url: "https://github.com/advisories/new" });
   assert.throws(() => checkAudit(report, lock, options), /Unreviewed/);
 });
+test("allows only the reviewed Dynamic 5.10.0 inheritance paths", () => {
+  for (const name of ["@dynamic-labs/ethereum", "@dynamic-labs/solana-core",
+    "@dynamic-labs/waas", "@dynamic-labs/waas-evm"]) {
+    const { report, lock } = fixture();
+    const node = `node_modules/${name}`;
+    report.vulnerabilities[name] = { severity: "high", nodes: [node], via: ["bigint-buffer"] };
+    report.metadata.vulnerabilities.total++;
+    lock.packages[node] = { version: "5.10.0" };
+    assert.equal(checkAudit(report, lock, options), 2);
+    assert.throws(() => checkAudit(report, lock, { now }), /Unreviewed/);
+    lock.packages[node].version = "5.10.1";
+    assert.throws(() => checkAudit(report, lock, options), /Unreviewed/);
+    lock.packages[node].version = "5.9.3";
+    assert.throws(() => checkAudit(report, lock, options), /Unreviewed/);
+    lock.packages[node].version = "5.10.0";
+    report.vulnerabilities[name].via.push({ name, dependency: name, severity: "high",
+      url: "https://github.com/advisories/unreviewed" });
+    assert.throws(() => checkAudit(report, lock, options), /Unreviewed/);
+  }
+});
 test("verifies the complete Dynamic bundle and rejects native or server parser code", () => {
   const entry = "/repo/apps/monad-web/src/DynamicWallet.tsx";
   assert.doesNotThrow(() => checkBrowserModules([entry, "/repo/node_modules/bigint-buffer/dist/browser.js"]));
