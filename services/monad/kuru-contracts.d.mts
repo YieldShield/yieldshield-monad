@@ -1,4 +1,4 @@
-import type { Abi, Address, PublicClient, TransactionReceipt } from "viem";
+import type { Abi, Address, TransactionReceipt } from "viem";
 export const KURU: {
   chainId: number;
   account: Address;
@@ -27,7 +27,21 @@ export type KuruQuote = KuruIdentity & {
   quotedAt: number;
   expiresAt: number;
 };
-type Reader = Pick<PublicClient, "getChainId" | "getCode" | "getBlock" | "getStorageAt" | "readContract">;
+// The browser and standalone API install their own viem copies. Describe the
+// reads this module uses without comparing their recursive client generics.
+type Reader = {
+  getChainId(): Promise<number>;
+  getCode(parameters: { address: Address; blockNumber?: bigint }): Promise<`0x${string}` | undefined>;
+  getBlock(): Promise<{ number: bigint | null; timestamp: bigint }>;
+  getStorageAt(parameters: { address: Address; slot: `0x${string}`; blockNumber?: bigint }): Promise<`0x${string}` | undefined>;
+  readContract(parameters: {
+    address: Address;
+    abi: Abi;
+    functionName: string;
+    args: readonly unknown[];
+    blockNumber?: bigint;
+  }): Promise<unknown>;
+};
 export function isKuruTarget(address: Address): boolean;
 export function verifyKuruTarget(client: Reader, address: Address, blockNumber?: bigint): Promise<void>;
 export function readKuruIdentity(client: Reader, now?: number): Promise<KuruIdentity>;
