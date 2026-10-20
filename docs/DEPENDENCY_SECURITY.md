@@ -1,4 +1,24 @@
-# Dependency security review
+# Dependency security
+
+## Current policy — 20 October 2026
+
+The root npm override replaces `bigint-buffer` with the local pure JavaScript
+compatibility package in `vendor/bigint-buffer`. It reuses the implementation
+already maintained in YieldShield/yieldshield and contains no native binding,
+install script or dependencies. Large-buffer and conversion regressions verify
+the actual resolved package, including lengths beyond the former native stack
+buffer boundary.
+
+The former browser exception expired on 16 October and has been removed from
+the gate. Every production audit finding now fails the gate, including the old
+inherited Dynamic/Solana findings. The browser module exclusions and the API
+and contract-tool audits remain enforced. The vendor package is the only
+additional local dependency link accepted by the repository scope check.
+
+The following entries record historical reviews and do not authorize current
+exceptions.
+
+## Historical dependency reviews review
 
 Reviewed **16 September 2026**. Scope: all three current npm lockfiles: the root workspace and deployed Monad browser app, the Railway API in `services/monad`, and JavaScript contract tools in `contracts`. This is a dependency review, not an independent security audit.
 

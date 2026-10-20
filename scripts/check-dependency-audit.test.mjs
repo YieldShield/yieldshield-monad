@@ -9,10 +9,15 @@ const options = { now, allowBrowserExceptions: true };
 const require = createRequire(import.meta.url);
 test("audits every committed npm lockfile, including standalone tooling", () => {
   const files = execFileSync("git", ["ls-files", "*package-lock.json"], {
-    cwd: new URL("../", import.meta.url), encoding: "utf8",
-  }).trim().split("\n").sort();
-  const covered = auditedDirectories.map((directory) =>
-    directory === "." ? "package-lock.json" : `${directory}/package-lock.json`).sort();
+    cwd: new URL("../", import.meta.url),
+    encoding: "utf8",
+  })
+    .trim()
+    .split("\n")
+    .sort();
+  const covered = auditedDirectories
+    .map((directory) => (directory === "." ? "package-lock.json" : `${directory}/package-lock.json`))
+    .sort();
   assert.deepEqual(covered, files, "Add every new lockfile to the dependency audit gate");
 });
 function fixture() {
@@ -21,9 +26,16 @@ function fixture() {
       metadata: { vulnerabilities: { total: 1 } },
       vulnerabilities: {
         "bigint-buffer": {
-          severity: "high", nodes: ["node_modules/bigint-buffer"],
-          via: [{ name: "bigint-buffer", dependency: "bigint-buffer", severity: "high",
-            url: "https://github.com/advisories/GHSA-3gc7-fjrx-p6mg" }],
+          severity: "high",
+          nodes: ["node_modules/bigint-buffer"],
+          via: [
+            {
+              name: "bigint-buffer",
+              dependency: "bigint-buffer",
+              severity: "high",
+              url: "https://github.com/advisories/GHSA-3gc7-fjrx-p6mg",
+            },
+          ],
         },
       },
     },
@@ -31,61 +43,26 @@ function fixture() {
   };
 }
 
-test("accepts only the reviewed advisory and rejects it for the API", () => {
-  const { report, lock } = fixture();
-  assert.equal(checkAudit(report, lock, options), 1);
-  assert.throws(() => checkAudit(report, lock, { now }), /Unreviewed/);
+test("accepts a complete clean production audit", () => {
+  assert.equal(checkAudit({ vulnerabilities: {}, metadata: { vulnerabilities: { total: 0 } } }), 0);
 });
-test("rejects changed advisory IDs, critical severity, versions, paths and expired review", () => {
-  for (const change of [
-    ({ report }) => { report.vulnerabilities["bigint-buffer"].via[0].url += "-new"; },
-    ({ report }) => { report.vulnerabilities["bigint-buffer"].severity = "critical"; },
-    ({ lock }) => { lock.packages["node_modules/bigint-buffer"].version = "1.1.6"; },
-    ({ report }) => { report.vulnerabilities["bigint-buffer"].nodes.push("node_modules/other/node_modules/bigint-buffer"); },
-  ]) {
-    const f = fixture(); change(f);
-    assert.throws(() => checkAudit(f.report, f.lock, options));
-  }
+test("rejects the former bigint-buffer exception for every caller and date", () => {
   const { report, lock } = fixture();
-  assert.throws(() => checkAudit(report, lock, { ...options, now: Date.parse("2026-10-16") }), /expired/);
-});
-test("rejects unknown inherited dependencies and missing audit data", () => {
-  const { report, lock } = fixture();
-  report.vulnerabilities["new-parent"] = { severity: "high", nodes: ["node_modules/new-parent"], via: ["bigint-buffer"] };
-  report.metadata.vulnerabilities.total++;
   assert.throws(() => checkAudit(report, lock, options), /Unreviewed/);
-  assert.throws(() => checkAudit({ error: { code: "ENOTFOUND" } }, lock, options), /Incomplete/);
+  assert.throws(() => checkAudit(report, lock, { now: Date.parse("2026-10-20") }), /Unreviewed/);
 });
-test("allows reviewed inheritance but still rejects a new advisory on an inherited package", () => {
-  const { report, lock } = fixture();
-  const name = "@solana/buffer-layout-utils";
-  report.vulnerabilities[name] = { severity: "high", nodes: [`node_modules/${name}`], via: ["bigint-buffer"] };
-  lock.packages[`node_modules/${name}`] = { version: "0.2.0" };
-  report.metadata.vulnerabilities.total++;
-  assert.equal(checkAudit(report, lock, options), 2);
-  report.vulnerabilities[name].via.push({ name, dependency: name, severity: "high", url: "https://github.com/advisories/new" });
-  assert.throws(() => checkAudit(report, lock, options), /Unreviewed/);
-});
-test("allows only the reviewed Dynamic 5.10.0 inheritance paths", () => {
-  for (const name of ["@dynamic-labs/ethereum", "@dynamic-labs/solana-core",
-    "@dynamic-labs/waas", "@dynamic-labs/waas-evm"]) {
-    const { report, lock } = fixture();
-    const node = `node_modules/${name}`;
-    report.vulnerabilities[name] = { severity: "high", nodes: [node], via: ["bigint-buffer"] };
-    report.metadata.vulnerabilities.total++;
-    lock.packages[node] = { version: "5.10.0" };
-    assert.equal(checkAudit(report, lock, options), 2);
-    assert.throws(() => checkAudit(report, lock, { now }), /Unreviewed/);
-    lock.packages[node].version = "5.10.1";
-    assert.throws(() => checkAudit(report, lock, options), /Unreviewed/);
-    lock.packages[node].version = "5.9.3";
-    assert.throws(() => checkAudit(report, lock, options), /Unreviewed/);
-    lock.packages[node].version = "5.10.0";
-    report.vulnerabilities[name].via.push({ name, dependency: name, severity: "high",
-      url: "https://github.com/advisories/unreviewed" });
-    assert.throws(() => checkAudit(report, lock, options), /Unreviewed/);
+test("rejects inherited findings, unknown advisories and inconsistent reports", () => {
+  for (const name of ["@dynamic-labs/ethereum", "@solana/buffer-layout-utils", "unknown"]) {
+    const report = {
+      vulnerabilities: { [name]: { severity: "high", via: ["bigint-buffer"] } },
+      metadata: { vulnerabilities: { total: 1 } },
+    };
+    assert.throws(() => checkAudit(report), /Unreviewed/);
   }
+  assert.throws(() => checkAudit({ error: { code: "ENOTFOUND" } }), /Incomplete/);
+  assert.throws(() => checkAudit({ vulnerabilities: {}, metadata: { vulnerabilities: { total: 1 } } }), /summary/);
 });
+
 test("verifies the complete Dynamic bundle and rejects native or server parser code", () => {
   const entry = "/repo/apps/monad-web/src/DynamicWallet.tsx";
   assert.doesNotThrow(() => checkBrowserModules([entry, "/repo/node_modules/bigint-buffer/dist/browser.js"]));
@@ -97,8 +74,13 @@ test("verifies the complete Dynamic bundle and rejects native or server parser c
 
 test("rejects retired first-party workspaces in the browser bundle", () => {
   const entry = "/repo/apps/monad-web/src/DynamicWallet.tsx";
-  for (const source of ["apps/web/src/App.tsx", "packages/sdk/src/index.ts",
-    "packages/adapter-solana/dist/index.js", "packages/adapter-evm/src/index.ts", "packages/core/src/index.ts"]) {
+  for (const source of [
+    "apps/web/src/App.tsx",
+    "packages/sdk/src/index.ts",
+    "packages/adapter-solana/dist/index.js",
+    "packages/adapter-evm/src/index.ts",
+    "packages/core/src/index.ts",
+  ]) {
     assert.throws(() => checkBrowserModules([entry, `/repo/${source}`]), /Retired application workspace/);
   }
 });
@@ -106,9 +88,16 @@ test("rejects retired first-party workspaces in the browser bundle", () => {
 test("rejects the removed stream-json exception even at its previously reviewed version", () => {
   const { report, lock } = fixture();
   report.vulnerabilities["stream-json"] = {
-    severity: "moderate", nodes: ["node_modules/stream-json"],
-    via: [{ name: "stream-json", dependency: "stream-json", severity: "moderate",
-      url: "https://github.com/advisories/GHSA-528h-pc64-c93x" }],
+    severity: "moderate",
+    nodes: ["node_modules/stream-json"],
+    via: [
+      {
+        name: "stream-json",
+        dependency: "stream-json",
+        severity: "moderate",
+        url: "https://github.com/advisories/GHSA-528h-pc64-c93x",
+      },
+    ],
   };
   report.metadata.vulnerabilities.total++;
   lock.packages["node_modules/stream-json"] = { version: "1.9.1" };
@@ -121,23 +110,50 @@ test("Jayson browser override preserves JSON-RPC IDs, success and error callback
     const request = JSON.parse(body);
     assert.equal(request.jsonrpc, "2.0");
     assert.match(request.id, /^[0-9a-f-]{36}$/i);
-    done(null, JSON.stringify({ jsonrpc: "2.0", id: request.id,
-      ...(request.method === "fail" ? { error: { code: -32601, message: "Unknown method" } }
-        : { result: request.params[0] }) }));
+    done(
+      null,
+      JSON.stringify({
+        jsonrpc: "2.0",
+        id: request.id,
+        ...(request.method === "fail"
+          ? { error: { code: -32601, message: "Unknown method" } }
+          : { result: request.params[0] }),
+      }),
+    );
   });
-  await new Promise((resolve, reject) => client.request("echo", [42], (error, response) => {
-    if (error) return reject(error);
-    assert.equal(response.result, 42);
-    resolve();
-  }));
-  await new Promise((resolve, reject) => client.request("fail", [], (error, rpcError, result) => {
-    if (error) return reject(error);
-    assert.equal(rpcError.code, -32601);
-    assert.equal(result, undefined);
-    resolve();
-  }));
+  await new Promise((resolve, reject) =>
+    client.request("echo", [42], (error, response) => {
+      if (error) return reject(error);
+      assert.equal(response.result, 42);
+      resolve();
+    }),
+  );
+  await new Promise((resolve, reject) =>
+    client.request("fail", [], (error, rpcError, result) => {
+      if (error) return reject(error);
+      assert.equal(rpcError.code, -32601);
+      assert.equal(result, undefined);
+      resolve();
+    }),
+  );
   const custom = new Client(() => {}, { generator: () => "wallet-request" });
   assert.equal(custom.request("echo", []).id, "wallet-request");
   assert.equal(custom.request("echo", [], 7).id, 7);
   assert.equal(custom.request("notify", [], null).id, undefined);
+});
+
+test("bigint conversion uses the local JavaScript implementation for large buffers", () => {
+  const { realpathSync } = require("node:fs");
+  const resolved = require.resolve("bigint-buffer");
+  assert.match(realpathSync(resolved).replaceAll("\\", "/"), /\/vendor\/bigint-buffer\/dist\/node\.js$/);
+  const { toBigIntLE, toBigIntBE, toBufferLE, toBufferBE } = require("bigint-buffer");
+  for (const size of [0, 1, 7, 8, 9, 31, 32, 33, 64, 65, 4096]) {
+    const bytes = Buffer.alloc(size, 0x7f);
+    const expected = size ? BigInt("0x" + bytes.toString("hex")) : 0n;
+    assert.equal(toBigIntLE(bytes), expected);
+    assert.equal(toBigIntBE(bytes), expected);
+    assert.deepEqual(toBufferLE(expected, size), bytes);
+    assert.deepEqual(toBufferBE(expected, size), bytes);
+    assert.deepEqual(bytes, Buffer.alloc(size, 0x7f));
+  }
 });
