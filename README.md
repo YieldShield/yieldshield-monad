@@ -35,7 +35,7 @@ Fees are 10% junior + 1% creator + 1% protocol **of realized positive gains**, p
 
 ## Run locally
 
-Use Node **24.14.0** and Foundry **v1.8.1**. Clone submodules recursively:
+Use Node **24.22.1** and Foundry **v1.8.1**. Clone submodules recursively:
 
 ```sh
 git clone --recurse-submodules https://github.com/YieldShield/yieldshield-monad.git
