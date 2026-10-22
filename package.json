@@ -31,10 +31,10 @@
     "generate:abis": "node scripts/generate-monad-abis.mjs"
   },
   "dependencies": {
-    "@dynamic-labs/ethereum": "5.10.0",
-    "@dynamic-labs/ethereum-core": "5.10.0",
-    "@dynamic-labs/sdk-react-core": "5.10.0",
-    "@dynamic-labs/wallet-connector-core": "5.10.0",
+    "@dynamic-labs/ethereum": "5.12.0",
+    "@dynamic-labs/ethereum-core": "5.12.0",
+    "@dynamic-labs/sdk-react-core": "5.12.0",
+    "@dynamic-labs/wallet-connector-core": "5.12.0",
     "@pythnetwork/pyth-sdk-solidity": "4.3.1",
     "viem": "^2.57.4"
   },
