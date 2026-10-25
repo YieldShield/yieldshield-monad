@@ -29,6 +29,14 @@ The pinned Git submodules in [.gitmodules](.gitmodules) retain their upstream li
 
 JavaScript dependencies are recorded in the root, `services/monad/` and `contracts/` lockfiles. Their packages retain their own licenses and notices; the root MIT license is not a license grant for those dependencies. Install the locked dependencies and initialize submodules to obtain their accompanying notices.
 
+## JavaScript bigint-buffer compatibility package
+
+The private compatibility package in `vendor/bigint-buffer/` derives its pure
+JavaScript implementation and types from `no2chem/bigint-buffer` v1.1.5. Its
+[Apache-2.0 license](vendor/bigint-buffer/LICENSE) and
+[modification record](vendor/bigint-buffer/README.md) are bundled with the code.
+Its native binding is excluded.
+
 ## Self-hosted fonts
 
 `apps/monad-web/public/fonts/` contains unmodified Latin WOFF2 subsets of **DM Sans** and **Manrope**, distributed under the SIL Open Font License 1.1. Their copyright and complete licenses are bundled as [dm-sans-OFL.txt](apps/monad-web/public/fonts/dm-sans-OFL.txt) and [manrope-OFL.txt](apps/monad-web/public/fonts/manrope-OFL.txt). The [font source record](apps/monad-web/public/fonts/README.md) identifies the upstream projects and retrieval date.
