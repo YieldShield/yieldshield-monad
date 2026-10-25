@@ -7,6 +7,26 @@ import { auditedDirectories, checkAudit, checkBrowserModules } from "./check-dep
 const now = Date.parse("2026-09-16T00:00:00Z");
 const options = { now, allowBrowserExceptions: true };
 const require = createRequire(import.meta.url);
+
+test("patched ESM query parser preserves encoded WalletConnect pairing parameters", async () => {
+  const queryString = (await import("query-string")).default;
+  const values = queryString.parse("label=Alice%20%26%20Bob&relay-protocol=irn&symKey=ab%2Fcd");
+  assert.equal(values.label, "Alice & Bob");
+  assert.equal(values["relay-protocol"], "irn");
+  assert.equal(values.symKey, "ab/cd");
+  const connector = createRequire(require.resolve("@dynamic-labs/wallet-connect"));
+  const { formatUri, parseUri } = connector("@walletconnect/utils");
+  const pairing = {
+    topic: "a".repeat(64), version: 2, symKey: "b".repeat(64),
+    relay: { protocol: "irn" },
+  };
+  const parsed = parseUri(formatUri(pairing));
+  assert.equal(parsed.topic, pairing.topic);
+  assert.equal(parsed.symKey, pairing.symKey);
+  assert.equal(parsed.version, pairing.version);
+  assert.deepEqual(parsed.relay, pairing.relay);
+});
+
 test("audits every committed npm lockfile, including standalone tooling", () => {
   const files = execFileSync("git", ["ls-files", "*package-lock.json"], {
     cwd: new URL("../", import.meta.url),
