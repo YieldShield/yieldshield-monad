@@ -2,11 +2,30 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { execFileSync } from "node:child_process";
 import { createRequire } from "node:module";
+import path from "node:path";
+import { pathToFileURL } from "node:url";
 import { auditedDirectories, checkAudit, checkBrowserModules } from "./check-dependency-audit.mjs";
 
 const now = Date.parse("2026-09-16T00:00:00Z");
 const options = { now, allowBrowserExceptions: true };
 const require = createRequire(import.meta.url);
+
+test("patched Zod preserves wallet RPC, theme and response validation", async () => {
+  const walletEntry = require.resolve("@reown/appkit-wallet");
+  const schemas = await import(pathToFileURL(path.resolve(path.dirname(walletEntry), "../src/W3mFrameSchema.js")));
+  const { appEvent, frameEvent } = schemas.W3mFrameSchema;
+  const rpc = { type: "@w3m-app/RPC_REQUEST", payload: {
+    method: "eth_sendTransaction", params: [{ to: "0x" + "1".repeat(40), value: "0x1" }], chainId: 10143,
+  } };
+  assert.equal(appEvent.safeParse(rpc).success, true);
+  assert.equal(appEvent.safeParse({ ...rpc, payload: { ...rpc.payload, method: "unknown_method" } }).success, false);
+  assert.equal(appEvent.safeParse({ type: "@w3m-app/SYNC_THEME", payload: {
+    themeVariables: { "--w3m-font-size-master": "10px", "--w3m-z-index": 100 },
+  } }).success, true);
+  assert.equal(frameEvent.safeParse({ type: "@w3m-frame/GET_CHAIN_ID_SUCCESS", payload: { chainId: 10143 } }).success, true);
+  assert.equal(frameEvent.safeParse({ type: "@w3m-frame/GET_CHAIN_ID_SUCCESS", payload: { chainId: true } }).success, false);
+  assert.equal(frameEvent.safeParse({ type: "@w3m-frame/RPC_REQUEST_ERROR", payload: { message: 123 } }).success, false);
+});
 
 test("patched ESM query parser preserves encoded WalletConnect pairing parameters", async () => {
   const queryString = (await import("query-string")).default;

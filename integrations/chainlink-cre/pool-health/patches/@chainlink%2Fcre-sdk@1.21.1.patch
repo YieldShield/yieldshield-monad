@@ -1,0 +1,45 @@
+diff --git a/dist/sdk/tee-constraints.d.ts b/dist/sdk/tee-constraints.d.ts
+index 0da9ca8ee1a04ccc90e9d2b32a92d26fc4ce714d..9231a1d16135ac528501474f9318480c0c91eca9 100644
+--- a/dist/sdk/tee-constraints.d.ts
++++ b/dist/sdk/tee-constraints.d.ts
+@@ -1,5 +1,5 @@
+ import type { Requirements } from '../generated/sdk/v1alpha/sdk_pb';
+-import { z } from 'zod';
++import { z } from 'zod/v3';
+ export declare const REGIONS: readonly ["us-west-2"];
+ export declare const NITRO_REGIONS: readonly ["us-west-2"];
+ declare const regionSchema: z.ZodEnum<["us-west-2"]>;
+diff --git a/dist/sdk/tee-constraints.js b/dist/sdk/tee-constraints.js
+index 8d5bdd7b71a2fa38b076bc0fcd18cc6009096811..9753108a44f6ae2b0ce0bacfe634254aa178b84a 100644
+--- a/dist/sdk/tee-constraints.js
++++ b/dist/sdk/tee-constraints.js
+@@ -1,6 +1,6 @@
+ import { create } from '@bufbuild/protobuf';
+ import { RegionsSchema, RequirementsSchema, TeeSchema, TeeType, TeeTypesAndRegionsSchema, } from '../generated/sdk/v1alpha/sdk_pb';
+-import { z } from 'zod';
++import { z } from 'zod/v3';
+ // --- Region schemas (source of truth) ---
+ export const REGIONS = ['us-west-2'];
+ export const NITRO_REGIONS = ['us-west-2'];
+diff --git a/dist/sdk/wasm/host-bindings.d.ts b/dist/sdk/wasm/host-bindings.d.ts
+index e610a003d36bc173b76a22dd492a7025c780704d..310f57c7944a83ac8d6c3586e60993625fca3ec5 100644
+--- a/dist/sdk/wasm/host-bindings.d.ts
++++ b/dist/sdk/wasm/host-bindings.d.ts
+@@ -1,5 +1,5 @@
+ import { Mode } from '../../generated/sdk/v1alpha/sdk_pb';
+-import { z } from 'zod';
++import { z } from 'zod/v3';
+ export declare const globalHostBindingsSchema: z.ZodObject<{
+     switchModes: z.ZodFunction<z.ZodTuple<[z.ZodNativeEnum<typeof Mode>], z.ZodUnknown>, z.ZodVoid>;
+     log: z.ZodFunction<z.ZodTuple<[z.ZodString], z.ZodUnknown>, z.ZodVoid>;
+diff --git a/dist/sdk/wasm/host-bindings.js b/dist/sdk/wasm/host-bindings.js
+index e33464811cc3fcfd7d0eb146a51efc2cfbe79191..94d957edd3f48d869bc7b9a2d73974221a73c39b 100644
+--- a/dist/sdk/wasm/host-bindings.js
++++ b/dist/sdk/wasm/host-bindings.js
+@@ -1,5 +1,5 @@
+ import { Mode } from '../../generated/sdk/v1alpha/sdk_pb';
+-import { z } from 'zod';
++import { z } from 'zod/v3';
+ // Zod schema for validating global host functions
+ export const globalHostBindingsSchema = z.object({
+     switchModes: z.function().args(z.nativeEnum(Mode)).returns(z.void()),
