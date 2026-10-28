@@ -47,7 +47,7 @@ jobs:
           if [ -L contracts/node_modules ]; then unlink contracts/node_modules; fi
           npm ci --prefix contracts --ignore-scripts
           npm run test:scripts --prefix contracts
-      - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09
+      - uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf
         with:
           version: v1.8.1
       - name: Monad adapter and lifecycle tests
