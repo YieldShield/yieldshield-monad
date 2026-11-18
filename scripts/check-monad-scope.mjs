@@ -12,6 +12,7 @@ export const manifestPaths = [
   "contracts/package.json",
   "integrations/chainlink-cre/pool-health/package.json",
   "vendor/bigint-buffer/package.json",
+  "vendor/anymatch/package.json",
 ];
 const dependencyFields = ["dependencies", "devDependencies", "peerDependencies", "optionalDependencies"];
 const solanaDependency =
@@ -52,14 +53,15 @@ export function checkMonadScope(manifests, lock, trackedFiles) {
   for (const [location, entry] of Object.entries(lock.packages)) {
     if (!location.includes("node_modules/") && location !== "") {
       assert(
-        ["apps/monad-web", "vendor/bigint-buffer"].includes(location),
+        ["apps/monad-web", "vendor/bigint-buffer", "vendor/anymatch"].includes(location),
         `Retired workspace in lockfile: ${location}`,
       );
     }
     if (entry.link)
       assert(
         (location === "node_modules/monad-web" && entry.resolved === "apps/monad-web") ||
-          (location === "node_modules/bigint-buffer" && entry.resolved === "vendor/bigint-buffer"),
+          (location === "node_modules/bigint-buffer" && entry.resolved === "vendor/bigint-buffer") ||
+          (location === "node_modules/anymatch" && entry.resolved === "vendor/anymatch"),
         `Unexpected workspace link: ${location}`,
       );
   }
