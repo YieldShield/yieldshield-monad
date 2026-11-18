@@ -181,6 +181,27 @@ test("Jayson browser override preserves JSON-RPC IDs, success and error callback
   assert.equal(custom.request("notify", [], null).id, undefined);
 });
 
+test("anymatch uses the local minimatch implementation instead of picomatch", () => {
+  const { readFileSync, realpathSync } = require("node:fs");
+  const resolved = require.resolve("anymatch");
+  assert.match(realpathSync(resolved).replaceAll("\\", "/"), /\/vendor\/anymatch\/index\.js$/);
+  const unstorageRequire = createRequire(require.resolve("@walletconnect/keyvaluestorage"));
+  const fromUnstorage = createRequire(unstorageRequire.resolve("unstorage/drivers/fs")).resolve("anymatch");
+  assert.equal(realpathSync(fromUnstorage), realpathSync(resolved));
+  const lock = JSON.parse(readFileSync(new URL("../package-lock.json", import.meta.url), "utf8"));
+  for (const [location, entry] of Object.entries(lock.packages)) {
+    if (location.endsWith("node_modules/picomatch")) assert.equal(entry.dev, true, `${location} must stay dev-only`);
+  }
+  const anymatch = require("anymatch");
+  const ignore = anymatch(["**/node_modules/**", "**/.git/**"]);
+  assert.equal(ignore("/srv/storage/node_modules"), true);
+  assert.equal(ignore("/srv/storage/.git/HEAD"), true);
+  assert.equal(ignore("/srv/storage/wallet/session.json"), false);
+  const started = process.hrtime.bigint();
+  assert.equal(anymatch("+(*a)", "a".repeat(64) + "!"), false);
+  assert.ok(Number(process.hrtime.bigint() - started) / 1e6 < 1000);
+});
+
 test("bigint conversion uses the local JavaScript implementation for large buffers", () => {
   const { realpathSync } = require("node:fs");
   const resolved = require.resolve("bigint-buffer");
