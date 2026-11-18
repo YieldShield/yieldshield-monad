@@ -47,10 +47,10 @@
     "@pythnetwork/pyth-sdk-solidity": "4.3.1",
     "dotenv": "~18.0.10",
     "ethers": "^6.17.0",
-    "prettier": "~3.9.10",
+    "prettier": "~3.10.1",
     "qrcode": "~1.5.3",
     "toml": "~5.0.1",
-    "axios": "1.21.0"
+    "axios": "1.21.1"
   },
   "overrides": {
     "zod@<4.6.6": "4.6.7"
