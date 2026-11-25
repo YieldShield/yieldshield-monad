@@ -36,7 +36,7 @@
     "@dynamic-labs/sdk-react-core": "5.17.0",
     "@dynamic-labs/wallet-connector-core": "5.17.0",
     "@pythnetwork/pyth-sdk-solidity": "4.3.1",
-    "viem": "^2.57.17",
+    "viem": "^2.58.4",
     "bigint-buffer": "file:vendor/bigint-buffer",
     "anymatch": "file:vendor/anymatch"
   },
